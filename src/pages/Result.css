@@ -1,0 +1,11 @@
+.result-container { background: #FFF0F5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 50px 20px; font-family: 'Nunito', sans-serif; }
+.vibe-title { font-family: 'Fraunces', serif; font-size: 36px; color: #FF477E; font-weight: 900; margin-bottom: 30px; }
+.princess-card { background: white; border-radius: 45px; padding: 50px 30px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 25px 60px rgba(255, 107, 107, 0.15); margin-bottom: 40px; }
+.result-name { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; margin: 20px 0; color: #333; }
+.mascot-circle { width: 180px; height: 180px; background: #FFC2D1; border-radius: 50%; margin: 0 auto 30px; border: 8px solid white; overflow: hidden; }
+.mascot-circle img { width: 100%; height: 100%; }
+.detail-tag { background: #FF477E; color: white; display: inline-block; padding: 8px 20px; border-radius: 50px; font-size: 13px; font-weight: 800; }
+.detail-desc { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 800; color: #FF477E; margin-top: 15px; }
+.share-btn-grad { background: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 100%); color: white; border: none; padding: 20px; border-radius: 50px; width: 100%; max-width: 380px; font-size: 18px; font-weight: 900; box-shadow: 0 12px 30px rgba(255, 85, 118, 0.3); cursor: pointer; }
+.bottom-actions { display: flex; gap: 20px; margin-top: 30px; }
+.bottom-actions button { background: none; border: none; color: #FF477E; font-weight: 800; cursor: pointer; }

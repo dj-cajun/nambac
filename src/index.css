@@ -1,0 +1,76 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  /* Colors */
+  --color-primary: #FF4D8D;
+  --color-primary-hover: #E63B7A;
+  --color-secondary: #FFB6C1;
+  --color-text-dark: #2D2D2D;
+  --color-text-gray: #666666;
+  --color-bg-light: #FFF0F5;
+  --color-white: #FFFFFF;
+
+  /* Gradients */
+  --gradient-main: linear-gradient(135deg, #FFF5F8 0%, #FFE4E9 100%);
+  --gradient-primary: linear-gradient(135deg, #FF4D8D 0%, #FF85B3 100%);
+
+  /* Shadows */
+  --shadow-soft: 0 8px 24px rgba(255, 77, 141, 0.15);
+  --shadow-hover: 0 12px 30px rgba(255, 77, 141, 0.25);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  /* Radius */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-main: 'Outfit', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--gradient-main);
+  color: var(--color-text-dark);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+button {
+  border: none;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+/* Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}

@@ -1,0 +1,7 @@
+.footer {
+  padding: 60px 20px; text-align: center; background: transparent;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+.footer-logo { font-family: 'Fraunces', serif; font-weight: 900; color: #FF477E; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+.footer-links { display: flex; gap: 30px; font-weight: 800; color: #888; font-size: 14px; }
+.footer-copy { font-size: 12px; color: #ccc; max-width: 400px; line-height: 1.5; margin-top: 10px; }

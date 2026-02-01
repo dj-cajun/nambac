@@ -1,0 +1,30 @@
+[tool.ruff]
+# 줄 길이 제한 (PEP8 권장 79~88)
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+# 적용할 규칙 세트
+# E, W: Pycodestyle (기본 문법)
+# F: Pyflakes (오류 탐지)
+# C90: McCabe (복잡도)
+# PL: Pylint (코드 품질, 길이 제한 등)
+# I: Isort (임포트 정렬)
+select = ["E", "W", "F", "C90", "PL", "I"]
+
+ignore = []
+
+# [1] 복잡도 제한
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+# [2] 함수 길이 및 구조 제한 (Pylint 규칙 활용)
+[tool.ruff.lint.pylint]
+max-statements = 50    # 함수 내 구문 수 50개 제한 (함수 길이 제한과 유사 효과)
+max-branches = 12      # 분기점 제한
+max-args = 5           # 인자 개수 제한
+
+# [3] 저장 시 자동 수정 (import 정렬 및 삭제 포함)
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
