@@ -1,79 +1,165 @@
 .navbar-container {
-  position: sticky; top: 0; left: 0; right: 0;
-  display: flex; justify-content: center;
-  padding: 15px 20px; z-index: 1000;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 12px 20px;
+  z-index: 1000;
   background: transparent;
 }
 
 .navbar-pill {
   background: white;
-  width: 100%; max-width: 1050px; /* 약간 더 슬림하게 조정 */
-  height: 60px; /* 높이를 줄여 더 날렵하게 */
+  width: 100%;
+  max-width: 1050px;
+  height: 56px;
   border-radius: 100px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 25px;
-  box-shadow: 0 10px 30px rgba(255, 71, 126, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 24px;
+  /* Adjusted padding */
+  box-shadow: 0 8px 20px rgba(255, 45, 133, 0.08);
+  /* Softer pink shadow */
 }
 
-/* 왼쪽 로고 영역 */
-.nav-left { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-shrink: 0; }
-.nav-logo-circle {
-  background: #FF477E; width: 28px; height: 28px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-}
-.logo-cloud { font-size: 14px; color: white; }
-.nav-brand-text { 
-  font-family: 'Fraunces', serif; font-weight: 900; color: #FF477E; 
-  font-size: 18px; /* 폰트 크기 감소 */
-  letter-spacing: -0.5px; 
+/* Left: Logo */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
-/* 중앙 내비게이션 & 검색창 - 침범 방지 핵심 */
-.nav-center { 
-  display: flex; align-items: center; 
-  gap: 25px; /* 메뉴와 검색창 사이 간격 */
-  flex-grow: 1; justify-content: center; 
+.nav-logo-icon {
+  width: 24px;
+  height: 24px;
+  background: #FF2D85;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E");
+  -webkit-mask-size: cover;
+  mask-size: cover;
 }
-.nav-links { display: flex; gap: 15px; }
+
+.nav-brand-text {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  color: #333;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+.nav-brand-suffix {
+  color: #BBB;
+  font-weight: 400;
+}
+
+/* Center: Links */
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .nav-item {
-  background: none; border: none; font-weight: 800; color: #555;
-  font-size: 12px; /* 폰트 크기 대폭 감소 */
-  cursor: pointer; display: flex; align-items: center; gap: 5px;
-  white-space: nowrap; /* 글자 줄바꿈 방지 */
-}
-.nav-item.active { color: #000; }
-
-.nav-search-bar {
-  background: #F9F9FB; border-radius: 50px;
-  display: flex; align-items: center; padding: 8px 15px;
-  width: 160px; /* 검색창 너비 최적화 */
-  gap: 8px; flex-shrink: 0;
-}
-.search-icon { color: #B0B0C0; }
-.nav-search-bar input {
-  border: none; background: none; outline: none;
-  font-size: 12px; color: #333; width: 100%;
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: #666;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-/* 오른쪽 프로필 & 알림 */
-.nav-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+.nav-item:hover {
+  color: #FF2D85;
+}
+
+.nav-item.active {
+  color: #333;
+  font-weight: 700;
+}
+
+/* Right: Buttons */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-container {
+  background: #F8F9FA;
+  border-radius: 50px;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 200px;
+}
+
+.search-container input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #333;
+  width: 100%;
+}
+
+.search-container input::placeholder {
+  color: #BBB;
+}
+
+.btn-profile {
+  background: #FF2D85;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(255, 45, 133, 0.3);
+}
+
+.btn-profile:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(255, 45, 133, 0.4);
+}
+
 .icon-btn {
-  background: none; border: none; cursor: pointer; position: relative;
-  display: flex; align-items: center; justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.2s;
 }
-.notification-dot {
-  position: absolute; top: 0; right: 0;
-  width: 6px; height: 6px; background: #FF477E;
-  border: 1.5px solid white; border-radius: 50%;
-}
-.nav-profile-circle {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: #FFE4E1; border: 1.5px solid #FFD1DC;
-  overflow: hidden; cursor: pointer;
-}
-.nav-profile-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-/* 반응형: 화면이 작아지면 검색창 숨기기 (침범 방지) */
+.icon-btn:hover {
+  background: #F5F5F5;
+}
+
+/* Responsive */
 @media (max-width: 850px) {
-  .nav-search-bar { display: none; }
+  .nav-center {
+    display: none;
+  }
+
+  .search-container {
+    display: none;
+  }
 }

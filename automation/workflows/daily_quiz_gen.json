@@ -1,0 +1,193 @@
+{
+    "name": "Daily HCMC Buzz Quiz",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "hours",
+                            "hours": 10
+                        }
+                    ]
+                }
+            },
+            "name": "Schedule Trigger (10AM)",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "command": "python3 ../scripts/invoke_agent.py Expert_Trend_Hunter"
+            },
+            "name": "Step 1: Trend Hunter",
+            "type": "n8n-nodes-base.executeCommand",
+            "typeVersion": 1,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "functionCode": "const result = JSON.parse(items[0].json.stdout);\nreturn [{json: result}];"
+            },
+            "name": "Parse JSON",
+            "type": "n8n-nodes-base.function",
+            "typeVersion": 1,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "command": "=python3 ../scripts/invoke_agent.py {{items[0].json.target_agent}} --context \"{{items[0].json.pushed_brief}}\""
+            },
+            "name": "Step 2: Generate Content",
+            "type": "n8n-nodes-base.executeCommand",
+            "typeVersion": 1,
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "command": "=python3 ../scripts/invoke_agent.py Inspector_J_Bad --context \"Verify this content...\""
+            },
+            "name": "Step 3: Quality Control",
+            "type": "n8n-nodes-base.executeCommand",
+            "typeVersion": 1,
+            "position": [
+                1050,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{items[0].json.stdout}}",
+                            "operation": "contains",
+                            "value2": "APPROVE"
+                        }
+                    ]
+                }
+            },
+            "name": "If Approved",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                1250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO quizzes (title, description) VALUES ('New Generated Quiz', 'Created by Sisyphus')"
+            },
+            "name": "Step 4: Deploy to DB",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 1,
+            "position": [
+                1450,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "channel": "#nambac-alerts",
+                "text": "🚨 Quiz Rejected by Inspector J Bad. Retrying..."
+            },
+            "name": "Slack Alert",
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 1,
+            "position": [
+                1450,
+                400
+            ]
+        }
+    ],
+    "connections": {
+        "Schedule Trigger (10AM)": {
+            "main": [
+                [
+                    {
+                        "node": "Step 1: Trend Hunter",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Step 1: Trend Hunter": {
+            "main": [
+                [
+                    {
+                        "node": "Parse JSON",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse JSON": {
+            "main": [
+                [
+                    {
+                        "node": "Step 2: Generate Content",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Step 2: Generate Content": {
+            "main": [
+                [
+                    {
+                        "node": "Step 3: Quality Control",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Step 3: Quality Control": {
+            "main": [
+                [
+                    {
+                        "node": "If Approved",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "If Approved": {
+            "main": [
+                [
+                    {
+                        "node": "Step 4: Deploy to DB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Slack Alert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

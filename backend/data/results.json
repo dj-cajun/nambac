@@ -1,0 +1,578 @@
+[
+  {
+    "result_code": 0,
+    "title": "Khách Du Lịch Ngáo Ngơ ✈️",
+    "description": "Bạn đến Sài Gòn chỉ để ăn phở 24. Cần 'phổ cập' kiến thức gấp!",
+    "traits": [
+      "Ngây thơ",
+      "Dễ bị lừa",
+      "Yêu màu hồng"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "e5a1c425-d9e0-4816-9b70-39358bce8a08"
+  },
+  {
+    "result_code": 1,
+    "title": "Tấm Chiếu Mới Trải 🆕",
+    "description": "Biết trả giá nhưng toàn thất bại. Cố lên bạn ơi!",
+    "traits": [
+      "Nhiệt huyết",
+      "Hay bỡ ngỡ",
+      "Cần kinh nghiệm"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "9f687e58-1402-42cb-9627-89a43af5e8fc"
+  },
+  {
+    "result_code": 2,
+    "title": "Dân Nhập Cư Tập Sự 🎒",
+    "description": "Biết đường tắt, biết quán ngon. Sắp thành dân local!",
+    "traits": [
+      "Thích nghi",
+      "Ham học hỏi",
+      "Sành ăn"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "4c0aab45-eb4b-41e4-a7ec-a03c2613edc3"
+  },
+  {
+    "result_code": 3,
+    "title": "Thổ Địa Quận 4 🗺️",
+    "description": "Đường nào cũng biết. Grab driver còn phải nể!",
+    "traits": [
+      "Rành đường",
+      "Thông thạo",
+      "Nhanh nhạy"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "f9a3f36e-f34a-4a5b-915e-4c871e0fa15c"
+  },
+  {
+    "result_code": 4,
+    "title": "Ninja Lead Huyền Thoại 🛵",
+    "description": "Khả năng luồn lách thượng thừa. Áo chống nắng là trang phục chiến đấu!",
+    "traits": [
+      "Tốc độ",
+      "Bất khả chiến bại",
+      "Che kín mít"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "d7c1a774-1fdd-4fcb-97b2-a548935c4125"
+  },
+  {
+    "result_code": 5,
+    "title": "Chúa Tể Vỉa Hè ☕",
+    "description": "Cà phê bệt là chân ái. Sống 'bụi' mới là chất!",
+    "traits": [
+      "Bình dân",
+      "Thoải mái",
+      "Vui vẻ"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "768c0652-c137-4f45-ab6f-b77f185a9020"
+  },
+  {
+    "result_code": 6,
+    "title": "Master Trả Giá 💸",
+    "description": "Chợ Bến Thành khóc thét khi thấy bạn. Trả giá như nghệ thuật!",
+    "traits": [
+      "Tiết kiệm",
+      "Sắc sảo",
+      "Thuyết phục"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "4b3e06c3-774c-407c-9abe-ca73cc3d601b"
+  },
+  {
+    "result_code": 7,
+    "title": "Trùm Cuối Sài Gòn 👑",
+    "description": "Sài Gòn nằm trong lòng bàn tay bạn!",
+    "traits": [
+      "Quyền lực",
+      "Hiểu biết",
+      "Bá đạo"
+    ],
+    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
+    "id": "a7470cb3-5ae7-49da-aedd-d66de2b6f225"
+  },
+  {
+    "result_code": 0,
+    "title": "Người Tối Cổ 🗿",
+    "description": "Bạn sống ở Sài Gòn hay hang động vậy? Trend gì cũng không biết!",
+    "traits": [
+      "Cổ hủ",
+      "Bình yên",
+      "Xa lánh xã hội"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "1d5843f8-0349-49de-8fa5-00be5a4451c2"
+  },
+  {
+    "result_code": 1,
+    "title": "Mầm Non Gen Z 🌱",
+    "description": "Đang tập tành đu trend. Cố gắng lên, sắp 'slay' rồi!",
+    "traits": [
+      "Ngây thơ",
+      "Học hỏi",
+      "Dễ thương"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "a4d71ddd-3d0f-4e71-ab38-b81649367693"
+  },
+  {
+    "result_code": 2,
+    "title": "Thánh Sống Ảo 📸",
+    "description": "Đi cafe không uống, chỉ chụp hình. Camera roll 10,000 tấm!",
+    "traits": [
+      "Ăn ảnh",
+      "Nghệ thuật",
+      "Kiên nhẫn"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "b662247f-ffd6-4f2a-a3e6-b19c8eeaaa72"
+  },
+  {
+    "result_code": 3,
+    "title": "Reviewer Ẩm Thực 🍜",
+    "description": "Quán nào ngon, quán nào dở bạn biết hết. Bạn bè toàn hỏi bạn ăn gì!",
+    "traits": [
+      "Sành ăn",
+      "Khó tính",
+      "Đáng tin cậy"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "e54c7038-2697-4515-80be-11f105722335"
+  },
+  {
+    "result_code": 4,
+    "title": "Chiến Thần Tik Tok 🎵",
+    "description": "Nhạc nổi lên là nhảy. Trend gì cũng bắt kịp tíc tắc!",
+    "traits": [
+      "Năng động",
+      "Sáng tạo",
+      "Nổi tiếng"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "008413be-f44e-48d1-bcf3-6990c24478c8"
+  },
+  {
+    "result_code": 5,
+    "title": "Dân Chill Chính Hiệu 🎧",
+    "description": "Không ồn ào, chỉ thích low-fi và workshop. Vibe cực nghệ!",
+    "traits": [
+      "Sâu sắc",
+      "Nghệ sĩ",
+      "Trầm tính"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "9ec30328-0186-4484-8a9a-29c618117f04"
+  },
+  {
+    "result_code": 6,
+    "title": "Bà Chúa Tiệc Tùng 🥂",
+    "description": "Bùi Viện là nhà, bar pub là giường. Quẩy banh nóc!",
+    "traits": [
+      "Vui vẻ",
+      "Hết mình",
+      "Không ngủ"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "1897504a-0b2b-4577-8d92-68845cad7c3c"
+  },
+  {
+    "result_code": 7,
+    "title": "Tổng Tài Gen Z 💎",
+    "description": "Vừa giỏi kiếm tiền vừa chơi chất. Bạn chính là nhân vật chính của bộ phim này!",
+    "traits": [
+      "Thành công",
+      "Phong cách",
+      "Hoàn hảo"
+    ],
+    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
+    "id": "1e172484-fa0a-456a-a0c5-e6b870d1ab2d"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh nhậu quán vỉa hè (000)",
+    "description": "Người này chỉ thích nằm dài ở quán nhậu vỉa hè, uống bia tươi và ăn mỳ tôm. Cuộc sống đơn giản như lòng bàn tay.",
+    "traits": [
+      "Thích ăn vặt",
+      "Ngại di chuyển"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "c39fbd57-a05e-431f-a984-bcc9cdf06145"
+  },
+  {
+    "result_code": 1,
+    "title": "Nghiện café chó (001)",
+    "description": "Người này là fan cuồng của café chó, thích ngắm những chú chó trong quán hơn là nói chuyện với người khác. Chỉ cần có chó là đủ!",
+    "traits": [
+      "Yêu động vật",
+      "Sống ảo"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "60ea7e69-b149-47a1-bddf-cc9ec68f39de"
+  },
+  {
+    "result_code": 2,
+    "title": "Phượt thủ bình dân (010)",
+    "description": "Người này thích đi du lịch nhưng chỉ ở những nơi bình dân, không cần sang chảnh. Phượt là cuộc sống, không cần phải xa hoa.",
+    "traits": [
+      "Yêu thiên nhiên",
+      "Thích khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "5cb40733-7cfc-45f7-a546-f71defa6dfdb"
+  },
+  {
+    "result_code": 3,
+    "title": "Du lịch tự túc (011)",
+    "description": "Người này thích đi du lịch và có một chút sang chảnh. Thích chụp ảnh sống ảo tại những địa điểm hot nhất.",
+    "traits": [
+      "Chụp ảnh",
+      "Thích khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "f6ec0900-f4ec-4b2a-b6d7-cf3cb7b38487"
+  },
+  {
+    "result_code": 4,
+    "title": "Cà phê văn phòng (100)",
+    "description": "Người này là nhân viên văn phòng điển hình, thích café nhưng không thích xô bồ. Sống chậm nhưng chắc.",
+    "traits": [
+      "Công việc ổn định",
+      "Yêu công nghệ"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "d5ca5962-0aaa-498e-baf3-55a35d179731"
+  },
+  {
+    "result_code": 5,
+    "title": "Thám hiểm thành phố (101)",
+    "description": "Người này thích lên kế hoạch cho những cuộc đi chơi, tìm kiếm quán xá mới lạ. Luôn tìm thấy niềm vui từ những điều nhỏ nhặt.",
+    "traits": [
+      "Thích khám phá",
+      "Yêu sự mới lạ"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "4522656f-8d9e-435c-b47b-63237aa1c17e"
+  },
+  {
+    "result_code": 6,
+    "title": "Sang chảnh nhưng giản dị (110)",
+    "description": "Người này thích những thứ sang trọng nhưng cũng không quên nguồn gốc. Một ly trà sữa cao cấp cũng làm họ hạnh phúc.",
+    "traits": [
+      "Thích sự tinh tế",
+      "Yêu cái đẹp"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "f80c6662-23d8-4315-b21d-4cff5507f0f2"
+  },
+  {
+    "result_code": 7,
+    "title": "Chúa tể du lịch (111)",
+    "description": "Người này là du khách chuyên nghiệp, luôn tìm kiếm những trải nghiệm mới mẻ và sang chảnh. Cuộc sống là một chuyến phiêu lưu.",
+    "traits": [
+      "Thích khám phá",
+      "Sống hưởng thụ"
+    ],
+    "image_url": null,
+    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
+    "id": "42857211-e5a3-41fc-baa7-5827f9c80fb6"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh Ăn Tối Giản (000)",
+    "description": "Chỉ cần một bánh mì và trà đá là đủ. Mọi thứ khác là xa xỉ. Bạn sống đơn giản như một ninja giấu mặt ở Sài Gòn.",
+    "traits": [
+      "Tiết kiệm",
+      "Thích nghi"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "067af443-bd83-41b4-bc40-be5994340265"
+  },
+  {
+    "result_code": 1,
+    "title": "Góc Nhìn Hướng Nội (001)",
+    "description": "Là một người nhút nhát nhưng lại thích tìm hiểu những món ăn độc lạ. Bạn như một cục đá quý giữa biển người.",
+    "traits": [
+      "Sâu sắc",
+      "Thích khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "18d12ab5-b65c-4210-a9d0-3f4af5f29144"
+  },
+  {
+    "result_code": 2,
+    "title": "Du Khách Ăn Mặn (010)",
+    "description": "Yêu thích trải nghiệm ẩm thực địa phương nhưng không ngại tốn tiền cho một bát phở chính hiệu. Bạn là khách du lịch sang chảnh ở Sài Gòn.",
+    "traits": [
+      "Khám phá",
+      "Sang trọng"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "8204ecd0-ad0a-4cbd-b294-41306180d878"
+  },
+  {
+    "result_code": 3,
+    "title": "Sành Ăn Hướng Ngoại (011)",
+    "description": "Thích ăn uống tại những địa điểm nổi tiếng nhưng chỉ khi có khuyến mãi. Bạn như một influencer đang tìm kiếm món ăn đẹp cho Instagram.",
+    "traits": [
+      "Sáng tạo",
+      "Thích chia sẻ"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "729b3e8e-01cd-4e86-b539-6f18dc921b60"
+  },
+  {
+    "result_code": 4,
+    "title": "Người Địa Phương Sang Chảnh (100)",
+    "description": "Sống ở Sài Gòn nhưng chỉ ăn những món đắt tiền nhất. Bạn như một vua chúa giữa đám đông.",
+    "traits": [
+      "Sang trọng",
+      "Độc quyền"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "f1946a48-6403-4836-9213-0d7080691c76"
+  },
+  {
+    "result_code": 5,
+    "title": "Thực Khách Hướng Nội (101)",
+    "description": "Người thích ăn ngon nhưng chỉ thích ăn một mình. Bạn thích nhâm nhi từng món ăn như một nghệ sĩ thưởng thức tác phẩm của mình.",
+    "traits": [
+      "Cá nhân",
+      "Sáng tạo"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "902ef386-f6d4-412d-be61-7fbe79bee31f"
+  },
+  {
+    "result_code": 6,
+    "title": "Khách Du Lịch Sang Chảnh (110)",
+    "description": "Chi tiền cho món ăn như thể không có ngày mai. Bạn là người đi du lịch nhưng lại thích giải trí cao cấp.",
+    "traits": [
+      "Phóng khoáng",
+      "Thích trải nghiệm"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "b50760a5-e078-4353-8e29-8c386471e9e8"
+  },
+  {
+    "result_code": 7,
+    "title": "Thánh Ăn Nhậu (111)",
+    "description": "Mọi món ăn trên đời đều phải có bia. Bạn là người sống để ăn và ăn để sống, không cần phải lý do. Chỉ cần ăn và uống!",
+    "traits": [
+      "Vui vẻ",
+      "Cởi mở"
+    ],
+    "image_url": null,
+    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
+    "id": "2296267d-8592-4b4a-a6e9-0e1f97e21e42"
+  },
+  {
+    "result_code": 0,
+    "title": "Người Bản Địa Nhút Nhát (000)",
+    "description": "Tôi chỉ muốn ngồi một góc quán cà phê cũ, nghe nhạc xưa và uống trà sữa, không thích giao lưu xã hội lắm đâu. À mà, bạn có thể đưa tôi menu không?",
+    "traits": [
+      "Nhút nhát",
+      "Thích yên tĩnh"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "34f578cd-8e49-477c-bbce-cee0b9c6a151"
+  },
+  {
+    "result_code": 1,
+    "title": "Khách Du Lịch Nhút Nhát (001)",
+    "description": "Tôi đến Sài Gòn để khám phá, nhưng mà chỉ dám ngồi một góc với ống hút trà sữa. Đừng làm tôi phải nói chuyện với người lạ nhé!",
+    "traits": [
+      "Nhút nhát",
+      "Khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "d9a064ee-961f-4c3a-a641-aaa86bf1936c"
+  },
+  {
+    "result_code": 2,
+    "title": "Người Bản Địa Hòa Đồng (010)",
+    "description": "Tôi là người Sài Gòn chính hiệu, nhưng tôi thích nói chuyện với mọi người. Đừng ngại, tôi chỉ muốn biết bạn đã ăn phở ở đâu thôi mà!",
+    "traits": [
+      "Hòa đồng",
+      "Thích trò chuyện"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "8ddf27b9-a99f-4662-8252-a357ce8d95a0"
+  },
+  {
+    "result_code": 3,
+    "title": "Khách Du Lịch Hòa Đồng (011)",
+    "description": "Tôi đến để tận hưởng từng khoảnh khắc ở Sài Gòn, và tôi không ngại giao lưu với mọi người. Cùng chụp ảnh sống ảo nào!",
+    "traits": [
+      "Hòa đồng",
+      "Thích khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "d399c88a-e6c2-49a3-9f2e-31e5d13be473"
+  },
+  {
+    "result_code": 4,
+    "title": "Người Bản Địa Sang Chảnh (100)",
+    "description": "Tôi là người Sài Gòn, nhưng tôi chỉ đến những quán cà phê sang chảnh nhất. Thời trang của tôi cũng phải đỉnh cao như món ăn tôi chọn!",
+    "traits": [
+      "Sang chảnh",
+      "Thời trang"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "8899a27a-a3ab-4937-9dff-27ebe2ded174"
+  },
+  {
+    "result_code": 5,
+    "title": "Khách Du Lịch Sang Chảnh (101)",
+    "description": "Tôi đến Sài Gòn để trải nghiệm những điều tốt nhất, từ món ăn đến chỗ ở. Chỉ cần có wifi và món ăn ngon, tôi sẽ không phàn nàn!",
+    "traits": [
+      "Sang chảnh",
+      "Khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "64c7d099-7d1d-43b5-8e9b-ba6a0f49bf70"
+  },
+  {
+    "result_code": 6,
+    "title": "Người Bản Địa Thích Tiết Kiệm (110)",
+    "description": "Tôi yêu Sài Gòn nhưng cũng rất biết tiết kiệm. Món ngon nào tôi cũng tìm được mà không cần phải tốn kém!",
+    "traits": [
+      "Tiết kiệm",
+      "Thông minh"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "bfefeb89-b4b6-49c0-93e2-2396c4ef66dc"
+  },
+  {
+    "result_code": 7,
+    "title": "Khách Du Lịch Thích Tiết Kiệm (111)",
+    "description": "Tôi du lịch Sài Gòn với ngân sách hạn chế, nhưng không có gì cản tôi thưởng thức món ngon! Đôi khi món ngon lại nằm ở chỗ bình dân nhất!",
+    "traits": [
+      "Tiết kiệm",
+      "Khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
+    "id": "ea7dccba-d8d4-43f3-88c3-1123b926578e"
+  },
+  {
+    "result_code": 0,
+    "title": "Người nội tâm tiết kiệm (000)",
+    "description": "Bạn là một người sống trong thế giới riêng của mình, thích đếm từng đồng tiền và tránh xa những bữa tiệc xa hoa. Nhìn thấy bạn đã đủ hài lòng rồi.",
+    "traits": [
+      "Nội tâm",
+      "Tiết kiệm"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "f0f3404d-2ba5-4304-a70c-1b3bdaf212d6"
+  },
+  {
+    "result_code": 1,
+    "title": "Người nội tâm tiêu xài (001)",
+    "description": "Sống kín đáo nhưng vẫn thích đôi khi lăn xả vào những bữa tiệc sang trọng. Cứ như là 'nằm trong tủ lạnh' nhưng thỉnh thoảng lại bật ra như 'ngôi sao'.",
+    "traits": [
+      "Nội tâm",
+      "Xa hoa"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "ff0c86ee-9acd-4b5f-b53b-37adf170e58c"
+  },
+  {
+    "result_code": 2,
+    "title": "Người hướng ngoại tiết kiệm (010)",
+    "description": "Bạn là người thích giao tiếp nhưng lại có thể ăn mì tôm cả tháng. Mọi người nghĩ bạn là 'nhà sản xuất meme' nhưng thực ra bạn đang tiết kiệm từng xu.",
+    "traits": [
+      "Hướng ngoại",
+      "Tiết kiệm"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "87615139-b6df-416e-baa7-f5529fa1f87f"
+  },
+  {
+    "result_code": 3,
+    "title": "Người hướng ngoại tiêu xài (011)",
+    "description": "Bạn là trung tâm của mọi bữa tiệc! Chi tiêu không tiếc tay, vì cuộc sống quá ngắn để không tận hưởng. Nhưng đôi khi cũng cần nhớ ví tiền nhé!",
+    "traits": [
+      "Hướng ngoại",
+      "Xa hoa"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "7274e43c-8375-46a3-aa24-9d451e84f102"
+  },
+  {
+    "result_code": 4,
+    "title": "Người nội tâm địa phương (100)",
+    "description": "Bình yên trong góc nhỏ của Sài Gòn, bạn thích khám phá từng góc phố, nhưng không bao giờ xa rời chiếc ghế yêu thích của mình.",
+    "traits": [
+      "Nội tâm",
+      "Địa phương"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "d6e10223-f751-4ddb-bb3a-d827c91d4e74"
+  },
+  {
+    "result_code": 5,
+    "title": "Người nội tâm du lịch (101)",
+    "description": "Thích khám phá những nơi mới nhưng luôn một mình. Bạn là 'phượt thủ ngầm' với một chiếc vali mà chỉ có bạn mới biết cách xếp gọn gàng.",
+    "traits": [
+      "Nội tâm",
+      "Du lịch"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "626b1bf3-45c9-4127-a290-189a0dec209f"
+  },
+  {
+    "result_code": 6,
+    "title": "Người hướng ngoại địa phương (110)",
+    "description": "Bạn là ngôi sao của khu phố, luôn chào hỏi mọi người. Có thể không đi xa nhưng luôn biết rõ từng quán ăn ngon trên đường phố.",
+    "traits": [
+      "Hướng ngoại",
+      "Địa phương"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "a5f173d6-5541-42ab-b13c-e62c87037cc7"
+  },
+  {
+    "result_code": 7,
+    "title": "Người hướng ngoại du lịch (111)",
+    "description": "Người đi khắp nơi và không bao giờ ngại giao tiếp! Cuộc sống là một chuyến phiêu lưu lớn và bạn là nhân vật chính trong câu chuyện của mình.",
+    "traits": [
+      "Hướng ngoại",
+      "Du lịch"
+    ],
+    "image_url": null,
+    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
+    "id": "db1e6c43-7ec5-4fd7-b0bb-cbf8f63d75f3"
+  }
+]

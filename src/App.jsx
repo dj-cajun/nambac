@@ -4,16 +4,23 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import QuizPage from './pages/QuizPage';
+import Admin from './pages/Admin';
 
 function App() {
   return (
     <Router>
-      <div className="app-layout" style={{ background: '#FFF0F5', minHeight: '100vh' }}>
+      <div className="app-layout" style={{ position: 'relative', minHeight: '100vh', background: 'transparent' }}>
+        {/* Blurry Blobs Background */}
+        <div className="blob-bg blob-1"></div>
+        <div className="blob-bg blob-2"></div>
+        <div className="blob-bg blob-3"></div>
+
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           {/* 어떤 퀴즈 번호로 들어오든 처리하는 동적 라우팅 */}
           <Route path="/quiz/:id" element={<QuizPage />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
         <Footer />
       </div>

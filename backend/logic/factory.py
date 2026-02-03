@@ -5,6 +5,8 @@ import asyncio
 import httpx
 from dotenv import load_dotenv
 
+from .image_generator import ImageGenerator
+
 # 환경 변수 로드
 load_dotenv()
 
@@ -16,18 +18,24 @@ def log(message):
 
 
 class NambacFactory:
-    def __init__(self):
+    def __init__(self, generate_images: bool = False):
         # OpenRouter 설정
-        self.api_key = os.getenv("OPENCODE_API_KEY")
+        self.api_key = os.getenv("OPENROUTER_API_KEY")
         self.base_url = "https://openrouter.ai/api/v1"
         self.base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-        # 모델 설정
-        self.model = "google/gemini-2.0-flash-001"
+        # 모델 설정 (OpenRouter)
+        self.model = "openai/gpt-4o-mini"
+
+        # 이미지 생성 설정
+        self.generate_images = generate_images
+        self.image_generator = ImageGenerator() if generate_images else None
 
         if not self.api_key:
-            log("❌ Error: OPENCODE_API_KEY not found in env.")
-            sys.exit(1)
+            log(
+                f"❌ Error: OPENROUTER_API_KEY not found in env. Available keys: {list(os.environ.keys())}"
+            )
+            raise ValueError("OPENROUTER_API_KEY not found in environment")
 
     def load_sop(self, role):
         """SOP(프롬프트) 파일을 읽어옵니다."""
@@ -53,10 +61,14 @@ class NambacFactory:
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": system_prompt},
+                {
+                    "role": "system",
+                    "content": system_prompt
+                    + "\n\nIMPORTANT: You must respond ONLY with valid JSON. No explanations outside of JSON.",
+                },
                 {"role": "user", "content": user_content},
             ],
-            "response_format": {"type": "json_object"},
+            "temperature": 0.7,
         }
 
         async with httpx.AsyncClient(timeout=60.0) as client:
@@ -68,10 +80,31 @@ class NambacFactory:
 
                 data = response.json()
                 content = data["choices"][0]["message"]["content"]
+
+                # Extract JSON from markdown code blocks if present
+                if "```" in content:
+                    # Find content between code blocks
+                    import re
+
+                    json_match = re.search(
+                        r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", content
+                    )
+                    if json_match:
+                        content = json_match.group(1)
+                    else:
+                        # Try to extract just the JSON-like part (from first { to last })
+                        json_match = re.search(r"\{[\s\S]*\}", content)
+                        if json_match:
+                            content = json_match.group(0)
+
+                log(f"✅ {agent_name} raw response: {content[:200]}")
                 return json.loads(content)
 
             except httpx.HTTPStatusError as e:
                 log(f"❌ API Error in {agent_name}: {e.response.text}")
+                return {}
+            except json.JSONDecodeError as e:
+                log(f"❌ JSON Parse Error in {agent_name}: {str(e)}")
                 return {}
             except Exception as e:
                 log(f"❌ Error in {agent_name}: {str(e)}")
@@ -245,20 +278,122 @@ class NambacFactory:
                 f"⚠️ Warning: Missing Data. Questions: {len(questions_data)}, Results: {len(results_data)}"
             )
 
+        # 이미지 생성 (활성화된 경우)
+        if self.generate_images and self.image_generator:
+            log("🎨 Starting image generation...")
+
+            # 1. 퀴즈 커버 이미지 생성
+            cover_image = self.image_generator.generate_quiz_cover(
+                director_output.get("title", ""),
+                director_output.get("category", "Trendy"),
+            )
+            if cover_image:
+                final_quiz["meta"]["image_url"] = (
+                    f"http://localhost:8000/images/{cover_image['filename']}"
+                )
+                log(f"✅ Cover image generated: {cover_image['filename']}")
+
+            # 2. 질문 이미지 생성 (최대 5개만 - 비용 절감)
+            for idx, question in enumerate(final_quiz["questions"][:5]):
+                question_image = await self.image_generator.generate_question_image(
+                    question.get("question_text", ""),
+                    question.get("order_number", idx + 1),
+                )
+                if question_image:
+                    question["image_url"] = (
+                        f"http://localhost:8000/images/{question_image['filename']}"
+                    )
+                    log(
+                        f"✅ Question {idx + 1} image generated: {question_image['filename']}"
+                    )
+
+            # 3. 결과 이미지 생성 (최대 8개)
+            for idx, result in enumerate(final_quiz["results"]):
+                result_image = await self.image_generator.generate_result_image(
+                    result.get("type_name", ""), result.get("description", "")
+                )
+                if result_image:
+                    result["image_url"] = (
+                        f"http://localhost:8000/images/{result_image['filename']}"
+                    )
+                    log(f"✅ Result {idx} image generated: {result_image['filename']}")
+
+            log("🎨 Image generation completed!")
+
         return final_quiz
 
+
+    async def run_trend_hunter(self):
+        """Step 1: 트렌드 헌터가 현재 이슈를 분석"""
+        sop = self.load_sop("Expert_Trend_Hunter")
+        # Simulating external input from n8n or just asking for current trends
+        task = "Analyze current HCMC trends and return 3 keywords and 1 main topic."
+        return await self.call_agent("Expert_Trend_Hunter", sop, task)
+
+    async def run_inspector(self, quiz_data):
+        """Step 3: J-Bad 감찰관이 퀴즈 품질 검수"""
+        sop = self.load_sop("Inspector_J_Bad")
+        task = f"""
+        [Quiz Data]: {json.dumps(quiz_data, ensure_ascii=False)}
+        
+        Verify if this quiz meets the 'King-bad' standards.
+        Return JSON: {{ "status": "APPROVE" or "REJECT", "comment": "...", "stamp": "..." }}
+        """
+        return await self.call_agent("Inspector_J_Bad", sop, task)
+
+    async def run_daily_cycle(self):
+        """Sisyphus Loop: Daily Content Generation Cycle"""
+        log("🗿 Sisyphus started rolling the stone...")
+        
+        # 1. Trend Hunting
+        trend_data = await self.run_trend_hunter()
+        if not trend_data or "raw_insight" not in trend_data:
+            log("❌ Trend Hunter failed. Using fallback topic.")
+            topic = "호치민 비오는 날 그랩 잡기" # Fallback
+        else:
+            topic = trend_data.get("pushed_brief", trend_data.get("raw_insight"))
+            log(f"🏹 Trend Found: {topic}")
+
+        # 2. Generation (Reusing existing workflow with new topic)
+        # In full version, we would switch between agents (PastLife, MBTI) here.
+        # For now, we inject the trend into the main workflow.
+        generated_quiz = await self.run_workflow(topic)
+        
+        if not generated_quiz:
+             log("❌ Generation failed.")
+             return None
+
+        # 3. Quality Control (Inspector J Bad)
+        inspection = await self.run_inspector(generated_quiz)
+        log(f"👮‍♂️ Inspector Verdict: {inspection.get('status')} - {inspection.get('comment')}")
+
+        if inspection.get("status") == "APPROVE":
+             generated_quiz["meta"]["qc_stamp"] = inspection.get("stamp")
+             # Return for DB insertion
+             return generated_quiz
+        else:
+            log("⚠️ Quiz Rejected. (Retry logic to be implemented)")
+            # For Phase 2 demo, we return it anyway but marked as rejected
+            generated_quiz["meta"]["qc_status"] = "REJECTED"
+            return generated_quiz
 
 # ---------------------------------------------------------
 # 실행 진입점 (CLI / n8n)
 # ---------------------------------------------------------
 if __name__ == "__main__":
     # n8n 등 외부에서 인자로 주제를 전달받음 (기본값 설정)
-    topic_arg = sys.argv[1] if len(sys.argv) > 1 else "호치민 1군 그랩 기사 전생 체험"
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", default="workflow", help="workflow or daily")
+    parser.add_argument("topic", nargs="?", default="호치민 1군 그랩 기사 전생 체험")
+    args = parser.parse_args()
 
     factory = NambacFactory()
 
-    # 비동기 루프 실행
-    result = asyncio.run(factory.run_workflow(topic_arg))
+    if args.mode == "daily":
+        result = asyncio.run(factory.run_daily_cycle())
+    else:
+        result = asyncio.run(factory.run_workflow(args.topic))
 
     # 최종 결과는 stdout으로 출력 (n8n이 캡처하는 부분)
     print(json.dumps(result, ensure_ascii=False, indent=2))

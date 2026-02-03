@@ -1,26 +1,10 @@
 import React from 'react';
 import { Star, Sparkles, Cloud } from 'lucide-react';
-import { supabase } from '../supabaseClient';
 import './Login.css';
 
 const Login = () => {
-    const handleGoogleLogin = async () => {
-        try {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    queryParams: {
-                        access_type: 'offline',
-                        prompt: 'consent',
-                    },
-                    redirectTo: window.location.origin
-                }
-            });
-            if (error) throw error;
-        } catch (error) {
-            console.error('Error logging in:', error.message);
-            alert('로그인 중 오류가 발생했습니다: ' + error.message);
-        }
+    const handleGoogleLogin = () => {
+        alert('Google 로그인 기능은 로컬 테스트용으로 비활성화되었습니다.');
     };
 
     return (

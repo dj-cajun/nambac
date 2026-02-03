@@ -1,112 +1,95 @@
 import os
 import sys
-from supabase import create_client
-from dotenv import load_dotenv
 
-# 환경 변수 로드
-load_dotenv()
+# Add backend directory to sys.path to allow importing from logic
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(backend_dir)
 
-url = os.environ.get("VITE_SUPABASE_URL")
-key = os.environ.get("VITE_SUPABASE_ANON_KEY")
+from logic.json_manager import JSONManager
 
-if not url or not key:
-    print("❌ Error: Missing Supabase credentials in .env")
-    sys.exit(1)
-
-supabase = create_client(url, key)
-
-print("🚀 Starting 8-Type Quiz Insertion...")
-
-# 1. Quiz Meta Data (quizzes table)
-quiz_meta = {
-    "title": "호치민 로컬 생존력 테스트 (8-Type)",
-    "description": "당신의 호치민 적응력을 3개의 질문으로 완벽하게 분석합니다. 당신은 현지인일까요, 영원한 관광객일까요?",
-    "category": "Survival",
-    "image_url": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?q=80&w=1000&auto=format&fit=crop",
-    "is_active": True,
-    "view_count": 0,
-    "share_count": 0,
-}
+print("🚀 Starting Saigon Survival Quiz Insertion (Local JSON)...")
 
 try:
-    print(f"Adding Quiz: {quiz_meta['title']}...")
-    res = supabase.table("quizzes").insert(quiz_meta).execute()
+    # Initialize JSON Manager (pointing to backend/data)
+    json_manager = JSONManager(data_dir=os.path.join(backend_dir, "data"))
 
-    if not res.data:
-        raise Exception("No data returned from quiz insert")
+    # 1. Quiz Meta Data
+    quiz_meta = {
+        "title": "Thử Thách Sinh Tồn Sài Gòn (Level MAX)",
+        "description": "Bạn là 'Thổ Địa' Sài Gòn hay 'Tấm Chiếu Mới'? Trả lời 3 câu hỏi để biết ngay trình độ thích nghi của bạn tại HCMC! Cười xỉu! 🤣",
+        "category": "Survival",
+        "image_url": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?q=80&w=1000&auto=format&fit=crop",
+        "is_active": True,
+        "view_count": 1200,
+        "share_count": 45,
+    }
 
-    quiz_id = res.data[0]["id"]
-    print(f"✅ Quiz Created! ID: {quiz_id}")
-
-    # 2. Questions Data (questions table) - 3-Bit Binary Logic
-    # Q1: Axis 1 (1 point)
-    # Q2: Axis 2 (2 points)
-    # Q3: Axis 3 (4 points)
-    # Q4, Q5: Bonus (0 points)
-
+    # 2. Questions Data (3-Bit Binary Logic)
     questions = [
         {
-            "quiz_id": quiz_id,
             "order_number": 1,
-            "question_text": "벤탄 시장에서 상인이 '50만동!'을 외쳤다. 당신의 반응은?",
-            "option_a": "오케이, 쿨거래 (호구형)",
-            "option_b": "'20만동 아니면 안사요' 뒤도 안보고 걷기 (고수형)",
+            "question_text": "Cô bán hàng ở chợ Bến Thành hét giá '500k'. Bạn làm gì?",
+            "option_a": "Chốt đơn luôn cho lẹ (Rich Kid 💸)",
+            "option_b": "'100k bán ko cô?' rồi bỏ đi thẳng (Thánh trả giá 😎)",
             "score_a": 0,
             "score_b": 1,  # Axis 1 (Bit 0)
             "image_url": "https://images.unsplash.com/photo-1535139262971-c51845709a48?auto=format&fit=crop&w=500&q=60",
         },
         {
-            "quiz_id": quiz_id,
             "order_number": 2,
-            "question_text": "오토바이 택시(Grab)가 역주행을 시작했다.",
-            "option_a": "비명을 지르며 기사님 어깨를 잡는다 (겁쟁이)",
-            "option_b": "자연스럽게 풍경을 감상하며 스릴을 즐긴다 (현지인)",
+            "question_text": "Grab Bike chạy ngược chiều trên đường Điện Biên Phủ 😱",
+            "option_a": "Hét lên 'Á á á cứu tôi!' (Yếu tim 😭)",
+            "option_b": "Ngắm cảnh chill chill, chuyện thường ngày (Dân chơi 🤘)",
             "score_a": 0,
             "score_b": 2,  # Axis 2 (Bit 1)
             "image_url": "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&w=500&q=60",
         },
         {
-            "quiz_id": quiz_id,
             "order_number": 3,
-            "question_text": "점심 메뉴로 무엇을 먹을까?",
-            "option_a": "에어컨 빵빵한 일본 라멘집 (안전지향)",
-            "option_b": "목욕탕 의자에 앉아 먹는 길거리 껌땀 (도전지향)",
+            "question_text": "Trưa nay ăn gì cho chuẩn bài?",
+            "option_a": "Mì Nhật máy lạnh mát rượi (Team sang chảnh ❄️)",
+            "option_b": "Cơm tấm bì chả lề đường, ngồi ghế nhựa (Team bụi 🍖)",
             "score_a": 0,
             "score_b": 4,  # Axis 3 (Bit 2)
             "image_url": "https://images.unsplash.com/photo-1511690656952-34342d2c2ace?auto=format&fit=crop&w=500&q=60",
         },
         # Bonus Questions (No Score Effect)
         {
-            "quiz_id": quiz_id,
             "order_number": 4,
-            "question_text": "[보너스] 콩카페에서 주문할 메뉴는?",
-            "option_a": "코코넛 커피",
-            "option_b": "쓰어다",
+            "question_text": "[Bonus] Đi cafe thì chọn quán nào?",
+            "option_a": "Starbucks máy lạnh (Sang chảnh)",
+            "option_b": "Cà phê bệt Nhà Thờ (Bụi bặm)",
             "score_a": 0,
             "score_b": 0,
             "image_url": "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=500&q=60",
         },
         {
-            "quiz_id": quiz_id,
             "order_number": 5,
-            "question_text": "[보너스] 갑자기 비가 쏟아진다(스콜). 당신은?",
-            "option_a": "건물 안으로 피신한다",
-            "option_b": "우비 입고 빗속을 뚫는다",
+            "question_text": "[Bonus] Sài Gòn đang mùa nào?",
+            "option_a": "Mùa hè",
+            "option_b": "Mùa nóng thấy m* & mùa mưa ngập lụt",
             "score_a": 0,
             "score_b": 0,
             "image_url": "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=500&q=60",
         },
     ]
 
-    print(f"Adding {len(questions)} Questions...")
-    q_res = supabase.table("questions").insert(questions).execute()
+    # 3. Results Data (8 Types)
+    results = [
+        {"result_code": 0, "title": "Khách Du Lịch Ngáo Ngơ ✈️", "description": "Bạn đến Sài Gòn chỉ để ăn phở 24. Cần 'phổ cập' kiến thức gấp!", "traits": ["Ngây thơ", "Dễ bị lừa", "Yêu màu hồng"]},
+        {"result_code": 1, "title": "Tấm Chiếu Mới Trải 🆕", "description": "Biết trả giá nhưng toàn thất bại. Cố lên bạn ơi!", "traits": ["Nhiệt huyết", "Hay bỡ ngỡ", "Cần kinh nghiệm"]},
+        {"result_code": 2, "title": "Dân Nhập Cư Tập Sự 🎒", "description": "Biết đường tắt, biết quán ngon. Sắp thành dân local!", "traits": ["Thích nghi", "Ham học hỏi", "Sành ăn"]},
+        {"result_code": 3, "title": "Thổ Địa Quận 4 🗺️", "description": "Đường nào cũng biết. Grab driver còn phải nể!", "traits": ["Rành đường", "Thông thạo", "Nhanh nhạy"]},
+        {"result_code": 4, "title": "Ninja Lead Huyền Thoại 🛵", "description": "Khả năng luồn lách thượng thừa. Áo chống nắng là trang phục chiến đấu!", "traits": ["Tốc độ", "Bất khả chiến bại", "Che kín mít"]},
+        {"result_code": 5, "title": "Chúa Tể Vỉa Hè ☕", "description": "Cà phê bệt là chân ái. Sống 'bụi' mới là chất!", "traits": ["Bình dân", "Thoải mái", "Vui vẻ"]},
+        {"result_code": 6, "title": "Master Trả Giá 💸", "description": "Chợ Bến Thành khóc thét khi thấy bạn. Trả giá như nghệ thuật!", "traits": ["Tiết kiệm", "Sắc sảo", "Thuyết phục"]},
+        {"result_code": 7, "title": "Trùm Cuối Sài Gòn 👑", "description": "Sài Gòn nằm trong lòng bàn tay bạn!", "traits": ["Quyền lực", "Hiểu biết", "Bá đạo"]},
+    ]
 
-    print("\n✨ SUCCESS! 8-Type Quiz Data Inserted.")
-    print("--------------------------------------------")
-    print(f"Quiz Title: {quiz_meta['title']}")
-    print(f"Questions : {len(questions)} items")
-    print("Scoring   : Q1(1), Q2(2), Q3(4) -> Max Score 7")
-    print("--------------------------------------------")
+    saved_quiz = json_manager.save_quiz_complete(quiz_meta, questions, results)
+
+    print("\n✨ SUCCESS! 'Saigon Survival' Quiz Updated (Local JSON).")
+    print(f"Quiz ID: {saved_quiz['id']}")
 
 except Exception as e:
     print(f"\n❌ Error Occurred: {str(e)}")

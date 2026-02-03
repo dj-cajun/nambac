@@ -12,9 +12,10 @@ export const supabase = (supabaseUrl && supabaseAnonKey)
     ? createClient(supabaseUrl, supabaseAnonKey)
     : {
         from: () => ({
-            select: () => ({ eq: () => ({ data: [] }) }), // Mock chain for Home/Admin
+            select: () => ({ eq: () => ({ data: [] }) }), // Mock chain
             insert: () => ({ error: 'Supabase not configured' }),
             delete: () => ({ error: 'Supabase not configured' }),
+            update: () => ({ error: 'Supabase not configured' }),
         }),
         auth: {
             signInWithOAuth: () => Promise.resolve({ error: { message: 'Supabase keys missing' } })
