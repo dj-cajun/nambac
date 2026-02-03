@@ -45,7 +45,7 @@ class NambacFactory:
                 return f.read()
         except FileNotFoundError:
             log(f"Error: SOP file not found at {path}")
-            sys.exit(1)
+            raise ValueError(f"SOP file not found: {path}")
 
     async def call_agent(self, agent_name, system_prompt, user_content):
         """개별 에이전트를 실행하는 공통 함수 (httpx 사용)"""
@@ -322,7 +322,6 @@ class NambacFactory:
 
         return final_quiz
 
-
     async def run_trend_hunter(self):
         """Step 1: 트렌드 헌터가 현재 이슈를 분석"""
         sop = self.load_sop("Expert_Trend_Hunter")
@@ -344,12 +343,12 @@ class NambacFactory:
     async def run_daily_cycle(self):
         """Sisyphus Loop: Daily Content Generation Cycle"""
         log("🗿 Sisyphus started rolling the stone...")
-        
+
         # 1. Trend Hunting
         trend_data = await self.run_trend_hunter()
         if not trend_data or "raw_insight" not in trend_data:
             log("❌ Trend Hunter failed. Using fallback topic.")
-            topic = "호치민 비오는 날 그랩 잡기" # Fallback
+            topic = "호치민 비오는 날 그랩 잡기"  # Fallback
         else:
             topic = trend_data.get("pushed_brief", trend_data.get("raw_insight"))
             log(f"🏹 Trend Found: {topic}")
@@ -358,24 +357,27 @@ class NambacFactory:
         # In full version, we would switch between agents (PastLife, MBTI) here.
         # For now, we inject the trend into the main workflow.
         generated_quiz = await self.run_workflow(topic)
-        
+
         if not generated_quiz:
-             log("❌ Generation failed.")
-             return None
+            log("❌ Generation failed.")
+            return None
 
         # 3. Quality Control (Inspector J Bad)
         inspection = await self.run_inspector(generated_quiz)
-        log(f"👮‍♂️ Inspector Verdict: {inspection.get('status')} - {inspection.get('comment')}")
+        log(
+            f"👮‍♂️ Inspector Verdict: {inspection.get('status')} - {inspection.get('comment')}"
+        )
 
         if inspection.get("status") == "APPROVE":
-             generated_quiz["meta"]["qc_stamp"] = inspection.get("stamp")
-             # Return for DB insertion
-             return generated_quiz
+            generated_quiz["meta"]["qc_stamp"] = inspection.get("stamp")
+            # Return for DB insertion
+            return generated_quiz
         else:
             log("⚠️ Quiz Rejected. (Retry logic to be implemented)")
             # For Phase 2 demo, we return it anyway but marked as rejected
             generated_quiz["meta"]["qc_status"] = "REJECTED"
             return generated_quiz
+
 
 # ---------------------------------------------------------
 # 실행 진입점 (CLI / n8n)
@@ -383,6 +385,7 @@ class NambacFactory:
 if __name__ == "__main__":
     # n8n 등 외부에서 인자로 주제를 전달받음 (기본값 설정)
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", default="workflow", help="workflow or daily")
     parser.add_argument("topic", nargs="?", default="호치민 1군 그랩 기사 전생 체험")
