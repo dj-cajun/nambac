@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { QUIZ_CATEGORIES, SERVICE_CATEGORIES, getFilterTypes, getCategoryLabel, getPersonas } from '../constants/categories';
 
 const Admin = () => {
     // Password Protection
@@ -44,27 +45,20 @@ const Admin = () => {
 
     // Edit Modal State
     const [editingQuiz, setEditingQuiz] = useState(null);
+    const [modalTab, setModalTab] = useState('info'); // 'info' | 'questions' | 'results'
     const [editTitle, setEditTitle] = useState('');
     const [editDescription, setEditDescription] = useState('');
     const [editCategory, setEditCategory] = useState('');
     const [editQuestions, setEditQuestions] = useState([]);
+    const [editResults, setEditResults] = useState([]); // 8 result types
     const [editImage, setEditImage] = useState(null);
     const [editImagePreview, setEditImagePreview] = useState('');
     const [isDragging, setIsDragging] = useState(false);
 
-    // Constants
-    const filterTypes = ['all', 'Love', 'Career', 'Personality', 'Personality_Pet', 'Trendy', 'Food', 'Travel', 'Survival'];
 
-    const personas = [
-        { name: 'Dr. Freud (Psychology)', prompt: 'Create a deep psychological personality test.' },
-        { name: 'Cupid (Romance)', prompt: 'Create a romantic love compatibility test.' },
-        { name: 'Elon (Career)', prompt: 'Create a career aptitude test for the future.' },
-        { name: 'Chef Gordon (Food)', prompt: 'Create a culinary taste preference test.' },
-        { name: 'Explorer Jack (Travel)', prompt: 'Create a travel destination personality test.' },
-        { name: 'Dr. Dolittle (Pet)', prompt: 'Create a pet companion compatibility test.' },
-        { name: 'Trend Setter (Viral)', prompt: 'Create a viral gen-z trend test.' },
-        { name: 'Survivor (Hero)', prompt: 'Create a survival instinct and superpower test.' }
-    ];
+    // Constants (from shared categories)
+    const filterTypes = getFilterTypes();
+    const personas = getPersonas();
 
     // Fetch Quizzes and Services
     const fetchQuizzes = async () => {
@@ -116,20 +110,8 @@ const Admin = () => {
         return new Date(dateString).toLocaleDateString();
     };
 
-    // Get Type Label
-    const getTypeLabel = (type) => {
-        const labels = {
-            'Love': 'Romance',
-            'Career': 'Career',
-            'Personality': 'Personality',
-            'Personality_Pet': 'Pet',
-            'Trendy': 'Trend',
-            'Food': 'Food',
-            'Travel': 'Travel',
-            'Survival': 'Superhero'
-        };
-        return labels[type] || type;
-    };
+    // Get Type Label (from shared categories)
+    const getTypeLabel = (type) => getCategoryLabel(type) || type;
 
     // --- Actions ---
 
@@ -142,6 +124,7 @@ const Admin = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     topic: persona.prompt, // Backend expects 'topic'
+                    category: persona.category,
                     generate_images: true
                 })
             });
@@ -233,6 +216,7 @@ const Admin = () => {
 
     const openEditModal = async (quiz) => {
         setEditingQuiz(quiz);
+        setModalTab('info'); // Reset to info tab
         setEditTitle(quiz.title || '');
         setEditDescription(quiz.description || '');
         setEditCategory(quiz.category || '');
@@ -240,12 +224,28 @@ const Admin = () => {
         setEditImagePreview(quiz.image_url || '');
         setEditQuestions([]);
 
-        // Fetch full details including questions
+        // Initialize 8 default results (3-bit binary: 0-7)
+        const defaultResults = Array.from({ length: 8 }, (_, i) => ({
+            result_code: i,
+            title: '',
+            description: '',
+        }));
+        setEditResults(defaultResults);
+
+        // Fetch full details including questions and results
         try {
             const response = await fetch(`http://localhost:8000/api/quizzes/${quiz.id}`);
             const data = await response.json();
             if (data.questions) {
                 setEditQuestions(data.questions);
+            }
+            if (data.results && data.results.length > 0) {
+                // Merge with default results to ensure all 8 exist
+                const mergedResults = defaultResults.map(dr => {
+                    const found = data.results.find(r => r.result_code === dr.result_code);
+                    return found || dr;
+                });
+                setEditResults(mergedResults);
             }
         } catch (error) {
             console.error("Error fetching quiz details:", error);
@@ -255,10 +255,12 @@ const Admin = () => {
 
     const closeEditModal = () => {
         setEditingQuiz(null);
+        setModalTab('info');
         setEditTitle('');
         setEditDescription('');
         setEditCategory('');
         setEditQuestions([]);
+        setEditResults([]);
         setEditImage(null);
         setEditImagePreview('');
     };
@@ -267,6 +269,18 @@ const Admin = () => {
         const updatedQuestions = [...editQuestions];
         updatedQuestions[index] = { ...updatedQuestions[index], [field]: value };
         setEditQuestions(updatedQuestions);
+    };
+
+    const handleResultChange = (index, field, value) => {
+        const updatedResults = [...editResults];
+        updatedResults[index] = { ...updatedResults[index], [field]: value };
+        setEditResults(updatedResults);
+    };
+
+    // Helper: Convert result_code to binary string (e.g., 5 -> "1-0-1")
+    const toBinaryString = (code) => {
+        const b = code.toString(2).padStart(3, '0');
+        return `${b[0]}-${b[1]}-${b[2]}`;
     };
 
     const handleImageSelect = (e) => {
@@ -357,156 +371,191 @@ const Admin = () => {
     // 2. Dashboard View
     return (
         <>
-            {/* Edit Modal */}
+            {/* ✅ Opaque Business Contrast Modal */}
             {editingQuiz && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col relative">
-                        {/* Header */}
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-gray-800">✏️ Edit Quiz</h3>
-                            <button onClick={closeEditModal} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+                    {/* Modal Container: 100% Opaque White + Thin Black Border */}
+                    <div style={{ backgroundColor: '#FFFFFF' }} className="border-[3px] border-black rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col relative shadow-md overflow-hidden">
+
+                        {/* Header: Clean White */}
+                        <div className="px-6 py-4 border-b-[1.5px] border-black flex justify-between items-center bg-white">
+                            <h3 className="text-lg font-bold text-black tracking-tight">
+                                Quiz Editor — {editTitle || 'Untitled'}
+                            </h3>
+                            <button
+                                onClick={closeEditModal}
+                                className="w-8 h-8 bg-white text-black rounded-sm flex items-center justify-center font-bold text-lg hover:bg-gray-100 transition-colors border-[1.5px] border-black"
+                            >
+                                ✕
+                            </button>
                         </div>
 
-                        {/* Scrollable Content */}
-                        <div className="p-6 overflow-y-auto flex-1">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div className="space-y-4">
+                        {/* Tab Navigation: Underline Style */}
+                        <div className="flex gap-0 bg-white border-b-[1.5px] border-black">
+                            {[
+                                { id: 'info', label: 'Basic Info' },
+                                { id: 'questions', label: 'Questions' },
+                                { id: 'results', label: 'Results' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setModalTab(tab.id)}
+                                    className={`px-4 py-2 font-black text-sm transition-all
+                                         ${modalTab === tab.id
+                                            ? 'text-black border-b-[3px] border-black -mb-[1.5px] bg-white'
+                                            : 'text-gray-500 hover:text-black hover:bg-white'
+                                        }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Main Content: Scrollable White */}
+                        <div className="p-6 overflow-y-auto flex-1 bg-white">
+
+                            {/* [INFO TAB] */}
+                            {modalTab === 'info' && (
+                                <div className="space-y-5 max-w-2xl">
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-600 mb-2">Title</label>
-                                        <input
+                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Quiz Title</label>
+                                         <input
                                             type="text"
                                             value={editTitle}
                                             onChange={(e) => setEditTitle(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
+                                            className="w-full px-4 py-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            placeholder="Enter quiz title..."
                                         />
                                     </div>
+
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-600 mb-2">Description</label>
+                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Category</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {QUIZ_CATEGORIES.map(cat => (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => setEditCategory(cat.id)}
+                                                    className={`px-4 py-2 rounded-sm font-medium text-sm border-[1.5px] border-black transition-all
+                                                        ${editCategory === cat.id
+                                                            ? 'bg-black text-white'
+                                                            : 'bg-white text-black hover:bg-gray-100'
+                                                        }`}
+                                                >
+                                                    {cat.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Description</label>
                                         <textarea
                                             value={editDescription}
                                             onChange={(e) => setEditDescription(e.target.value)}
-                                            rows={2}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF2D85] resize-none"
+                                            rows={4}
+                                            className="w-full px-4 py-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                                            placeholder="Enter quiz description..."
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-600 mb-2">Category</label>
-                                        <select
-                                            value={editCategory}
-                                            onChange={(e) => setEditCategory(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
-                                        >
-                                            <option value="">Select Category</option>
-                                            {filterTypes.filter(t => t !== 'all').map(t => (
-                                                <option key={t} value={t}>{getTypeLabel(t)}</option>
-                                            ))}
-                                        </select>
-                                    </div>
                                 </div>
+                            )}
 
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-600 mb-2">Quiz Image</label>
-                                    <div
-                                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                                        onDragLeave={() => setIsDragging(false)}
-                                        onDrop={handleDrop}
-                                        className={`border-2 border-dashed rounded-lg h-full min-h-[160px] flex flex-col items-center justify-center p-4 transition-colors cursor-pointer ${isDragging
-                                            ? 'border-[#FF2D85] bg-pink-50'
-                                            : 'border-gray-300 hover:border-[#FF2D85]'
-                                            }`}
-                                        onClick={() => document.getElementById('image-upload').click()}
-                                    >
-                                        <input
-                                            type="file"
-                                            id="image-upload"
-                                            accept="image/*"
-                                            onChange={handleImageSelect}
-                                            className="hidden"
-                                        />
-                                        {editImagePreview ? (
-                                            <div className="relative w-full h-full">
-                                                <img
-                                                    src={editImagePreview}
-                                                    alt="Preview"
-                                                    className="w-full h-40 object-cover rounded-lg"
-                                                />
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setEditImage(null);
-                                                        setEditImagePreview('');
-                                                    }}
-                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 text-xs font-bold hover:bg-red-600"
-                                                >
-                                                    ✕
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <span className="text-3xl mb-2">📷</span>
-                                                <p className="text-xs text-gray-400">Click or Drag Image</p>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="border-t border-gray-100 pt-6">
-                                <h4 className="text-lg font-bold text-gray-800 mb-4">📝 Questions ({editQuestions.length})</h4>
-                                <div className="space-y-6">
+                            {/* [QUESTIONS TAB] */}
+                            {modalTab === 'questions' && (
+                                <div className="space-y-4 bg-white">
                                     {editQuestions.map((q, idx) => (
-                                        <div key={idx} className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="text-xs font-bold text-[#FF2D85] uppercase tracking-wider">Question {idx + 1}</span>
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={q.question_text || ''}
-                                                onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)}
-                                                className="w-full px-3 py-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-200 text-sm font-bold"
-                                                placeholder="Enter question text..."
-                                            />
-                                            <div className="grid grid-cols-2 gap-3">
+                                         <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-5">
+                                             <div className="flex justify-between items-center mb-3">
+                                                 <span className="font-bold text-black">Question {idx + 1}</span>
+                                                 <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-semibold border border-black">
+                                                     Weight: +{Math.pow(2, idx)}
+                                                 </span>
+                                             </div>
+                                             <input
+                                                 type="text"
+                                                 value={q.question_text || ''}
+                                                 onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)}
+                                                 className="w-full px-4 py-2.5 mb-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                 placeholder="Question text..."
+                                             />
+                                            <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <span className="text-xs font-semibold text-gray-500 mb-1 block">Option A</span>
-                                                    <input
-                                                        type="text"
-                                                        value={q.option_a || ''}
-                                                        onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-pink-300 text-sm"
-                                                        placeholder="Option A"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <span className="text-xs font-semibold text-gray-500 mb-1 block">Option B</span>
-                                                    <input
-                                                        type="text"
-                                                        value={q.option_b || ''}
-                                                        onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-pink-300 text-sm"
-                                                        placeholder="Option B"
-                                                    />
+                                                     <span className="text-xs font-semibold text-gray-500 block mb-1">Option A (0 pt)</span>
+                                                     <input
+                                                         type="text"
+                                                         value={q.option_a || ''}
+                                                         onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)}
+                                                         className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                     />
+                                                 </div>
+                                                 <div>
+                                                     <span className="text-xs font-semibold text-gray-500 block mb-1">Option B (+{Math.pow(2, idx)} pt)</span>
+                                                     <input
+                                                         type="text"
+                                                         value={q.option_b || ''}
+                                                         onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)}
+                                                         className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            )}
+
+                            {/* [RESULTS TAB] */}
+                            {modalTab === 'results' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                     {editResults.map((result, idx) => (
+                                         <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-4">
+                                             <div className="flex justify-between items-center mb-2">
+                                                 <span className="text-xs font-bold text-gray-600">Result #{idx + 1}</span>
+                                                 <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded border border-black">
+                                                     {toBinaryString(result.result_code)}
+                                                 </span>
+                                             </div>
+                                             <input
+                                                 type="text"
+                                                 value={result.title || ''}
+                                                 onChange={(e) => handleResultChange(idx, 'title', e.target.value)}
+                                                 className="w-full px-3 py-2 mb-2 bg-white border-[1.5px] border-black rounded-sm font-semibold text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                 placeholder="Result title"
+                                             />
+                                             <textarea
+                                                 value={result.description || ''}
+                                                 onChange={(e) => handleResultChange(idx, 'description', e.target.value)}
+                                                 rows={2}
+                                                 className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-xs font-medium text-black resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                 placeholder="Result description..."
+                                             />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
-                        <div className="p-6 border-t border-gray-100 flex gap-3 bg-white">
+                        {/* Footer: Action Buttons */}
+                        <div className="px-6 py-4 border-t-[1.5px] border-black bg-white flex justify-between items-center">
                             <button
-                                onClick={closeEditModal}
-                                className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                                onClick={() => { if (window.confirm('Are you sure you want to delete this quiz?')) { deleteQuiz(editingQuiz.id); closeEditModal(); } }}
+                                className="text-red-600 font-semibold text-sm hover:underline"
                             >
-                                Cancel
+                                Delete Quiz
                             </button>
-                            <button
-                                onClick={saveQuiz}
-                                className="flex-1 px-4 py-3 bg-[#FF2D85] text-white rounded-xl font-bold hover:bg-[#E01E70] transition-colors shadow-lg shadow-pink-200"
-                            >
-                                Save Changes
-                            </button>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={closeEditModal}
+                                    className="px-5 py-2.5 bg-white text-black font-semibold rounded-lg border-[1.5px] border-black hover:bg-gray-100 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={saveQuiz}
+                                    className="px-6 py-2.5 bg-black text-white font-semibold rounded-lg border-[1.5px] border-black hover:bg-gray-800 transition-colors"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -524,16 +573,16 @@ const Admin = () => {
 
                     {/* Tabs */}
                     <div className="flex justify-center mb-8">
-                        <div className="bg-white p-2 rounded-full shadow-lg flex gap-2">
+                        <div className="bg-white border-b-2 border-black flex shadow-none">
                             <button
                                 onClick={() => setActiveTab('quizzes')}
-                                className={`px-6 py-2 rounded-full font-bold transition-all ${activeTab === 'quizzes' ? 'bg-[#FF2D85] text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                                className={`px-4 py-2 font-black transition-all border-b-2 ${activeTab === 'quizzes' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black hover:bg-gray-50'}`}
                             >
                                 🧩 Quizzes
                             </button>
                             <button
                                 onClick={() => setActiveTab('services')}
-                                className={`px-6 py-2 rounded-full font-bold transition-all ${activeTab === 'services' ? 'bg-[#FF2D85] text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                                className={`px-4 py-2 font-black transition-all border-b-2 ${activeTab === 'services' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black hover:bg-gray-50'}`}
                             >
                                 🔗 AI Services
                             </button>
@@ -542,7 +591,7 @@ const Admin = () => {
 
                     {/* AI Buttons (Only for Quizzes) */}
                     {activeTab === 'quizzes' && (
-                        <section className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-3xl p-8 border-4 border-[#FF2D85] shadow-lg mb-12">
+                        <section className="bg-white border-[1.5px] border-black rounded-lg p-6 mb-12 shadow-md">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {personas.map((persona, index) => {
                                     const pastelColors = [
@@ -557,23 +606,23 @@ const Admin = () => {
                                     ];
                                     const colorClass = pastelColors[index % pastelColors.length];
 
-                                    return (
-                                        <button
-                                            key={index}
-                                            onClick={() => handleGenerate(persona)}
-                                            disabled={loading}
-                                            className={`group relative p-6 flex flex-col items-center justify-center transition-all duration-200 transform
-                                                sticker-tile ${colorClass} ${loading ? 'opacity-50 cursor-not-allowed' : ''}
-                                            `}
-                                        >
+                                     return (
+                                         <button
+                                             key={index}
+                                             onClick={() => handleGenerate(persona)}
+                                             disabled={loading}
+                                             className={`group relative p-4 flex flex-col items-center justify-center transition-all duration-200 transform
+                                                 bg-white border-[1.5px] border-black rounded-lg hover:bg-gray-100 ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+                                             `}
+                                         >
                                             <span className="text-4xl mb-3 block group-hover:scale-110 transition-transform filter drop-shadow-sm">
-                                                {index === 0 ? '🧠' : index === 1 ? '💘' : index === 2 ? '🚀' : index === 3 ? '🍳' : index === 4 ? '✈️' : index === 5 ? '🐾' : index === 6 ? '✨' : '🦸'}
+                                                {persona.emoji}
                                             </span>
                                             <span className="font-black text-sm text-gray-800 text-center leading-tight">
-                                                {persona.name.split(' (')[0]}
+                                                {persona.name}
                                             </span>
                                             <span className="text-[10px] font-bold text-gray-500 mt-1 uppercase tracking-wider">
-                                                {persona.name.match(/\((.*?)\)/)?.[1] || 'AI'}
+                                                {persona.category}
                                             </span>
                                         </button>
                                     );
@@ -711,10 +760,9 @@ const Admin = () => {
                                             className="px-4 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
                                         >
                                             <option value="">Select Category</option>
-                                            <option value="Visual">Visual / Face</option>
-                                            <option value="Fortune">Fortune / Tarot</option>
-                                            <option value="Fun">Fun / Anime</option>
-                                            <option value="Utility">Utility</option>
+                                            {SERVICE_CATEGORIES.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                            ))}
                                         </select>
                                         <input
                                             type="text"

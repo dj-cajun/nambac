@@ -5,6 +5,7 @@ import {
   Home as HomeIcon, Compass, BarChart2, Settings, Play, LogIn, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import './Home.css';
+import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS } from '../constants/categories';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -14,18 +15,10 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef(null);
 
-  // Categories with pastel colors
+  // Categories: Special tabs first, then quiz categories
   const categories = [
-    { id: 'Magazine', label: 'HCMC Guide', color: 'bg-lime-100' },
-    { id: 'Total', label: 'Tất cả', color: 'bg-white' },
-    { id: 'Love', label: 'Tình Yêu', color: 'bg-pink-100' },
-    { id: 'Personality', label: 'Tính Cách', color: 'bg-purple-100' },
-    { id: 'Career', label: 'Sự Nghiệp', color: 'bg-blue-100' },
-    { id: 'Trendy', label: 'Đu Trend', color: 'bg-yellow-100' },
-    { id: 'Food', label: 'Ăn Gì', color: 'bg-orange-100' },
-    { id: 'Travel', label: 'Vi Vu', color: 'bg-green-100' },
-    { id: 'Pet', label: 'Boss & Sen', color: 'bg-teal-100' },
-    { id: 'Survival', label: 'Sinh Tồn', color: 'bg-red-100' },
+    ...HOME_SPECIAL_TABS,
+    ...QUIZ_CATEGORIES.map(c => ({ id: c.id, label: c.label, color: c.color })),
   ];
 
   const [services, setServices] = useState([]);

@@ -12,6 +12,11 @@ export default function QuizPage({ quizIdProp }) {
 
     const [quizInfo, setQuizInfo] = useState(null);
     const [results, setResults] = useState([]);
+    const [questions, setQuestions] = useState([]);
+    const [answers, setAnswers] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [finalScore, setFinalScore] = useState(0);
+    const [showResult, setShowResult] = useState(false);
 
     // Fetch Data
     useEffect(() => {

@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import QuizPage from './pages/QuizPage';
 import Admin from './pages/Admin';
+import './App.css'; // [FIX]: Added missing style import
 
 function App() {
   return (

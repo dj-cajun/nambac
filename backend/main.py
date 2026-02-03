@@ -52,6 +52,7 @@ class QuizResponse(BaseModel):
 class QuizRequest(BaseModel):
     topic: str
     generate_images: bool = False
+    category: Optional[str] = None
 
 
 # --- FastAPI App Initialization ---
@@ -167,7 +168,7 @@ async def create_quiz(request: QuizRequest):
         quiz_meta = {
             "title": meta.get("title", request.topic),
             "description": meta.get("description", ""),
-            "category": meta.get("category", "Trendy"),
+            "category": request.category or meta.get("category", "Trendy"),
             "image_url": meta.get("image_url", None),
         }
 
@@ -274,7 +275,6 @@ def get_results(quiz_id: str):
     results = json_manager.get_results_by_quiz_id(quiz_id)
     return {"results": results}
 
-
     return {"results": results}
 
 
@@ -327,17 +327,19 @@ async def run_daily_cycle():
     try:
         factory = NambacFactory()
         print("🗿 Starting Daily Automation Cycle...")
-        
+
         # 1-3. Run the optimized cycle
         result = await factory.run_daily_cycle()
-        
+
         if not result:
-            raise HTTPException(status_code=500, detail="Automation Cycle Failed (No Output)")
-            
+            raise HTTPException(
+                status_code=500, detail="Automation Cycle Failed (No Output)"
+            )
+
         if result.get("meta", {}).get("qc_status") == "REJECTED":
-             # In a real scenario, we might just log this and not save.
-             # For Phase 2 Demo, we save it but maybe mark as inactive?
-             print("⚠️ Saving REJECTED quiz for review.")
+            # In a real scenario, we might just log this and not save.
+            # For Phase 2 Demo, we save it but maybe mark as inactive?
+            print("⚠️ Saving REJECTED quiz for review.")
 
         # 4. Save to DB (Reuse Parsing Logic)
         meta = result.get("meta", {})
@@ -355,36 +357,42 @@ async def run_daily_cycle():
         # Questions
         questions = []
         for q in questions_data:
-            questions.append({
-                "order_number": q.get("order_number", len(questions) + 1),
-                "question_text": q.get("question_text", ""),
-                "option_a": q.get("option_a", ""),
-                "option_b": q.get("option_b", ""),
-                "score_a": q.get("score_a", 0),
-                "score_b": q.get("score_b", 0),
-                "image_url": q.get("image_prompt", None) # Fallback to prompt if URL missing
-            })
+            questions.append(
+                {
+                    "order_number": q.get("order_number", len(questions) + 1),
+                    "question_text": q.get("question_text", ""),
+                    "option_a": q.get("option_a", ""),
+                    "option_b": q.get("option_b", ""),
+                    "score_a": q.get("score_a", 0),
+                    "score_b": q.get("score_b", 0),
+                    "image_url": q.get(
+                        "image_prompt", None
+                    ),  # Fallback to prompt if URL missing
+                }
+            )
 
         # Results
         results = []
         for r in results_data:
-            results.append({
-                "result_code": r.get("score", 0),
-                "title": r.get("type_name", ""),
-                "description": r.get("description", ""),
-                "traits": r.get("traits", []),
-                "image_url": None
-            })
+            results.append(
+                {
+                    "result_code": r.get("score", 0),
+                    "title": r.get("type_name", ""),
+                    "description": r.get("description", ""),
+                    "traits": r.get("traits", []),
+                    "image_url": None,
+                }
+            )
 
         # Save
         saved_quiz = json_manager.save_quiz_complete(quiz_meta, questions, results)
         print(f"✅ Daily Quiz Saved: {saved_quiz['id']}")
-        
+
         return {
             "status": "success",
             "message": "Daily cycle completed successfully",
             "quiz_id": saved_quiz["id"],
-            "qc_stamp": meta.get("qc_stamp", "NONE")
+            "qc_stamp": meta.get("qc_stamp", "NONE"),
         }
 
     except Exception as e:
@@ -400,6 +408,7 @@ if __name__ == "__main__":
 
 # ========== Viral & Expansion Endpoints (Phase 3) ==========
 
+
 @app.get("/api/og/{quiz_id}/{result_code}")
 async def get_og_image(quiz_id: str, result_code: int):
     """
@@ -409,24 +418,26 @@ async def get_og_image(quiz_id: str, result_code: int):
     quiz = json_manager.get_quiz(quiz_id)
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
-        
+
     results = json_manager.get_results_by_quiz_id(quiz_id)
-    target_result = next((r for r in results if int(r.get("result_code", -1)) == result_code), None)
-    
+    target_result = next(
+        (r for r in results if int(r.get("result_code", -1)) == result_code), None
+    )
+
     if not target_result:
         raise HTTPException(status_code=404, detail="Result type not found")
-        
+
     # 2. Generate Image
     generator = ImageGenerator()
     filename = generator.generate_og_card(
         title=quiz["title"],
-        description=target_result["description"], 
-        result_type=target_result["title"]
+        description=target_result["description"],
+        result_type=target_result["title"],
     )
-    
+
     if not filename:
         raise HTTPException(status_code=500, detail="Image generation failed")
-    
+
     file_path = f"data/og/{filename}"
     return FileResponse(file_path)
 
