@@ -35,6 +35,7 @@ const Admin = () => {
     const [filteredQuizzes, setFilteredQuizzes] = useState([]);
     const [filterType, setFilterType] = useState('all');
     const [loading, setLoading] = useState(false);
+    const [availableAgents, setAvailableAgents] = useState([]);
 
     // Service Form State
     const [newServiceTitle, setNewServiceTitle] = useState('');
@@ -58,7 +59,36 @@ const Admin = () => {
 
     // Constants (from shared categories)
     const filterTypes = getFilterTypes();
-    const personas = getPersonas();
+    const basePersonas = getPersonas();
+
+    // Dynamic Personas: Sync with available .md agents
+    const syncedPersonas = basePersonas.filter(p => {
+        return availableAgents.some(agent =>
+            agent.toLowerCase().includes(p.category.toLowerCase()) ||
+            p.category.toLowerCase().includes(agent.replace('Expert_', '').toLowerCase())
+        );
+    }).map(p => {
+        const matchingAgent = availableAgents.find(agent =>
+            agent.toLowerCase().includes(p.category.toLowerCase()) ||
+            p.category.toLowerCase().includes(agent.replace('Expert_', '').toLowerCase())
+        );
+        return { ...p, agent_name: matchingAgent };
+    });
+
+    const extraPersonas = availableAgents.filter(agent => {
+        return !basePersonas.some(p =>
+            agent.toLowerCase().includes(p.category.toLowerCase()) ||
+            p.category.toLowerCase().includes(agent.replace('Expert_', '').toLowerCase())
+        );
+    }).map(agent => ({
+        name: `${agent.replace('Expert_', '').replace('Quiz_', '').replace(/_/g, ' ')}`,
+        prompt: `Generate a viral quiz about this topic.`,
+        category: agent.replace('Expert_', '').replace('Quiz_', ''),
+        emoji: '🤖',
+        agent_name: agent
+    }));
+
+    const personas = [...syncedPersonas, ...extraPersonas];
 
     // Fetch Quizzes and Services
     const fetchQuizzes = async () => {
@@ -67,8 +97,8 @@ const Admin = () => {
             const response = await fetch('http://localhost:8000/api/quizzes');
             const data = await response.json();
             const quizList = data.quizzes || data || [];
-            // Sort by ID descend
-            quizList.sort((a, b) => b.id - a.id);
+            // Sort by Created Date descend (UUID strings aren't subtractable)
+            quizList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             setQuizzes(quizList);
             setFilteredQuizzes(quizList);
         } catch (error) {
@@ -88,10 +118,21 @@ const Admin = () => {
         }
     };
 
+    const fetchAgents = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/admin/agents');
+            const data = await response.json();
+            setAvailableAgents(data.agents || []);
+        } catch (error) {
+            console.error("Error fetching agents:", error);
+        }
+    };
+
     useEffect(() => {
         if (isAuthenticated) {
             fetchQuizzes();
             fetchServices();
+            fetchAgents();
         }
     }, [isAuthenticated]);
 
@@ -125,13 +166,14 @@ const Admin = () => {
                 body: JSON.stringify({
                     topic: persona.prompt, // Backend expects 'topic'
                     category: persona.category,
+                    agent_name: persona.agent_name, // Pass the specific agent file name
                     generate_images: true
                 })
             });
 
             if (response.ok) {
                 const data = await response.json();
-                alert(`✅ Quiz Generated Successfully!\nTitle: ${data.quiz.title}`);
+                alert(`✅ Quiz Generated Successfully!\nTitle: ${data.quiz?.title || 'Unknown'}`);
                 fetchQuizzes();
             } else {
                 const err = await response.json();
@@ -224,8 +266,8 @@ const Admin = () => {
         setEditImagePreview(quiz.image_url || '');
         setEditQuestions([]);
 
-        // Initialize 8 default results (3-bit binary: 0-7)
-        const defaultResults = Array.from({ length: 8 }, (_, i) => ({
+        // Initialize 6 default results (Score: 0-5)
+        const defaultResults = Array.from({ length: 6 }, (_, i) => ({
             result_code: i,
             title: '',
             description: '',
@@ -277,10 +319,21 @@ const Admin = () => {
         setEditResults(updatedResults);
     };
 
-    // Helper: Convert result_code to binary string (e.g., 5 -> "1-0-1")
-    const toBinaryString = (code) => {
-        const b = code.toString(2).padStart(3, '0');
-        return `${b[0]}-${b[1]}-${b[2]}`;
+    const handleClearResult = (index) => {
+        if (!window.confirm("Clear this result?")) return;
+        const updatedResults = [...editResults];
+        updatedResults[index] = {
+            ...updatedResults[index],
+            title: '',
+            description: '',
+            image_url: ''
+        };
+        setEditResults(updatedResults);
+    };
+
+// Helper: Format result_code to display score
+    const toScoreDisplay = (code) => {
+        return `${code} pts`;
     };
 
     const handleImageSelect = (e) => {
@@ -301,6 +354,34 @@ const Admin = () => {
         }
     };
 
+    const handleDeleteQuestion = async (idx) => {
+        const question = editQuestions[idx];
+        if (!question) return;
+
+        if (!window.confirm("Are you sure you want to delete this question?")) return;
+
+        // If it has an ID, delete from backend
+        if (question.id) {
+            try {
+                const response = await fetch(`http://localhost:8000/api/questions/${question.id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    alert("Failed to delete question from server.");
+                    return;
+                }
+            } catch (error) {
+                console.error("Error deleting question:", error);
+                alert("Error connecting to server.");
+                return;
+            }
+        }
+
+        // Update local state
+        const updatedQuestions = editQuestions.filter((_, i) => i !== idx);
+        setEditQuestions(updatedQuestions);
+    };
+
     const saveQuiz = async () => {
         if (!editingQuiz) return;
 
@@ -313,6 +394,7 @@ const Admin = () => {
                     description: editDescription,
                     category: editCategory,
                     questions: editQuestions,
+                    results: editResults,
                     // image handling would need form data or base64 usually, sticking to JSON for now
                     image_url: editImagePreview // Simplification
                 }),
@@ -419,7 +501,7 @@ const Admin = () => {
                                 <div className="space-y-5 max-w-2xl">
                                     <div>
                                         <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Quiz Title</label>
-                                         <input
+                                        <input
                                             type="text"
                                             value={editTitle}
                                             onChange={(e) => setEditTitle(e.target.value)}
@@ -464,38 +546,68 @@ const Admin = () => {
                             {modalTab === 'questions' && (
                                 <div className="space-y-4 bg-white">
                                     {editQuestions.map((q, idx) => (
-                                         <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-5">
-                                             <div className="flex justify-between items-center mb-3">
-                                                 <span className="font-bold text-black">Question {idx + 1}</span>
-                                                 <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-semibold border border-black">
-                                                     Weight: +{Math.pow(2, idx)}
-                                                 </span>
-                                             </div>
-                                             <input
-                                                 type="text"
-                                                 value={q.question_text || ''}
-                                                 onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)}
-                                                 className="w-full px-4 py-2.5 mb-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                 placeholder="Question text..."
-                                             />
+                                        <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-5">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-black">Question {idx + 1}</span>
+                                                    <button
+                                                        onClick={() => handleDeleteQuestion(idx)}
+                                                        className="px-2 py-0.5 text-red-500 hover:bg-red-50 text-[10px] font-bold border border-red-200 rounded transition-all flex items-center gap-1"
+                                                        title="Delete Question"
+                                                    >
+                                                        🗑️ DELETE
+                                                    </button>
+                                                </div>
+                                                <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-semibold border border-black">
+                                                    Weight: +1
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={q.question_text || ''}
+                                                onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)}
+                                                className="w-full px-4 py-2.5 mb-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                placeholder="Question text..."
+                                            />
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                     <span className="text-xs font-semibold text-gray-500 block mb-1">Option A (0 pt)</span>
-                                                     <input
-                                                         type="text"
-                                                         value={q.option_a || ''}
-                                                         onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)}
-                                                         className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                     />
-                                                 </div>
-                                                 <div>
-                                                     <span className="text-xs font-semibold text-gray-500 block mb-1">Option B (+{Math.pow(2, idx)} pt)</span>
-                                                     <input
-                                                         type="text"
-                                                         value={q.option_b || ''}
-                                                         onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)}
-                                                         className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                     />
+                                                    <span className="text-xs font-semibold text-gray-500 block mb-1">Option A (0 pt)</span>
+                                                    <input
+                                                        type="text"
+                                                        value={q.option_a || ''}
+                                                        onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)}
+                                                        className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                  <div>
+                                                      <span className="text-xs font-semibold text-gray-500 block mb-1">Option B (+1 pt)</span>
+                                                      <input
+                                                          type="text"
+                                                          value={q.option_b || ''}
+                                                          onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)}
+                                                          className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                      />
+                                                  </div>
+                                            </div>
+
+                                            {/* Question Image Management */}
+                                            <div className="mt-4 pt-4 border-t border-gray-100 flex gap-4 items-start">
+                                                <div className="flex-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Question Image URL</label>
+                                                    <input
+                                                        type="text"
+                                                        value={q.image_url || ''}
+                                                        onChange={(e) => handleQuestionChange(idx, 'image_url', e.target.value)}
+                                                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs font-mono focus:outline-none focus:border-black"
+                                                        placeholder="https://..."
+                                                    />
+                                                </div>
+                                                <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                    {q.image_url ? (
+                                                        <img src={q.image_url} alt="" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span className="text-[10px] text-gray-300 font-bold uppercase">No Image</span>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -506,28 +618,55 @@ const Admin = () => {
                             {/* [RESULTS TAB] */}
                             {modalTab === 'results' && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                     {editResults.map((result, idx) => (
-                                         <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-4">
-                                             <div className="flex justify-between items-center mb-2">
-                                                 <span className="text-xs font-bold text-gray-600">Result #{idx + 1}</span>
+                                    {editResults.map((result, idx) => (
+                                        <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-4">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="text-xs font-bold text-gray-600">Result #{idx + 1}</span>
                                                  <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded border border-black">
-                                                     {toBinaryString(result.result_code)}
+                                                     {toScoreDisplay(result.result_code)}
                                                  </span>
-                                             </div>
-                                             <input
-                                                 type="text"
-                                                 value={result.title || ''}
-                                                 onChange={(e) => handleResultChange(idx, 'title', e.target.value)}
-                                                 className="w-full px-3 py-2 mb-2 bg-white border-[1.5px] border-black rounded-sm font-semibold text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                 placeholder="Result title"
-                                             />
-                                             <textarea
-                                                 value={result.description || ''}
-                                                 onChange={(e) => handleResultChange(idx, 'description', e.target.value)}
-                                                 rows={2}
-                                                 className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-xs font-medium text-black resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                 placeholder="Result description..."
-                                             />
+                                                <button
+                                                    onClick={() => handleClearResult(idx)}
+                                                    className="text-gray-400 hover:text-red-500 text-[10px] font-bold uppercase tracking-tighter"
+                                                    title="Clear Result"
+                                                >
+                                                    🗑️ Clear
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={result.title || ''}
+                                                onChange={(e) => handleResultChange(idx, 'title', e.target.value)}
+                                                className="w-full px-3 py-2 mb-2 bg-white border-[1.5px] border-black rounded-sm font-semibold text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                placeholder="Result title"
+                                            />
+                                            <textarea
+                                                value={result.description || ''}
+                                                onChange={(e) => handleResultChange(idx, 'description', e.target.value)}
+                                                rows={2}
+                                                className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-xs font-medium text-black resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                placeholder="Result description..."
+                                            />
+
+                                            {/* Result Image Management */}
+                                            <div className="mt-3 flex gap-3 items-center">
+                                                <div className="flex-1">
+                                                    <input
+                                                        type="text"
+                                                        value={result.image_url || ''}
+                                                        onChange={(e) => handleResultChange(idx, 'image_url', e.target.value)}
+                                                        className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-[10px] font-mono focus:outline-none"
+                                                        placeholder="Result Image URL..."
+                                                    />
+                                                </div>
+                                                <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                    {result.image_url ? (
+                                                        <img src={result.image_url} alt="" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span className="text-[8px] text-gray-300 font-bold uppercase">No Img</span>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -557,8 +696,8 @@ const Admin = () => {
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </div >
+                </div >
             )}
 
             {/* Main Content */}
@@ -606,15 +745,15 @@ const Admin = () => {
                                     ];
                                     const colorClass = pastelColors[index % pastelColors.length];
 
-                                     return (
-                                         <button
-                                             key={index}
-                                             onClick={() => handleGenerate(persona)}
-                                             disabled={loading}
-                                             className={`group relative p-4 flex flex-col items-center justify-center transition-all duration-200 transform
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleGenerate(persona)}
+                                            disabled={loading}
+                                            className={`group relative p-4 flex flex-col items-center justify-center transition-all duration-200 transform
                                                  bg-white border-[1.5px] border-black rounded-lg hover:bg-gray-100 ${loading ? 'opacity-50 cursor-not-allowed' : ''}
                                              `}
-                                         >
+                                        >
                                             <span className="text-4xl mb-3 block group-hover:scale-110 transition-transform filter drop-shadow-sm">
                                                 {persona.emoji}
                                             </span>

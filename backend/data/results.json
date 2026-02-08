@@ -72,30 +72,6 @@
     "id": "768c0652-c137-4f45-ab6f-b77f185a9020"
   },
   {
-    "result_code": 6,
-    "title": "Master Trả Giá 💸",
-    "description": "Chợ Bến Thành khóc thét khi thấy bạn. Trả giá như nghệ thuật!",
-    "traits": [
-      "Tiết kiệm",
-      "Sắc sảo",
-      "Thuyết phục"
-    ],
-    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
-    "id": "4b3e06c3-774c-407c-9abe-ca73cc3d601b"
-  },
-  {
-    "result_code": 7,
-    "title": "Trùm Cuối Sài Gòn 👑",
-    "description": "Sài Gòn nằm trong lòng bàn tay bạn!",
-    "traits": [
-      "Quyền lực",
-      "Hiểu biết",
-      "Bá đạo"
-    ],
-    "quiz_id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
-    "id": "a7470cb3-5ae7-49da-aedd-d66de2b6f225"
-  },
-  {
     "result_code": 0,
     "title": "Người Tối Cổ 🗿",
     "description": "Bạn sống ở Sài Gòn hay hang động vậy? Trend gì cũng không biết!",
@@ -166,30 +142,6 @@
     ],
     "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
     "id": "9ec30328-0186-4484-8a9a-29c618117f04"
-  },
-  {
-    "result_code": 6,
-    "title": "Bà Chúa Tiệc Tùng 🥂",
-    "description": "Bùi Viện là nhà, bar pub là giường. Quẩy banh nóc!",
-    "traits": [
-      "Vui vẻ",
-      "Hết mình",
-      "Không ngủ"
-    ],
-    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
-    "id": "1897504a-0b2b-4577-8d92-68845cad7c3c"
-  },
-  {
-    "result_code": 7,
-    "title": "Tổng Tài Gen Z 💎",
-    "description": "Vừa giỏi kiếm tiền vừa chơi chất. Bạn chính là nhân vật chính của bộ phim này!",
-    "traits": [
-      "Thành công",
-      "Phong cách",
-      "Hoàn hảo"
-    ],
-    "quiz_id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
-    "id": "1e172484-fa0a-456a-a0c5-e6b870d1ab2d"
   },
   {
     "result_code": 0,
@@ -264,30 +216,6 @@
     "id": "4522656f-8d9e-435c-b47b-63237aa1c17e"
   },
   {
-    "result_code": 6,
-    "title": "Sang chảnh nhưng giản dị (110)",
-    "description": "Người này thích những thứ sang trọng nhưng cũng không quên nguồn gốc. Một ly trà sữa cao cấp cũng làm họ hạnh phúc.",
-    "traits": [
-      "Thích sự tinh tế",
-      "Yêu cái đẹp"
-    ],
-    "image_url": null,
-    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
-    "id": "f80c6662-23d8-4315-b21d-4cff5507f0f2"
-  },
-  {
-    "result_code": 7,
-    "title": "Chúa tể du lịch (111)",
-    "description": "Người này là du khách chuyên nghiệp, luôn tìm kiếm những trải nghiệm mới mẻ và sang chảnh. Cuộc sống là một chuyến phiêu lưu.",
-    "traits": [
-      "Thích khám phá",
-      "Sống hưởng thụ"
-    ],
-    "image_url": null,
-    "quiz_id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
-    "id": "42857211-e5a3-41fc-baa7-5827f9c80fb6"
-  },
-  {
     "result_code": 0,
     "title": "Thánh Ăn Tối Giản (000)",
     "description": "Chỉ cần một bánh mì và trà đá là đủ. Mọi thứ khác là xa xỉ. Bạn sống đơn giản như một ninja giấu mặt ở Sài Gòn.",
@@ -358,30 +286,6 @@
     "image_url": null,
     "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
     "id": "902ef386-f6d4-412d-be61-7fbe79bee31f"
-  },
-  {
-    "result_code": 6,
-    "title": "Khách Du Lịch Sang Chảnh (110)",
-    "description": "Chi tiền cho món ăn như thể không có ngày mai. Bạn là người đi du lịch nhưng lại thích giải trí cao cấp.",
-    "traits": [
-      "Phóng khoáng",
-      "Thích trải nghiệm"
-    ],
-    "image_url": null,
-    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
-    "id": "b50760a5-e078-4353-8e29-8c386471e9e8"
-  },
-  {
-    "result_code": 7,
-    "title": "Thánh Ăn Nhậu (111)",
-    "description": "Mọi món ăn trên đời đều phải có bia. Bạn là người sống để ăn và ăn để sống, không cần phải lý do. Chỉ cần ăn và uống!",
-    "traits": [
-      "Vui vẻ",
-      "Cởi mở"
-    ],
-    "image_url": null,
-    "quiz_id": "ad90bf59-c01e-425a-8262-97149dbc623e",
-    "id": "2296267d-8592-4b4a-a6e9-0e1f97e21e42"
   },
   {
     "result_code": 0,
@@ -456,30 +360,6 @@
     "id": "64c7d099-7d1d-43b5-8e9b-ba6a0f49bf70"
   },
   {
-    "result_code": 6,
-    "title": "Người Bản Địa Thích Tiết Kiệm (110)",
-    "description": "Tôi yêu Sài Gòn nhưng cũng rất biết tiết kiệm. Món ngon nào tôi cũng tìm được mà không cần phải tốn kém!",
-    "traits": [
-      "Tiết kiệm",
-      "Thông minh"
-    ],
-    "image_url": null,
-    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
-    "id": "bfefeb89-b4b6-49c0-93e2-2396c4ef66dc"
-  },
-  {
-    "result_code": 7,
-    "title": "Khách Du Lịch Thích Tiết Kiệm (111)",
-    "description": "Tôi du lịch Sài Gòn với ngân sách hạn chế, nhưng không có gì cản tôi thưởng thức món ngon! Đôi khi món ngon lại nằm ở chỗ bình dân nhất!",
-    "traits": [
-      "Tiết kiệm",
-      "Khám phá"
-    ],
-    "image_url": null,
-    "quiz_id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
-    "id": "ea7dccba-d8d4-43f3-88c3-1123b926578e"
-  },
-  {
     "result_code": 0,
     "title": "Người nội tâm tiết kiệm (000)",
     "description": "Bạn là một người sống trong thế giới riêng của mình, thích đếm từng đồng tiền và tránh xa những bữa tiệc xa hoa. Nhìn thấy bạn đã đủ hài lòng rồi.",
@@ -552,27 +432,433 @@
     "id": "626b1bf3-45c9-4127-a290-189a0dec209f"
   },
   {
-    "result_code": 6,
-    "title": "Người hướng ngoại địa phương (110)",
-    "description": "Bạn là ngôi sao của khu phố, luôn chào hỏi mọi người. Có thể không đi xa nhưng luôn biết rõ từng quán ăn ngon trên đường phố.",
+    "result_code": 0,
+    "title": "Thánh Mê Mẩn Nhìn",
+    "description": "Bạn là người cực kỳ nhút nhát, chỉ biết ngồi bên lề, ngắm nhìn các trend mà không dám tham gia. Đúng là một 'thánh nhìn' chính hiệu!",
     "traits": [
-      "Hướng ngoại",
-      "Địa phương"
+      "Rụt rè",
+      "Ngại giao tiếp"
     ],
     "image_url": null,
-    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
-    "id": "a5f173d6-5541-42ab-b13c-e62c87037cc7"
+    "quiz_id": "0d2dae40-c2ea-4d2e-b292-64d61337fdc1",
+    "id": "393726e1-6a65-4b1d-ac1f-f63c48270fb7"
+  },
+  {
+    "result_code": 1,
+    "title": "Người Theo Đuổi Mòn Mỏi",
+    "description": "Dù bạn không phải là người khởi xướng nhưng luôn cố gắng bắt kịp xu hướng. Đi theo như một con cừu, nhưng ít ra bạn cũng biết đến chúng!",
+    "traits": [
+      "Theo đuổi",
+      "Kém sáng tạo"
+    ],
+    "image_url": null,
+    "quiz_id": "0d2dae40-c2ea-4d2e-b292-64d61337fdc1",
+    "id": "abcc8a26-4bad-48a5-bd94-d7c4aa10a337"
+  },
+  {
+    "result_code": 2,
+    "title": "Chân Dung Du Lịch",
+    "description": "Bạn thích đi du lịch và thu thập những xu hướng mới từ khắp nơi trên thế giới. Nhưng bạn lại không tạo ra trend, chỉ là một người truyền bá thôi!",
+    "traits": [
+      "Yêu du lịch",
+      "Khám phá"
+    ],
+    "image_url": null,
+    "quiz_id": "0d2dae40-c2ea-4d2e-b292-64d61337fdc1",
+    "id": "097dd2da-33b6-4ce2-9371-8223b1410839"
+  },
+  {
+    "result_code": 3,
+    "title": "Trendy Mọi Nơi",
+    "description": "Bạn là người có óc sáng tạo và luôn tìm kiếm những xu hướng mới mẻ. Nhưng đôi khi, bạn cũng chỉ là một phần trong bức tranh lớn của xu hướng!",
+    "traits": [
+      "Sáng tạo",
+      "Năng động"
+    ],
+    "image_url": null,
+    "quiz_id": "0d2dae40-c2ea-4d2e-b292-64d61337fdc1",
+    "id": "9804048e-267b-4492-ae38-02ba1cd54881"
+  },
+  {
+    "result_code": 4,
+    "title": "Thánh Tạo Trend",
+    "description": "Bạn là một trong những người khởi xướng những trào lưu hot nhất. Nếu không có bạn, chắc chắn thế giới đã kém vui hơn rất nhiều!",
+    "traits": [
+      "Sáng tạo",
+      "Lãnh đạo"
+    ],
+    "image_url": null,
+    "quiz_id": "0d2dae40-c2ea-4d2e-b292-64d61337fdc1",
+    "id": "e61de129-ab2d-43b1-b0a8-c40b7fc4fdbf"
+  },
+  {
+    "result_code": 5,
+    "title": "Người Đưa Tin Nhanh Nhạy",
+    "description": "Bạn không chỉ theo dõi các xu hướng mà còn biết cách kết hợp và tạo ra những trend mới từ những gì bạn thấy. Bạn là một 'người đưa tin' chính hiệu!",
+    "traits": [
+      "Nhanh nhạy",
+      "Sáng tạo"
+    ],
+    "image_url": null,
+    "quiz_id": "0d2dae40-c2ea-4d2e-b292-64d61337fdc1",
+    "id": "ed248179-9dea-498b-9437-e17a542aea91"
+  },
+  {
+    "result_code": 0,
+    "title": "",
+    "description": "",
+    "traits": [
+      "진지함 200%",
+      "고독한 천재",
+      "노잼(본인만 모름)"
+    ],
+    "image_url": null,
+    "quiz_id": "844f4461-dc64-45a6-aab3-ad52762381e2",
+    "id": "fc58f8d1-d82f-4bba-88f9-5df1eccdee0c"
+  },
+  {
+    "result_code": 0,
+    "title": "",
+    "description": "",
+    "traits": [
+      "뒷북 장인",
+      "노력형 관종",
+      "대기만성형"
+    ],
+    "image_url": null,
+    "quiz_id": "844f4461-dc64-45a6-aab3-ad52762381e2",
+    "id": "c0b6e8c1-6fe4-4d39-bece-d5ade2a35d32"
+  },
+  {
+    "result_code": 0,
+    "title": "",
+    "description": "",
+    "traits": [
+      "아가리 파이터",
+      "실전압축드립근",
+      "선넘기 장인"
+    ],
+    "image_url": null,
+    "quiz_id": "844f4461-dc64-45a6-aab3-ad52762381e2",
+    "id": "a8264233-d9aa-4a2e-b3db-ea454261eca4"
+  },
+  {
+    "result_code": 0,
+    "title": "",
+    "description": "",
+    "traits": [
+      "관심으로 먹고 삶",
+      "도파민 중독자",
+      "인간 틱톡"
+    ],
+    "image_url": null,
+    "quiz_id": "844f4461-dc64-45a6-aab3-ad52762381e2",
+    "id": "04fef369-6b35-4988-a6cb-2506c6deaa6f"
+  },
+  {
+    "result_code": 0,
+    "title": "Du Khách Ngây Thơ",
+    "description": "Bạn nhìn Sài Gòn qua lăng kính màu hồng của Instagram. Đối với bạn, kẹt xe là 'đặc sản', ngập nước là 'trải nghiệm', và bị chặt chém là 'học phí'. Bạn dễ thương, nhưng ví tiền của bạn đang khóc thét. Hãy cẩn thận, Sài Gòn không hiền như ảnh bạn chụp đâu. Nhưng chính sự ngây thơ này lại giúp bạn tận hưởng thành phố một cách trọn vẹn nhất.",
+    "traits": [
+      "Dễ tin người",
+      "Ngân sách linh hoạt",
+      "Chúa tể sống ảo"
+    ],
+    "image_url": null,
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "f24abe6f-4c1c-41dd-804f-e5b99cbe7344"
+  },
+  {
+    "result_code": 1,
+    "title": "Tấm Chiếu Mới Trải",
+    "description": "Bạn đã bắt đầu nhận ra sự thật phũ phàng của Sài Gòn nhưng vẫn còn bỡ ngỡ. Bạn biết trả giá nhưng vẫn hớ, biết né đường ngập nhưng vẫn chết máy. Bạn đang trong giai đoạn chuyển hóa từ 'gà mờ' sang 'ma cũ'. Đừng nản lòng, ai cũng có một thời như vậy. Cứ từ từ rồi Sài Gòn sẽ dạy bạn khôn ra.",
+    "traits": [
+      "Đang học hỏi",
+      "Thỉnh thoảng bị lừa",
+      "Bắt đầu biết chửi thề"
+    ],
+    "image_url": null,
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "488baa39-288e-4ab4-b99f-74f91b91fc83"
+  },
+  {
+    "result_code": 2,
+    "title": "Dân Văn Phòng Thích Nghi",
+    "description": "Bạn đã thuộc lòng các quy luật ngầm của Sài Gòn. Bạn biết quán ăn nào ngon, giờ nào đường đông, và app nào ship hàng nhanh nhất. Cuộc sống của bạn là một chuỗi lặp lại có tính toán: sáng đi làm, chiều về nhà, cuối tuần cà phê. An toàn, ổn định, nhưng đôi khi hơi nhàm chán. Bạn không phải là kẻ chinh phục, bạn là người hòa nhập.",
+    "traits": [
+      "Bậc thầy Google Maps",
+      "Chuyên gia săn sale",
+      "An toàn là trên hết"
+    ],
+    "image_url": null,
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "fbe40797-b2a6-4233-9c3e-a7e15a6bf677"
+  },
+  {
+    "result_code": 3,
+    "title": "Chiến Binh Đường Phố",
+    "description": "Bạn thực sự là một phần của dòng chảy hỗn loạn này. Tiếng còi xe là nhạc nền, khói bụi là nước hoa. Bạn có thể ăn bún riêu lề đường ngon lành và mặc cả như một vị thần. Bạn không sợ lạc, chỉ sợ hết tiền. Bạn chính là hình ảnh Sài Gòn chân thật nhất: năng động, ồn ào và đầy sức sống.",
+    "traits": [
+      "Hệ tiêu hóa thép",
+      "Kỹ năng luồn lách thượng thừa",
+      "Sống về đêm"
+    ],
+    "image_url": null,
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "0d115546-280d-4fac-a27f-8dd4cd8b2b9f"
+  },
+  {
+    "result_code": 4,
+    "title": "Thổ Địa Hẻm Sâu",
+    "description": "Google Maps phải gọi bạn bằng cụ. Bạn biết những con hẻm mà ngay cả người giao hàng cũng phải bó tay, những quán ăn không tên nhưng ngon bá cháy. Bạn không theo trend, bạn tạo ra trend trong vòng bạn bè. Đối với bạn, Sài Gòn không phải nơi để sống, mà là một mê cung để khám phá.",
+    "traits": [
+      "Biết tuốt",
+      "Ghét đám đông",
+      "Bạn thân của các cô chú bán hàng"
+    ],
+    "image_url": null,
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "5779fbbf-8bc9-4a2b-8547-35ec534c4271"
+  },
+  {
+    "result_code": 5,
+    "title": "Lão Làng Về Hưu Sớm",
+    "description": "Bạn đã đạt đến cảnh giới tối cao của sự sinh tồn ở Sài Gòn: sự thờ ơ. Kẹt xe? Ngồi thiền trên xe. Ngập nước? Coi như đi bơi. Bạn đã thấy hết mọi thứ, chẳng còn gì làm bạn ngạc nhiên. Bạn ngồi quán cà phê cóc, nhìn dòng đời trôi qua với nụ cười bí ẩn. Bạn không sống ở Sài Gòn, Sài Gòn sống trong bạn.",
+    "traits": [
+      "Bình tĩnh trước giông bão",
+      "Triết lý vỉa hè",
+      "Coi tiền như rác (vì không có)"
+    ],
+    "image_url": null,
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "8cd78b14-bf46-4506-96b2-95ba6372f40f"
+  },
+  {
+    "result_code": 6,
+    "title": "Archetype 6",
+    "description": "Analysis pending for this type.",
+    "traits": [
+      "Unique",
+      "Mysterious"
+    ],
+    "image_url": null,
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "0556812a-34a4-4b55-9386-2f6002a84c03"
   },
   {
     "result_code": 7,
-    "title": "Người hướng ngoại du lịch (111)",
-    "description": "Người đi khắp nơi và không bao giờ ngại giao tiếp! Cuộc sống là một chuyến phiêu lưu lớn và bạn là nhân vật chính trong câu chuyện của mình.",
+    "title": "Archetype 7",
+    "description": "Analysis pending for this type.",
     "traits": [
-      "Hướng ngoại",
-      "Du lịch"
+      "Unique",
+      "Mysterious"
     ],
     "image_url": null,
-    "quiz_id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
-    "id": "db1e6c43-7ec5-4fd7-b0bb-cbf8f63d75f3"
+    "quiz_id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "id": "592e6722-93b5-4421-8ef0-bec0573a2e26"
+  },
+  {
+    "result_code": 0,
+    "title": "Triết Gia Phòng Trọ Quận Bình Thạnh",
+    "description": "Kiếp trước bạn chắc chắn là một triết gia ẩn dật, nhưng chỉ chuyên tâm nghiên cứu triết học 'tối nay ăn gì'. Thế giới của bạn thu nhỏ lại bằng bốn bức tường phòng trọ, và 'hủy kèo' là một bộ môn nghệ thuật bạn đã đạt đến trình độ thượng thừa. Tuy vậy, bạn bè vẫn yêu quý bạn vì bạn là một người lắng nghe tuyệt vời (qua tin nhắn Zalo thôi nhé). Bạn là minh chứng sống cho câu nói: 'Hướng nội không phải là một cái tội'.",
+    "traits": [
+      "Bậc thầy hủy kèo",
+      "Chuyên gia review phim",
+      "Tâm hồn ăn uống online"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "d7aaeec0-fb65-46c5-ae7d-e08df85fa731"
+  },
+  {
+    "result_code": 1,
+    "title": "Linh Hồn Lạc Giữa Landmark 81",
+    "description": "Bạn khao khát một cuộc sống sang chảnh và thoải mái, nhưng chiếc ví của bạn thường xuyên lên tiếng phản đối. Bạn luôn đứng giữa hai lựa chọn: một bữa ăn sang trọng ở Quận 1 hay một tuần ăn mì gói để tiết kiệm. Bạn là sự mâu thuẫn đáng yêu giữa ước mơ và thực tại, luôn tìm cách tận hưởng cuộc sống một cách khôn ngoan nhất trong khả năng của mình. Đừng lo, ai cũng vậy thôi!",
+    "traits": [
+      "Mơ về Thảo Điền",
+      "Thực tế tại Gò Vấp",
+      "Thích sang chảnh nhưng hay hết tiền"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "ab2c0ddd-11cd-4644-9f86-f90c21115896"
+  },
+  {
+    "result_code": 2,
+    "title": "Chuyên Gia Săn Sale ShopeeFood",
+    "description": "Bạn là vua săn sale, là chúa tể của những mã giảm giá. Bộ não của bạn hoạt động như một siêu máy tính, có khả năng tính toán tổ hợp khuyến mãi phức tạp để có được bữa ăn hời nhất. Bạn mang lại niềm vui cho bạn bè bằng cách chia sẻ những chiếc deal 'hời' và câu cửa miệng của bạn là 'Sao phải trả đủ tiền?'. Bạn không hề keo kiệt, bạn chỉ đang chi tiêu thông minh mà thôi.",
+    "traits": [
+      "Thánh săn sale",
+      "Bộ não máy tính",
+      "Bạn tốt của mọi nhà"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "5e19d1dd-560e-4114-b82b-3bca10be9069"
+  },
+  {
+    "result_code": 3,
+    "title": "Chiến Binh Đường Phố Bán Thời Gian",
+    "description": "Bạn là người có khả năng cân bằng cuộc sống đáng nể. Bạn có thể tận hưởng một buổi tối yên tĩnh ở nhà cày phim, nhưng cũng sẵn sàng lên đồ đi 'quẩy' khi có kèo. Bạn thích nghi tốt với sự hỗn loạn của Sài Gòn, từ kẹt xe đến mưa bất chợt, nhưng nếu được chọn, bạn vẫn thích sự bình yên hơn. Bạn chính là hiện thân của sự 'vừa đủ' – vừa đủ vui, vừa đủ điên, và vừa đủ lười.",
+    "traits": [
+      "Thích nghi tốt",
+      "Biết mình biết ta",
+      "Lúc hướng nội, lúc hướng ngoại"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "5eabfd78-fe34-48bf-9129-ec843f54f7bb"
+  },
+  {
+    "result_code": 4,
+    "title": "Đại Sứ Cà Phê Sữa Đá Quận 1",
+    "description": "Bạn là linh hồn của mọi cuộc vui, là cuốn danh bạ sống về những quán xá hay ho ở Sài Gòn. Năng lượng của bạn dường như vô tận, và có lẽ trong máu bạn chảy dòng cà phê sữa đá thay vì hồng cầu. Bạn bè luôn gọi bạn đầu tiên khi muốn đi chơi, vì họ biết chỉ cần có bạn, cuộc vui sẽ không bao giờ tàn. Bạn sinh ra để tỏa sáng và kết nối mọi người.",
+    "traits": [
+      "Không cà phê không sống nổi",
+      "Google Map sống",
+      "Năng lượng vô tận"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "6f5adba4-a525-4e23-8aaf-863036df7d6b"
+  },
+  {
+    "result_code": 5,
+    "title": "Tổ Lái Vỉa Hè Bất Bại",
+    "description": "Bạn chính là một 'Saigonese' chính hiệu trong tâm hồn. Bạn không sợ hãi, ưa mạo hiểm và xem sự hỗn loạn là một phần thú vị của cuộc sống. Với bạn, đồ ăn vỉa hè càng 'bất ổn' lại càng ngon, kẹt xe chỉ là một thử thách nhỏ cho kỹ năng lạng lách. Bạn sống một cuộc đời không chờ đợi, luôn sẵn sàng lao về phía trước. Bạn không đi theo dòng chảy, bạn tạo ra dòng chảy của riêng mình.",
+    "traits": [
+      "Gan to hơn người",
+      "Hệ tiêu hóa thép",
+      "Sống là không chờ đợi"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "a70fd04b-7eb9-4b1d-8c25-a211cf5eb9a0"
+  },
+  {
+    "result_code": 6,
+    "title": "Archetype 6",
+    "description": "Analysis pending for this type.",
+    "traits": [
+      "Unique",
+      "Mysterious"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "2067f09c-b344-4a01-9a98-53c27259aa8a"
+  },
+  {
+    "result_code": 7,
+    "title": "Archetype 7",
+    "description": "Analysis pending for this type.",
+    "traits": [
+      "Unique",
+      "Mysterious"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "id": "2f803219-5194-4c4e-897a-102eac1cbc51"
+  },
+  {
+    "result_code": 0,
+    "title": "Người Tối Cổ Lướt Mạng",
+    "description": "Bạn là người dùng Internet hệ 'hoài niệm'. Đối với bạn, mạng xã hội chỉ là nơi để liên lạc với gia đình và xem vài video chó mèo dễ thương. Bạn chẳng hiểu nổi tại sao người ta lại nhảy múa trên TikTok hay tranh cãi kịch liệt về một cái váy. Bạn là ốc đảo bình yên giữa thế giới số hỗn loạn, và điều đó thật đáng quý. Nhưng cẩn thận, đôi khi bạn sẽ bỏ lỡ vài tin hot chấn động đấy!",
+    "traits": [
+      "Miễn nhiễm với drama",
+      "Chúa tể ẩn danh",
+      "Thích xem hơn thích đăng"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "ca501c8d-db48-46e6-8e6c-c6e0cd7fdd9d"
+  },
+  {
+    "result_code": 1,
+    "title": "Thánh 'Haha' Dạo",
+    "description": "Bạn là khán giả trung thành của mọi cuộc vui trên mạng. Vai trò của bạn là thả 'haha' vào mọi status, meme, hay bình luận hài hước. Bạn không trực tiếp tạo trend, nhưng bạn là nhân tố quan trọng giúp lan truyền chúng. Bạn âm thầm quan sát, tận hưởng sự hài hước của Internet và chỉ xuất hiện khi cần thể hiện sự đồng tình bằng một nút 'haha'. Bạn chính là người hùng thầm lặng của cõi mạng.",
+    "traits": [
+      "Chuyên gia lướt newfeed",
+      "Nụ cười bí ẩn",
+      "Không bao giờ hết 'haha'"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "3c7d4349-30be-4362-afa4-eaa3e29ce9e7"
+  },
+  {
+    "result_code": 2,
+    "title": "Nhà Báo Tác Nghiệp Tại Gia",
+    "description": "Bạn có một khả năng đặc biệt là luôn có mặt ở mọi 'biến' và nhanh tay chụp màn hình lại. Group chat của bạn bè luôn đầy ắp những tin tức nóng hổi do bạn cung cấp. Bạn không phải người châm ngòi, nhưng chắc chắn là người thêm dầu vào lửa hiệu quả nhất. Mọi người yêu quý bạn vì sự nhiệt tình hóng hớt và khả năng tóm tắt drama siêu đỉnh.",
+    "traits": [
+      "Tay nhanh hơn não",
+      "Kho lưu trữ drama",
+      "Bạn của mọi nhà"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "e2ec7990-7e46-4904-957e-9efb29d5d7b0"
+  },
+  {
+    "result_code": 3,
+    "title": "Thánh Chế Meme Tiềm Năng",
+    "description": "Trong đầu bạn luôn có một kho tàng ý tưởng hài hước, chỉ chờ thời cơ để bùng nổ. Bạn thấy một hình ảnh, một câu nói là có thể nghĩ ra ngay 1001 kiểu meme khác nhau. Dù đôi khi còn hơi ngại ngùng chưa dám đăng, nhưng một khi đã ra tay thì meme của bạn chắc chắn sẽ được bạn bè chia sẻ rần rần. Bạn là mầm non giải trí, hãy tự tin tỏa sáng hơn nữa!",
+    "traits": [
+      "Bộ não đầy meme",
+      "Óc hài hước vô tận",
+      "Chuyên gia bình luận dạo"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "d189207a-b1ae-4b26-a5d0-f4eb30d0443c"
+  },
+  {
+    "result_code": 4,
+    "title": "Chiến Thần Review",
+    "description": "Bạn không thể chịu được việc thử một món ăn ngon hay một quán cà phê đẹp mà không cho cả thế giới biết. Mỗi bài đăng của bạn đều có tâm như một bài báo, với hình ảnh lung linh và những dòng nhận xét chi tiết. Bạn chính là kim chỉ nam cho các quyết định ăn chơi của bạn bè. Sức ảnh hưởng của bạn không hề nhỏ, một bài review của bạn có thể khiến một quán ăn vô danh trở nên nổi tiếng!",
+    "traits": [
+      "Nhà phê bình ẩm thực",
+      "Check-in mọi mặt trận",
+      "Có tâm nhất hệ mặt trời"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "bdc479e7-4e44-498d-a4e3-86f17d122756"
+  },
+  {
+    "result_code": 5,
+    "title": "Chúa Tể Tạo Trend Đích Thực",
+    "description": "Bạn sinh ra là để tạo trend. Một câu nói vu vơ của bạn có thể trở thành slogan quốc dân. Một điệu nhảy ngẫu hứng của bạn có thể xuất hiện trên mọi clip TikTok. Bạn không theo đuổi xu hướng, bạn chính là người tạo ra nó. Bạn có một sự nhạy bén đặc biệt với những gì công chúng yêu thích. Xin chúc mừng, bạn chính là ngôi sao quyền lực nhất trên mạng xã hội này!",
+    "traits": [
+      "Nói gì cũng thành trend",
+      "DNA ngôi sao",
+      "Quyền lực mềm cõi mạng"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "df255fd2-fd8a-4fdd-b847-2d56bdb8bf15"
+  },
+  {
+    "result_code": 6,
+    "title": "Archetype 6",
+    "description": "Analysis pending for this type.",
+    "traits": [
+      "Unique",
+      "Mysterious"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "2d3544b5-abbe-48cb-a0d5-f84efef7a26a"
+  },
+  {
+    "result_code": 7,
+    "title": "Archetype 7",
+    "description": "Analysis pending for this type.",
+    "traits": [
+      "Unique",
+      "Mysterious"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "id": "090caf0e-989a-4273-8a68-fa29f9fdff4c"
   }
 ]

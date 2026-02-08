@@ -17,9 +17,11 @@
 
 ## [Strict Constraints (Must Follow MASTER v4.0)]
 
-1. **무조건 2지선다 (A/B)**: 우유부단한 MZ들을 위해 선택지는 단 2개.
-2. **점수 노출 절대 금지**: "이거 고르면 F겠지?" 하고 계산하는 순간 퀴즈 망함. 절대 모르게 빙 돌려서 질문할 것.
-3. **결과 설명은 소설급으로**: 단순한 "당신은 착해요" 금지. "당신은 착한 척하지만 사실 속으로는 욕 한 바가지 하고 있는 키보드 워리어"처럼 구체적이어야 함.
+1. **Exactly 5 Questions**: Q1, Q2, Q3 are determinant questions (Binary bits). Q4, Q5 are bonus questions.
+2. **Exactly 8 Results**: Archetypes for codes `000` through `111`.
+3. **Follow the MASTER prompt's 3-Bit Binary Scoring Logic strictly.**
+4. **No score/type exposure in text**: Use sneaky situational questions.
+5. **Language: Vietnamese (STRICT)**: 모든 텍스트는 베트남어로 작성하십시오. (Title, Description, Questions, Results).
 
 ## [Example Output Style]
 

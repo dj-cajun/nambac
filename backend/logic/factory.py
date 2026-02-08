@@ -5,13 +5,14 @@ import asyncio
 import httpx
 from dotenv import load_dotenv
 
+import google.generativeai as genai
 from .image_generator import ImageGenerator
 
 # 환경 변수 로드
 load_dotenv()
 
 
-# n8n 연동을 위해 로그는 stderr로 출력 (stdout은 JSON 데이터 전용)
+# Log messages to stderr (stdout is reserved for JSON output)
 def log(message):
     sys.stderr.write(f"[System] {message}\n")
     sys.stderr.flush()
@@ -19,96 +20,155 @@ def log(message):
 
 class NambacFactory:
     def __init__(self, generate_images: bool = False):
-        # OpenRouter 설정
-        self.api_key = os.getenv("OPENROUTER_API_KEY")
+        # OpenRouter Configuration
+        self.openrouter_key = os.getenv("OPENROUTER_API_KEY")
+        self.gemini_key = os.getenv("GEMINI_API_KEY")
         self.base_url = "https://openrouter.ai/api/v1"
         self.base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-        # 모델 설정 (OpenRouter)
-        self.model = "openai/gpt-4o-mini"
+        # Model Configuration
+        self.openrouter_model = "openai/gpt-4o-mini"
+        self.gemini_model_name = "gemini-pro-latest"
 
-        # 이미지 생성 설정
+        # Image Generation Configuration
         self.generate_images = generate_images
         self.image_generator = ImageGenerator() if generate_images else None
 
-        if not self.api_key:
+        if self.gemini_key:
+            genai.configure(api_key=self.gemini_key)
+            log("💎 Gemini API configured.")
+        elif not self.openrouter_key:
             log(
-                f"❌ Error: OPENROUTER_API_KEY not found in env. Available keys: {list(os.environ.keys())}"
+                f"❌ Error: Neither GEMINI_API_KEY nor OPENROUTER_API_KEY found in env. Available keys: {list(os.environ.keys())}"
             )
-            raise ValueError("OPENROUTER_API_KEY not found in environment")
+            raise ValueError("No API key found in environment")
 
     def load_sop(self, role):
-        """SOP(프롬프트) 파일을 읽어옵니다."""
-        path = os.path.join(self.base_path, "agents_nambac", "prompts", f"{role}.md")
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                return f.read()
-        except FileNotFoundError:
-            log(f"Error: SOP file not found at {path}")
-            raise ValueError(f"SOP file not found: {path}")
+        """SOP(프롬프트) 파일을 여러 경로에서 찾아 읽어옵니다."""
+        # 경로 후보군
+        paths = [
+            os.path.join(self.base_path, "..", ".claude", "agents", f"{role}.md"),
+            os.path.join(self.base_path, "agents_nambac", "prompts", f"{role}.md"),
+        ]
+        
+        for path in paths:
+            if os.path.exists(path):
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        return f.read()
+                except Exception as e:
+                    log(f"Error reading SOP at {path}: {str(e)}")
+        
+        log(f"Error: SOP file for role '{role}' not found in any path.")
+        raise ValueError(f"SOP file not found: {role}")
 
     async def call_agent(self, agent_name, system_prompt, user_content):
-        """개별 에이전트를 실행하는 공통 함수 (httpx 사용)"""
+        """개별 에이전트를 실행하는 공통 함수"""
         log(f"🤖 Agent '{agent_name}' working...")
 
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "HTTP-Referer": "https://nambac.xyz",  # OpenRouter Requirement
-            "X-Title": "Nambac Factory",  # OpenRouter Requirement
-            "Content-Type": "application/json",
-        }
+        # Master Prompt 로드 (있을 경우)
+        master_prompt = ""
+        try:
+            master_prompt = self.load_sop("MASTER_Quiz_Prompt_v3")
+            log("🎓 Master Prompt v4.0 integrated.")
+        except Exception:
+            pass
 
-        payload = {
-            "model": self.model,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": system_prompt
-                    + "\n\nIMPORTANT: You must respond ONLY with valid JSON. No explanations outside of JSON.",
-                },
-                {"role": "user", "content": user_content},
-            ],
-            "temperature": 0.7,
-        }
+        full_system_prompt = f"{master_prompt}\n\n{system_prompt}" if master_prompt else system_prompt
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        # Gemini 사용 시 (우선순위)
+        if self.gemini_key:
             try:
-                response = await client.post(
-                    f"{self.base_url}/chat/completions", headers=headers, json=payload
+                log(f"💎 Using Gemini model: {self.gemini_model_name}")
+                model = genai.GenerativeModel(
+                    model_name=self.gemini_model_name,
+                    system_instruction=full_system_prompt + "\n\nIMPORTANT: You must respond ONLY with valid JSON. No explanations outside of JSON."
                 )
-                response.raise_for_status()
-
-                data = response.json()
-                content = data["choices"][0]["message"]["content"]
-
-                # Extract JSON from markdown code blocks if present
-                if "```" in content:
-                    # Find content between code blocks
-                    import re
-
-                    json_match = re.search(
-                        r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", content
+                
+                response = await asyncio.to_thread(
+                    model.generate_content,
+                    user_content,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=0.7,
+                        response_mime_type="application/json"
                     )
-                    if json_match:
-                        content = json_match.group(1)
-                    else:
-                        # Try to extract just the JSON-like part (from first { to last })
-                        json_match = re.search(r"\{[\s\S]*\}", content)
-                        if json_match:
-                            content = json_match.group(0)
-
-                log(f"✅ {agent_name} raw response: {content[:200]}")
-                return json.loads(content)
-
-            except httpx.HTTPStatusError as e:
-                log(f"❌ API Error in {agent_name}: {e.response.text}")
-                return {}
-            except json.JSONDecodeError as e:
-                log(f"❌ JSON Parse Error in {agent_name}: {str(e)}")
-                return {}
+                )
+                
+                content = response.text
+                return self._parse_json(agent_name, content)
             except Exception as e:
-                log(f"❌ Error in {agent_name}: {str(e)}")
-                return {}
+                log(f"❌ Gemini Error in {agent_name}: {str(e)}")
+                # Gemini 실패 시 OpenRouter로 폴백 시도 (키가 있다면)
+                if not self.openrouter_key:
+                    return {}
+
+        # OpenRouter 사용 시
+        if self.openrouter_key:
+            log(f"🌐 Using OpenRouter model: {self.openrouter_model}")
+            headers = {
+                "Authorization": f"Bearer {self.openrouter_key}",
+                "HTTP-Referer": "https://nambac.xyz",
+                "X-Title": "Nambac Factory",
+                "Content-Type": "application/json",
+            }
+
+            payload = {
+                "model": self.openrouter_model,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": full_system_prompt
+                        + "\n\nIMPORTANT: You must respond ONLY with valid JSON. No explanations outside of JSON.",
+                    },
+                    {"role": "user", "content": user_content},
+                ],
+                "temperature": 0.7,
+            }
+
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                try:
+                    response = await client.post(
+                        f"{self.base_url}/chat/completions", headers=headers, json=payload
+                    )
+                    response.raise_for_status()
+
+                    data = response.json()
+                    content = data["choices"][0]["message"]["content"]
+                    return self._parse_json(agent_name, content)
+
+                except httpx.HTTPStatusError as e:
+                    log(f"❌ API Error in {agent_name}: {e.response.text}")
+                    return {}
+                except Exception as e:
+                    log(f"❌ Error in {agent_name}: {str(e)}")
+                    return {}
+        
+        return {}
+
+    def _parse_json(self, agent_name, content):
+        """JSON 추출 및 파싱 공통 로직"""
+        try:
+            # Extract JSON from markdown code blocks if present
+            if "```" in content:
+                import re
+                json_match = re.search(
+                    r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", content
+                )
+                if json_match:
+                    content = json_match.group(1)
+                else:
+                    json_match = re.search(r"\{[\s\S]*\}", content)
+                    if json_match:
+                        content = json_match.group(0)
+
+            log(f"✅ {agent_name} raw response: {content[:100]}...")
+            return json.loads(content)
+        except json.JSONDecodeError as e:
+            log(f"❌ JSON Parse Error in {agent_name}: {str(e)}")
+            return {}
+        except Exception as e:
+            log(f"❌ Error parsing response in {agent_name}: {str(e)}")
+            return {}
 
     async def run_workflow(self, topic):
         log(f"🚀 Starting Workflow for topic: {topic}")
@@ -118,13 +178,12 @@ class NambacFactory:
         sop_architect = self.load_sop("visual_architect")
         sop_analyst = self.load_sop("report_analyst")
 
-        # ---------------------------------------------------------
-        # STEP 1: Director Agent (기획)
+        # STEP 1: Director Agent (Planning)
         # ---------------------------------------------------------
         director_task = f"""
-        주제 '{topic}'에 대한 퀴즈 컨셉을 기획하세요.
-        반드시 JSON 형식으로 출력해야 하며, 키값은 'title', 'description', 'viral_hook', 'category' 입니다.
-        category는 'Trendy', 'Survival', 'Personality' 중 하나로 선정하세요.
+        Plan a quiz concept for the topic: '{topic}'.
+        Output MUST be in JSON format with keys: 'title', 'description', 'viral_hook', 'category'.
+        Category should be one of: 'Trendy', 'Survival', 'Personality'.
         """
         director_output = await self.call_agent(
             "Director J-Bad", sop_director, director_task
@@ -140,24 +199,24 @@ class NambacFactory:
 
         log(f"✅ Concept Created: {director_output.get('title')}")
 
-        # ---------------------------------------------------------
-        # STEP 2: Report Analyst (성향 정의)
-        # 8가지 성향(Types)을 먼저 정의해야 질문을 설계할 수 있음
+        # STEP 2: Report Analyst (Archetype Definition)
+        # Defining 8 personality types (Archetypes) based on 3 axes.
         # ---------------------------------------------------------
         analyst_task = f"""
         [Director's Concept]: {json.dumps(director_output, ensure_ascii=False)}
         
-        위 기획을 바탕으로 8가지 결과 유형(Archetypes)을 설계하세요.
-        3개의 Binary 축(Axis)에 의해 결정되는 8가지 조합(000 ~ 111)입니다.
+        Based on the concept above, design **8 unique results (Archetypes)**.
+        These correspond to scores 0 to 7 (3-Bit Binary Scale).
         
-        응답은 반드시 아래 JSON 구조를 따라야 합니다:
+        Responses MUST strictly follow this JSON structure:
         {{
             "results": [
                 {{
                     "score": 0,
-                    "type_name": "Type 1 이름",
-                    "description": "상세 설명 (병맛/전문적 톤)",
-                    "traits": ["키워드1", "키워드2"]
+                    "type_name": "Type Name (VN)",
+                    "description": "Detailed analysis (VN) - Funny/Roasting/Expert tone",
+                    "traits": ["Trait 1", "Trait 2"],
+                    "keywords": ["#Hashtag1", "#Hashtag2"]
                 }},
                 ... (Score 0 to 7)
             ]
@@ -173,40 +232,40 @@ class NambacFactory:
         elif isinstance(analyst_res, list):
             results_data = analyst_res
 
-        if len(results_data) != 8:
-            log(f"⚠️ Warning: Analyst generated {len(results_data)} types. Expected 8.")
+        if len(results_data) != 6:
+            log(f"⚠️ Warning: Analyst generated {len(results_data)} types. Expected 6.")
 
-        # ---------------------------------------------------------
-        # STEP 3: Visual Architect (문제 출제)
-        # 정의된 성향을 가르는 3개의 결정적 질문(Binary Switch) 설계
+        # STEP 3: Visual Architect (Quiz Design)
+        # Designing 3 determinant questions (Binary Switches) and 2 bonus questions.
         # ---------------------------------------------------------
         architect_task = f"""
         [Director's Concept]: {json.dumps(director_output, ensure_ascii=False)}
         [Analyst's Archetypes]: {json.dumps(results_data, ensure_ascii=False)}
         
-        위 8가지 성향을 구분하기 위한 '3-Bit Binary Scoring' 질문 3개와 보너스 질문 2개를 출제하세요.
+        Design 3 '3-Bit Binary Scoring' questions and 2 bonus questions to separate the 8 types above.
         
-        [필수 규칙]
-        1. 총 5문항 출제.
-        2. Q1, Q2, Q3는 반드시 아래 점수 규칙을 따를 것 (성향 결정 문항).
-           - Q1: score_b = 1 ($2^0$) -> Axis 1 결정
-           - Q2: score_b = 2 ($2^1$) -> Axis 2 결정
-           - Q3: score_b = 4 ($2^2$) -> Axis 3 결정
-        3. Q4, Q5는 재미용 보너스 문항 (score_b = 0).
-        4. 모든 score_a는 0으로 고정.
-        5. image_prompt는 각 질문의 상황을 묘사하는 구체적인 프롬프트여야 함. (단조로움 방지)
+        [Rules]
+        1. 5 questions total.
+        2. **3-Axis Binary Logic (8 Results)**:
+           - Q1: Axis 1 (Major). Score B = +4 (Bit 2: 100).
+           - Q2: Axis 2 (Minor). Score B = +2 (Bit 1: 010).
+           - Q3: Axis 3 (Detail). Score B = +1 (Bit 0: 001).
+           - Q4, Q5: Flavor (Consistency). Score B = +0.
+           - Max Score: 7 (4+2+1), Min Score: 0 (000).
+           - This maps perfectly to 8 results (0-7).
+        3. image_prompt MUST describe the question scene vividly. (VN for text, EN for image prompts).
         
-        응답은 반드시 아래 JSON 구조를 따라야 합니다:
+        Responses MUST strictly follow this JSON structure:
         {{
             "questions": [
                 {{
                     "order_number": 1,
-                    "question_text": "질문 내용",
-                    "option_a": "선택지 A",
-                    "option_b": "선택지 B",
+                    "question_text": "Question Text (VN)",
+                    "option_a": "Option A (VN)",
+                    "option_b": "Option B (VN)",
                     "score_a": 0,
                     "score_b": 1,
-                    "image_prompt": "Cinematic shot of [상황 설명], neon lighting, detailed background"
+                    "image_prompt": "Cinematic shot of [scene description], neon lighting, detailed background"
                 }},
                 ...
             ]
@@ -224,99 +283,164 @@ class NambacFactory:
         elif isinstance(architect_res, list):
             questions_data = architect_res
 
-        # ---------------------------------------------------------
-        # STEP 4: Validation & Finalize (검증 및 병합)
-        # ---------------------------------------------------------
-
-        # 데이터 검증 로직 (3-Bit Rule)
-        is_valid = True
-        if len(questions_data) < 3:
-            log("❌ Critical: Less than 3 questions generated.")
-            is_valid = False
-        else:
-            # Q1, Q2, Q3 점수 강제 보정 (AI 실수를 방지하기 위한 안전장치)
-            try:
-                # 1. Score Enforcement
-                questions_data[0]["score_b"] = 1
-                questions_data[1]["score_b"] = 2
-                questions_data[2]["score_b"] = 4
-
-                # 나머지 문항 0점 처리
-                for q in questions_data[3:]:
-                    q["score_b"] = 0
-
-                # 모든 문항 score_a 0점 처리
-                for q in questions_data:
-                    q["score_a"] = 0
-
-                # 2. Schema Enforcement (Consistency)
-                # master.md에 정의된 questions 배열 구조를 강제로 맞춤
-                for idx, q in enumerate(questions_data):
-                    q["order_number"] = idx + 1
-                    # Ensure all keys exist
-                    q.setdefault("question_text", "질문 내용이 누락되었습니다.")
-                    q.setdefault("option_a", "A")
-                    q.setdefault("option_b", "B")
-                    q.setdefault(
-                        "image_prompt", "Abstract background, pink and black theme"
-                    )
-
-                log("✅ Consistency Check Passed: Scores & Schema Enforced.")
-            except IndexError:
-                log("❌ Error during score enforcement.")
-                is_valid = False
-
         final_quiz = {
             "meta": director_output,
             "questions": questions_data,
             "results": results_data,
         }
 
-        # 결과 검증
-        if not final_quiz["questions"] or not final_quiz["results"]:
-            log(
-                f"⚠️ Warning: Missing Data. Questions: {len(questions_data)}, Results: {len(results_data)}"
-            )
+        return await self.finalize_quiz(final_quiz)
+
+    async def run_expert_workflow(self, agent_name, topic):
+        log(f"🚀 Starting Expert Workflow: {agent_name} for topic: {topic}")
+
+        sop_expert = self.load_sop(agent_name)
+
+        # Expert task
+        task = f"Create a full quiz JSON for the topic: '{topic}'."
+
+        # Call the expert agent
+        result = await self.call_agent(agent_name, sop_expert, task)
+
+        if not result:
+            log(f"❌ Error: {agent_name} failed to generate quiz.")
+            return None
+
+        # Normalize the result structure
+        final_quiz = {
+            "meta": {
+                "title": result.get("title", f"{topic} Quiz"),
+                "description": result.get("description", ""),
+                "viral_hook": result.get("viral_hook", ""),
+                "category": result.get("category", "General"),
+            },
+            "questions": result.get("questions", []),
+            "results": result.get("results", []),
+        }
+
+        return await self.finalize_quiz(final_quiz)
+
+    async def finalize_quiz(self, final_quiz):
+        """데이터 검증 및 이미지 생성 공통 로직 (5문항 / 6결과 강제)"""
+        questions_data = final_quiz.get("questions", [])
+        results_data = final_quiz.get("results", [])
+        meta = final_quiz.get("meta", {})
+
+        log(f"🛠 Normalizing quiz: {len(questions_data)}Qs, {len(results_data)}Rs")
+
+        # 1. Question Normalization (Force exactly 5)
+        # ---------------------------------------------------------
+        standard_questions = []
+        for i in range(5):
+            if i < len(questions_data):
+                q = questions_data[i]
+            else:
+                q = {
+                    "question_text": f"Bonus Question {i+1}",
+                    "option_a": "Yes",
+                    "option_b": "No",
+                }
+            
+            # Remap keys if necessary
+            q["order_number"] = i + 1
+            q["question_text"] = q.get("question_text") or q.get("text") or "Nội dung câu hỏi bị thiếu."
+            q["option_a"] = q.get("option_a") or q.get("choice_a") or "Option A"
+            q["option_b"] = q.get("option_b") or q.get("choice_b") or "Option B"
+            
+            # Score Enforcement (3-Axis Binary Logic: 4-2-1-0-0)
+            q["score_a"] = 0
+            
+            if i == 0:
+                q["score_b"] = 4  # Q1 Axis 1 (100)
+            elif i == 1:
+                q["score_b"] = 2  # Q2 Axis 2 (010)
+            elif i == 2:
+                q["score_b"] = 1  # Q3 Axis 3 (001)
+            else:
+                q["score_b"] = 0  # Q4, Q5 Flavor
+            
+            q.setdefault("image_prompt", "Abstract background, webtoon style")
+            standard_questions.append(q)
+        
+        final_quiz["questions"] = standard_questions
+
+        # 2. Result Normalization (Force exactly 8)
+        # ---------------------------------------------------------
+        standard_results = []
+        # Create a map of existing results by score if available
+        result_map = {}
+        for r in results_data:
+            score = r.get("score")
+            if score is None:
+                # Try to parse from result_code "001" style
+                code = r.get("result_code") or r.get("code")
+                if code is not None:
+                    try: score = int(str(code), 2) if len(str(code)) == 3 else int(code)
+                    except: pass
+            
+            if score is not None and 0 <= score <= 7:
+                result_map[score] = r
+
+        for i in range(8):
+            if i in result_map:
+                r = result_map[i]
+            elif i < len(results_data) and "score" not in results_data[i]:
+                # Fallback to sequential if score mapping failed
+                r = results_data[i]
+            else:
+                r = {
+                    "type_name": f"Archetype {i}",
+                    "description": "Analysis pending for this type.",
+                    "traits": ["Unique", "Mysterious"]
+                }
+            
+            r["score"] = i
+            r["type_name"] = r.get("type_name") or r.get("result_title") or r.get("title") or f"Type {i}"
+            r["description"] = r.get("description") or r.get("result_description") or "Mô tả kết quả đang được cập nhật."
+            r.setdefault("traits", [])
+            standard_results.append(r)
+        
+        final_quiz["results"] = standard_results
+        log("✅ Consistency Check Passed: 5Q / 8R Schema Enforced.")
 
         # 이미지 생성 (활성화된 경우)
         if self.generate_images and self.image_generator:
-            log("🎨 Starting image generation...")
+            log("🎨 Starting image generation (Parallel)...")
 
-            # 1. 퀴즈 커버 이미지 생성
-            cover_image = self.image_generator.generate_quiz_cover(
-                director_output.get("title", ""),
-                director_output.get("category", "Trendy"),
+            # Tasks list for parallel execution
+            tasks = []
+
+            # 1. Cover Image Task
+            tasks.append(
+                self.image_generator.generate_quiz_cover(
+                    meta.get("title", ""), 
+                    meta.get("category", "Trendy"),
+                    meta.get("description", "")
+                )
             )
+
+            # 2. Result Images Tasks
+            for result in results_data:
+                tasks.append(
+                    self.image_generator.generate_result_image(
+                        result.get("type_name", ""), 
+                        result.get("description", "")
+                    )
+                )
+
+            # Execute all at once
+            results = await asyncio.gather(*tasks)
+
+            # Assign Cover Image
+            cover_image = results[0]
             if cover_image:
-                final_quiz["meta"]["image_url"] = (
-                    f"http://localhost:8000/images/{cover_image['filename']}"
-                )
-                log(f"✅ Cover image generated: {cover_image['filename']}")
+                final_quiz["meta"]["image_url"] = f"http://localhost:8000/images/{cover_image['filename']}"
 
-            # 2. 질문 이미지 생성 (최대 5개만 - 비용 절감)
-            for idx, question in enumerate(final_quiz["questions"][:5]):
-                question_image = await self.image_generator.generate_question_image(
-                    question.get("question_text", ""),
-                    question.get("order_number", idx + 1),
-                )
-                if question_image:
-                    question["image_url"] = (
-                        f"http://localhost:8000/images/{question_image['filename']}"
-                    )
-                    log(
-                        f"✅ Question {idx + 1} image generated: {question_image['filename']}"
-                    )
-
-            # 3. 결과 이미지 생성 (최대 8개)
-            for idx, result in enumerate(final_quiz["results"]):
-                result_image = await self.image_generator.generate_result_image(
-                    result.get("type_name", ""), result.get("description", "")
-                )
-                if result_image:
-                    result["image_url"] = (
-                        f"http://localhost:8000/images/{result_image['filename']}"
-                    )
-                    log(f"✅ Result {idx} image generated: {result_image['filename']}")
+            # Assign Result Images (Results start from index 1)
+            for i, result in enumerate(results_data):
+                img_res = results[i + 1]
+                if img_res:
+                    result["image_url"] = f"http://localhost:8000/images/{img_res['filename']}"
 
             log("🎨 Image generation completed!")
 

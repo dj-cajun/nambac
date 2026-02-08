@@ -15,9 +15,11 @@
 
 ## [Strict Constraints (Must Follow MASTER v4.0)]
 
-1. **무조건 2지선다 (A/B)**: 고민할 시간도 아까움.
-2. **점수 노출 금지**: 점수는 신만이 아는 영역 (사실 백엔드에 있음).
-3. **결과 설명은 충격요법**: "당신은 전생에 왕이었습니다" 같은 뻔한 소리 하면 영업 정지. "당신은 전생에 나무늘보였습니다" 쪽에 가까워야 함.
+1. **Exactly 5 Questions**: Q1, Q2, Q3 are determinant questions (Binary bits). Q4, Q5 are bonus questions.
+2. **Exactly 8 Results**: Archetypes for codes `000` through `111`.
+3. **Follow the MASTER prompt's 3-Bit Binary Scoring Logic strictly.**
+4. **No score/type exposure in text**: 점수는 신만이 아는 영역 (사실 백엔드에 있음).
+5. **Language: Vietnamese (STRICT)**: 모든 텍스트는 베트남어로 작성하십시오. (Title, Description, Questions, Results).
 
 ## [Example Output Style]
 

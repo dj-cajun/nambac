@@ -1,39 +1,33 @@
 /**
- * 3-bit Binary Scoring Logic
+ * Range-based Scoring Logic (5 Questions, Max Score 5)
  * 
- * Each question represents a bit in a 3-bit binary number.
- * Q1: 2^0 = 1
- * Q2: 2^1 = 2
- * Q3: 2^2 = 4
+ * Each question adds +1 to the score.
+ * Q1 to Q5: Each question adds 0 or 1.
  * 
- * Yes (1) adds the weight to the score.
- * No (0) adds 0.
+ * Result Range: 0 to 5 (6 unique results)
  * 
- * Result Range: 0 to 7
- * 
- * @param {boolean[]} answers - Array of 3 booleans (true for Yes/Option A, false for No/Option B)
- * NOTE: The prompt says "Option A" is +weight. Let's clarify based on standard A/B.
- * Usually A=Yes, B=No. Or specific mapping. 
- * The instruction says:
- * "1번 질문 '예' 선택 시: +1점"
- * Assuming the UI passes [isYes, isYes, isYes].
+ * @param {boolean[]} answers - Array of 5 booleans (true when Option B is selected)
  */
-export const calculateScore = (answers) => {
-    if (!answers || answers.length !== 3) {
-        console.warn("Invalid answers array for 3-bit logic", answers);
-        return 0; // Default to 0
+export const calculateScore = (answers, questions) => {
+    if (!answers || !questions || answers.length === 0) {
+        console.warn("Invalid inputs for scoring", { answers, questions });
+        return 0;
     }
 
-    let score = 0;
+    let rawScore = 0;
 
-    // Q1 (Index 0) -> Weight 1
-    if (answers[0]) score += 1;
+    answers.forEach((isOptionBSelected, index) => {
+        const question = questions[index];
+        if (question) {
+            if (isOptionBSelected) {
+                rawScore += (question.score_b || 0);
+            } else {
+                rawScore += (question.score_a || 0); // Usually 0
+            }
+        }
+    });
 
-    // Q2 (Index 1) -> Weight 2
-    if (answers[1]) score += 2;
-
-    // Q3 (Index 2) -> Weight 4
-    if (answers[2]) score += 4;
-
-    return score;
+    // 3-Bit Binary Logic (4-2-1-0-0) results in 0-7 range.
+    // This maps directly to result indices 0-7.
+    return rawScore;
 };

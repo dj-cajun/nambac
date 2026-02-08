@@ -13,6 +13,13 @@ from logic.factory import NambacFactory
 from logic.json_manager import JSONManager
 from logic.image_generator import ImageGenerator
 
+
+# Log messages to stderr
+def log(message):
+    sys.stderr.write(f"[System] {message}\n")
+    sys.stderr.flush()
+
+
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "../.env"))
 
 
@@ -53,6 +60,7 @@ class QuizRequest(BaseModel):
     topic: str
     generate_images: bool = False
     category: Optional[str] = None
+    agent_name: Optional[str] = None
 
 
 # --- FastAPI App Initialization ---
@@ -86,6 +94,21 @@ app.mount("/images", StaticFiles(directory="data/images"), name="images")
 @app.get("/")
 def read_root():
     return {"status": "operational", "system": "Nambac Agent Factory"}
+
+
+@app.get("/api/admin/agents")
+def get_available_agents():
+    """Available agents in .claude/agents/"""
+    agent_dir = os.path.join(os.path.dirname(__file__), "..", ".claude", "agents")
+    agents = []
+    if os.path.exists(agent_dir):
+        for filename in os.listdir(agent_dir):
+            if filename.endswith(".md") and (
+                filename.startswith("Expert_") or filename.startswith("Quiz_")
+            ):
+                agent_name = filename[:-3]  # Remove .md
+                agents.append(agent_name)
+    return {"agents": agents}
 
 
 @app.post("/api/quiz/generate")
@@ -148,11 +171,18 @@ async def create_quiz(request: QuizRequest):
     try:
         # AI로 퀴즈 생성 (이미지 생성 옵션 포함)
         factory = NambacFactory(generate_images=request.generate_images)
-        print(f"🎨 Creating quiz with topic: {request.topic}")
-        if request.generate_images:
-            print("🎨 Image generation enabled")
 
-        result = await factory.run_workflow(request.topic)
+        if request.agent_name:
+            log(f"🧠 Using specialized agent: {request.agent_name}")
+            result = await factory.run_expert_workflow(
+                request.agent_name, request.topic
+            )
+        else:
+            log(f"🚀 Using standard workflow for topic: {request.topic}")
+            result = await factory.run_workflow(request.topic)
+
+        if request.generate_images:
+            log("🎨 Image generation enabled")
 
         if not result:
             raise HTTPException(
@@ -165,24 +195,46 @@ async def create_quiz(request: QuizRequest):
         results_data = result.get("results", [])
 
         # 퀴즈 메타데이터 변환
+        
+        # 1. 썸네일 이미지 생성
+        quiz_cover_url = None
+        if request.generate_images:
+            try:
+                # ImageGenerator 인스턴스는 이미 위에 선언됨
+                image_generator = ImageGenerator()
+                cover_result = await image_generator.generate_quiz_cover(
+                    quiz_title=meta.get("title", request.topic),
+                    category=request.category or meta.get("category", "Trendy")
+                )
+                quiz_cover_url = cover_result.get("url") if cover_result else None
+            except Exception as e:
+                log(f"⚠️ Quiz cover image generation failed: {e}")
+                
+        # 2. 메타데이터 설정
         quiz_meta = {
             "title": meta.get("title", request.topic),
             "description": meta.get("description", ""),
             "category": request.category or meta.get("category", "Trendy"),
-            "image_url": meta.get("image_url", None),
+            "image_url": quiz_cover_url or meta.get("image_url", None), # 생성된 URL로 덮어쓰거나, AI가 준 URL 사용
         }
 
         # 질문 데이터 변환
         questions = []
         for q in questions_data:
+            order_number = q.get("order_number", len(questions) + 1)
+            
+            # [사용자 요청 로직] Range-based Scoring: 모든 5개 질문에 Option B=+1점을 부여 (총점 0-5)
+            score_a = 0
+            score_b = 1
+
             questions.append(
                 {
-                    "order_number": q.get("order_number", len(questions) + 1),
+                    "order_number": order_number,
                     "question_text": q.get("question_text", ""),
                     "option_a": q.get("option_a", ""),
                     "option_b": q.get("option_b", ""),
-                    "score_a": q.get("score_a", 0),
-                    "score_b": q.get("score_b", 0),
+                    "score_a": score_a,
+                    "score_b": score_b,
                     "image_url": q.get(
                         "image_prompt", None
                     ),  # image_prompt를 image_url로
@@ -191,14 +243,33 @@ async def create_quiz(request: QuizRequest):
 
         # 결과 데이터 변환
         results = []
+        image_generator = ImageGenerator() # 이미지 생성기 인스턴스 (비동기 호출용)
+        
         for r in results_data:
+            # 1. Image Generation (결과 이미지 생성)
+            image_result = None
+            if request.generate_images:
+                try:
+                    # ImageGenerator.generate_result_image는 비동기 함수
+                    image_result = await image_generator.generate_result_image(
+                        result_type=r.get("type_name", "Result"),
+                        description=r.get("description", "")
+                    )
+                except Exception as img_e:
+                    log(f"⚠️ Result image generation failed: {img_e}")
+                    image_result = None
+            
+            # image_result 딕셔너리에서 url 추출 (예: /images/filename.png)
+            image_url = image_result.get("url") if image_result else None
+
             results.append(
                 {
                     "result_code": r.get("score", 0),
                     "title": r.get("type_name", ""),
                     "description": r.get("description", ""),
                     "traits": r.get("traits", []),
-                    "image_url": None,
+                    # 2. image_url 필드에 저장된 이미지 경로를 설정
+                    "image_url": image_url, 
                 }
             )
 
@@ -214,18 +285,34 @@ async def create_quiz(request: QuizRequest):
 
 @app.put("/api/quizzes/{quiz_id}")
 def update_quiz(quiz_id: str, updates: Dict):
-    """퀴즈 수정"""
+    """퀴즈, 질문, 결과 수정"""
+    # 1. Update Questions if present
+    if "questions" in updates:
+        questions = updates.pop("questions")
+        for q in questions:
+            if "id" in q:
+                json_manager.update_question(q["id"], q)
+
+    # 2. Update Results if present
+    if "results" in updates:
+        results = updates.pop("results")
+        for r in results:
+            if "id" in r:
+                json_manager.update_result(r["id"], r)
+
+    # 3. Update Quiz Meta
     updated_quiz = json_manager.update_quiz(quiz_id, updates)
 
     if not updated_quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
 
-    return updated_quiz
+    return {"status": "success", "quiz": updated_quiz}
 
 
 @app.delete("/api/quizzes/{quiz_id}")
 def delete_quiz(quiz_id: str):
     """퀴즈 삭제"""
+    log(f"🔥 Attempting to delete quiz: {quiz_id}")
     success = json_manager.delete_quiz(quiz_id)
 
     if not success:
@@ -404,42 +491,6 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-
-
-# ========== Viral & Expansion Endpoints (Phase 3) ==========
-
-
-@app.get("/api/og/{quiz_id}/{result_code}")
-async def get_og_image(quiz_id: str, result_code: int):
-    """
-    [Dynamic OG Image] SNS 공유용 결과 카드 이미지 생성 및 반환
-    """
-    # 1. Get Quiz & Result Data
-    quiz = json_manager.get_quiz(quiz_id)
-    if not quiz:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-
-    results = json_manager.get_results_by_quiz_id(quiz_id)
-    target_result = next(
-        (r for r in results if int(r.get("result_code", -1)) == result_code), None
-    )
-
-    if not target_result:
-        raise HTTPException(status_code=404, detail="Result type not found")
-
-    # 2. Generate Image
-    generator = ImageGenerator()
-    filename = generator.generate_og_card(
-        title=quiz["title"],
-        description=target_result["description"],
-        result_type=target_result["title"],
-    )
-
-    if not filename:
-        raise HTTPException(status_code=500, detail="Image generation failed")
-
-    file_path = f"data/og/{filename}"
-    return FileResponse(file_path)
 
 
 @app.get("/api/magazine")

@@ -195,6 +195,31 @@ class JSONManager:
         self._write_json(self.results_file, all_results)
         return results
 
+    def update_result(self, result_id: str, updates: Dict) -> Optional[Dict]:
+        """결과 유형 수정"""
+        all_results = self._read_json(self.results_file)
+
+        for idx, result in enumerate(all_results):
+            if result["id"] == result_id:
+                all_results[idx].update(updates)
+                self._write_json(self.results_file, all_results)
+                return all_results[idx]
+
+        return None
+    
+    def delete_results_by_code(self, result_code: int) -> bool:
+        """특정 결과 코드를 가진 모든 결과 항목을 삭제"""
+        all_results = self._read_json(self.results_file)
+        original_length = len(all_results)
+        
+        # result_code가 result_code와 다른 항목들만 남김
+        all_results = [r for r in all_results if r.get("result_code") != result_code]
+
+        if len(all_results) < original_length:
+            self._write_json(self.results_file, all_results)
+            return True
+        return False
+
     # ========== 유틸리티 ==========
 
     def save_quiz_complete(self, quiz_meta: Dict, questions: List[Dict], results: List[Dict]) -> Dict:

@@ -144,7 +144,7 @@
 /* ==== Main Glass Card ==== */
 .result-glass-card {
     width: 100%;
-    max-width: 420px;
+    max-width: 600px; /* 가로 확장 */
     background: rgba(255, 255, 255, 0.4);
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
@@ -216,13 +216,27 @@
     text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
 }
 
+/* ==== Content Split Container (New Left/Right Layout) ==== */
+.content-split-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+    .content-split-container {
+        flex-direction: row;
+    }
+}
+
 /* ==== Image Section ==== */
 .result-image-section {
     width: 100%;
+    flex-shrink: 0;
     height: 240px;
     background: linear-gradient(135deg, #fde68a 0%, #fed7aa 100%);
     border-radius: 1rem;
-    border: 2px solid var(--comic-charcoal);
+    border: 3px solid var(--comic-charcoal); /* 3px로 증가 */
     box-shadow: 4px 4px 0px 0px var(--comic-charcoal);
     display: flex;
     align-items: flex-end;
@@ -231,38 +245,68 @@
     overflow: hidden;
 }
 
-.retro-sun {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    width: 48px;
-    height: 48px;
-    background: #fb923c;
-    border-radius: 50%;
-    border: 2px solid var(--comic-charcoal);
-    opacity: 0.7;
+@media (min-width: 600px) {
+    .result-image-section {
+        width: 250px; /* 데스크탑에서 고정 폭 */
+        height: 350px; /* 높이 증가 */
+        align-items: center; /* 가운데 정렬 */
+    }
 }
 
-.result-character-img {
-    width: 200px;
-    height: 200px;
-    object-fit: contain;
-    transform: translateY(8px);
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
-    z-index: 10;
-}
+.retro-sun { /* ... 기존 스타일 유지 ... */ }
+.result-character-img { /* ... 기존 스타일 유지 ... */ }
 
-/* ==== Analysis Section ==== */
+/* ==== Analysis Section (Right Column) ==== */
 .analysis-section {
-    background: rgba(255, 255, 255, 0.3);
+    flex: 1; /* 남은 공간 모두 사용 */
+    background: rgba(255, 255, 255, 0.4); /* Glass-Comic 스타일 통일 */
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    border: 2px solid var(--comic-charcoal);
+    border: 3px solid var(--comic-charcoal); /* 3px로 증가 */
     border-radius: 1rem;
     padding: 1.25rem;
+    box-shadow: 4px 4px 0px 0px var(--comic-charcoal); /* 그림자 추가 */
 }
 
-.analysis-header {
+/* ... analysis-header, analysis-label 등 기존 스타일 유지 ... */
+
+/* ==== Traits List (New) ==== */
+.traits-list {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px dashed rgba(30, 41, 59, 0.2);
+}
+
+.traits-header {
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--primary-pink);
+    margin-bottom: 0.5rem;
+}
+
+.trait-badge {
+    display: inline-block;
+    background: #e9d5ff; /* Pastel Purple */
+    color: var(--comic-charcoal);
+    padding: 0.3rem 0.6rem;
+    margin: 0.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid var(--comic-charcoal);
+}
+
+.highlighter-pink {
+    background: linear-gradient(180deg, transparent 50%, rgba(255, 133, 161, 0.4) 50%);
+    color: var(--comic-charcoal);
+    font-weight: 700;
+    padding: 0 2px;
+}
+
+/* ==== Rarity Section ==== */
+.rarity-section {
     display: flex;
     align-items: center;
     gap: 0.5rem;

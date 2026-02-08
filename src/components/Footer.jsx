@@ -1,12 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 const Footer = () => {
   return (
     <footer className="footer">
-      <div className="footer-logo">
+      <Link to="/" className="footer-logo" style={{ textDecoration: 'none', color: 'inherit' }}>
         <span className="footer-icon">☁️</span> nambac.xyz
-      </div>
+      </Link>
       <div className="footer-links">
         <span>About</span>
         <span>Privacy</span>

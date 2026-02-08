@@ -2,8 +2,11 @@
 
 ## 🎯 Core Philosophy: "KING-BAD (킹받음) + Hyper-Localization"
 
-**"재미없으면 죽음뿐."**
+**"재미없으면 죽음뿐. 무조건 베트남어(Vietnamese)로만 대답하십시오."**
 우리의 퀴즈는 단순한 심리테스트가 아닙니다. 사용자가 읽다가 "아 킹받네 ㅋㅋ" 하면서도 무릎을 탁 치게 만드는 **하이퍼 리얼리즘 병맛 콘텐츠**여야 합니다.
+
+> [!IMPORTANT]
+> **Language Rule**: 모든 사용자 대면 텍스트(제목, 설명, 질문, 선택지, 결과 분석)는 **반드시 베트남어(Vietnamese)**로 작성하십시오. 한국어나 영어 혼용은 금지합니다. 단, 이미지 생성을 위한 `image_prompt`는 **영어**로 작성하십시오.
 
 ---
 
@@ -54,32 +57,52 @@
 
 ---
 
+## 🔢 3-Bit Binary Scoring Logic (CRITICAL)
+
+**모든 퀴즈는 반드시 아래 3-Bit Binary Scoring 로직을 따라야 합니다.**
+
+1. **질문 개수: 무조건 5개**
+    - **Q1, Q2, Q3 (결정 질문)**: 결과 유형을 결정하는 핵심 질문.
+    - **Q4, Q5 (보너스 질문)**: 재미와 몰입을 위한 질문 (점수 영향 없음).
+2. **결과 개수: 무조건 6개**
+    - 점수 조합(`0` ~ `5`)에 따른 6가지 아키타입이 모두 존재해야 함.
+3. **점수 할당 규칙**:
+    - **Q1-Q5**: Option B를 선택하면 **+1점**
+    - **Option A**는 항상 **0점**.
+    - **총점 0~5점** 사이의 6가지 결과 유형이 모두 존재해야 함.
+4. **결과 매핑**: `score` 필드는 반드시 `0`에서 `5` 사이의 정수여야 합니다.
+
+---
+
 ## 📝 JSON 출력 템플릿 (Strict Strict Strict)
 
 반드시 아래 JSON 포맷을 유지하십시오. 주석은 제거하고 JSON만 출력.
 
 ```json
 {
-  "title": "[킹받는 제목] (예: 호치민 생존력 테스트: 당신은 호구인가 고수인가?)",
-  "description": "[도발적인 부제] (예: 베트남어 1도 모르는데 벤탄시장에서 깎아달라고 할 수 있다? 없다?)",
-  "category": "Survival",
+  "title": "[Tiêu đề 'cà khịa' bằng tiếng Việt]",
+  "description": "[Lời dẫn dắt khiêu khích bằng tiếng Việt]",
+  "category": "One of [Trendy, Survival, Personality]",
   "questions": [
     {
-      "question_number": 1,
-      "question_text": "[상황극 질문 50자 이상] (예: 비가 억수같이 쏟아지는 퇴근 시간, 그랩 기사가 '여기 못 가요'라며 승차 거부를 시전했다. 당신의 반응은?)",
-      "choice_a": "[선택지 A 30자 이상] (예: '오케이, 팁 2만동 더 줄게'라며 자본주의의 힘으로 해결 시도 💸)",
-      "choice_b": "[선택지 B 30자 이상] (예: '형님... 저 집에 가고 싶어요' 라며 구글 번역기로 감성 팔이 시전 😭)",
-      "image_prompt": "Heavy rain in Saigon street, disappointed webtoon style face looking at phone app, neon lights reflection"
-    }
+      "order_number": 1,
+      "question_text": "[Q1: Câu hỏi tình huống bằng tiếng Việt]",
+      "option_a": "[Lựa chọn A bằng tiếng Việt]",
+      "option_b": "[Lựa chọn B bằng tiếng Việt]",
+      "score_a": 0,
+      "score_b": 1,
+      "image_prompt": "[Visual Description in ENGLISH]"
+    },
+    ...
   ],
   "results": [
     {
-      "result_code": "000",
-      "result_title": "[결과 별명] (예: 1군 힙스터 호소인)",
-      "result_description": "[장문 결과 150자 이상] (예: 당신은 겉으로는 호치민의 힙한 곳은 다 꿰고 있는 척하지만, 사실 로컬 쌀국수집 위생 상태를 보면 동공 지진이 일어나는 깔끔쟁이! 친구들 앞에서는 '현지 적응 완료'를 외치지만 호텔 조식 쌀국수를 가장 사랑하는 당신... 그래도 그 어설픈 허세가 밉지 않은 귀여운 힙스터입니다.)",
-      "traits": ["허세 100%", "위생 민감 200%", "인스타 중독"],
-      "compatible_type": "111"
-    }
+      "score": 0,
+      "type_name": "[Tên kết quả 000 bằng tiếng Việt]",
+      "description": "[Phân tích chi tiết dài trên 150 chữ bằng tiếng Việt]",
+      "traits": ["Đặc điểm 1", "Đặc điểm 2", "Đặc điểm 3"]
+    },
+    ...
   ]
 }
 ```

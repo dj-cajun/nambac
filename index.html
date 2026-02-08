@@ -65,13 +65,25 @@
 </head>
 
 <body>
-  <div id="root">
-    <div class="glass-card">
-      <span class="mascot">🐱👓</span>
-      <h1>nambac.xyz</h1>
-      <p>베트남 1등 퀴즈 에이전시<br>준비 중입니다!</p>
-    </div>
-  </div>
+  <div id="root"></div>
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: import.meta.env.VITE_FB_APP_ID,
+        cookie: true,
+        xfbml: true,
+        version: 'v19.0'
+      });
+    };
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "https://connect.facebook.net/ko_KR/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+  </script>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

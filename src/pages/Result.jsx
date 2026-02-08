@@ -1,43 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Download, Share2, Home, RotateCcw } from 'lucide-react';
+import { Download, Share2, Home } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import ShareModal from '../components/ShareModal';
 import './Result.css';
 
 const Result = ({ score, results, quizId, onRestart }) => {
     const navigate = useNavigate();
+    const [showShareModal, setShowShareModal] = useState(false);
 
-    const [finalResult, setFinalResult] = useState({
-        title: "CURSING GRANDMA DEALER",
-        description: "Your results show a chaotic blend of unhinged energy and master of chaos. You possess the rare ability to deal facts with the intensity of a grandmother who has seen it all and isn't afraid to say it.\n\nKey phrases like \"absolute menace\" and \"no filters\" highlight your unique frequency in this digital landscape.",
-        image_url: "/images/grandma_roast_standing.png"
-    });
+    const [finalResult, setFinalResult] = useState({ title: "Đang tải...", description: "", image_url: "" });
 
     useEffect(() => {
         if (results && results.length > 0) {
             const match = results.find(r => parseInt(r.result_code) === score) || results[0];
-            if (match) {
-                setFinalResult({
-                    title: match.title,
-                    description: match.description,
-                    image_url: match.image_url || "/images/grandma_roast_standing.png"
-                });
-            }
+            if (match) setFinalResult(match);
         }
     }, [score, results]);
 
-    // Highlight keywords in description
-    const renderDescription = (text) => {
-        const keywords = ['absolute menace', 'no filters', 'chaotic', 'unhinged', 'master'];
-        let result = text;
-        keywords.forEach(keyword => {
-            const regex = new RegExp(`(${keyword})`, 'gi');
-            result = result.replace(regex, '<mark class="highlighter-pink">$1</mark>');
-        });
-        return <span dangerouslySetInnerHTML={{ __html: result }} />;
+    // ogImageUrl 제거. finalResult.image_url을 직접 사용
+
+    const renderDescription = (text = "") => {
+        return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;
     };
 
     return (
         <div className="result-page-container">
+            <Helmet>
+                <title>{`[${finalResult.type_name || finalResult.title}] - nambac.xyz`}</title>
+                <meta property="og:title" content={`Kết quả của tôi là [${finalResult.type_name || finalResult.title}]!`} />
+                <meta property="og:image" content={finalResult.image_url} />
+            </Helmet>
 
             {/* Header Bar */}
             <div className="result-header">
@@ -64,7 +57,7 @@ const Result = ({ score, results, quizId, onRestart }) => {
                     <div className="celebration-icon">
                         <span className="material-symbols-outlined filled">celebration</span>
                     </div>
-                    <h1 className="celebration-title">CORRECT!</h1>
+                    <h1 className="celebration-title">HOÀN THÀNH!</h1>
                 </div>
 
                 {/* Main Glass Card */}
@@ -75,39 +68,49 @@ const Result = ({ score, results, quizId, onRestart }) => {
 
                     {/* Title Banner */}
                     <div className="title-banner">
-                        <span className="banner-label">YOUR RESULT</span>
+                        <span className="banner-label">KẾT QUẢ CỦA BẠN</span>
                         <div className="banner-title-box">
-                            <h2 className="banner-title">[{finalResult.title}]</h2>
+                            <h2 className="banner-title">[{finalResult.type_name || finalResult.title}]</h2>
                         </div>
                     </div>
 
-                    {/* Image Section */}
-                    <div className="result-image-section">
-                        <div className="retro-sun"></div>
-                        <img
-                            src={finalResult.image_url}
-                            onError={(e) => { e.target.src = "/images/grandma_roast_standing.png" }}
-                            alt="Result Character"
-                            className="result-character-img"
-                        />
-                    </div>
-
-                    {/* Analysis Section */}
-                    <div className="analysis-section">
-                        <div className="analysis-header">
-                            <span className="material-symbols-outlined filled icon-lightbulb">lightbulb</span>
-                            <h4 className="analysis-label">THE ANALYSIS</h4>
+                    <div className="content-split-container">
+                        {/* 1. Image Section (Left) */}
+                        <div className="result-image-section">
+                            <div className="retro-sun"></div>
+                            <img
+                                src={finalResult.image_url}
+                                onError={(e) => { e.target.src = "/images/default_character.png" }}
+                                alt="Result Character"
+                                className="result-character-img"
+                            />
                         </div>
-                        <p className="analysis-text">
-                            {renderDescription(finalResult.description)}
-                        </p>
+
+                        {/* 2. Analysis & Description Section (Right) */}
+                        <div className="analysis-section">
+                            <div className="analysis-header">
+                                <span className="material-symbols-outlined filled icon-lightbulb">lightbulb</span>
+                                <h4 className="analysis-label">PHÂN TÍCH</h4>
+                            </div>
+                            <p className="analysis-text">
+                                {renderDescription(finalResult.description)}
+                            </p>
+
+                            {/* Traits/Stats (재배치) */}
+                            <div className="traits-list mt-4">
+                                <div className="traits-header">ĐẶC ĐIỂM</div>
+                                {finalResult.traits && finalResult.traits.map((trait, index) => (
+                                    <span key={index} className="trait-badge">{trait}</span>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Rarity Meter */}
                     <div className="rarity-section">
                         <div className="rarity-header">
-                            <span className="rarity-label">RARITY METRIC</span>
-                            <div className="rarity-badge">Top 3% Rarity!</div>
+                            <span className="rarity-label">ĐỘ HIẾM</span>
+                            <div className="rarity-badge">Top 3% Độ hiếm!</div>
                         </div>
                         <div className="rarity-bar-track">
                             <div className="rarity-bar-fill"></div>
@@ -132,23 +135,32 @@ const Result = ({ score, results, quizId, onRestart }) => {
             <div className="result-buttons">
                 <button className="btn-primary btn-save">
                     <Download size={24} strokeWidth={3} />
-                    SAVE IMAGE
+                    LƯU ẢNH
                 </button>
 
-                <button className="btn-primary btn-share">
+                <button className="btn-primary btn-share" onClick={() => setShowShareModal(true)}>
                     <Share2 size={24} strokeWidth={3} />
-                    SHARE THE ROAST
+                    CHIA SẺ KẾT QUẢ
                 </button>
 
                 <button className="btn-secondary" onClick={() => navigate('/')}>
                     <Home size={20} strokeWidth={3} />
-                    다음 팩폭 당하러 가기
+                    VỀ TRANG CHỦ
                 </button>
 
                 <button className="btn-text" onClick={onRestart}>
-                    다시하기 (Restart)
+                    Chơi lại (Restart)
                 </button>
             </div>
+
+            {showShareModal && (
+                <ShareModal
+                    quizTitle={finalResult.type_name || finalResult.title}
+                    quizId={quizId}
+                    score={score}
+                    onClose={() => setShowShareModal(false)}
+                />
+            )}
 
             {/* Home Indicator */}
             <div className="home-indicator">

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, Bell, User, Heart, MessageCircle, Send, Plus,
-  Home as HomeIcon, Compass, BarChart2, Settings, Play, LogIn, ChevronLeft, ChevronRight
+  Bell, User, Heart, MessageCircle, Send, Plus,
+  Home as HomeIcon, Compass, BarChart2, Settings, Play, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import './Home.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS } from '../constants/categories';
@@ -196,18 +196,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      {/* 1. Clean Header with Login Button */}
-      <header className="glass-header">
-        <Search size={22} color="#000" strokeWidth={2.5} />
-        <button
-          className="login-btn"
-          onClick={() => navigate('/login')}
-        >
-          <LogIn size={16} />
-          Đăng nhập
-        </button>
-      </header>
 
       {/* 2. Hero Carousel (3 Slides) */}
       <div className="hero-carousel-wrapper">

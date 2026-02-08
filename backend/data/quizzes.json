@@ -1,26 +1,15 @@
 [
   {
-    "title": "Thử Thách Sinh Tồn Sài Gòn (Level MAX)",
-    "description": "Bạn là 'Thổ Địa' Sài Gòn hay 'Tấm Chiếu Mới'? Trả lời 3 câu hỏi để biết ngay trình độ thích nghi của bạn tại HCMC! Cười xỉu! 🤣",
-    "category": "Survival",
-    "image_url": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?q=80&w=1000&auto=format&fit=crop",
-    "is_active": true,
-    "view_count": 1200,
-    "share_count": 45,
-    "id": "1dfc32d7-31a4-4e27-a792-868a40f57568",
-    "created_at": "2026-02-02T12:53:16.770546",
-    "status": "visible"
-  },
-  {
     "title": "Kiếp Trước Bạn Là Ai Ở Sài Gòn? 🔮",
     "description": "Ngồi cà phê bệt hay rooftop sang chảnh? Check ngay nết của bạn để xem kiếp trước bạn làm nghề gì nhé! Cười ẻ lun á!",
     "category": "Trendy",
     "image_url": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=1000&auto=format&fit=crop",
-    "is_active": true,
+    "is_active": false,
     "view_count": 8900,
     "share_count": 210,
     "id": "3fb8ae66-cd50-43ab-a2d1-815a90cd73e8",
-    "created_at": "2026-02-02T12:53:16.804532"
+    "created_at": "2026-02-02T12:53:16.804532",
+    "status": "hidden"
   },
   {
     "title": "Kiếp trước bạn là ai? Bật mí tính cách trầm kẽm!",
@@ -29,9 +18,10 @@
     "image_url": null,
     "id": "f6f4da4b-915b-4bd0-ba2a-8b6951ab3e89",
     "created_at": "2026-02-02T13:06:58.025442",
-    "is_active": true,
+    "is_active": false,
     "view_count": 0,
-    "share_count": 0
+    "share_count": 0,
+    "status": "hidden"
   },
   {
     "title": "Kiểu Ăn Uống Của Bạn Là Gì? Quá Trời Thú Vị!",
@@ -40,9 +30,10 @@
     "image_url": null,
     "id": "ad90bf59-c01e-425a-8262-97149dbc623e",
     "created_at": "2026-02-02T13:09:06.285791",
-    "is_active": true,
+    "is_active": false,
     "view_count": 0,
-    "share_count": 0
+    "share_count": 0,
+    "status": "hidden"
   },
   {
     "title": "Kiếp trước bạn là ai? Đúng chất Sài Gòn!",
@@ -51,9 +42,10 @@
     "image_url": null,
     "id": "6566bdd9-82b0-49c3-bb3a-c57672764b3c",
     "created_at": "2026-02-03T11:56:14.885039",
-    "is_active": true,
+    "is_active": false,
     "view_count": 0,
-    "share_count": 0
+    "share_count": 0,
+    "status": "hidden"
   },
   {
     "title": "Kiếp trước yêu nhau hay chỉ là mơ?",
@@ -62,6 +54,75 @@
     "image_url": null,
     "id": "baf50637-3add-4b57-80f8-bcaaf028bbbc",
     "created_at": "2026-02-03T11:58:32.876495",
+    "is_active": false,
+    "view_count": 0,
+    "share_count": 0,
+    "status": "hidden"
+  },
+  {
+    "title": "Kiếp Trước Là Trendy?",
+    "description": "Bạn có phải là người tạo ra những xu hướng 'cháy phố' hay chỉ là người đi theo? Hãy làm bài quiz này để khám phá!",
+    "category": "Trendy",
+    "image_url": null,
+    "id": "0d2dae40-c2ea-4d2e-b292-64d61337fdc1",
+    "created_at": "2026-02-07T13:54:39.032850",
+    "is_active": false,
+    "view_count": 0,
+    "share_count": 0,
+    "status": "hidden"
+  },
+  {
+    "title": "바이럴 퀴즈 제작 능력고사",
+    "description": "100만 뷰? 쌉가능. 당신의 뇌 속에 숨겨진 '관종력'을 측정해 드립니다.",
+    "category": "Linker_Lookalike",
+    "image_url": null,
+    "id": "844f4461-dc64-45a6-aab3-ad52762381e2",
+    "created_at": "2026-02-07T14:28:49.021620",
+    "is_active": false,
+    "view_count": 0,
+    "share_count": 0,
+    "status": "hidden"
+  },
+  {
+    "title": "Kiểm tra độ 'quẩy': Bạn là 'chúa tể' tiệc tùng hay 'thánh lặn' tại gia ở Sài Gòn?",
+    "description": "Cuối tuần nào cũng có kèo rủ rê, nhưng tâm hồn bạn lại gào thét đòi ở nhà cày phim. Bài trắc nghiệm này sẽ lột trần bản chất thật sự của bạn khi đối mặt với những cuộc vui ở cái đất Sài Gòn này. Dám chơi không?",
+    "category": "MBTI",
+    "image_url": null,
+    "id": "aeb4660f-43bf-416c-9cd8-d5100fc61b7f",
+    "created_at": "2026-02-07T14:45:55.830291",
+    "is_active": true,
+    "view_count": 0,
+    "share_count": 0
+  },
+  {
+    "title": "Bài Kiểm Tra Chỉ Số Sinh Tồn Tại Sài Gòn: Bạn Là 'Ma Xó' Hay 'Gà Mờ'?",
+    "description": "Đừng vội khoe ảnh check-in sang chảnh ở Quận 1. Hãy xem liệu bạn có đủ 'chất' để sống sót qua những con hẻm và cơn mưa ngập bất chợt của thành phố này không. Bài test này sẽ lột trần bộ mặt thật của bạn.",
+    "category": "HCMC_Guide",
+    "image_url": null,
+    "id": "de1b8f3b-8a6b-4636-b372-d02bc6312bc2",
+    "created_at": "2026-02-07T15:21:58.944130",
+    "is_active": true,
+    "view_count": 0,
+    "share_count": 0
+  },
+  {
+    "title": "Kiếp Trước Bạn Là 'Báo Thủ' Hay 'Báo Hiếu' Ở Sài Gòn?",
+    "description": "Đã bao giờ bạn tự hỏi tại sao mình lại nghiện trà sữa hơn nước lọc, hay rành đường Quận 1 như lòng bàn tay dù mới chuyển đến? Khám phá ngay nhân cách Sài Gòn ẩn sâu bên trong bạn!",
+    "category": "Fun_PastLife",
+    "image_url": "/images/grandma_roast_standing.png",
+    "id": "34ce8447-cdc8-42b8-88a6-c17a6ed87192",
+    "created_at": "2026-02-07T15:34:22.423698",
+    "is_active": true,
+    "view_count": 0,
+    "share_count": 0
+  },
+  {
+    "title": "Bạn là 'chúa tể' viral nào trên cõi mạng?",
+    "description": "Một dòng trạng thái vu vơ có thể biến bạn thành ngôi sao. Cùng xem thử DNA 'tạo trend' của bạn thuộc hệ nào nhé!",
+    "category": "Fun_PastLife",
+    "image_url": "/images/grandma_roast_standing.png",
+    "id": "95582d3a-7973-4c4f-bce5-69cba8276f42",
+    "created_at": "2026-02-07T15:48:45.624003",
     "is_active": true,
     "view_count": 0,
     "share_count": 0
