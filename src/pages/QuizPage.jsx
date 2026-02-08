@@ -20,6 +20,13 @@ export default function QuizPage({ quizIdProp }) {
     const [started, setStarted] = useState(false);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
+
+    const getImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        return `http://localhost:8000${url}`;
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -125,56 +132,85 @@ export default function QuizPage({ quizIdProp }) {
     // --- Intro View ---
     if (!started) {
         return (
-            <div className="quiz-page-container">
-                <div className="quiz-intro-card">
-                    {/* Cover Image */}
-                    <div className="intro-image-container">
+            <>
+                <div className="quiz-intro-card full-screen-mode">
+                    {/* Full Screen Cover Image */}
+                    <div className="intro-image-container full-screen-bg">
                         <img
-                            src={quizInfo.image_url || "/images/default_cover.png"}
+                            src={getImageUrl(quizInfo.image_url) || "/images/default_cover.png"}
                             alt={quizInfo.title}
                             className="intro-cover-img"
                             onError={(e) => { e.target.src = "/images/default_cover.png" }}
                         />
-                        <div className="image-overlay-gradient"></div>
-                        <div className="category-tag">{quizInfo.category}</div>
+                        <div className="image-overlay-gradient-strong"></div>
+
+                        {/* Category Tag (Top Left) */}
+                        <div className="category-tag top-safe-area">{quizInfo.category}</div>
+
+                        {/* Title (On Image, above bottom sheet) */}
+                        {/* Title Removed as per request */}
                     </div>
 
-                    {/* Content Section */}
-                    <div className="intro-content">
-                        <h1 className="intro-title">{quizInfo.title}</h1>
-                        <p className="intro-description">{quizInfo.description}</p>
+                    {/* Bottom Sheet (Navi Style) */}
+                    <motion.div
+                        initial={{ y: "150%" }}
+                        animate={{ y: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="intro-bottom-sheet"
+                    >
+                        <div className="sheet-actions">
+                            <button className="start-sheet-btn" onClick={handleStart}>
+                                <span className="btn-label">BẮT ĐẦU</span>
+                            </button>
 
-                        <div className="intro-stats">
-                            <div className="stat-pill">
-                                <Play size={14} fill="currentColor" />
-                                <span>{quizInfo.view_count || 0} lượt chơi</span>
+                            <button className="share-sheet-btn" onClick={() => setShowShareModal(true)}>
+                                <span className="btn-label">CHIA SẺ</span>
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Share Modal Popup */}
+                {showShareModal && (
+                    <div className="share-modal-overlay" onClick={() => setShowShareModal(false)}>
+                        <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3 className="share-modal-title">Chia sẻ bài quiz</h3>
+
+                            <div className="share-options">
+                                <button className="share-option zalo" onClick={() => {
+                                    window.open(`https://zalo.me/share?url=${encodeURIComponent(window.location.href)}`, '_blank');
+                                }}>
+                                    <span className="share-icon">💬</span>
+                                    <span>Zalo</span>
+                                </button>
+
+                                <button className="share-option instagram" onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    alert('Đã sao chép link! Hãy dán vào Instagram.');
+                                }}>
+                                    <span className="share-icon">📷</span>
+                                    <span>Instagram</span>
+                                </button>
+
+                                <button className="share-option facebook" onClick={() => {
+                                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+                                }}>
+                                    <span className="share-icon">📘</span>
+                                    <span>Facebook</span>
+                                </button>
+
+                                <button className="share-option copy-link" onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    alert('Đã sao chép link!');
+                                }}>
+                                    <span className="share-icon">🔗</span>
+                                    <span>Sao chép</span>
+                                </button>
                             </div>
                         </div>
                     </div>
-
-                    {/* Actions Box */}
-                    <div className="intro-actions-box">
-                        <button className="start-main-btn" onClick={handleStart}>
-                            <Play fill="currentColor" size={24} />
-                            <span>BẮT ĐẦU</span>
-                        </button>
-
-                        <div className="intro-secondary-btns">
-                            <button className="intro-icon-btn share-btn" onClick={() => { }}>
-                                <Share2 size={20} />
-                            </button>
-                            <button className="intro-icon-btn copy-btn" onClick={handleCopy}>
-                                {copied ? <Check size={20} color="#4ADE80" /> : <Copy size={20} />}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Home Indicator */}
-                <div className="home-indicator">
-                    <div className="indicator-bar"></div>
-                </div>
-            </div>
+                )}
+            </>
         );
     }
 
@@ -187,7 +223,6 @@ export default function QuizPage({ quizIdProp }) {
             {/* Header & Progress */}
             <div className="quiz-header">
                 <div className="progress-label">
-                    <span>CÂU HỎI {currentIndex + 1}</span>
                     <span>{currentIndex + 1}/{questions.length}</span>
                 </div>
                 <div className="glass-progress-track">
@@ -208,14 +243,6 @@ export default function QuizPage({ quizIdProp }) {
                 >
                     {/* Question Card */}
                     <div className="question-glass-panel">
-                        <div className="question-badge">LEVEL {currentIndex + 1}</div>
-
-                        {currentQuestion.image_url && (
-                            <div className="question-image-box">
-                                <img src={currentQuestion.image_url} alt="Question Art" />
-                            </div>
-                        )}
-
                         <h2 className="question-text">{currentQuestion.question_text}</h2>
                     </div>
 
@@ -238,11 +265,6 @@ export default function QuizPage({ quizIdProp }) {
                     </div>
                 </motion.div>
             </AnimatePresence>
-
-            {/* Home Indicator */}
-            <div className="home-indicator">
-                <div className="indicator-bar"></div>
-            </div>
         </div>
     );
 }

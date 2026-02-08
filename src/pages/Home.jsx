@@ -11,7 +11,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('Total');
+  const [activeTab, setActiveTab] = useState('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef(null);
 
@@ -25,14 +25,20 @@ export default function Home() {
   const [magazineArticles, setMagazineArticles] = useState([]);
   const [isConnecting, setIsConnecting] = useState(false);
 
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `http://localhost:8000${url}`;
+  };
+
   // Fetch Quizzes & Services & Magazine from API
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [quizRes, serviceRes, magRes] = await Promise.all([
-          fetch('http://localhost:8000/api/quizzes'),
-          fetch('http://localhost:8000/api/services'),
-          fetch('http://localhost:8000/api/magazine')
+          fetch('http://localhost:8000/api/quizzes', { cache: 'no-store' }),
+          fetch('http://localhost:8000/api/services', { cache: 'no-store' }),
+          fetch('http://localhost:8000/api/magazine', { cache: 'no-store' })
         ]);
 
         const quizData = await quizRes.json();
@@ -57,7 +63,7 @@ export default function Home() {
 
   const getRandomCount = () => Math.floor(Math.random() * (500 - 50 + 1)) + 50;
 
-  const filteredQuizzes = activeTab === 'Total'
+  const filteredQuizzes = activeTab === 'all'
     ? quizzes
     : quizzes.filter(q => q.category === activeTab || (activeTab === 'Trendy' && !q.category));
 
@@ -165,6 +171,17 @@ export default function Home() {
     }, 1500);
   };
 
+  const handleQuizClick = async (quizId) => {
+    // 1. Fire and forget view increment
+    try {
+      fetch(`http://localhost:8000/api/quizzes/${quizId}/view`, { method: 'POST' });
+    } catch (e) {
+      console.error("View increment failed", e);
+    }
+    // 2. Navigate
+    navigate(`/quiz/${quizId}`);
+  };
+
   if (loading) {
     return (
       <div className="home-container flex items-center justify-center">
@@ -212,28 +229,28 @@ export default function Home() {
             <div
               key={quiz.id}
               className="hero-slide"
-              onClick={() => navigate(`/quiz/${quiz.id}`)}
+              onClick={() => handleQuizClick(quiz.id)}
             >
               <div className="simple-tape"></div>
               <div className="hero-image-bg">
-                <img src={quiz.image_url || `https://images.unsplash.com/photo-161800518238${index}-a83a8bd57fbe`} alt="Hero" />
+                <img src={getImageUrl(quiz.image_url) || `https://images.unsplash.com/photo-161800518238${index}-a83a8bd57fbe`} alt="Hero" />
               </div>
               <div className="hero-overlay-gradient"></div>
 
               <div className="hero-content">
                 <div className="speech-bubble">
-                  💬 {(120432 + index * 10000).toLocaleString()} Đang chơi
+                  💬 {(quiz.view_count || 0).toLocaleString()} Đang chơi
                 </div>
                 <div className="mb-2">
                   <span className="trending-badge">
                     {index === 0 ? 'Top Thịnh Hành 🔥' : index === 1 ? 'HOT 🔥' : 'Mới ✨'}
                   </span>
                 </div>
-                <h2 className="hero-title">{quiz.title}</h2>
-                <p className="hero-desc">
+                <h2 className="hero-title" style={{ display: 'none' }}>{quiz.title}</h2>
+                <p className="hero-desc" style={{ display: 'none' }}>
                   {quiz.description}
                 </p>
-                <button className="hero-btn">
+                <button className="hero-btn" style={{ display: 'none' }}>
                   Bắt đầu ngay
                 </button>
               </div>
@@ -269,58 +286,32 @@ export default function Home() {
 
       {/* 4. Content List (Quiz or Magazine) */}
       <div className="mt-6">
-        {activeTab === 'Magazine' ? (
-          <>
-            <h3 className="glass-section-title text-[#10B981]">📰 HCMC Guide</h3>
-            <div className="glass-list">
-              {magazineArticles.map((article) => (
-                <div key={article.id} className="glass-card flex-col !items-start gap-4 h-auto" onClick={() => window.open(article.link || '#', '_blank')}>
-                  <div className="relative w-full h-40 rounded-xl overflow-hidden border-2 border-black shadow-[4px_4px_0px_#000]">
-                    <img src={article.image_url} alt="article" className="w-full h-full object-cover" />
-                    <div className="absolute top-2 right-2 bg-white border-2 border-black px-2 py-0.5 rounded-md text-[10px] font-bold shadow-[2px_2px_0px_#000]">
-                      {article.category}
+        <h3 className="glass-section-title">🔥 Top Thịnh Hành</h3>
+        <div className="glass-list grid-cols-2">
+          {filteredQuizzes.length === 0 ? (
+            <div className="text-center p-8 text-gray-500 font-bold col-span-2">Chưa có quiz nào hết trơn á! 🕸️</div>
+          ) : (
+            filteredQuizzes.map((quiz) => (
+              <div key={quiz.id} className="glass-card square-card" onClick={() => handleQuizClick(quiz.id)}>
+                <div className="card-tape"></div>
+                <div className="glass-card-thumb-large">
+                  <img src={getImageUrl(quiz.image_url) || "https://api.dicebear.com/7.x/shapes/svg?seed=" + quiz.id} alt="thumb" />
+                </div>
+                <div className="glass-card-info-bottom">
+                  <h4 className="info-title-sm line-clamp-2">{quiz.title}</h4>
+                  <div className="flex justify-between items-center mt-auto w-full">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
+                      <User size={10} /> {(quiz.view_count || 0).toLocaleString()}
                     </div>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg leading-tight mb-1">{article.title}</h4>
-                    <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{article.summary}</p>
-                    <div className="mt-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                      Read More ↗
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
+                      <Send size={10} /> {(quiz.share_count || 0).toLocaleString()}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <>
-            <h3 className="glass-section-title">🔥 Top Thịnh Hành</h3>
-            <div className="glass-list">
-              {filteredQuizzes.length === 0 ? (
-                <div className="text-center p-8 text-gray-500 font-bold">Chưa có quiz nào hết trơn á! 🕸️</div>
-              ) : (
-                filteredQuizzes.map((quiz) => (
-                  <div key={quiz.id} className="glass-card" onClick={() => navigate(`/quiz/${quiz.id}`)}>
-                    <div className="card-tape"></div>
-                    <div className="glass-card-thumb">
-                      <img src={quiz.image_url || "https://api.dicebear.com/7.x/shapes/svg?seed=" + quiz.id} alt="thumb" />
-                    </div>
-                    <div className="glass-card-info">
-                      <div className="info-category">{quiz.category || 'VIBE'}</div>
-                      <h4 className="info-title line-clamp-2">{quiz.title}</h4>
-                      <div className="flex items-center gap-2 mt-2 text-xs font-bold text-gray-500">
-                        <User size={12} className="inline" /> {getRandomCount().toLocaleString()} người tham gia
-                      </div>
-                    </div>
-                    <div className="action-play-sm">
-                      <Play size={16} fill="white" color="white" />
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
-        )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
       {/* 5. AI Service Hub (New) */}
       <div className="mt-8 mb-24">

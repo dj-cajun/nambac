@@ -154,6 +154,13 @@ const Admin = () => {
     // Get Type Label (from shared categories)
     const getTypeLabel = (type) => getCategoryLabel(type) || type;
 
+    // Helper: Get full image URL
+    const getImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        return `http://localhost:8000${url}`;
+    };
+
     // --- Actions ---
 
     const handleGenerate = async (persona) => {
@@ -266,8 +273,8 @@ const Admin = () => {
         setEditImagePreview(quiz.image_url || '');
         setEditQuestions([]);
 
-        // Initialize 6 default results (Score: 0-5)
-        const defaultResults = Array.from({ length: 6 }, (_, i) => ({
+        // Initialize 8 default results (Score: 0-7)
+        const defaultResults = Array.from({ length: 8 }, (_, i) => ({
             result_code: i,
             title: '',
             description: '',
@@ -331,7 +338,7 @@ const Admin = () => {
         setEditResults(updatedResults);
     };
 
-// Helper: Format result_code to display score
+    // Helper: Format result_code to display score
     const toScoreDisplay = (code) => {
         return `${code} pts`;
     };
@@ -539,6 +546,29 @@ const Admin = () => {
                                             placeholder="Enter quiz description..."
                                         />
                                     </div>
+
+                                    {/* Quiz Thumbnail Preview */}
+                                    <div className="pt-4 border-t border-gray-100">
+                                        <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Quiz Thumbnail</label>
+                                        <div className="flex gap-4 items-start">
+                                            <div className="flex-1">
+                                                <input
+                                                    type="text"
+                                                    value={editImagePreview}
+                                                    onChange={(e) => setEditImagePreview(e.target.value)}
+                                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs font-mono text-black focus:outline-none focus:border-black"
+                                                    placeholder="/images/..."
+                                                />
+                                            </div>
+                                            <div className="w-32 h-32 bg-gray-50 border border-black rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                {editImagePreview ? (
+                                                    <img src={getImageUrl(editImagePreview)} alt="Thumbnail Preview" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="text-xs text-gray-300 font-bold">No Image</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
@@ -559,7 +589,7 @@ const Admin = () => {
                                                     </button>
                                                 </div>
                                                 <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-semibold border border-black">
-                                                    Weight: +1
+                                                    Weight: +{idx === 0 ? 4 : idx === 1 ? 2 : idx === 2 ? 1 : 0}
                                                 </span>
                                             </div>
                                             <input
@@ -579,35 +609,14 @@ const Admin = () => {
                                                         className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
                                                     />
                                                 </div>
-                                                  <div>
-                                                      <span className="text-xs font-semibold text-gray-500 block mb-1">Option B (+1 pt)</span>
-                                                      <input
-                                                          type="text"
-                                                          value={q.option_b || ''}
-                                                          onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)}
-                                                          className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                      />
-                                                  </div>
-                                            </div>
-
-                                            {/* Question Image Management */}
-                                            <div className="mt-4 pt-4 border-t border-gray-100 flex gap-4 items-start">
-                                                <div className="flex-1">
-                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Question Image URL</label>
+                                                <div>
+                                                    <span className="text-xs font-semibold text-gray-500 block mb-1">Option B (+{idx === 0 ? 4 : idx === 1 ? 2 : idx === 2 ? 1 : 0} pt)</span>
                                                     <input
                                                         type="text"
-                                                        value={q.image_url || ''}
-                                                        onChange={(e) => handleQuestionChange(idx, 'image_url', e.target.value)}
-                                                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs font-mono focus:outline-none focus:border-black"
-                                                        placeholder="https://..."
+                                                        value={q.option_b || ''}
+                                                        onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)}
+                                                        className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
                                                     />
-                                                </div>
-                                                <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                    {q.image_url ? (
-                                                        <img src={q.image_url} alt="" className="w-full h-full object-cover" />
-                                                    ) : (
-                                                        <span className="text-[10px] text-gray-300 font-bold uppercase">No Image</span>
-                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -622,9 +631,9 @@ const Admin = () => {
                                         <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-4">
                                             <div className="flex justify-between items-center mb-2">
                                                 <span className="text-xs font-bold text-gray-600">Result #{idx + 1}</span>
-                                                 <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded border border-black">
-                                                     {toScoreDisplay(result.result_code)}
-                                                 </span>
+                                                <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded border border-black">
+                                                    {toScoreDisplay(result.result_code)}
+                                                </span>
                                                 <button
                                                     onClick={() => handleClearResult(idx)}
                                                     className="text-gray-400 hover:text-red-500 text-[10px] font-bold uppercase tracking-tighter"
@@ -661,7 +670,7 @@ const Admin = () => {
                                                 </div>
                                                 <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
                                                     {result.image_url ? (
-                                                        <img src={result.image_url} alt="" className="w-full h-full object-cover" />
+                                                        <img src={getImageUrl(result.image_url)} alt="" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <span className="text-[8px] text-gray-300 font-bold uppercase">No Img</span>
                                                     )}

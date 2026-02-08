@@ -10,6 +10,13 @@ const Result = ({ score, results, quizId, onRestart }) => {
     const [showShareModal, setShowShareModal] = useState(false);
 
     const [finalResult, setFinalResult] = useState({ title: "Đang tải...", description: "", image_url: "" });
+    const [recommendedQuizzes, setRecommendedQuizzes] = useState([]);
+
+    const getImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        return `http://localhost:8000${url}`;
+    };
 
     useEffect(() => {
         if (results && results.length > 0) {
@@ -17,6 +24,24 @@ const Result = ({ score, results, quizId, onRestart }) => {
             if (match) setFinalResult(match);
         }
     }, [score, results]);
+
+    // Fetch recommended quizzes
+    useEffect(() => {
+        const fetchQuizzes = async () => {
+            try {
+                const res = await fetch('http://localhost:8000/api/quizzes');
+                if (res.ok) {
+                    const data = await res.json();
+                    // Filter out current quiz
+                    const filtered = (data.quizzes || data).filter(q => q.id !== parseInt(quizId));
+                    setRecommendedQuizzes(filtered);
+                }
+            } catch (err) {
+                console.error('Failed to fetch recommended quizzes:', err);
+            }
+        };
+        fetchQuizzes();
+    }, [quizId]);
 
     // ogImageUrl 제거. finalResult.image_url을 직접 사용
 
@@ -32,140 +57,116 @@ const Result = ({ score, results, quizId, onRestart }) => {
                 <meta property="og:image" content={finalResult.image_url} />
             </Helmet>
 
-            {/* Header Bar */}
-            <div className="result-header">
-                <button className="header-btn glass-btn" onClick={() => navigate('/')}>
-                    <span className="material-symbols-outlined">close</span>
-                </button>
-
-                <div className="progress-bar-container">
-                    <div className="progress-bar-track">
-                        <div className="progress-bar-fill" style={{ width: '100%' }}></div>
-                    </div>
-                </div>
-
-                <button className="header-btn glass-btn">
-                    <span className="material-symbols-outlined">favorite</span>
-                </button>
-            </div>
+            {/* Header removed as per request */}
 
             {/* Main Content */}
             <main className="result-main">
 
-                {/* Celebration Section */}
-                <div className="celebration-section">
-                    <div className="celebration-icon">
-                        <span className="material-symbols-outlined filled">celebration</span>
-                    </div>
-                    <h1 className="celebration-title">HOÀN THÀNH!</h1>
-                </div>
+                {/* Result Card - Unified Image Style */}
+                <div className="result-unified-card">
+                    {/* Full Result Image */}
+                    <img
+                        src={getImageUrl(finalResult.image_url)}
+                        onError={(e) => { e.target.src = "/images/default_character.png" }}
+                        alt="Result Character"
+                        className="result-full-img"
+                    />
 
-                {/* Main Glass Card */}
-                <div className="result-glass-card">
-
-                    {/* Decorative Glow */}
-                    <div className="decorative-glow"></div>
-
-                    {/* Title Banner */}
-                    <div className="title-banner">
-                        <span className="banner-label">KẾT QUẢ CỦA BẠN</span>
-                        <div className="banner-title-box">
-                            <h2 className="banner-title">[{finalResult.type_name || finalResult.title}]</h2>
-                        </div>
-                    </div>
-
-                    <div className="content-split-container">
-                        {/* 1. Image Section (Left) */}
-                        <div className="result-image-section">
-                            <div className="retro-sun"></div>
-                            <img
-                                src={finalResult.image_url}
-                                onError={(e) => { e.target.src = "/images/default_character.png" }}
-                                alt="Result Character"
-                                className="result-character-img"
-                            />
+                    {/* Dark Overlay for Text */}
+                    <div className="result-overlay-right">
+                        {/* Result Title */}
+                        <div className="result-title-badge">
+                            {finalResult.type_name || finalResult.title}
                         </div>
 
-                        {/* 2. Analysis & Description Section (Right) */}
-                        <div className="analysis-section">
-                            <div className="analysis-header">
-                                <span className="material-symbols-outlined filled icon-lightbulb">lightbulb</span>
-                                <h4 className="analysis-label">PHÂN TÍCH</h4>
-                            </div>
-                            <p className="analysis-text">
-                                {renderDescription(finalResult.description)}
-                            </p>
-
-                            {/* Traits/Stats (재배치) */}
-                            <div className="traits-list mt-4">
-                                <div className="traits-header">ĐẶC ĐIỂM</div>
-                                {finalResult.traits && finalResult.traits.map((trait, index) => (
-                                    <span key={index} className="trait-badge">{trait}</span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Rarity Meter */}
-                    <div className="rarity-section">
-                        <div className="rarity-header">
-                            <span className="rarity-label">ĐỘ HIẾM</span>
-                            <div className="rarity-badge">Top 3% Độ hiếm!</div>
-                        </div>
-                        <div className="rarity-bar-track">
-                            <div className="rarity-bar-fill"></div>
-                        </div>
-                    </div>
-
-                    {/* Stats Row */}
-                    <div className="stats-row">
-                        <div className="stat-item stat-xp">
-                            <span className="material-symbols-outlined filled">stars</span>
-                            <span className="stat-value">+100 XP</span>
-                        </div>
-                        <div className="stat-item stat-time">
-                            <span className="material-symbols-outlined filled">timer</span>
-                            <span className="stat-value">1.2s</span>
-                        </div>
+                        {/* Description */}
+                        <p className="result-overlay-text">
+                            {renderDescription(finalResult.description)}
+                        </p>
                     </div>
                 </div>
+
+                {/* Recommended Quizzes Section */}
+                {recommendedQuizzes.length > 0 && (
+                    <div className="recommended-section">
+                        <h3 className="recommended-title">Đề xuất cho bạn</h3>
+                        <div className="recommended-grid">
+                            {recommendedQuizzes.map((quiz) => (
+                                <div
+                                    key={quiz.id}
+                                    className="recommended-card"
+                                    onClick={() => { window.location.href = `/quiz/${quiz.id}`; }}
+                                >
+                                    <img
+                                        src={getImageUrl(quiz.thumbnail_url || quiz.image_url)}
+                                        alt={quiz.title}
+                                        className="recommended-thumbnail"
+                                        onError={(e) => { e.target.src = "/images/default_quiz.png" }}
+                                    />
+                                    <span className="recommended-card-title">{quiz.title}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </main>
 
-            {/* Bottom Buttons */}
-            <div className="result-buttons">
-                <button className="btn-primary btn-save">
-                    <Download size={24} strokeWidth={3} />
-                    LƯU ẢNH
-                </button>
+            {/* Bottom Modal Bar (Like Quiz Start Screen) */}
+            <div className="result-bottom-bar">
+                <div className="bar-actions">
+                    <button className="restart-btn" onClick={onRestart}>
+                        <span className="btn-label">CHƠI LẠI</span>
+                        <div className="btn-icon-circle">
+                            <span className="material-symbols-outlined">refresh</span>
+                        </div>
+                    </button>
 
-                <button className="btn-primary btn-share" onClick={() => setShowShareModal(true)}>
-                    <Share2 size={24} strokeWidth={3} />
-                    CHIA SẺ KẾT QUẢ
-                </button>
-
-                <button className="btn-secondary" onClick={() => navigate('/')}>
-                    <Home size={20} strokeWidth={3} />
-                    VỀ TRANG CHỦ
-                </button>
-
-                <button className="btn-text" onClick={onRestart}>
-                    Chơi lại (Restart)
-                </button>
+                    <button className="share-btn" onClick={() => setShowShareModal(true)}>
+                        <Share2 size={24} />
+                    </button>
+                </div>
             </div>
 
+            {/* Share Modal Popup */}
             {showShareModal && (
-                <ShareModal
-                    quizTitle={finalResult.type_name || finalResult.title}
-                    quizId={quizId}
-                    score={score}
-                    onClose={() => setShowShareModal(false)}
-                />
-            )}
+                <div className="share-modal-overlay" onClick={() => setShowShareModal(false)}>
+                    <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="share-modal-title">Chia sẻ kết quả quiz</h3>
 
-            {/* Home Indicator */}
-            <div className="home-indicator">
-                <div className="indicator-bar"></div>
-            </div>
+                        <div className="share-options">
+                            <button className="share-option zalo" onClick={() => {
+                                window.open(`https://zalo.me/share?url=${encodeURIComponent(window.location.href)}`, '_blank');
+                            }}>
+                                <span className="share-icon">💬</span>
+                                <span>Zalo</span>
+                            </button>
+
+                            <button className="share-option instagram" onClick={() => {
+                                navigator.clipboard.writeText(window.location.href);
+                                alert('Đã sao chép link! Hãy dán vào Instagram.');
+                            }}>
+                                <span className="share-icon">📷</span>
+                                <span>Instagram</span>
+                            </button>
+
+                            <button className="share-option facebook" onClick={() => {
+                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+                            }}>
+                                <span className="share-icon">📘</span>
+                                <span>Facebook</span>
+                            </button>
+
+                            <button className="share-option copy-link" onClick={() => {
+                                navigator.clipboard.writeText(window.location.href);
+                                alert('Đã sao chép link!');
+                            }}>
+                                <span className="share-icon">🔗</span>
+                                <span>Sao chép</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -14,7 +14,7 @@ from logic.json_manager import JSONManager
 from logic.image_generator import ImageGenerator
 
 
-# Log messages to stderr
+# Log messages to stderr (Updated for result fix)
 def log(message):
     sys.stderr.write(f"[System] {message}\n")
     sys.stderr.flush()
@@ -98,16 +98,26 @@ def read_root():
 
 @app.get("/api/admin/agents")
 def get_available_agents():
-    """Available agents in .claude/agents/"""
-    agent_dir = os.path.join(os.path.dirname(__file__), "..", ".claude", "agents")
+    """Available agents in .claude/agents/ and agents_nambac/prompts/"""
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    directories = [
+        os.path.join(base_path, "..", ".claude", "agents"),
+        os.path.join(base_path, "agents_nambac", "prompts")
+    ]
+    
     agents = []
-    if os.path.exists(agent_dir):
-        for filename in os.listdir(agent_dir):
-            if filename.endswith(".md") and (
-                filename.startswith("Expert_") or filename.startswith("Quiz_")
-            ):
-                agent_name = filename[:-3]  # Remove .md
-                agents.append(agent_name)
+    seen = set()
+
+    for agent_dir in directories:
+        if os.path.exists(agent_dir):
+            for filename in os.listdir(agent_dir):
+                if filename.endswith(".md") and (
+                    filename.startswith("Expert_") or filename.startswith("Quiz_")
+                ):
+                    agent_name = filename[:-3]  # Remove .md
+                    if agent_name not in seen:
+                        agents.append(agent_name)
+                        seen.add(agent_name)
     return {"agents": agents}
 
 
@@ -155,11 +165,33 @@ def get_quiz(quiz_id: str):
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
 
-    # 연관 질문 조회
+    # 연관 질문 및 결과 조회
     questions = json_manager.get_questions_by_quiz_id(quiz_id)
+    results = json_manager.get_results_by_quiz_id(quiz_id)
     quiz["questions"] = questions
+    quiz["results"] = results
 
     return quiz
+
+    return quiz
+
+
+@app.post("/api/quizzes/{quiz_id}/view")
+def increment_view_count(quiz_id: str):
+    """퀴즈 조회수 증가"""
+    new_count = json_manager.increment_view_count(quiz_id)
+    if new_count is None:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    return {"view_count": new_count}
+
+
+@app.post("/api/quizzes/{quiz_id}/share")
+def increment_share_count(quiz_id: str):
+    """퀴즈 공유수 증가"""
+    new_count = json_manager.increment_share_count(quiz_id)
+    if new_count is None:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    return {"share_count": new_count}
 
 
 @app.post("/api/quizzes")
@@ -194,84 +226,49 @@ async def create_quiz(request: QuizRequest):
         questions_data = result.get("questions", [])
         results_data = result.get("results", [])
 
-        # 퀴즈 메타데이터 변환
-        
-        # 1. 썸네일 이미지 생성
-        quiz_cover_url = None
-        if request.generate_images:
-            try:
-                # ImageGenerator 인스턴스는 이미 위에 선언됨
-                image_generator = ImageGenerator()
-                cover_result = await image_generator.generate_quiz_cover(
-                    quiz_title=meta.get("title", request.topic),
-                    category=request.category or meta.get("category", "Trendy")
-                )
-                quiz_cover_url = cover_result.get("url") if cover_result else None
-            except Exception as e:
-                log(f"⚠️ Quiz cover image generation failed: {e}")
-                
-        # 2. 메타데이터 설정
+        # 1. 퀴즈 메타데이터 정제
         quiz_meta = {
             "title": meta.get("title", request.topic),
             "description": meta.get("description", ""),
             "category": request.category or meta.get("category", "Trendy"),
-            "image_url": quiz_cover_url or meta.get("image_url", None), # 생성된 URL로 덮어쓰거나, AI가 준 URL 사용
+            "image_url": meta.get("image_url") or "/images/grandma_roast_standing.png",
         }
 
-        # 질문 데이터 변환
+        # 2. 질문 데이터 정제 (4-2-1 점수 로직 강제)
         questions = []
-        for q in questions_data:
-            order_number = q.get("order_number", len(questions) + 1)
-            
-            # [사용자 요청 로직] Range-based Scoring: 모든 5개 질문에 Option B=+1점을 부여 (총점 0-5)
-            score_a = 0
-            score_b = 1
+        for i, q in enumerate(questions_data):
+            order = i + 1
+            score_b = 4 if order == 1 else 2 if order == 2 else 1 if order == 3 else 0
+            questions.append({
+                "order_number": order,
+                "question_text": q.get("question_text", "Câu hỏi mới"),
+                "option_a": q.get("option_a", "Lựa chọn A"),
+                "option_b": q.get("option_b", "Lựa chọn B"),
+                "score_a": 0,
+                "score_b": score_b,
+                # image_url 제거 (질문 이미지는 생성하지 않음)
+            })
 
-            questions.append(
-                {
-                    "order_number": order_number,
-                    "question_text": q.get("question_text", ""),
-                    "option_a": q.get("option_a", ""),
-                    "option_b": q.get("option_b", ""),
-                    "score_a": score_a,
-                    "score_b": score_b,
-                    "image_url": q.get(
-                        "image_prompt", None
-                    ),  # image_prompt를 image_url로
-                }
-            )
-
-        # 결과 데이터 변환
+        # 3. 결과 데이터 정제 (8개 보장)
         results = []
-        image_generator = ImageGenerator() # 이미지 생성기 인스턴스 (비동기 호출용)
-        
-        for r in results_data:
-            # 1. Image Generation (결과 이미지 생성)
-            image_result = None
-            if request.generate_images:
-                try:
-                    # ImageGenerator.generate_result_image는 비동기 함수
-                    image_result = await image_generator.generate_result_image(
-                        result_type=r.get("type_name", "Result"),
-                        description=r.get("description", "")
-                    )
-                except Exception as img_e:
-                    log(f"⚠️ Result image generation failed: {img_e}")
-                    image_result = None
+        for i in range(8):
+            # AI가 준 데이터가 있으면 사용, 없으면 기본값
+            r = results_data[i] if i < len(results_data) else {}
             
-            # image_result 딕셔너리에서 url 추출 (예: /images/filename.png)
-            image_url = image_result.get("url") if image_result else None
+            # Factory에서 이미 생성한 image_url이 있으면 최우선 사용
+            final_image_url = r.get("image_url") or "/images/grandma_roast_standing.png"
+            
+            results.append({
+                "result_code": i,
+                "title": r.get("type_name") or r.get("title") or f"Type {i}",
+                "description": r.get("description") or "Mô tả đang cập nhật...",
+                "traits": r.get("traits", ["Độc đáo", "Thú vị"]),
+                "image_url": final_image_url
+            })
 
-            results.append(
-                {
-                    "result_code": r.get("score", 0),
-                    "title": r.get("type_name", ""),
-                    "description": r.get("description", ""),
-                    "traits": r.get("traits", []),
-                    # 2. image_url 필드에 저장된 이미지 경로를 설정
-                    "image_url": image_url, 
-                }
-            )
+        # 4. JSON 저장
+        saved_quiz = json_manager.save_quiz_complete(quiz_meta, questions, results)
+        return {"quiz": saved_quiz, "questions": questions, "results": results}
 
         # JSON에 저장
         saved_quiz = json_manager.save_quiz_complete(quiz_meta, questions, results)
@@ -286,19 +283,33 @@ async def create_quiz(request: QuizRequest):
 @app.put("/api/quizzes/{quiz_id}")
 def update_quiz(quiz_id: str, updates: Dict):
     """퀴즈, 질문, 결과 수정"""
-    # 1. Update Questions if present
+    # 1. Update/Create Questions if present
     if "questions" in updates:
         questions = updates.pop("questions")
+        new_questions = []
         for q in questions:
-            if "id" in q:
+            if "id" in q and q["id"]:
                 json_manager.update_question(q["id"], q)
+            else:
+                q["quiz_id"] = quiz_id
+                new_questions.append(q)
+        
+        if new_questions:
+            json_manager.create_questions(new_questions)
 
-    # 2. Update Results if present
+    # 2. Update/Create Results if present
     if "results" in updates:
         results = updates.pop("results")
+        new_results = []
         for r in results:
-            if "id" in r:
+            if "id" in r and r["id"]:
                 json_manager.update_result(r["id"], r)
+            else:
+                r["quiz_id"] = quiz_id
+                new_results.append(r)
+        
+        if new_results:
+            json_manager.create_results(new_results)
 
     # 3. Update Quiz Meta
     updated_quiz = json_manager.update_quiz(quiz_id, updates)

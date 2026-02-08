@@ -1,12 +1,15 @@
 /**
- * Range-based Scoring Logic (5 Questions, Max Score 5)
+ * 3-bit Binary Scoring Logic (5 Questions total)
  * 
- * Each question adds +1 to the score.
- * Q1 to Q5: Each question adds 0 or 1.
+ * Q1: Weight 4 (Bit 2: 100)
+ * Q2: Weight 2 (Bit 1: 010)
+ * Q3: Weight 1 (Bit 0: 001)
+ * Q4, Q5: Weight 0
  * 
- * Result Range: 0 to 5 (6 unique results)
+ * Result Range: 0 to 7 (8 unique results)
  * 
  * @param {boolean[]} answers - Array of 5 booleans (true when Option B is selected)
+ * @param {object[]} questions - Array of question objects with scores
  */
 export const calculateScore = (answers, questions) => {
     if (!answers || !questions || answers.length === 0) {
@@ -16,18 +19,17 @@ export const calculateScore = (answers, questions) => {
 
     let rawScore = 0;
 
+    // Use the scores directly from the question objects (which are now forced to 4, 2, 1, 0, 0)
     answers.forEach((isOptionBSelected, index) => {
         const question = questions[index];
         if (question) {
             if (isOptionBSelected) {
                 rawScore += (question.score_b || 0);
             } else {
-                rawScore += (question.score_a || 0); // Usually 0
+                rawScore += (question.score_a || 0);
             }
         }
     });
 
-    // 3-Bit Binary Logic (4-2-1-0-0) results in 0-7 range.
-    // This maps directly to result indices 0-7.
     return rawScore;
 };

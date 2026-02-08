@@ -5,292 +5,174 @@ import time
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
+import asyncio
+import base64
+from io import BytesIO
 
 
 class ImageGenerator:
-    """이미지 생성 유틸리티 - OpenAI DALL-E 3 & PIL OG Generator"""
+    """이미지 생성 유틸리티 - OpenRouter (Google Gemini 3 Pro Image)"""
 
     def __init__(self):
-        # Google Cloud 설정
-        self.google_project_id = os.getenv("GOOGLE_CLOUD_PROJECT_ID")
-        self.api_key = os.getenv("OPENAI_API_KEY") # 호환성을 위해 남겨둠
-        self.base_url = "https://api.openai.com/v1"
+        self.api_key = os.getenv("OPENROUTER_API_KEY")
         self.images_dir = "data/images"
         self.og_dir = "data/og"
 
-        # 이미지 저장소 디렉토리 확인
         if not os.path.exists(self.images_dir):
-            os.makedirs(self.images_dir)
+            os.makedirs(self.images_dir, exist_ok=True)
         if not os.path.exists(self.og_dir):
-            os.makedirs(self.og_dir)
+            os.makedirs(self.og_dir, exist_ok=True)
 
-        if not self.google_project_id:
-            print("⚠️ Warning: GOOGLE_CLOUD_PROJECT_ID not found in environment variables.")
+        if not self.api_key:
+             print("⚠️ Warning: OPENROUTER_API_KEY not found. Image generation will fail.")
 
-    def generate_og_card(self, title: str, description: str, result_type: str) -> Optional[str]:
+    async def generate_image(self, prompt: str) -> Optional[dict]:
         """
-        PIL을 사용하여 SNS 공유용 OG 이미지 생성 (Glass-Comic Style)
-        
-        Returns:
-            str: 생성된 이미지의 파일명
-        """
-        try:
-            # 1. Base Image Setup (1200x630 - OG Standard)
-            width, height = 1200, 630
-            
-            # Pastel Pink/Purple Gradient Background (Matching Result.jsx)
-            image = Image.new('RGB', (width, height), color='#FFF0F5')
-            draw = ImageDraw.Draw(image)
-            
-            # Draw Gradient
-            for y in range(height):
-                r = 255
-                g = int(240 - (y / height) * 40)
-                b = int(245 - (y / height) * 20)
-                draw.line([(0, y), (width, y)], fill=(r, g, b))
-
-            # 2. Comic Border (Thick Black)
-            border_width = 15
-            draw.rectangle([0, 0, width, height], outline="black", width=border_width)
-            
-            # Inner Decorative Border (Thin)
-            draw.rectangle([30, 30, width-30, height-30], outline="black", width=2)
-            
-            # 3. Load Fonts
-            try:
-                # Try to use a bold font if available (Mac specific path for now or standard)
-                title_font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Black.ttf", 65)
-                type_font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Courier New Bold.ttf", 90)
-                desc_font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 40)
-                brand_font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 30)
-            except:
-                # Fallback to default
-                title_font = ImageFont.load_default()
-                type_font = ImageFont.load_default()
-                desc_font = ImageFont.load_default()
-                brand_font = ImageFont.load_default()
-
-            # 4. Content Layout
-            
-            # Result Type (Top Left Badge)
-            draw.rounded_rectangle([60, 60, 500, 160], radius=20, fill="#FF69B4", outline="black", width=5)
-            draw.text((90, 85), result_type, font=type_font, fill="white", stroke_width=2, stroke_fill="black")
-            
-            # Title (Bottom Left)
-            draw.text((60, 450), title, font=title_font, fill="#333333")
-            
-            # Description (Bottom Left - wrapped)
-            wrapper = textwrap.TextWrapper(width=45)
-            desc_lines = wrapper.wrap(description)
-            y_text = 540
-            for line in desc_lines[:2]: # Limit to 2 lines
-                draw.text((60, y_text), line, font=desc_font, fill="#666666")
-                y_text += 50
-                
-            # Character Placeholder (Right Side Circle)
-            # Draw a circle container for character
-            circle_x, circle_y, circle_r = 900, 315, 200
-            draw.ellipse([circle_x-circle_r, circle_y-circle_r, circle_x+circle_r, circle_y+circle_r], fill="white", outline="black", width=5)
-            
-            # Add text inside circle
-            draw.text((circle_x-50, circle_y-20), "YOU", font=type_font, fill="black")
-
-            # Branding (Top Right)
-            draw.text((width - 250, 50), "nambac.xyz", font=brand_font, fill="black")
-
-            # 5. Save
-            timestamp = int(time.time())
-            filename = f"og_{timestamp}.png"
-            filepath = os.path.join(self.og_dir, filename)
-            
-            image.save(filepath)
-            print(f"✅ OG Image generated (Glass-Comic): {filename}")
-            
-            return filename
-            
-        except Exception as e:
-            print(f"❌ OG Generation Error: {str(e)}")
-            return None
-
-    async def generate_image(
-        self, prompt: str, style: str = "vivid", size: str = "1024x1024"
-    ) -> Optional[dict]:
-        """
-        DALL-E 3로 이미지 생성
-
-        Args:
-            prompt: 이미지 생성 프롬프트
-            style: 'vivid' (선명) or 'natural' (자연스러움)
-            size: 이미지 크기 ('1024x1024', '1792x1024', '1024x1792')
-
-        Returns:
-            dict: {'filename': str, 'url': str} or None
+        OpenRouter API를 통해 이미지를 생성합니다.
+        Uses google/gemini-3-pro-image-preview model.
         """
         if not self.api_key:
-            print("❌ Error: OPENAI_API_KEY not configured.")
             return None
 
         try:
+            print(f"🎨 Gemini 3 Pro is rendering: {prompt[:50]}...")
+            
+            # OpenRouter uses chat completions endpoint for image generation
+            url = "https://openrouter.ai/api/v1/chat/completions"
+            
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
+                "HTTP-Referer": "https://nambac.xyz",
+                "X-Title": "Nambac Quiz"
             }
-
+            
             payload = {
-                "model": "dall-e-3",
-                "prompt": prompt,
-                "n": 1,
-                "size": size,
-                "style": style,
-                "response_format": "b64_json",  # Base64로 직접 받아서 저장
+                "model": "google/gemini-3-pro-image-preview",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                # "modalities": ["image"]
             }
 
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                response = await client.post(
-                    f"{self.base_url}/images/generations", headers=headers, json=payload
-                )
-                response.raise_for_status()
-                data = response.json()
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.post(url, json=payload, headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Check for image in choices
+                    if "choices" in data and len(data["choices"]) > 0:
+                        choice = data["choices"][0]
+                        message = choice.get("message", {})
+                        
+                        # Check for content
+                        content = message.get("content", [])
+                        
+                        # Handle text describing image or image URL
+                        # Gemini might return a URL in text or standard format
+                        if isinstance(content, list):
+                            for item in content:
+                                if item.get("type") == "image_url":
+                                    img_url = item.get("image_url", {}).get("url", "")
+                                    if img_url:
+                                        if img_url.startswith("data:image"):
+                                            b64_data = img_url.split(",")[1] if "," in img_url else img_url
+                                            filename = self._save_image(b64_data, prompt)
+                                            print(f"✅ Gemini Success: {filename}")
+                                            return {
+                                                "filename": filename,
+                                                "url": f"/images/{filename}",
+                                                "revised_prompt": prompt
+                                            }
+                                        else:
+                                            # Download URL
+                                            print(f"📥 Downloading image from URL...")
+                                            img_response = await client.get(img_url)
+                                            if img_response.status_code == 200:
+                                                b64_data = base64.b64encode(img_response.content).decode()
+                                                filename = self._save_image(b64_data, prompt)
+                                                print(f"✅ Gemini Success: {filename}")
+                                                return {
+                                                    "filename": filename,
+                                                    "url": f"/images/{filename}",
+                                                    "revised_prompt": prompt
+                                                }
+                        elif isinstance(content, str):
+                            # Sometimes Gemini returns markdown image
+                            if "](" in content and content.endswith(")"):
+                                # Extract URL from Markdown
+                                import re
+                                match = re.search(r'\((http.*?)\)', content)
+                                if match:
+                                    img_url = match.group(1)
+                                    print(f"📥 Downloading image from extracted URL...")
+                                    img_response = await client.get(img_url)
+                                    if img_response.status_code == 200:
+                                        b64_data = base64.b64encode(img_response.content).decode()
+                                        filename = self._save_image(b64_data, prompt)
+                                        return {"filename": filename, "url": f"/images/{filename}", "revised_prompt": prompt}
+                            
+                            # Check for base64 data URI
+                            if content.startswith("data:image"):
+                                b64_data = content.split(",")[1] if "," in content else content
+                                filename = self._save_image(b64_data, prompt)
+                                print(f"✅ Gemini Success: {filename}")
+                                return {"filename": filename, "url": f"/images/{filename}", "revised_prompt": prompt}
+                
+                print(f"❌ Gemini API error: {response.status_code} - {response.text[:500]}")
+                return None
 
-                # Base64 이미지 데이터 추출
-                b64_image = data["data"][0]["b64_json"]
-                revised_prompt = data["data"][0].get("revised_prompt", prompt)
-
-                # 이미지 파일로 저장
-                filename = self._save_image(b64_image, prompt)
-
-                print(f"✅ Image generated: {filename}")
-
-                return {
-                    "filename": filename,
-                    "url": f"/images/{filename}",
-                    "revised_prompt": revised_prompt,
-                }
-
-        except httpx.HTTPStatusError as e:
-            print(f"❌ OpenAI API Error: {e.response.text}")
-            return None
         except Exception as e:
-            print(f"❌ Image generation error: {str(e)}")
+            print(f"❌ Gemini exception: {str(e)}")
             return None
 
     def _save_image(self, b64_image: str, prompt: str) -> str:
-        """
-        Base64 이미지를 파일로 저장
-
-        Args:
-            b64_image: Base64 인코딩된 이미지
-            prompt: 원본 프롬프트 (파일명 생성용)
-
-        Returns:
-            str: 저장된 파일명
-        """
-        import base64
-
-        # 타임스탬프 기반 파일명 생성
+        """Base64 이미지를 파일로 저장하고 워터마크 추가"""
         timestamp = int(time.time())
-        # 프롬프트에서 파일명에 적합한 키워드 추출 (최대 30자)
-        keywords = " ".join(prompt.split()[:3])[:30].replace(" ", "_")
-
-        filename = f"img_{timestamp}_{keywords}.png"
+        clean_prompt = "".join(c for c in prompt[:30] if c.isalnum() or c==' ').replace(" ", "_")
+        filename = f"img_{timestamp}_{clean_prompt}.png"
         filepath = os.path.join(self.images_dir, filename)
 
-        # Base64 디코딩 및 파일 저장
         image_data = base64.b64decode(b64_image)
-        with open(filepath, "wb") as f:
-            f.write(image_data)
+        image = Image.open(BytesIO(image_data))
+        
+        draw = ImageDraw.Draw(image)
+        width, height = image.size
+        try:
+            font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 24)
+        except:
+            font = ImageFont.load_default()
+            
+        text = "nambac.xyz"
+        bbox = draw.textbbox((0, 0), text, font=font)
+        tw, th = bbox[2]-bbox[0], bbox[3]-bbox[1]
+        x, y = width - tw - 20, height - th - 20
+        draw.rectangle([x-5, y-5, x+tw+5, y+th+5], fill=(255, 255, 255, 100))
+        draw.text((x, y), text, font=font, fill=(0, 0, 0, 180))
 
+        image.save(filepath)
         return filename
 
     async def generate_quiz_cover(self, quiz_title: str, category: str, description: str = "") -> Optional[dict]:
-        """
-        퀴즈 커버 이미지 생성 (질문용)
-        
-        ... (생략) ...
-        """
-        if not self.api_key:
-            # API Key 없을 때 더미 이미지 반환 (테스트용)
-            return {
-                "filename": "grandma_roast_standing.png",
-                "url": "/images/grandma_roast_standing.png",
-                "revised_prompt": "Dummy image used due to missing API Key.",
-            }
+        prompt = f"Create a high-quality 'Korean Webtoon' style quiz cover art. Subject: {quiz_title}. Theme: {description or category}. Modern illustration, vibrant colors."
+        return await self.generate_image(prompt)
 
-        content_context = f"\nDescription: {description}" if description else ""
+    async def generate_result_image(self, result_type: str, description: str) -> Optional[dict]:
+        """결과 이미지 생성 - 캐릭터 중심, 텍스트 금지, 웹툰 스타일"""
         prompt = f"""
-        Create a vibrant, eye-catching 'Korean Webtoon (Manhwa) Style' quiz cover image for:
-        Title: {quiz_title}{content_context}
-        Category: {category}
-
-        Style Requirements:
-        - Korean Webtoon (Manhwa) style: clean lines, vibrant shading, modern digital illustration.
-        - The scene should visually represent the quiz content and description.
-        - Modern, trendy aesthetic with bold colors.
-        - Eye-catching typography for the title (if included).
-        - 4K resolution quality, high definition.
-        """
-
-        return await self.generate_image(prompt, style="vivid")
-
-    async def generate_question_image(
-        self, question_text: str, question_number: int
-    ) -> Optional[dict]:
-        """
-        질문별 이미지 생성
+        Create a character-centric 'Korean Webtoon (Manhwa)' style illustration for a personality profile.
+        Archetype: {result_type}
+        Character Details: {description}
         
-        ... (생략) ...
+        Strict Rules:
+        1. NO TEXT: The image must have absolutely no letters, numbers, or words. 
+        2. Style: Clean digital line art, semi-realistic webtoon shading.
+        3. Character: Draw a single expressive character that embodies the '{result_type}' energy.
+        4. COMPOSITION: Character MUST be positioned on the LEFT SIDE of the image. Keep the RIGHT SIDE of the image empty or with simple background - this area will be used for text overlay.
+        5. Layout: Close-up or waist-up character shot on LEFT, expressive background on RIGHT reflecting the mood.
         """
-        if not self.api_key:
-            # API Key 없을 때 더미 이미지 반환 (테스트용)
-            return {
-                "filename": "grandma_roast.png",
-                "url": "/images/grandma_roast.png",
-                "revised_prompt": "Dummy image used due to missing API Key.",
-            }
-
-        prompt = f"""
-        Create an engaging illustration for a quiz question #{question_number}:
-        {question_text}
-
-        Style:
-        - Minimalist, clean design
-        - Soft pastel colors or vibrant gradients
-        - Abstract or metaphorical representation
-        - 3D illustration style
-        - Eye-catching but not distracting
-        - Modern UI/UX aesthetic
-        """
-
-        return await self.generate_image(prompt, style="natural")
-
-    async def generate_result_image(
-        self, result_type: str, description: str
-    ) -> Optional[dict]:
-        """
-        결과 유형 이미지 생성
-        
-        ... (생략) ...
-        """
-        if not self.api_key:
-            # API Key 없을 때 더미 이미지 반환 (테스트용)
-            return {
-                "filename": "grandma_roast_standing.png",
-                "url": "/images/grandma_roast_standing.png",
-                "revised_prompt": "Dummy image used due to missing API Key.",
-            }
-
-        prompt = f"""
-        Create a vibrant character illustration for a unique quiz result archetype:
-        Type: {result_type}
-        Description: {description}
-
-        Critical Requirements:
-        - NO TEXT OR LETTERS: The image must contain absolutely no text, letters, or numbers.
-        - CHARACTER-CENTRIC: Focus on a single character that embodies the traits of '{result_type}'.
-        - Style: 'Korean Webtoon (Manhwa)' style, clean line art, vibrant digital shading.
-        - The character's pose, expression, and environment should reflect the '{description}'.
-        - Modern, trendy, and expressive.
-        - 4K resolution, high-quality illustration.
-        """
-
-        return await self.generate_image(prompt, style="vivid")
+        return await self.generate_image(prompt)

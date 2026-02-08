@@ -102,6 +102,27 @@ class JSONManager:
 
         return None
 
+    def increment_view_count(self, quiz_id: str) -> Optional[int]:
+        """조회수 증가"""
+        quizzes = self.get_all_quizzes()
+        for idx, quiz in enumerate(quizzes):
+            if quiz["id"] == quiz_id:
+                new_count = quiz.get("view_count", 0) + 1
+                quizzes[idx]["view_count"] = new_count
+                self._write_json(self.quizzes_file, quizzes)
+                return new_count
+        return None
+
+    def increment_share_count(self, quiz_id: str) -> Optional[int]:
+        """공유수 증가"""
+        quizzes = self.get_all_quizzes()
+        for idx, quiz in enumerate(quizzes):
+            if quiz["id"] == quiz_id:
+                new_count = quiz.get("share_count", 0) + 1
+                quizzes[idx]["share_count"] = new_count
+                self._write_json(self.quizzes_file, quizzes)
+                return new_count
+
     def delete_quiz(self, quiz_id: str) -> bool:
         """퀴즈 삭제"""
         quizzes = self.get_all_quizzes()
@@ -114,6 +135,8 @@ class JSONManager:
 
             # 연관 질문들도 삭제
             self.delete_questions_by_quiz_id(quiz_id)
+            # 연관 결과들도 삭제
+            self.delete_results_by_quiz_id(quiz_id)
 
             return True
         return False
@@ -207,6 +230,12 @@ class JSONManager:
 
         return None
     
+    def delete_results_by_quiz_id(self, quiz_id: str):
+        """퀴즈 ID로 연관 결과들 삭제"""
+        all_results = self._read_json(self.results_file)
+        all_results = [r for r in all_results if r.get("quiz_id") != quiz_id]
+        self._write_json(self.results_file, all_results)
+
     def delete_results_by_code(self, result_code: int) -> bool:
         """특정 결과 코드를 가진 모든 결과 항목을 삭제"""
         all_results = self._read_json(self.results_file)

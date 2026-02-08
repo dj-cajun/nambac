@@ -1,19 +1,17 @@
 // Quiz Categories (공통 사용 - Home, Admin 모두 동일)
 export const QUIZ_CATEGORIES = [
-    { id: 'Love', label: 'Tình Yêu', labelKo: '연애', color: 'bg-pink-100', emoji: '💘', prompt: 'Create a romantic love compatibility test.' },
-    { id: 'Personality', label: 'Tính Cách', labelKo: '성격', color: 'bg-purple-100', emoji: '🧠', prompt: 'Create a deep psychological personality test.' },
-    { id: 'Career', label: 'Sự Nghiệp', labelKo: '커리어', color: 'bg-blue-100', emoji: '🚀', prompt: 'Create a career aptitude test for the future.' },
-    { id: 'Trendy', label: 'Đu Trend', labelKo: '트렌디', color: 'bg-yellow-100', emoji: '✨', prompt: 'Create a viral gen-z trend test.' },
-    { id: 'Food', label: 'Ăn Gì', labelKo: '음식', color: 'bg-orange-100', emoji: '🍳', prompt: 'Create a culinary taste preference test.' },
-    { id: 'Travel', label: 'Vi Vu', labelKo: '여행', color: 'bg-green-100', emoji: '✈️', prompt: 'Create a travel destination personality test.' },
-    { id: 'Pet', label: 'Boss & Sen', labelKo: '반려동물', color: 'bg-teal-100', emoji: '🐾', prompt: 'Create a pet companion compatibility test.' },
-    { id: 'Survival', label: 'Sinh Tồn', labelKo: '서바이벌', color: 'bg-red-100', emoji: '🦸', prompt: 'Create a survival instinct and superpower test.' },
+    { id: 'MBTI', label: 'Tính Cách (MBTI)', labelKo: 'MBTI', color: 'bg-purple-100', emoji: '🧠', prompt: 'Create a deep psychological MBTI personality test.' },
+    { id: 'Fortune', label: 'Bói Toán (Tarot)', labelKo: '운세', color: 'bg-indigo-100', emoji: '🔮', prompt: 'Create a fortune telling tarot reading quiz.' },
+    { id: 'PastLife', label: 'Kiếp Trước', labelKo: '전생', color: 'bg-orange-100', emoji: '👻', prompt: 'Create a past life regression test.' },
+    { id: 'Trend_Hunter', label: 'Đu Trend', labelKo: '트렌드', color: 'bg-yellow-100', emoji: '✨', prompt: 'Create a viral gen-z trend test.' },
+    { id: 'Linker_Lookalike', label: 'Ai Giống Tui?', labelKo: '닮은꼴', color: 'bg-pink-100', emoji: '👯', prompt: 'Create a celebrity lookalike visual test.' },
+    { id: 'Delivery_King', label: 'Ông Hoàng Delivery', labelKo: '배달왕', color: 'bg-green-100', emoji: '🛵', prompt: 'Create a food delivery preference test.' },
+    { id: 'HCMC_Guide', label: 'HCMC Guide', labelKo: '호치민 가이드', color: 'bg-lime-100', emoji: '🏙️', prompt: 'Create a city guide quiz for HCMC.' },
 ];
 
 // Home-only special tabs (Magazine, All)
 export const HOME_SPECIAL_TABS = [
-    { id: 'Magazine', label: 'HCMC Guide', color: 'bg-lime-100' },
-    { id: 'Total', label: 'Tất cả', color: 'bg-white' },
+    { id: 'all', label: 'Tất cả', color: 'bg-white' },
 ];
 
 // AI Service Categories (Admin only)
