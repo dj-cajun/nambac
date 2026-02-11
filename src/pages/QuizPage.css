@@ -4,7 +4,7 @@
 /* Assuming global body background is set, but we can enforce local if needed */
 .quiz-page-container {
     min-height: 100vh;
-    padding: 20px;
+    padding: 0;
     padding-bottom: 40px;
     display: flex;
     flex-direction: column;
@@ -12,6 +12,18 @@
     position: relative;
     max-width: 480px;
     margin: 0 auto;
+
+    /* Match Home/AIService spacing pattern */
+    .quiz-header,
+    .question-glass-panel,
+    .answers-grid,
+    .quiz-intro-card,
+    .intro-image-container,
+    .question-anim-wrapper {
+        margin-left: 20px;
+        margin-right: 20px;
+        width: auto;
+    }
 }
 
 /* 1. Header & Progress */

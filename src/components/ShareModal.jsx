@@ -2,8 +2,11 @@ import React from 'react';
 import { Facebook, Link, X, Send } from 'lucide-react';
 
 const ShareModal = ({ quizTitle, quizId, score, onClose }) => {
-    const shareUrl = `https://nambac.xyz/quiz/${quizId}/result?score=${score}`;
-    const quote = `내 관상은 [${quizTitle}]! #Nambac #XemTuong`;
+    // Backend OG Endpoint (Always use Production URL for Social Sharing)
+    const shareUrl = `https://nambac.xyz/api/share/${quizId}/${score}`;
+
+    // Zalo/FB Quote
+    const quote = `[${quizTitle}] 결과 확인하기! #Nambac #XemTuong`;
 
     const shareToFacebook = () => {
         const appId = import.meta.env.VITE_FB_APP_ID;

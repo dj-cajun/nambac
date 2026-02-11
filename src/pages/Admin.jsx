@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { QUIZ_CATEGORIES, SERVICE_CATEGORIES, getFilterTypes, getCategoryLabel, getPersonas } from '../constants/categories';
+import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
 
 const Admin = () => {
     // Password Protection
@@ -8,19 +9,19 @@ const Admin = () => {
     const [passwordError, setPasswordError] = useState(false);
     const ADMIN_PASSWORD = '0922';
 
-    // Check session storage on mount
+    const passwordInputRef = useRef(null);
+
+    // Focus password input on mount
     useEffect(() => {
-        const savedAuth = sessionStorage.getItem('admin_authenticated');
-        if (savedAuth === 'true') {
-            setIsAuthenticated(true);
+        if (!isAuthenticated && passwordInputRef.current) {
+            passwordInputRef.current.focus();
         }
-    }, []);
+    }, [isAuthenticated]);
 
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
         if (password === ADMIN_PASSWORD) {
             setIsAuthenticated(true);
-            sessionStorage.setItem('admin_authenticated', 'true');
             setPasswordError(false);
         } else {
             setPasswordError(true);
@@ -94,7 +95,7 @@ const Admin = () => {
     const fetchQuizzes = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:8000/api/quizzes');
+            const response = await fetch(`${API_BASE_URL}/quizzes`);
             const data = await response.json();
             const quizList = data.quizzes || data || [];
             // Sort by Created Date descend (UUID strings aren't subtractable)
@@ -110,7 +111,7 @@ const Admin = () => {
 
     const fetchServices = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/services');
+            const response = await fetch(`${API_BASE_URL}/services`);
             const data = await response.json();
             setServices(data.services || []);
         } catch (error) {
@@ -120,7 +121,7 @@ const Admin = () => {
 
     const fetchAgents = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/admin/agents');
+            const response = await fetch(`${API_BASE_URL}/admin/agents`);
             const data = await response.json();
             setAvailableAgents(data.agents || []);
         } catch (error) {
@@ -154,12 +155,7 @@ const Admin = () => {
     // Get Type Label (from shared categories)
     const getTypeLabel = (type) => getCategoryLabel(type) || type;
 
-    // Helper: Get full image URL
-    const getImageUrl = (url) => {
-        if (!url) return '';
-        if (url.startsWith('http')) return url;
-        return `http://localhost:8000${url}`;
-    };
+    // getImageUrl is now imported from apiConfig.js
 
     // --- Actions ---
 
@@ -167,7 +163,7 @@ const Admin = () => {
         setLoading(true);
         try {
             // Call actual AI endpoint to create quiz
-            const response = await fetch('http://localhost:8000/api/quizzes', {
+            const response = await fetch(`${API_BASE_URL}/quizzes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -203,7 +199,7 @@ const Admin = () => {
             // Optimistic update
             setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newStatus === 'visible' } : q));
 
-            await fetch(`http://localhost:8000/api/quizzes/${id}`, {
+            await fetch(`${API_BASE_URL}/quizzes/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus, is_active: newStatus === 'visible' })
@@ -218,7 +214,7 @@ const Admin = () => {
     const deleteQuiz = async (id) => {
         if (!window.confirm("Are you sure you want to delete this quiz?")) return;
         try {
-            await fetch(`http://localhost:8000/api/quizzes/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE_URL}/quizzes/${id}`, { method: 'DELETE' });
             setQuizzes(prev => prev.filter(q => q.id !== id));
         } catch (error) {
             console.error("Error deleting quiz:", error);
@@ -232,7 +228,7 @@ const Admin = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:8000/api/services', {
+            const response = await fetch(`${API_BASE_URL}/services`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -283,7 +279,7 @@ const Admin = () => {
 
         // Fetch full details including questions and results
         try {
-            const response = await fetch(`http://localhost:8000/api/quizzes/${quiz.id}`);
+            const response = await fetch(`${API_BASE_URL}/quizzes/${quiz.id}`);
             const data = await response.json();
             if (data.questions) {
                 setEditQuestions(data.questions);
@@ -370,7 +366,7 @@ const Admin = () => {
         // If it has an ID, delete from backend
         if (question.id) {
             try {
-                const response = await fetch(`http://localhost:8000/api/questions/${question.id}`, {
+                const response = await fetch(`${API_BASE_URL}/questions/${question.id}`, {
                     method: 'DELETE'
                 });
                 if (!response.ok) {
@@ -393,7 +389,7 @@ const Admin = () => {
         if (!editingQuiz) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/quizzes/${editingQuiz.id}`, {
+            const response = await fetch(`${API_BASE_URL}/quizzes/${editingQuiz.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -435,10 +431,12 @@ const Admin = () => {
                     <form onSubmit={handlePasswordSubmit} className="space-y-4">
                         <div>
                             <input
+                                ref={passwordInputRef}
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter Admin Password"
+                                autoFocus
                                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF2D85] focus:outline-none transition-colors"
                             />
                             {passwordError && (
@@ -975,7 +973,7 @@ const Admin = () => {
                                                         <button
                                                             onClick={async () => {
                                                                 if (window.confirm('Delete service?')) {
-                                                                    await fetch(`http://localhost:8000/api/services/${svc.id}`, { method: 'DELETE' });
+                                                                    await fetch(`${API_BASE_URL}/services/${svc.id}`, { method: 'DELETE' });
                                                                     fetchServices();
                                                                 }
                                                             }}

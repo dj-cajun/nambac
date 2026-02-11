@@ -21,11 +21,12 @@
       justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    
+
     /* 스크롤바 숨기기 */
     body::-webkit-scrollbar {
       display: none;
     }
+
     body {
       -ms-overflow-style: none;
       scrollbar-width: none;
@@ -62,28 +63,21 @@
       display: block;
     }
   </style>
+
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_MEASUREMENT_ID%"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', '%VITE_GA_MEASUREMENT_ID%');
+  </script>
 </head>
 
 <body>
   <div id="root"></div>
-  <div id="fb-root"></div>
-  <script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId: import.meta.env.VITE_FB_APP_ID,
-        cookie: true,
-        xfbml: true,
-        version: 'v19.0'
-      });
-    };
-    (function(d, s, id){
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) {return;}
-       js = d.createElement(s); js.id = id;
-       js.src = "https://connect.facebook.net/ko_KR/sdk.js";
-       fjs.parentNode.insertBefore(js, fjs);
-     }(document, 'script', 'facebook-jssdk'));
-  </script>
+  <!-- Facebook SDK는 React 컴포넌트에서 처리됨 -->
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

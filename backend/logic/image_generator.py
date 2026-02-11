@@ -45,15 +45,18 @@ class ImageGenerator:
             
             Style:
             - Always maintain a 'Korean Webtoon (Manhwa)' style with clean digital line art, semi-realistic shading, and vibrant colors.
+            - Ensure 'Masterpiece', 'Best Quality', 'Highly Detailed', '8k Resolution', 'Cinematic Lighting' aesthetics.
             
             Composition Rules:
             1. If the user mentions 'Quiz Cover' or 'Thumbnail': 
                - THE IMAGE MUST INCLUDE THE QUIZ TITLE TEXT in a stylish, legible font as part of the composition. 
-               - It should look like a professional webtoon cover with a title.
+               - It should look like a professional, high-budget webtoon cover with a title.
+               - Focus on dynamic angles, dramatic lighting, and rich details.
             2. If the user mentions 'Result Image' or 'Personality Result':
                - THE IMAGE MUST HAVE ABSOLUTELY NO TEXT, LETTERS, OR NUMBERS.
-               - THE MAIN CHARACTER/SUBJECT MUST BE POSITIONED ON THE LEFT SIDE OF THE FRAME. 
-               - Leave the right side relatively empty or with a simple background so that UI text can be overlaid easily.
+               - THE MAIN CHARACTER/SUBJECT MUST BE POSITIONED ON THE LEFT THIRD OF THE FRAME. 
+               - DO NOT LEAVE THE RIGHT SIDE WHITE/EMPTY. Render a complete, detailed background scene across the entire image.
+               - However, ensure the RIGHT TWO-THIRDS contain background elements that are not too busy, to allow text overlay readability.
             
             General:
             - Focus on aesthetics, composition, lighting, and specific details.

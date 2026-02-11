@@ -1,22 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Download, Share2, Home } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import ShareModal from '../components/ShareModal';
+import AdPlaceholder from '../components/AdPlaceholder';
 import './Result.css';
+import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
 
-const Result = ({ score, results, quizId, onRestart }) => {
+const Result = () => {
     const navigate = useNavigate();
+    const { id: quizIdParam } = useParams();
+    const [searchParams] = useSearchParams(); // Needs import
+    const score = parseInt(searchParams.get('score'));
+
+    // passed props are gone, so we need local state
+    const [results, setResults] = useState([]);
     const [showShareModal, setShowShareModal] = useState(false);
 
     const [finalResult, setFinalResult] = useState({ title: "Đang tải...", description: "", image_url: "" });
     const [recommendedQuizzes, setRecommendedQuizzes] = useState([]);
 
-    const getImageUrl = (url) => {
-        if (!url) return '';
-        if (url.startsWith('http')) return url;
-        return `http://localhost:8000${url}`;
-    };
+    // Fetch Results if not present
+    useEffect(() => {
+        const fetchResults = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/quizzes/${quizIdParam}/results`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setResults(data.results || []);
+                }
+            } catch (err) {
+                console.error("Failed to fetch results", err);
+            }
+        };
+        fetchResults();
+    }, [quizIdParam]);
 
     useEffect(() => {
         if (results && results.length > 0) {
@@ -29,11 +47,11 @@ const Result = ({ score, results, quizId, onRestart }) => {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                const res = await fetch('http://localhost:8000/api/quizzes');
+                const res = await fetch(`${API_BASE_URL}/quizzes`);
                 if (res.ok) {
                     const data = await res.json();
                     // Filter out current quiz
-                    const filtered = (data.quizzes || data).filter(q => q.id !== parseInt(quizId));
+                    const filtered = (data.quizzes || data).filter(q => q.id !== parseInt(quizIdParam));
                     setRecommendedQuizzes(filtered);
                 }
             } catch (err) {
@@ -41,7 +59,7 @@ const Result = ({ score, results, quizId, onRestart }) => {
             }
         };
         fetchQuizzes();
-    }, [quizId]);
+    }, [quizIdParam]);
 
     // ogImageUrl 제거. finalResult.image_url을 직접 사용
 
@@ -53,8 +71,19 @@ const Result = ({ score, results, quizId, onRestart }) => {
         <div className="result-page-container">
             <Helmet>
                 <title>{`[${finalResult.type_name || finalResult.title}] - nambac.xyz`}</title>
+                <meta name="description" content={finalResult.description} />
+
+                {/* Open Graph / Facebook */}
+                <meta property="og:type" content="website" />
                 <meta property="og:title" content={`Kết quả của tôi là [${finalResult.type_name || finalResult.title}]!`} />
-                <meta property="og:image" content={finalResult.image_url} />
+                <meta property="og:description" content={finalResult.description} />
+                <meta property="og:image" content={getImageUrl(finalResult.image_url)} />
+
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:title" content={finalResult.type_name || finalResult.title} />
+                <meta property="twitter:description" content={finalResult.description} />
+                <meta property="twitter:image" content={getImageUrl(finalResult.image_url)} />
             </Helmet>
 
             {/* Header removed as per request */}
@@ -86,6 +115,12 @@ const Result = ({ score, results, quizId, onRestart }) => {
                     </div>
                 </div>
 
+                {/* AdSense Slot (Below Result Image) */}
+                <AdPlaceholder location="result-bottom" />
+
+                {/* AdSense Slot (Below Result Image) */}
+                <AdPlaceholder location="result-bottom" />
+
                 {/* Recommended Quizzes Section */}
                 {recommendedQuizzes.length > 0 && (
                     <div className="recommended-section">
@@ -114,7 +149,7 @@ const Result = ({ score, results, quizId, onRestart }) => {
             {/* Bottom Modal Bar (Like Quiz Start Screen) */}
             <div className="result-bottom-bar">
                 <div className="bar-actions">
-                    <button className="restart-btn" onClick={onRestart}>
+                    <button className="restart-btn" onClick={() => navigate(`/quiz/${quizIdParam}`)}>
                         <span className="btn-label">CHƠI LẠI</span>
                         <div className="btn-icon-circle">
                             <span className="material-symbols-outlined">refresh</span>

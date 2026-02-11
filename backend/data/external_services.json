@@ -1,18 +1,10 @@
 [
   {
-    "id": "service_anime_style",
-    "title": "레탄똔 헌팅포차 애니 관상",
-    "description": "그랩 기사님도 못 알아볼 정도로 예쁘게 바꿔드림 (실물 책임 안 짐) ✨",
-    "image_url": "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=60",
-    "url": "https://huggingface.co/spaces/akhaliq/AnimeGANv2",
-    "category": "Visual"
-  },
-  {
-    "id": "service_tarot_ai",
-    "title": "타오디엔 점쟁이 AI 할매 🔮",
-    "description": "이직, 연애, 금전운? 복채는 무료니까 AI한테 물어봐 (팩폭 주의) ⚡️",
-    "image_url": "https://images.unsplash.com/photo-1620072274198-a83a8bd57fbe?w=500&auto=format&fit=crop&q=60",
-    "url": "https://huggingface.co/spaces/nateraw/fart-tarot",
-    "category": "Fortune"
+    "id": "service_cat_dog_vengeance",
+    "title": "개 vs 고양이 벤전스 ⚔️",
+    "description": "난 개상인가 고양이상인가? AI가 판별하고 병맛 분석 팩폭을 날려드립니다.",
+    "image_url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&auto=format&fit=crop&q=60",
+    "url": "/service/cat-dog-vengeance",
+    "category": "Fun"
   }
 ]

@@ -7,7 +7,7 @@
     "id": "1241a23f-9b8f-46c3-bdb3-b374dd5a47be",
     "created_at": "2026-02-08T17:02:45.192974",
     "is_active": true,
-    "view_count": 0,
+    "view_count": 1,
     "share_count": 0
   },
   {
@@ -29,7 +29,7 @@
     "id": "4f4140a0-0bc8-42d0-aafa-e25cb6e68cc5",
     "created_at": "2026-02-08T23:12:18.334992",
     "is_active": true,
-    "view_count": 4,
+    "view_count": 5,
     "share_count": 0
   },
   {
@@ -40,7 +40,7 @@
     "id": "0a75391f-7811-403c-85e8-e9644fdd07a8",
     "created_at": "2026-02-08T23:13:33.770787",
     "is_active": true,
-    "view_count": 1,
+    "view_count": 2,
     "share_count": 0
   },
   {
@@ -51,7 +51,7 @@
     "id": "3bbd202a-b308-44d4-a277-f1326285901d",
     "created_at": "2026-02-08T23:15:36.903804",
     "is_active": true,
-    "view_count": 6,
+    "view_count": 7,
     "share_count": 0
   },
   {
@@ -62,7 +62,7 @@
     "id": "22bc0040-df4f-410f-8274-3c107e70241d",
     "created_at": "2026-02-08T23:19:29.009770",
     "is_active": true,
-    "view_count": 6,
+    "view_count": 7,
     "share_count": 0
   },
   {
@@ -73,7 +73,7 @@
     "id": "1551f08b-16b6-4f8c-b701-e3047366401d",
     "created_at": "2026-02-08T23:30:57.303218",
     "is_active": true,
-    "view_count": 32,
+    "view_count": 34,
     "share_count": 0
   },
   {
@@ -95,7 +95,7 @@
     "id": "d2bd0505-cef6-4259-993d-d8ac0560d6bb",
     "created_at": "2026-02-09T01:44:33.182197",
     "is_active": true,
-    "view_count": 2,
+    "view_count": 3,
     "share_count": 0
   },
   {
@@ -106,106 +106,40 @@
     "id": "45ca7eae-a08e-4d33-a4eb-22d5100053ce",
     "created_at": "2026-02-09T01:53:51.590523",
     "is_active": true,
-    "view_count": 5,
+    "view_count": 6,
     "share_count": 0
   },
   {
-    "title": "Bạn giống người nổi tiếng Việt Nam nào? (Phiên bản 'cà khịa')",
-    "description": "Ứng dụng AI 'mờ ám' sẽ soi mặt bạn và phán như đúng rồi. Đừng tin, nhưng cứ chơi cho vui!",
-    "category": "Linker_Lookalike",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "446eed34-7417-4cf4-804f-b19207305427",
-    "created_at": "2026-02-09T03:22:16.054784",
-    "is_active": true,
-    "view_count": 0,
-    "share_count": 0
-  },
-  {
-    "title": "Kiếp trước bạn là ai? Tìm hiểu ngay! | Bạn đã từng là ai trong kiếp trước? Khám phá ngay!",
-    "description": "Bạn có tin vào luân hồi? Hãy trả lời những câu hỏi này để khám phá cuộc đời trước đây của bạn! | Bạn có tin vào luân hồi? Hãy trả lời những câu hỏi này để khám phá cuộc đời trước đây của bạn!",
-    "category": "PastLife",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "created_at": "2026-02-09T04:07:50.333121",
-    "is_active": true,
-    "view_count": 0,
-    "share_count": 0
-  },
-  {
-    "title": "Bói Tarot: Đoán Vận Mệnh Tương Lai Của Bạn (Chỉ Đúng Khi Trả Tiền)",
-    "description": "Chào mừng đến với sạp bói dạo của bà già Chợ Lớn! Trả lời mấy câu hỏi linh tinh, biết đâu vận mệnh đổi đời. Không đúng đừng chửi, tại số!",
-    "category": "Fortune",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "created_at": "2026-02-09T04:10:05.443712",
-    "is_active": true,
-    "view_count": 0,
-    "share_count": 0
-  },
-  {
-    "title": "Bạn là loại 'trà xanh' nào trong mắt crush?",
-    "description": "Khám phá bản chất 'thật trân' ẩn sâu bên trong con người bạn. Đừng lo, chúng tôi không phán xét... nhiều đâu!",
-    "category": "MBTI",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "created_at": "2026-02-09T04:11:34.998353",
-    "is_active": true,
-    "view_count": 0,
-    "share_count": 0
-  },
-  {
-    "title": "Kiếp trước bạn là ai? | Bạn là ai trong kiếp trước?",
-    "description": "Khám phá bí mật về quá khứ của bạn! Bài kiểm tra 'cà khịa' này sẽ tiết lộ bạn là ai trong kiếp trước. Chuẩn bị tinh thần để '킹받음' nhé! | Khám phá bí mật về quá khứ của bạn! Bài kiểm tra 'cà khịa' này sẽ tiết lộ bạn là ai trong kiếp trước. Chuẩn bị tinh thần để '킹받음' nhé!",
-    "category": "PastLife",
-    "image_url": "/images/img_1770585790_Create_a_highquality_Korean_.png",
-    "id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "created_at": "2026-02-09T04:24:08.374823",
-    "is_active": true,
-    "view_count": 0,
-    "share_count": 0
-  },
-  {
-    "title": "Bạn là 'Thánh Order' hệ nào ở Sài Gòn?",
-    "description": "Chọn món ăn cũng cần 'gu' đó nha! Xem thử bạn hợp với món nào nhất khi 'quẹo lựa' trên app!",
-    "category": "Delivery_King",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "created_at": "2026-02-09T04:29:46.503678",
-    "is_active": true,
-    "view_count": 0,
-    "share_count": 0
-  },
-  {
-    "title": "Bạn hợp với trend Gen Z 'cà khịa' nào nhất?",
-    "description": "Bạn có phải là một 'con nghiện' trend thứ thiệt? Làm bài test này để biết bạn đang 'đu' trend nào nhiệt tình nhất nhé!",
+    "title": "Bạn là 'con nghiện' trend TikTok hệ nào ở Sài Gòn?",
+    "description": "Đu trend nhanh như chớp, nhưng liệu bạn có thực sự 'hợp gu' với giới trẻ Sài Gòn? Test ngay để biết bạn thuộc team 'tóp tóp' nào!",
     "category": "Trend_Hunter",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "created_at": "2026-02-09T04:38:50.193108",
+    "image_url": "/images/img_1770621757_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "created_at": "2026-02-09T14:22:47.882373",
     "is_active": true,
-    "view_count": 0,
+    "view_count": 9,
     "share_count": 0
   },
   {
-    "title": "Bạn là 'thánh' order đồ ăn ở Sài Gòn cấp độ mấy?",
-    "description": "Đói bụng mà không biết ăn gì? Để tui 'khám bệnh' cho cái ví với cái bụng của bạn nha! 🛵💨",
-    "category": "Delivery_King",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "created_at": "2026-02-09T04:43:32.043313",
+    "title": "Bói Tarot 'Cà Khịa': Đoán Vận Mệnh Qua Lăng Kính Chợ Lớn!",
+    "description": "Đừng tưởng bói Tarot là 'màu hường'! Bà đây phán toàn 'cà khịa', nghe xong chỉ muốn 'táng' cho phát! Nhưng...chuẩn đét đó con!",
+    "category": "Fortune",
+    "image_url": "/images/img_1770791189_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "created_at": "2026-02-11T13:26:39.043396",
     "is_active": true,
-    "view_count": 0,
+    "view_count": 4,
     "share_count": 0
   },
   {
-    "title": "Bạn Sống Ảo Ở Sài Gòn Cỡ Nào? Test Ngay!",
-    "description": "Mới đến Sài Gòn mà tưởng mình là dân bản địa? Làm bài test này để biết bạn 'phèn' hay 'chất' nhé!",
-    "category": "HCMC_Guide",
-    "image_url": "/images/grandma_roast_standing.png",
-    "id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "created_at": "2026-02-09T04:54:37.415233",
+    "title": "Bói Tarot: Xem vận mệnh 'cà khịa' kiểu Chợ Lớn!",
+    "description": "Bà Hai bói dạo Chợ Lớn phán: 'Mấy đứa không nạp tiền, đừng hòng biết tương lai!'",
+    "category": "Fortune",
+    "image_url": "/images/img_1770791976_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "created_at": "2026-02-11T13:39:48.185640",
     "is_active": true,
-    "view_count": 0,
+    "view_count": 16,
     "share_count": 0
   }
 ]

@@ -5,6 +5,8 @@ import { Play, Share2, Copy, Check } from 'lucide-react';
 import { calculateScore } from '../logic/scoring';
 import Result from './Result';
 import './QuizPage.css';
+import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
+import AdPlaceholder from '../components/AdPlaceholder';
 
 export default function QuizPage({ quizIdProp }) {
     const { id } = useParams();
@@ -22,19 +24,14 @@ export default function QuizPage({ quizIdProp }) {
     const [copied, setCopied] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
 
-    const getImageUrl = (url) => {
-        if (!url) return '';
-        if (url.startsWith('http')) return url;
-        return `http://localhost:8000${url}`;
-    };
-
     useEffect(() => {
+        window.scrollTo(0, 0);
         const fetchData = async () => {
             if (!quizId) return;
             try {
                 setLoading(true);
                 // Fetch Quiz Info & Questions
-                const quizRes = await fetch(`http://localhost:8000/api/quizzes/${quizId}`);
+                const quizRes = await fetch(`${API_BASE_URL}/quizzes/${quizId}`);
                 if (!quizRes.ok) throw new Error('Failed to fetch quiz');
                 const quizData = await quizRes.ok ? await quizRes.json() : null;
 
@@ -44,7 +41,7 @@ export default function QuizPage({ quizIdProp }) {
                 }
 
                 // Fetch Results
-                const resultRes = await fetch(`http://localhost:8000/api/quizzes/${quizId}/results`);
+                const resultRes = await fetch(`${API_BASE_URL}/quizzes/${quizId}/results`);
                 if (resultRes.ok) {
                     const resData = await resultRes.json();
                     setResults(resData.results || []);
@@ -62,6 +59,7 @@ export default function QuizPage({ quizIdProp }) {
 
     const handleStart = () => {
         setStarted(true);
+        window.scrollTo(0, 0);
     };
 
     const handleAnswer = (isA) => {
@@ -70,6 +68,7 @@ export default function QuizPage({ quizIdProp }) {
 
         if (currentIndex < questions.length - 1) {
             setCurrentIndex(currentIndex + 1);
+            window.scrollTo(0, 0);
         } else {
             setShowResult(true);
         }
@@ -116,17 +115,10 @@ export default function QuizPage({ quizIdProp }) {
     }
 
     if (showResult) {
-        // Use all answers with weighted scoring (Gatekeeper Logic 3-1-1-0-0)
+        // Calculate score and navigate to Analysis Page
         const score = calculateScore(answers, questions);
-
-        return (
-            <Result
-                score={score}
-                results={results}
-                quizId={quizId}
-                onRestart={handleRestart}
-            />
-        );
+        navigate(`/quiz/${quizId}/analysis`, { state: { score, results } }); // Pass data
+        return null; // Don't render anything while redirecting
     }
 
     // --- Intro View ---
@@ -265,6 +257,9 @@ export default function QuizPage({ quizIdProp }) {
                     </div>
                 </motion.div>
             </AnimatePresence>
+
+            {/* AdSense Slot (Bottom of Quiz Page) */}
+            <AdPlaceholder location="quiz-bottom" />
         </div>
     );
 }

@@ -10,8 +10,8 @@ const Footer = () => {
       </Link>
       <div className="footer-links">
         <span>About</span>
-        <span>Privacy</span>
-        <span>Terms</span>
+        <Link to="/privacy-policy" style={{ textDecoration: 'none', color: 'inherit' }}>Privacy</Link>
+        <Link to="/terms-of-service" style={{ textDecoration: 'none', color: 'inherit' }}>Terms</Link>
         <span>Help</span>
       </div>
       <p className="footer-copy">© 2026 Nambac Cloud Mascot & Co. Made for Vietnamese Gen Z with love and pixels.</p>

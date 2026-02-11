@@ -20,13 +20,18 @@
 /* ==== Page Container ==== */
 .result-page-container {
     min-height: 100vh;
-    width: 100%;
+    width: 95%;
+    max-width: 500px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
+    align-items: center;
     background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 50%, #f3e5f5 100%);
     font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--comic-charcoal);
     overflow-x: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    /* Optional: adds subtle depth on desktop */
 }
 
 /* ==== Header ==== */
@@ -102,8 +107,8 @@
 /* ==== New Unified Card (Image + Overlay Text) ==== */
 .result-unified-card {
     position: relative;
-    width: calc(100% - 40px);
-    max-width: 480px;
+    width: 95%;
+    max-width: 500px;
     aspect-ratio: 3/4;
     /* Poster ratio like quiz start */
     border-radius: 24px;
@@ -158,8 +163,8 @@
 
 /* ==== Recommended Quizzes Section ==== */
 .recommended-section {
-    width: 100%;
-    max-width: 480px;
+    width: 95%;
+    max-width: 500px;
     margin-top: 20px;
     padding-bottom: 100px;
     /* Space for bottom bar */
@@ -644,8 +649,8 @@
     left: 0;
     right: 0;
     margin: 0 auto;
-    width: calc(100% - 40px);
-    max-width: 480px;
+    width: 95%;
+    max-width: 500px;
     height: 70px;
     background: white;
     border: 2px solid var(--comic-charcoal);

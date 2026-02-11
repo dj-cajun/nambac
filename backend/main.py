@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 from typing import List, Optional, Any, Dict, cast
 from datetime import datetime
@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from logic.factory import NambacFactory
 from logic.json_manager import JSONManager
 from logic.image_generator import ImageGenerator
+from logic.ai_service_manager import AIServiceManager
 
 
 # Log messages to stderr (Updated for result fix)
@@ -64,13 +65,20 @@ class QuizRequest(BaseModel):
 
 
 # --- FastAPI App Initialization ---
+# cPanel 배포 환경(ENV=production)일 때만 root_path="/api" 설정
+# 로컬 개발 환경(ENV=development 또는 없음)에서는 root_path="" (기본값)
+root_path = "/api" if os.getenv("ENV") == "production" else ""
+
 app = FastAPI(
     title="Nambac Agent Factory API",
     description="3인의 AI 에이전트(Director, Architect, Analyst)가 협업하는 퀴즈 생성 공장",
     version="1.0.0",
+    root_path=root_path,
 )
 
 origins = [
+    "https://nambac.xyz",
+    "http://nambac.xyz",
     "http://localhost:5173",
     "http://localhost:3000",
     "http://127.0.0.1:8000",
@@ -192,6 +200,77 @@ def increment_share_count(quiz_id: str):
     if new_count is None:
         raise HTTPException(status_code=404, detail="Quiz not found")
     return {"share_count": new_count}
+
+
+@app.get("/share/{quiz_id}/{result_code}", response_class=HTMLResponse)
+def share_result_og(quiz_id: str, result_code: int):
+    """
+    Social Sharing Endpoint (Server-Side Rendering for OG Tags)
+    - Returns HTML with dynamic OG tags (Image, Title)
+    - Redirects real users to the Frontend SPA
+    """
+    quiz = json_manager.get_quiz(quiz_id)
+    if not quiz:
+        return HTMLResponse(content="<html><body>Quiz not found</body></html>", status_code=404)
+
+    # Find specific result
+    results = json_manager.get_results_by_quiz_id(quiz_id)
+    result = next((r for r in results if int(r.get("result_code")) == result_code), None)
+    
+    if result:
+        title = result.get("title", quiz.get("title", "Nambac Quiz"))
+        description = result.get("description", "Check out my result!").replace("\n", " ")
+        image_url = result.get("image_url", "")
+    else:
+        # Fallback to generic quiz info
+        title = quiz.get("title", "Nambac Quiz")
+        description = quiz.get("summary", "Check out this quiz!")
+        image_url = quiz.get("thumbnail", "")
+
+    # Ensure Absolute URL for Image (Critical for FB/Zalo)
+    if image_url and not image_url.startswith("http"):
+        # If /images/..., prepend domain
+        image_url = f"https://nambac.xyz{image_url}"
+    elif not image_url:
+        image_url = "https://nambac.xyz/og-default.png" # Fallback
+
+    frontend_url = f"https://nambac.xyz/quiz/{quiz_id}/result?score={result_code}"
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{frontend_url}">
+        <meta property="og:title" content="{title}">
+        <meta property="og:description" content="{description[:300]}...">
+        <meta property="og:image" content="{image_url}">
+        <meta property="og:image:width" content="800">
+        <meta property="og:image:height" content="800">
+
+        <!-- Zalo / Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:title" content="{title}">
+        <meta property="twitter:description" content="{description[:300]}...">
+        <meta property="twitter:image" content="{image_url}">
+
+        <title>{title}</title>
+        
+        <script>
+            // Redirect to actual SPA page
+            window.location.href = "{frontend_url}";
+        </script>
+    </head>
+    <body>
+        <p>Redirecting to result...</p>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
 
 
 @app.post("/api/quizzes")
@@ -408,6 +487,24 @@ def delete_service(service_id: str):
     if not success:
         raise HTTPException(status_code=404, detail="Service not found")
     return {"message": "Service deleted successfully"}
+
+
+class CatDogRequest(BaseModel):
+    name: str
+    image: str
+
+
+@app.post("/api/ai-service/cats-vs-dog")
+async def analyze_cat_dog(request: CatDogRequest):
+    try:
+        manager = AIServiceManager()
+        result = await manager.run_cat_dog_analysis(request.name, request.image)
+        if not result:
+            raise HTTPException(status_code=500, detail="AI Analysis failed")
+        return result
+    except Exception as e:
+        print(f"❌ AI Service Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Server Error: {str(e)}")
 
 
 # ========== Automation Endpoints (Phase 2) ==========

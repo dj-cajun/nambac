@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import './Home.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS } from '../constants/categories';
+import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
+import AdPlaceholder from '../components/AdPlaceholder';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -25,20 +27,14 @@ export default function Home() {
   const [magazineArticles, setMagazineArticles] = useState([]);
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const getImageUrl = (url) => {
-    if (!url) return '';
-    if (url.startsWith('http')) return url;
-    return `http://localhost:8000${url}`;
-  };
-
   // Fetch Quizzes & Services & Magazine from API
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [quizRes, serviceRes, magRes] = await Promise.all([
-          fetch('http://localhost:8000/api/quizzes', { cache: 'no-store' }),
-          fetch('http://localhost:8000/api/services', { cache: 'no-store' }),
-          fetch('http://localhost:8000/api/magazine', { cache: 'no-store' })
+          fetch(`${API_BASE_URL}/quizzes`, { cache: 'no-store' }),
+          fetch(`${API_BASE_URL}/services`, { cache: 'no-store' }),
+          fetch(`${API_BASE_URL}/magazine`, { cache: 'no-store' })
         ]);
 
         const quizData = await quizRes.json();
@@ -165,7 +161,11 @@ export default function Home() {
 
     // Fake loading delay for effect
     setTimeout(() => {
-      window.open(service.url, '_blank');
+      if (service.url.startsWith('/')) {
+        navigate(service.url);
+      } else {
+        window.open(service.url, '_blank');
+      }
       setIsConnecting(false);
       setConnectingService(null);
     }, 1500);
@@ -174,7 +174,7 @@ export default function Home() {
   const handleQuizClick = async (quizId) => {
     // 1. Fire and forget view increment
     try {
-      fetch(`http://localhost:8000/api/quizzes/${quizId}/view`, { method: 'POST' });
+      fetch(`${API_BASE_URL}/quizzes/${quizId}/view`, { method: 'POST' });
     } catch (e) {
       console.error("View increment failed", e);
     }
@@ -313,6 +313,10 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* AdSense Slot (Between Quiz List and AI Services) */}
+      <AdPlaceholder location="home-middle" />
+
       {/* 5. AI Service Hub (New) */}
       <div className="mt-8 mb-24">
         <h3 className="glass-section-title text-[#FF2D85]">✨ AI Partner Services</h3>

@@ -10,6 +10,7 @@
   --jelly-radius: 2rem;
 }
 
+html,
 body {
   margin: 0;
   font-family: 'Be Vietnam Pro', 'Jua', sans-serif;

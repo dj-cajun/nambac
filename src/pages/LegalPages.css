@@ -1,0 +1,120 @@
+.legal-page-container {
+    padding: 80px 20px;
+    /* Added top padding for navbar */
+    max-width: 100%;
+    min-height: 100vh;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: #4a148c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.legal-content {
+    background: rgba(255, 255, 255, 0.9);
+    /* Higher opacity for better readability */
+    padding: 40px;
+    border-radius: 30px;
+    text-align: left;
+    max-width: 800px;
+    width: 100%;
+    max-height: 80vh;
+    /* Limit height to viewport */
+    overflow-y: auto;
+    /* Scroll internal content */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    position: relative;
+}
+
+/* Custom Scrollbar for Legal Content */
+.legal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.legal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.legal-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.legal-content h1 {
+    font-size: 1.8rem;
+    color: #880e4f;
+    margin-bottom: 5px;
+    text-align: center;
+    font-weight: 800;
+}
+
+.legal-content .last-updated {
+    text-align: center;
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.legal-content section {
+    margin-bottom: 25px;
+}
+
+.legal-content h2 {
+    font-size: 1.2rem;
+    color: #c2185b;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #fce4ec;
+    padding-bottom: 5px;
+    font-weight: 700;
+}
+
+.legal-content p {
+    margin-bottom: 12px;
+    line-height: 1.7;
+    color: #4a4a4a;
+    font-size: 0.95rem;
+}
+
+.legal-back-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: #fce4ec;
+    color: #880e4f;
+    text-align: center;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+}
+
+.legal-back-btn:hover {
+    background: #f8bbd0;
+    transform: translateY(-2px);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .legal-page-container {
+        padding: 70px 15px 20px;
+    }
+
+    .legal-content {
+        padding: 25px;
+        max-height: 85vh;
+    }
+
+    .legal-content h1 {
+        font-size: 1.4rem;
+    }
+
+    .legal-content h2 {
+        font-size: 1.1rem;
+    }
+}

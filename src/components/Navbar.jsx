@@ -20,11 +20,8 @@ const Navbar = () => {
             <span className="nav-brand-text">nambac<span className="nav-brand-suffix">.xyz</span></span>
           </div>
 
-          {/* CENTER: Links */}
+          {/* CENTER: Links Removed */}
           <div className="nav-center">
-            <button className={`nav-item ${isActive('/') ? 'active' : ''}`} onClick={() => navigate('/')}>Home</button>
-            <button className="nav-item" onClick={() => navigate('/')}>Quizzes</button>
-            <button className="nav-item" onClick={() => alert('About Page Coming Soon!')}>About</button>
           </div>
 
           {/* RIGHT: Actions - Empty or minimal */}

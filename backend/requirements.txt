@@ -1,6 +1,9 @@
 fastapi
-uvicorn
+uvicorn[standard]
 httpx
 python-dotenv
 pydantic
-ruff
+google-genai
+pillow
+aiofiles
+python-multipart

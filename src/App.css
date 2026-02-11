@@ -2,7 +2,15 @@
   /* Ensure this container is relative for absolute positioning of blobs */
   position: relative;
   min-height: 100vh;
-  overflow: hidden; /* Prevent blobs from causing horizontal scroll */
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow: hidden;
+  /* Prevent blobs from causing horizontal scroll */
+  background: white;
+  /* Ensure consistent background within the frame */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  /* Optional: Separation from body bg */
 }
 
 /* Base Blob Styles */
@@ -17,20 +25,23 @@
 }
 
 .blob-1 {
-  background: #FF2D85; /* Hot Pink */
+  background: #FF2D85;
+  /* Hot Pink */
   top: -100px;
   left: -100px;
 }
 
 .blob-2 {
-  background: #4DE8F4; /* Cyan */
+  background: #4DE8F4;
+  /* Cyan */
   bottom: 0px;
   right: -50px;
   transform: scale(0.7);
 }
 
 .blob-3 {
-  background: #FFD700; /* Gold/Yellow */
+  background: #FFD700;
+  /* Gold/Yellow */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(1.2);

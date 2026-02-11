@@ -3,7 +3,7 @@
  * Supabase 대신 로컬 백엔드 API 사용
  */
 
-const API_BASE_URL = 'http://localhost:8000/api';
+import { API_BASE_URL } from './apiConfig';
 
 class LocalDataClient {
   /**
@@ -208,7 +208,7 @@ export const supabase = {
       return {
         select: () => {
           return {
-             single: async () => {
+            single: async () => {
               // 퀴즈 삽입
               if (Array.isArray(data) && data.length > 0) {
                 const quiz = data[0];

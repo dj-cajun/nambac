@@ -2915,938 +2915,314 @@
   },
   {
     "result_code": 0,
-    "title": "Ngọc Trinh 'phiên bản Grab'",
-    "description": "Bạn là 'Ngọc Trinh phiên bản Grab'. Vẻ ngoài thì long lanh như ngọc, nhưng thực tế thì chạy Grab kiếm sống qua ngày. Đừng buồn, ai bảo cứ đẹp là phải giàu đâu? Quan trọng là bạn vẫn xinh đẹp và tự kiếm tiền bằng chính sức lao động của mình. Mạnh mẽ lên!",
+    "title": "'Ẩn sĩ' TikTok",
+    "description": "Bạn sống chậm hơn một nhịp so với thế giới 'tóp tóp'. Không phải là bạn 'tụt hậu', mà là bạn có gu riêng, không chạy theo số đông. Một chút 'vintage', một chút 'hoài cổ', bạn là 'của hiếm' giữa Sài Gòn náo nhiệt!",
     "traits": [
-      "Xinh đẹp",
-      "Tự lập",
-      "Chăm chỉ"
+      "Gu riêng",
+      "Sống chậm",
+      "Không thích ồn ào"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "12f455e0-e7a3-4ca0-a38e-642a3a5a2c2f"
+    "image_url": "/images/img_1770621755_Result_Image_Main_Subject_Ẩ.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "6ec66cbf-658c-4862-bde3-5b37ded25ccb"
   },
   {
     "result_code": 1,
-    "title": "Trấn Thành 'hệ tâm linh'",
-    "description": "Bạn là 'Trấn Thành hệ tâm linh'. Nói chuyện thì triết lý như đúng rồi, nhưng thực ra toàn đạo lý xàm xí. Thích phán xét người khác, nhưng lại sống ảo trên mạng xã hội. Dù sao thì bạn cũng là một người có tâm hồn phong phú, chỉ là đôi khi hơi 'lố' thôi!",
+    "title": "Thánh 'hóng hớt' nửa mùa",
+    "description": "Bạn có 'máu' trend, nhưng chỉ 'hóng hớt' chứ không 'đu' tới bến. Thích khám phá cái mới, nhưng vẫn giữ 'chất' riêng. Kiểu như 'flex' nhẹ nhàng: 'À, cái này tao biết rồi!'",
     "traits": [
-      "Thông minh",
-      "Hài hước",
-      "Lố lăng"
+      "Thích cái mới",
+      "Vẫn giữ chất riêng",
+      "Flex nhẹ nhàng"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "c5857ab8-1d58-4f44-a27d-d2ce53ca61c9"
+    "image_url": "/images/img_1770621756_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "9b46415d-0eff-4a38-a326-9069983ecfab"
   },
   {
     "result_code": 2,
-    "title": "Chi Pu 'đa-zi-năng'",
-    "description": "Bạn là 'Chi Pu đa-zi-năng'. Cái gì cũng muốn làm, nhưng cái gì cũng dở dở ương ương. Hát thì không hay, diễn thì đơ, nhưng vẫn tự tin làm tới. Khâm phục bạn ở cái tinh thần 'dám nghĩ dám làm', nhưng mà làm ơn hãy chọn một nghề thôi được không?",
+    "title": "Con chiên ngoan đạo của TikTok",
+    "description": "Bạn 'nghiện' TikTok hơn cả 'người yêu'. Trend nào cũng 'đu', filter nào cũng thử. Sống hết mình với đam mê 'tóp tóp', ai nói gì mặc kệ. Miễn vui là được!",
     "traits": [
-      "Tự tin",
-      "Năng động",
-      "Tham vọng"
+      "Nghiện TikTok",
+      "Sống hết mình",
+      "Mặc kệ đời"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "08d49b88-c5a3-415d-8194-8bc264743670"
+    "image_url": "/images/img_1770621755_Result_Image_Main_Subject_Co.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "acdf3580-7ccd-43de-b35a-79a6b66cfc29"
   },
   {
     "result_code": 3,
-    "title": "Sơn Tùng M-TP 'cool ngầu'",
-    "description": "Bạn là 'Sơn Tùng M-TP cool ngầu'. Luôn tỏ ra bí ẩn và lạnh lùng, nhưng thực ra là không biết nói gì. Thích bắt chước phong cách của người khác, nhưng lại không có chất riêng. Dù sao thì bạn cũng có một gu thẩm mỹ tốt, chỉ là cần tìm ra con đường của riêng mình thôi!",
+    "title": "Trendsetter 'tập sự'",
+    "description": "Bạn có tố chất 'dẫn đầu', nhưng chưa đủ 'máu' để 'cháy' hết mình. Thích tạo ra cái mới, nhưng vẫn 'e dè' sợ bị 'ném đá'. Cứ tự tin lên, bạn sẽ là 'ngôi sao' TikTok!",
     "traits": [
-      "Phong cách",
-      "Bí ẩn",
-      "Lạnh lùng"
+      "Có tố chất",
+      "Còn e dè",
+      "Cần tự tin"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "a33f0853-b233-49ea-ae96-8d65e98f7364"
+    "image_url": "/images/img_1770621754_Result_Image_Main_Subject_Tr.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "7c825701-001f-4af3-8c5e-5de65161cd63"
   },
   {
     "result_code": 4,
-    "title": "H'Hen Niê 'chân chất'",
-    "description": "Bạn là 'H'Hen Niê chân chất'. Thật thà, giản dị, không màu mè. Sống đơn giản, nghĩ đơn giản, không bon chen. Dù không có nhiều tài năng đặc biệt, nhưng bạn luôn được mọi người yêu quý vì sự chân thành của mình. Hãy cứ là chính mình, bạn nhé!",
+    "title": "Dân 'đu đưa' chuyên nghiệp",
+    "description": "Bạn là 'linh hồn' của mọi cuộc vui. Trend nào có bạn là 'auto' hot. Sẵn sàng 'bung xõa', không ngại 'lố'. Bạn sinh ra để 'quẩy' cùng TikTok!",
     "traits": [
-      "Chân thành",
-      "Giản dị",
-      "Tốt bụng"
+      "Linh hồn của cuộc vui",
+      "Sẵn sàng bung xõa",
+      "Sinh ra để quẩy"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "c09ba119-20ba-4ffc-9daa-4786343b6a02"
+    "image_url": "/images/img_1770621763_Result_Image_Main_Subject_Dâ.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "fcfea52a-3fc1-4b73-836a-5935f9095f0e"
   },
   {
     "result_code": 5,
-    "title": "Isaac 'soái ca'",
-    "description": "Bạn là 'Isaac soái ca'. Đẹp trai, ga lăng, luôn quan tâm đến người khác. Là hình mẫu lý tưởng của bao cô gái. Nhưng mà 'soái ca' thường cô đơn, vì chẳng ai dám tiếp cận bạn cả. Hãy mở lòng hơn, bạn sẽ tìm được người phù hợp!",
+    "title": "Thánh 'biến hóa' khôn lường",
+    "description": "Bạn có khả năng 'biến hóa' tài tình theo mọi trend. Hôm nay 'bánh bèo', mai 'cool ngầu'. Khả năng thích ứng của bạn khiến ai cũng phải 'trầm trồ'!",
     "traits": [
-      "Đẹp trai",
-      "Ga lăng",
-      "Tốt bụng"
+      "Khả năng biến hóa",
+      "Thích ứng nhanh",
+      "Gây trầm trồ"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "7d5366f9-0bf5-40e5-a773-f3c85b35f580"
+    "image_url": "/images/img_1770621762_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "b1383f60-f5cd-42d2-933b-a82f65c33ebf"
   },
   {
     "result_code": 6,
-    "title": "Lan Ngọc 'ngọc nữ'",
-    "description": "Bạn là 'Lan Ngọc ngọc nữ'. Xinh đẹp, tài năng, được nhiều người yêu mến. Nhưng cuộc sống của bạn không phải lúc nào cũng màu hồng. Đôi khi bạn cảm thấy cô đơn và lạc lõng. Hãy tìm kiếm sự giúp đỡ từ những người xung quanh, bạn sẽ vượt qua được mọi khó khăn!",
+    "title": "Trendsetter 'gạo cội'",
+    "description": "Bạn không chỉ 'đu' trend, mà còn 'tạo' ra trend. Gu thẩm mỹ 'đỉnh của chóp', khả năng sáng tạo 'vô biên'. Bạn là 'thần tượng' của giới trẻ Sài Gòn!",
     "traits": [
-      "Xinh đẹp",
-      "Tài năng",
-      "Nhạy cảm"
+      "Tạo ra trend",
+      "Gu thẩm mỹ đỉnh",
+      "Thần tượng giới trẻ"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "20c74f1e-1c95-40e2-8a10-c30ba71271c9"
+    "image_url": "/images/img_1770621763_Result_Image_Main_Subject_Tr.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "a48fc41e-b1a2-4644-864d-99cd5ea4b5d8"
   },
   {
     "result_code": 7,
-    "title": "JustaTee 'bad boy'",
-    "description": "Bạn là 'JustaTee bad boy'. Ngổ ngáo, nổi loạn, không thích bị gò bó. Thích làm những điều mình thích, không quan tâm đến người khác nghĩ gì. Nhưng bên trong vẻ ngoài 'bad boy' đó là một trái tim ấm áp. Hãy thể hiện con người thật của mình, bạn sẽ được mọi người yêu quý!",
+    "title": "Ông/Bà hoàng TikTok",
+    "description": "Bạn là 'trùm cuối' của thế giới 'tóp tóp'. Mọi trend đều nằm trong tầm tay bạn. Quyền lực 'ngầm' của bạn khiến ai cũng phải 'nể phục'. Bạn là 'huyền thoại' của TikTok Sài Gòn!",
     "traits": [
-      "Cá tính",
-      "Nổi loạn",
-      "Ấm áp"
+      "Trùm cuối",
+      "Quyền lực ngầm",
+      "Huyền thoại TikTok"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "446eed34-7417-4cf4-804f-b19207305427",
-    "id": "b387d03a-fb20-423d-af69-a9d862d85c6d"
+    "image_url": "/images/img_1770621767_Result_Image_Main_Subject_Ôn.png",
+    "quiz_id": "5b3979ca-ffb7-44ef-9961-3ca047939419",
+    "id": "688c9072-f74f-4a25-b5aa-20f8f6a9161c"
   },
   {
     "result_code": 0,
-    "title": "Người nông dân hiền lành | Người nông dân hiền lành",
-    "description": "Trong kiếp trước, bạn là một người nông dân hiền lành, sống ở một vùng quê yên bình. Bạn yêu thiên nhiên và thích trồng trọt. Cuộc sống của bạn tuy đơn giản nhưng đầy niềm vui. Bạn rất giỏi trong việc trồng rau má và nuôi gà. Tuy nhiên, bạn lại rất sợ ma và thường xuyên bị mất ngủ vì tiếng chó sủa lúc nửa đêm. | Trong kiếp trước, bạn là một người nông dân hiền lành, sống ở một vùng quê yên bình. Bạn yêu thiên nhiên và thích trồng trọt. Cuộc sống của bạn tuy đơn giản nhưng đầy niềm vui. Bạn rất giỏi trong việc trồng rau má và nuôi gà. Tuy nhiên, bạn lại rất sợ ma và thường xuyên bị mất ngủ vì tiếng chó sủa lúc nửa đêm.",
+    "title": "'Thánh Nhát Gan' Chợ Lớn",
+    "description": "Con thuộc dạng 'gặp chuyện là xỉu'. Thấy lá bài xấu là hồn bay phách lạc, chỉ giỏi trốn tránh. Nhưng mà...nhờ vậy mà con sống lâu đó! Bùa hộ mệnh: cục gạch vỡ.",
     "traits": [
-      "Hiền lành",
-      "Chăm chỉ",
-      "Yêu thiên nhiên"
+      "Sợ sệt",
+      "Dễ tin người",
+      "Hay lo lắng"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "7132f0fd-fb72-4e98-9c4c-ee00df7edfcf"
+    "image_url": "/images/img_1770791189_Result_Image_Main_Subject_T.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "dbdb8ace-5510-494a-a9ea-94216d945222"
   },
   {
     "result_code": 1,
-    "title": "Cô bán bún riêu vui vẻ | Cô bán bún riêu vui vẻ",
-    "description": "Trong kiếp trước, bạn là một cô bán bún riêu vui vẻ, nổi tiếng khắp khu phố. Bún riêu của bạn ngon đến nỗi ai ăn cũng phải xuýt xoa. Bạn luôn nở nụ cười trên môi và sẵn sàng giúp đỡ mọi người. Bạn rất giỏi trong việc nêm nếm gia vị và pha nước mắm. Tuy nhiên, bạn lại rất hay quên và thường xuyên cho nhầm đường vào nồi bún riêu. | Trong kiếp trước, bạn là một cô bán bún riêu vui vẻ, nổi tiếng khắp khu phố. Bún riêu của bạn ngon đến nỗi ai ăn cũng phải xuýt xoa. Bạn luôn nở nụ cười trên môi và sẵn sàng giúp đỡ mọi người. Bạn rất giỏi trong việc nêm nếm gia vị và pha nước mắm. Tuy nhiên, bạn lại rất hay quên và thường xuyên cho nhầm đường vào nồi bún riêu.",
+    "title": "'Tắc Kè Hoa' 3 Phải",
+    "description": "Con gió chiều nào che chiều đó. Thấy ai bói hay thì bu theo, gặp bài xấu thì chối đây đẩy. Cơ mà...nhờ vậy mà con sống sót qua mọi drama! Bùa hộ mệnh: cái nắp chai bia.",
     "traits": [
-      "Vui vẻ",
-      "Hào phóng",
-      "Nấu ăn ngon"
+      "Ba phải",
+      "Dễ thay đổi",
+      "Thiếu chính kiến"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "894f1f8a-d190-4db2-ade0-f42aea56edf0"
+    "image_url": "/images/img_1770791187_Result_Image_Main_Subject_T.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "33dea189-af93-48c2-9f4e-e6dfadf1ff7d"
   },
   {
     "result_code": 2,
-    "title": "Anh xích lô lãng tử | Anh xích lô lãng tử",
-    "description": "Trong kiếp trước, bạn là một anh xích lô lãng tử, rong ruổi khắp các con đường của Hà Nội. Bạn thích ngắm nhìn phố phường và nghe những câu chuyện của người đi đường. Bạn rất giỏi trong việc lái xích lô và thuộc mọi ngóc ngách của thành phố. Tuy nhiên, bạn lại rất hay mơ mộng và thường xuyên đi lạc đường. Có lần, bạn còn chở khách đến tận... Vũng Tàu! | Trong kiếp trước, bạn là một anh xích lô lãng tử, rong ruổi khắp các con đường của Hà Nội. Bạn thích ngắm nhìn phố phường và nghe những câu chuyện của người đi đường. Bạn rất giỏi trong việc lái xích lô và thuộc mọi ngóc ngách của thành phố. Tuy nhiên, bạn lại rất hay mơ mộng và thường xuyên đi lạc đường. Có lần, bạn còn chở khách đến tận... Vũng Tàu!",
+    "title": "'Ngựa Non Háu Đá' Quận 1",
+    "description": "Con bốc đồng, thích thể hiện. Thấy bài Tarot hay hay là phán như đúng rồi, ai cản cũng không nghe. Nhưng mà...nhờ vậy mà con có nhiều 'kỷ niệm nhớ đời'! Bùa hộ mệnh: tờ vé số rách.",
     "traits": [
-      "Lãng tử",
-      "Tự do",
-      "Thích khám phá"
+      "Bốc đồng",
+      "Hiếu thắng",
+      "Nóng nảy"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "14e7d4e5-74be-44f5-a687-f4f90af0d98c"
+    "image_url": "/images/img_1770791189_Result_Image_Main_Subject_N.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "fff1fbd0-975c-42d4-bed5-5b086f63a63e"
   },
   {
     "result_code": 3,
-    "title": "Thầy đồ nghiêm khắc | Thầy đồ nghiêm khắc",
-    "description": "Trong kiếp trước, bạn là một thầy đồ nghiêm khắc, dạy chữ Hán cho lũ trẻ trong làng. Bạn luôn yêu cầu học trò phải học thuộc lòng kinh sử và trừng phạt rất nặng những ai lười biếng. Bạn rất giỏi trong việc viết chữ đẹp và am hiểu sâu sắc về văn hóa truyền thống. Tuy nhiên, bạn lại rất bảo thủ và không chịu tiếp thu những cái mới. Bạn cho rằng TikTok là thứ vô bổ và chỉ dành cho lũ trẻ trâu. | Trong kiếp trước, bạn là một thầy đồ nghiêm khắc, dạy chữ Hán cho lũ trẻ trong làng. Bạn luôn yêu cầu học trò phải học thuộc lòng kinh sử và trừng phạt rất nặng những ai lười biếng. Bạn rất giỏi trong việc viết chữ đẹp và am hiểu sâu sắc về văn hóa truyền thống. Tuy nhiên, bạn lại rất bảo thủ và không chịu tiếp thu những cái mới. Bạn cho rằng TikTok là thứ vô bổ và chỉ dành cho lũ trẻ trâu.",
+    "title": "'Thánh Lầy' Bến Thành",
+    "description": "Con sống kiểu 'đời là bể khổ, bơi không lại thì lặn'. Thấy bài xấu cũng cười hề hề cho qua chuyện. Nhưng mà...nhờ vậy mà con sống vui vẻ hơn người ta! Bùa hộ mệnh: cọng rau muống.",
     "traits": [
-      "Nghiêm khắc",
-      "Uyên bác",
-      "Bảo thủ"
+      "Lầy lội",
+      "Vô tư",
+      "Hay cười"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "981b17e3-e13e-4277-8c4d-59d51ea8bfbf"
+    "image_url": "/images/img_1770791188_Result_Image_Main_Subject_T.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "a4617621-7933-4e29-be51-17fd77a5178e"
   },
   {
     "result_code": 4,
-    "title": "Cô ca sĩ phòng trà quyến rũ | Cô ca sĩ phòng trà quyến rũ",
-    "description": "Trong kiếp trước, bạn là một cô ca sĩ phòng trà quyến rũ, sở hữu giọng hát ngọt ngào và vẻ đẹp khiến bao người say đắm. Bạn thường hát những bài tình ca buồn da diết và khiến khán giả rơi nước mắt. Bạn rất giỏi trong việc hát và chơi đàn guitar. Tuy nhiên, bạn lại rất dễ rung động và thường xuyên vướng vào những mối tình chóng vánh. Bạn đã từng yêu một anh trùm xã hội đen và suýt bị bắt cóc. | Trong kiếp trước, bạn là một cô ca sĩ phòng trà quyến rũ, sở hữu giọng hát ngọt ngào và vẻ đẹp khiến bao người say đắm. Bạn thường hát những bài tình ca buồn da diết và khiến khán giả rơi nước mắt. Bạn rất giỏi trong việc hát và chơi đàn guitar. Tuy nhiên, bạn lại rất dễ rung động và thường xuyên vướng vào những mối tình chóng vánh. Bạn đã từng yêu một anh trùm xã hội đen và suýt bị bắt cóc.",
+    "title": "'Drama Queen' Thảo Điền",
+    "description": "Con sống ảo tung chảo, thấy bài Tarot xấu là làm lố lên cho cả xóm biết. Cơ mà...nhờ vậy mà con được nhiều người quan tâm! Bùa hộ mệnh: cái ly trà tắc.",
     "traits": [
-      "Quyến rũ",
-      "Tài năng",
-      "Dễ rung động"
+      "Sống ảo",
+      "Thích gây sự chú ý",
+      "Hay than vãn"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "e04cbf2b-dbd5-42ae-acdb-90f99131db02"
+    "image_url": "/images/img_1770791197_Result_Image_Main_Subject_D.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "398549de-7ddc-457b-979f-d2aa7f1db3da"
   },
   {
     "result_code": 5,
-    "title": "Anh thợ sửa xe tài ba | Anh thợ sửa xe tài ba",
-    "description": "Trong kiếp trước, bạn là một anh thợ sửa xe tài ba, có thể sửa chữa mọi loại xe, từ xe đạp cà tàng đến xe hơi đời mới. Bạn rất giỏi trong việc tìm ra những lỗi hỏng hóc và sửa chúng một cách nhanh chóng. Bạn luôn sẵn sàng giúp đỡ mọi người và không bao giờ lấy tiền công quá đắt. Tuy nhiên, bạn lại rất bừa bộn và thường xuyên để đồ nghề lung tung khắp xưởng. Vợ bạn đã nhiều lần cằn nhằn về việc này. | Trong kiếp trước, bạn là một anh thợ sửa xe tài ba, có thể sửa chữa mọi loại xe, từ xe đạp cà tàng đến xe hơi đời mới. Bạn rất giỏi trong việc tìm ra những lỗi hỏng hóc và sửa chúng một cách nhanh chóng. Bạn luôn sẵn sàng giúp đỡ mọi người và không bao giờ lấy tiền công quá đắt. Tuy nhiên, bạn lại rất bừa bộn và thường xuyên để đồ nghề lung tung khắp xưởng. Vợ bạn đã nhiều lần cằn nhằn về việc này.",
+    "title": "'Dân Chơi Hệ Tâm Linh' Phú Nhuận",
+    "description": "Con nửa tin nửa ngờ, thấy bài Tarot hay thì share rần rần, gặp bài xấu thì âm thầm đi giải hạn. Cơ mà...nhờ vậy mà con cân bằng được cuộc sống! Bùa hộ mệnh: cục pin điện thoại.",
     "traits": [
-      "Tài ba",
-      "Tận tâm",
-      "Bừa bộn"
+      "Tò mò",
+      "Dễ bị ảnh hưởng",
+      "Cẩn trọng"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "ac010b70-c0bc-4061-b489-1f0c015c745e"
+    "image_url": "/images/img_1770791198_Result_Image_Main_Subject_D.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "edee53e1-65f4-4b9b-9342-c2c2be785f67"
   },
   {
     "result_code": 6,
-    "title": "Bà chủ tiệm tạp hóa khó tính | Bà chủ tiệm tạp hóa khó tính",
-    "description": "Trong kiếp trước, bạn là một bà chủ tiệm tạp hóa khó tính, luôn cau có và cằn nhằn khách hàng. Bạn rất giỏi trong việc quản lý tiền bạc và không bao giờ để ai nợ tiền. Bạn luôn nhớ giá của từng món hàng và không bao giờ bán sai giá. Tuy nhiên, bạn lại rất keo kiệt và không bao giờ cho ai vay tiền. Bạn còn cất giấu một hũ vàng dưới gầm giường và không cho ai biết. | Trong kiếp trước, bạn là một bà chủ tiệm tạp hóa khó tính, luôn cau có và cằn nhằn khách hàng. Bạn rất giỏi trong việc quản lý tiền bạc và không bao giờ để ai nợ tiền. Bạn luôn nhớ giá của từng món hàng và không bao giờ bán sai giá. Tuy nhiên, bạn lại rất keo kiệt và không bao giờ cho ai vay tiền. Bạn còn cất giấu một hũ vàng dưới gầm giường và không cho ai biết.",
+    "title": "'Triết Gia Đường Phố' Quận 3",
+    "description": "Con suy nghĩ sâu xa, thấy bài Tarot xấu là ngồi ngẫm nghĩ cả ngày. Cơ mà...nhờ vậy mà con hiểu được nhiều điều về bản thân! Bùa hộ mệnh: cái muỗng ăn phở.",
     "traits": [
-      "Khó tính",
-      "Tiết kiệm",
-      "Keo kiệt"
+      "Sâu sắc",
+      "Hay suy tư",
+      "Khó hiểu"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "5ffaa88f-9dba-440d-9567-f099a02ea063"
+    "image_url": "/images/img_1770791197_Result_Image_Main_Subject_T.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "65b5fd88-f3ca-4806-b94b-ad280c52e41b"
   },
   {
     "result_code": 7,
-    "title": "Ông trùm bất động sản tham lam | Ông trùm bất động sản tham lam",
-    "description": "Trong kiếp trước, bạn là một ông trùm bất động sản tham lam, sẵn sàng làm mọi thứ để kiếm tiền, kể cả việc lừa đảo và hối lộ. Bạn rất giỏi trong việc mua bán đất đai và xây dựng những tòa nhà cao tầng. Bạn luôn tìm cách bóc lột người lao động và không quan tâm đến môi trường. Cuối đời, bạn bị ung thư phổi và chết trong cô đơn. Bạn đã để lại một gia tài kếch xù nhưng không ai muốn thừa kế. | Trong kiếp trước, bạn là một ông trùm bất động sản tham lam, sẵn sàng làm mọi thứ để kiếm tiền, kể cả việc lừa đảo và hối lộ. Bạn rất giỏi trong việc mua bán đất đai và xây dựng những tòa nhà cao tầng. Bạn luôn tìm cách bóc lột người lao động và không quan tâm đến môi trường. Cuối đời, bạn bị ung thư phổi và chết trong cô đơn. Bạn đã để lại một gia tài kếch xù nhưng không ai muốn thừa kế.",
+    "title": "'Thánh Bướng' Chợ Cũ",
+    "description": "Con cứng đầu, thấy bài Tarot xấu là cãi tay đôi với bà thầy bói. Cơ mà...nhờ vậy mà con luôn bảo vệ được chính kiến của mình! Bùa hộ mệnh: miếng bánh mì.",
     "traits": [
-      "Tham lam",
-      "Xảo quyệt",
-      "Tàn nhẫn"
+      "Bướng bỉnh",
+      "Khó bảo",
+      "Tự tin"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "daf65ecf-3e0c-4db6-9926-c4db74529499",
-    "id": "d5225142-359f-44b5-95b6-695f2bd710a5"
+    "image_url": "/images/img_1770791198_Result_Image_Main_Subject_T.png",
+    "quiz_id": "c343563f-7704-4e2b-ad02-b668dd1e5a80",
+    "id": "cf2959da-18a3-4a30-9667-3c088b6cef16"
   },
   {
     "result_code": 0,
-    "title": "Thánh Ăn Chắc Mặc Bền",
-    "description": "Mày là chúa tiết kiệm! Đến nỗi keo kiệt luôn rồi đó. Sống vậy ai chơi? Nhưng thôi kệ mẹ nó, miễn mình giàu là được. Cẩn thận kẻo bị ung thư túi tiền nha con. Bùa hộ mệnh: cái nắp chai.",
+    "title": "Thánh 'tự kỷ'",
+    "description": "Mấy đứa sống trong thế giới riêng, ai nói gì cũng kệ. Nhưng mà này, lâu lâu ra ngoài hít thở không khí đi nha! Bùa hộ mệnh cho mấy đứa là... cục gạch lót đường.",
     "traits": [
-      "Tiết kiệm",
-      "Keo kiệt",
-      "Thực dụng"
+      "Khép kín",
+      "Tự tin thái quá",
+      "Ích kỷ"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "ba652801-36fd-4f8d-b856-3374fe1a277b"
+    "image_url": "/images/img_1770791975_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "e2251a62-70f1-46e3-8a51-4625c24ec7d8"
   },
   {
     "result_code": 1,
-    "title": "Số Nhọ Toàn Tập",
-    "description": "Đúng là số mày đen như chó mực! Làm gì cũng xui xẻo. Thôi thì ráng mà sống tiếp đi con. Đời còn dài, cố gắng lên! Nhưng mà chắc cũng không khá hơn đâu. Bùa hộ mệnh: cục gạch.",
+    "title": "Thanh niên 'cứng'",
+    "description": "Bói toán chỉ là trò con nít. Mấy đứa tự tin vào bản thân, không tin vào vận may. Nhưng mà này, đôi khi cũng nên mềm dẻo một chút nha! Bùa hộ mệnh của mấy đứa là... cái bật lửa.",
+    "traits": [
+      "Mạnh mẽ",
+      "Bướng bỉnh",
+      "Không tin ai"
+    ],
+    "image_url": "/images/img_1770791974_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "936d2f14-2771-4986-a44d-d6857f2c31a1"
+  },
+  {
+    "result_code": 2,
+    "title": "Dân 'sống ảo'",
+    "description": "Bói toán chỉ là cái cớ để sống ảo thôi. Check-in các kiểu, khoe lên mạng xã hội. Thực tế thì... thôi không dám nói. Bùa hộ mệnh của mấy đứa là... cục pin dự phòng.",
+    "traits": [
+      "Thích khoe mẽ",
+      "Sống hời hợt",
+      "Nghiện mạng xã hội"
+    ],
+    "image_url": "/images/img_1770791974_Result_Image_Main_Subject_Dâ.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "6fda17bc-8e1a-447f-9189-ccf4eb59685c"
+  },
+  {
+    "result_code": 3,
+    "title": "Người 'bình thường'",
+    "description": "Bói toán cho vui thôi mà. Mấy đứa không quá tin, cũng không quá khinh. Sống đơn giản, không drama. Bùa hộ mệnh của mấy đứa là... cái ly trà đá.",
+    "traits": [
+      "Bình tĩnh",
+      "Thực tế",
+      "Không nổi bật"
+    ],
+    "image_url": "/images/img_1770791975_Result_Image_Main_Subject_Ng.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "e5b47a7f-1d25-43e1-9f15-42baf85cfd24"
+  },
+  {
+    "result_code": 4,
+    "title": "Chuyên gia 'drama'",
+    "description": "Cái gì cũng làm quá lên. Bói ra lá xấu là khóc lóc, bói ra lá tốt thì khoe khắp xóm. Bớt bớt lại đi má! Bùa hộ mệnh của mấy đứa là... cái khẩu trang y tế.",
+    "traits": [
+      "Lo lắng",
+      "Thích thể hiện",
+      "Dễ bị ảnh hưởng"
+    ],
+    "image_url": "/images/img_1770791982_Result_Image_Main_Subject_Ch.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "f9eea47f-abf0-4f5b-bc10-09c3f9e50ab2"
+  },
+  {
+    "result_code": 5,
+    "title": "Con chiên 'ngoan đạo'",
+    "description": "Cái gì cũng tin sái cổ. Bói toán, phong thủy, bùa ngải... cái gì cũng chơi. Coi chừng bị lừa đó má! Bùa hộ mệnh của mấy đứa là... quyển kinh Phật.",
+    "traits": [
+      "Tin người",
+      "Dễ bị dụ",
+      "Mê tín"
+    ],
+    "image_url": "/images/img_1770791987_Result_Image_Main_Subject_Co.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "afdcf8ce-c216-4ad0-8f10-8450578ad372"
+  },
+  {
+    "result_code": 6,
+    "title": "Thánh 'mõm'",
+    "description": "Mồm thì bảo không tin, nhưng trong lòng thì lo sốt vó. Bói ra cái gì cũng đem ra bàn tán, nhưng không bao giờ hành động. Bùa hộ mệnh của mấy đứa là... cuộn băng keo.",
+    "traits": [
+      "Nói nhiều",
+      "Sợ hãi",
+      "Thiếu quyết đoán"
+    ],
+    "image_url": "/images/img_1770791987_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "b413f80f-de3d-4b5c-a94a-aa85da6c25e6"
+  },
+  {
+    "result_code": 7,
+    "title": "Số nhọ 'vô đối'",
+    "description": "Bói đâu trúng đó, toàn ra điềm gở. Mấy đứa số nhọ từ trong trứng rồi. Nhưng mà này, đừng buồn, rồi mọi chuyện sẽ qua thôi! Bùa hộ mệnh của mấy đứa là... tờ vé số (biết đâu trúng).",
     "traits": [
       "Xui xẻo",
       "Bi quan",
-      "Cam chịu"
+      "Hay gặp chuyện không may"
     ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "329cbd35-df06-4f82-9595-bbf09f3d2e69"
-  },
-  {
-    "result_code": 2,
-    "title": "Dân Văn Phòng Mọt Sách",
-    "description": "Suốt ngày chỉ biết cắm mặt vào máy tính. Ra đường nhìn ai cũng như người ngoài hành tinh. Mở mồm ra là toàn thuật ngữ chuyên ngành. Bớt 'ngáo' lại đi con! Bùa hộ mệnh: cái kính cận.",
-    "traits": [
-      "Mọt sách",
-      "Khô khan",
-      "Chuyên nghiệp"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "4dcfe7c4-8e6d-43db-8380-8a19d94a5745"
-  },
-  {
-    "result_code": 3,
-    "title": "Thánh Nhọ Nghề Nghiệp",
-    "description": "Công việc thì bấp bênh, lương thì ba cọc ba đồng. Sếp thì khó tính, đồng nghiệp thì đâm sau lưng. Thôi thì ráng mà kiếm việc khác đi con. Chứ đời này còn khổ dài dài. Bùa hộ mệnh: tờ đơn xin việc.",
-    "traits": [
-      "Bất ổn",
-      "Khó khăn",
-      "Chán nản"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "3bec7e82-1927-4296-be99-bbf66090a3ea"
-  },
-  {
-    "result_code": 4,
-    "title": "Con Buôn Có Tâm",
-    "description": "Mày có tố chất làm giàu đó con! Nhưng mà phải có tâm một chút. Đừng có thấy tiền là mờ mắt. Làm ăn phải uy tín thì mới bền được. Chứ không thì sớm muộn cũng 'ăn cám'. Bùa hộ mệnh: cái cân.",
-    "traits": [
-      "Tham vọng",
-      "Có tâm",
-      "Uy tín"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "68a30f30-6ae8-45c3-b8e7-6b5bb2f8421e"
-  },
-  {
-    "result_code": 5,
-    "title": "Số Hưởng Ăn Chơi",
-    "description": "Đúng là số mày sướng từ trong trứng! Tiền bạc rủng rỉnh, ăn chơi không phải nghĩ. Nhưng mà đừng có phung phí quá. Của làm ra thì quý hơn của cho. Bùa hộ mệnh: thẻ tín dụng.",
-    "traits": [
-      "Sung sướng",
-      "Phung phí",
-      "Vô tư"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "2c5d3b87-c18e-41ad-9cab-f68771544b98"
-  },
-  {
-    "result_code": 6,
-    "title": "Dân IT Đầu Têu",
-    "description": "Mày là trùm công nghệ! Cái gì cũng biết, cái gì cũng rành. Nhưng mà bớt 'ảo tưởng sức mạnh' lại đi con. Ngoài kia còn nhiều người giỏi hơn mày lắm. Bùa hộ mệnh: cái USB.",
-    "traits": [
-      "Thông minh",
-      "Tự tin",
-      "Kiêu ngạo"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "c6ecdce6-db31-4ce6-a562-4cf932bf0a63"
-  },
-  {
-    "result_code": 7,
-    "title": "Thánh Lầy Vô Đối",
-    "description": "Mày là đứa 'lầy' nhất cái xóm này! Đi đến đâu là náo loạn đến đó. Nhưng mà vui tính nên ai cũng quý. Bớt 'tăng động' lại đi con. Kẻo có ngày bị 'táng' cho vỡ mặt. Bùa hộ mệnh: cái loa.",
-    "traits": [
-      "Vui vẻ",
-      "Lầy lội",
-      "Tăng động"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "c82e2ddd-7544-44e5-82fc-59a1c16a1026",
-    "id": "b6c292f9-a24d-4cb2-8097-3a116d8c1c4c"
-  },
-  {
-    "result_code": 0,
-    "title": "Thánh 'tự kỷ ám thị' (000)",
-    "description": "Bạn là kiểu người crush có tồn tại hay không còn chưa chắc chắn. Bạn tự vẽ ra một câu chuyện tình yêu đẹp như mơ, nhưng thực tế thì... crush thậm chí còn không biết bạn là ai! Hãy mạnh dạn lên, đừng để tình yêu chỉ tồn tại trong trí tưởng tượng. Biết đâu crush cũng đang chờ bạn bật đèn xanh đó!",
-    "traits": [
-      "Rụt rè",
-      "Hay mơ mộng",
-      "Thiếu tự tin"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "42610f37-9c40-4edb-aa4e-b56a2876995a"
-  },
-  {
-    "result_code": 1,
-    "title": "'Thả thính nghiệp dư' (001)",
-    "description": "Bạn có chút xíu 'trà xanh' trong người, nhưng trình độ còn non lắm. Thả thính thì cũng có thả, nhưng toàn những câu sáo rỗng, nghe chán òm. Lời khuyên chân thành: hãy học hỏi thêm kinh nghiệm từ các bậc tiền bối, hoặc đơn giản là... bớt xàm lại!",
-    "traits": [
-      "Hơi nhút nhát",
-      "Thích quan tâm",
-      "Chưa có kinh nghiệm"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "cd6a4d86-5767-451f-a7fa-9c2990417616"
-  },
-  {
-    "result_code": 2,
-    "title": "'Chuyên gia thả bả' (010)",
-    "description": "Bạn là một cao thủ thả thính, nhưng lại thích chơi trò 'mèo vờn chuột'. Bạn tung ra những tín hiệu mập mờ, khiến crush cứ phải đoán già đoán non. Coi chừng 'lửa gần rơm lâu ngày cũng bén', đến lúc crush chán không thèm đu nữa thì đừng có mà hối hận!",
-    "traits": [
-      "Thông minh",
-      "Quyến rũ",
-      "Thích kiểm soát"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "e538e1b4-0333-44ec-95e0-497a324c7285"
-  },
-  {
-    "result_code": 3,
-    "title": "'Trà xanh hai mặt' (011)",
-    "description": "Bạn là bậc thầy của sự giả tạo. Trước mặt crush thì tỏ ra ngây thơ vô số tội, nhưng sau lưng thì âm thầm 'tấn công' đối thủ. Cẩn thận kẻo 'cái kim trong bọc lâu ngày cũng lòi ra', đến lúc đó thì đừng trách ai ác!",
-    "traits": [
-      "Giả tạo",
-      "Thủ đoạn",
-      "ích kỷ"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "4a90f381-ba75-4be5-a948-8bdb1b786299"
-  },
-  {
-    "result_code": 4,
-    "title": "'Stalker chính hiệu' (100)",
-    "description": "Bạn là một 'thánh soi' thứ thiệt. Bạn biết crush thích ăn gì, đi đâu, chơi với ai... Thậm chí, bạn còn biết rõ hơn cả crush nữa! Nhưng hãy nhớ, 'biết quá nhiều không tốt đâu', coi chừng bị crush block cho thì đừng có khóc!",
-    "traits": [
-      "Tò mò",
-      "Quan tâm thái quá",
-      "Ám ảnh"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "da5f056a-c4ff-4eb4-9658-8f64d0375313"
-  },
-  {
-    "result_code": 5,
-    "title": "'Thánh thả thính dạo' (101)",
-    "description": "Bạn rải thính khắp mọi nơi, ai bạn cũng 'thả'. Crush chỉ là một trong số vô vàn 'con mồi' của bạn. Bạn thích cảm giác được nhiều người theo đuổi, nhưng lại chẳng thực sự yêu ai. Đến một ngày, bạn sẽ nhận ra mình cô đơn đến nhường nào!",
-    "traits": [
-      "Lăng nhăng",
-      "Thích chinh phục",
-      "Hời hợt"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "d3341a23-4132-464d-a5f3-39b070a0793b"
-  },
-  {
-    "result_code": 6,
-    "title": "'Trà xanh cao cấp' (110)",
-    "description": "Bạn là một 'trà xanh' thượng thừa. Bạn biết cách khiến crush 'say như điếu đổ' mà không cần phải làm gì quá nhiều. Bạn có một sức hút khó cưỡng, khiến ai cũng muốn được ở bên bạn. Nhưng hãy cẩn thận, 'hồng nhan bạc phận' đó nha!",
-    "traits": [
-      "Quyến rũ",
-      "Thông minh",
-      "Xảo quyệt"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "faef0fcc-413d-4257-9523-fe66bcd16b3b"
-  },
-  {
-    "result_code": 7,
-    "title": "'Ác quỷ đội lốt thiên thần' (111)",
-    "description": "Bạn là 'trùm cuối' của thế giới 'trà xanh'. Bạn sẵn sàng làm mọi thứ để đạt được mục đích, kể cả việc 'dẫm đạp' lên người khác. Bạn không có trái tim, chỉ có sự toan tính. Hãy coi chừng, 'gieo nhân nào gặt quả nấy', đến lúc nhận 'quả báo' thì đừng có mà kêu!",
-    "traits": [
-      "Tàn nhẫn",
-      "Tham vọng",
-      "Vô cảm"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "cc3e1d12-b672-4ef8-93b6-20b76bd339d1",
-    "id": "0dd9762d-fcbe-4e54-b24a-61e3067f3698"
-  },
-  {
-    "result_code": 0,
-    "title": "Thánh 'Ăn Chay Nằm Ngửa' | Thánh 'Ăn Chay Nằm Ngửa'",
-    "description": "Kiếp trước bạn là một tu sĩ ẩn dật trên núi Bà Đen, ngày ngày niệm Phật cầu siêu cho nhân loại. Tính tình hiền lành, ít nói, nhưng mỗi lời nói ra đều là chân lý. Đừng cố gắng 'cà khịa' bạn, vì bạn sẽ chỉ cười trừ và nói 'A Di Đà Phật'. Nhưng đôi khi, sự 'vô tri' của bạn lại khiến người khác 'tức anh ách'. | Kiếp trước bạn là một tu sĩ ẩn dật trên núi Bà Đen, ngày ngày niệm Phật cầu siêu cho nhân loại. Tính tình hiền lành, ít nói, nhưng mỗi lời nói ra đều là chân lý. Đừng cố gắng 'cà khịa' bạn, vì bạn sẽ chỉ cười trừ và nói 'A Di Đà Phật'. Nhưng đôi khi, sự 'vô tri' của bạn lại khiến người khác 'tức anh ách'.",
-    "traits": [
-      "Hiền lành",
-      "Ít nói",
-      "Vô tri"
-    ],
-    "image_url": "/images/img_1770585792_________Create_a_characterce.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "f7fa5fc0-b841-41d6-b30b-dd9c915b48e3"
-  },
-  {
-    "result_code": 1,
-    "title": "Trùm 'Ăn Chơi Sài Gòn' | Trùm 'Ăn Chơi Sài Gòn'",
-    "description": "Kiếp trước bạn là một 'dân chơi' thứ thiệt, sống hết mình cho tuổi trẻ. Quẩy banh nóc các quán bar ở Bùi Viện, 'cháy' hết mình trong các lễ hội âm nhạc. Tuy nhiên, sau những cuộc vui thâu đêm suốt sáng, bạn lại cảm thấy cô đơn và trống rỗng. Đừng lo, hãy cứ 'bung xõa' đi, vì cuộc đời là những chuyến đi! | Kiếp trước bạn là một 'dân chơi' thứ thiệt, sống hết mình cho tuổi trẻ. Quẩy banh nóc các quán bar ở Bùi Viện, 'cháy' hết mình trong các lễ hội âm nhạc. Tuy nhiên, sau những cuộc vui thâu đêm suốt sáng, bạn lại cảm thấy cô đơn và trống rỗng. Đừng lo, hãy cứ 'bung xõa' đi, vì cuộc đời là những chuyến đi!",
-    "traits": [
-      "Ăn chơi",
-      "Hết mình",
-      "Cô đơn"
-    ],
-    "image_url": "/images/img_1770585791_________Create_a_characterce.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "a1076391-48ec-4b72-b823-abaa5e2a663f"
-  },
-  {
-    "result_code": 2,
-    "title": "Thánh 'Cà Khịa Online' | Thánh 'Cà Khịa Online'",
-    "description": "Kiếp trước bạn là một 'anh hùng bàn phím' chính hiệu. Sẵn sàng 'combat' với bất kỳ ai trên mạng xã hội, từ chuyện chính trị đến chuyện showbiz. Tuy nhiên, ngoài đời thực, bạn lại là một người khá nhút nhát và ngại giao tiếp. Hãy nhớ rằng, 'cà khịa' có chừng mực thôi nhé! | Kiếp trước bạn là một 'anh hùng bàn phím' chính hiệu. Sẵn sàng 'combat' với bất kỳ ai trên mạng xã hội, từ chuyện chính trị đến chuyện showbiz. Tuy nhiên, ngoài đời thực, bạn lại là một người khá nhút nhát và ngại giao tiếp. Hãy nhớ rằng, 'cà khịa' có chừng mực thôi nhé!",
-    "traits": [
-      "Cà khịa",
-      "Anh hùng bàn phím",
-      "Nhút nhát"
-    ],
-    "image_url": "/images/img_1770585791_________Create_a_characterce.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "f2e689fb-854c-44db-a6fe-82c4b7effbf0"
-  },
-  {
-    "result_code": 3,
-    "title": "Ninja 'GrabBike' | Ninja 'GrabBike'",
-    "description": "Kiếp trước bạn là một 'tay lái lụa' chuyên chạy GrabBike, thuộc lòng mọi con hẻm ở Sài Gòn. Tốc độ của bạn nhanh đến nỗi có thể 'teleport' khách hàng đến bất kỳ đâu trong vòng một nốt nhạc. Tuy nhiên, đôi khi bạn lại 'bốc đồng' và gây ra những tình huống 'dở khóc dở cười'. Hãy lái xe cẩn thận nhé! | Kiếp trước bạn là một 'tay lái lụa' chuyên chạy GrabBike, thuộc lòng mọi con hẻm ở Sài Gòn. Tốc độ của bạn nhanh đến nỗi có thể 'teleport' khách hàng đến bất kỳ đâu trong vòng một nốt nhạc. Tuy nhiên, đôi khi bạn lại 'bốc đồng' và gây ra những tình huống 'dở khóc dở cười'. Hãy lái xe cẩn thận nhé!",
-    "traits": [
-      "Tay lái lụa",
-      "Thuộc đường",
-      "Bốc đồng"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "bac32842-ae10-4f16-b803-0130fdd88ec4"
-  },
-  {
-    "result_code": 4,
-    "title": "Hot TikToker 'Triệu View' | Hot TikToker 'Triệu View'",
-    "description": "Kiếp trước bạn là một TikToker nổi tiếng, chuyên tạo ra những video 'viral' trên mạng xã hội. Bạn có khả năng 'bắt trend' cực nhanh và luôn biết cách làm cho người khác phải 'wow' lên vì sự sáng tạo của mình. Tuy nhiên, đôi khi bạn lại quá chú trọng vào 'view' và quên mất giá trị thực của bản thân. Hãy là một TikToker có tâm nhé! | Kiếp trước bạn là một TikToker nổi tiếng, chuyên tạo ra những video 'viral' trên mạng xã hội. Bạn có khả năng 'bắt trend' cực nhanh và luôn biết cách làm cho người khác phải 'wow' lên vì sự sáng tạo của mình. Tuy nhiên, đôi khi bạn lại quá chú trọng vào 'view' và quên mất giá trị thực của bản thân. Hãy là một TikToker có tâm nhé!",
-    "traits": [
-      "Nổi tiếng",
-      "Sáng tạo",
-      "Ám ảnh view"
-    ],
-    "image_url": "/images/img_1770585796_________Create_a_characterce.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "087b3cf3-7980-46e6-963a-112ce62d80cc"
-  },
-  {
-    "result_code": 5,
-    "title": "Thánh 'Mắm Tôm Chân Kinh' | Thánh 'Mắm Tôm Chân Kinh'",
-    "description": "Kiếp trước bạn là một người cực kỳ yêu thích mắm tôm, đến nỗi có thể ăn mắm tôm thay cơm. Bạn có thể phân biệt được hàng trăm loại mắm tôm khác nhau, từ mắm tôm Bắc đến mắm tôm miền Nam. Tuy nhiên, đôi khi bạn lại 'gây khó chịu' cho người khác vì mùi mắm tôm quá nồng. Hãy ăn mắm tôm có ý thức nhé! | Kiếp trước bạn là một người cực kỳ yêu thích mắm tôm, đến nỗi có thể ăn mắm tôm thay cơm. Bạn có thể phân biệt được hàng trăm loại mắm tôm khác nhau, từ mắm tôm Bắc đến mắm tôm miền Nam. Tuy nhiên, đôi khi bạn lại 'gây khó chịu' cho người khác vì mùi mắm tôm quá nồng. Hãy ăn mắm tôm có ý thức nhé!",
-    "traits": [
-      "Yêu mắm tôm",
-      "Sành ăn",
-      "Gây khó chịu"
-    ],
-    "image_url": "/images/img_1770585799_________Create_a_characterce.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "8ddaad6b-fe79-4205-a8cf-a9ee01c803df"
-  },
-  {
-    "result_code": 6,
-    "title": "Chuyên Gia 'Bùng Tiền' | Chuyên Gia 'Bùng Tiền'",
-    "description": "Kiếp trước bạn là một 'cao thủ' trong việc 'bùng tiền' của người khác. Bạn có thể nghĩ ra hàng trăm lý do khác nhau để 'khất nợ' hoặc 'quỵt nợ'. Tuy nhiên, cuối cùng bạn lại phải trả giá cho những hành động của mình. Hãy sống trung thực và trả nợ đầy đủ nhé! | Kiếp trước bạn là một 'cao thủ' trong việc 'bùng tiền' của người khác. Bạn có thể nghĩ ra hàng trăm lý do khác nhau để 'khất nợ' hoặc 'quỵt nợ'. Tuy nhiên, cuối cùng bạn lại phải trả giá cho những hành động của mình. Hãy sống trung thực và trả nợ đầy đủ nhé!",
-    "traits": [
-      "Bùng tiền",
-      "Khất nợ",
-      "Quỵt nợ"
-    ],
-    "image_url": "/images/img_1770585799_________Create_a_characterce.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "a5aedbdd-3bfc-4cb1-8125-0de2da1b1bdf"
-  },
-  {
-    "result_code": 7,
-    "title": "Boss 'Lươn Lẹo' | Boss 'Lươn Lẹo'",
-    "description": "Kiếp trước bạn là một ông trùm 'lươn lẹo', chuyên dùng những lời nói 'ngọt ngào' để 'dụ dỗ' người khác. Bạn có khả năng 'thao túng' tâm lý người khác một cách dễ dàng. Tuy nhiên, cuối cùng bạn lại bị 'lật mặt' và phải trả giá cho những hành động của mình. Hãy sống thật lòng và đừng 'lươn lẹo' nữa nhé! | Kiếp trước bạn là một ông trùm 'lươn lẹo', chuyên dùng những lời nói 'ngọt ngào' để 'dụ dỗ' người khác. Bạn có khả năng 'thao túng' tâm lý người khác một cách dễ dàng. Tuy nhiên, cuối cùng bạn lại bị 'lật mặt' và phải trả giá cho những hành động của mình. Hãy sống thật lòng và đừng 'lươn lẹo' nữa nhé!",
-    "traits": [
-      "Lươn lẹo",
-      "Dụ dỗ",
-      "Thao túng"
-    ],
-    "image_url": "/images/img_1770585798_________Create_a_characterce.png",
-    "quiz_id": "45c6011d-081e-4acb-b0e0-5a00c6d91481",
-    "id": "d609304e-64d9-449a-bf1a-66e65a6e37bd"
-  },
-  {
-    "result_code": 0,
-    "title": "'Ninja Tiết Kiệm' Chính Hiệu",
-    "description": "Bạn là 'master' trong việc kiểm soát chi tiêu ăn uống. Luôn ưu tiên những món 'cây nhà lá vườn' hoặc tự nấu tại nhà. Ra đường thấy ai 'vung tay quá trán' là bạn 'ngứa mắt' lắm đó nha! Nhưng đôi khi cũng nên 'tự thưởng' cho bản thân một bữa ra trò, đừng 'khổ hạnh' quá!",
-    "traits": [
-      "Tiết kiệm",
-      "Tự giác",
-      "Khéo tay"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "5dba4fbc-2211-4d33-9775-19a1d50f2397"
-  },
-  {
-    "result_code": 1,
-    "title": "'Thánh Ăn Vặt' Không Ngại Giá",
-    "description": "Bạn có 'radar' nhạy bén với mọi món ăn vặt 'hot trend' ở Sài Gòn. Không ngại 'ship' từ quận 12 về quận 1 chỉ để thỏa mãn cơn thèm thuồng. Tiền bạc chỉ là 'phù du', quan trọng là 'cái bụng' phải vui! Coi chừng 'eo' không vui đó nha!",
-    "traits": [
-      "Sành ăn",
-      "Chịu chi",
-      "Háo hức"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "53074c88-88b3-4ff9-bcf4-e8595267ee58"
-  },
-  {
-    "result_code": 2,
-    "title": "'Foodie' Chính Hiệu - Ăn Để Sống",
-    "description": "Bạn thuộc tuýp người 'ăn để sống', chứ không phải 'sống để ăn'. Bữa ăn nào cũng cần đầy đủ dinh dưỡng, healthy và 'balance'. Không bao giờ 'đụng' đến đồ ăn vặt hay thức ăn nhanh. 'Chế độ' của bạn khiến ai cũng phải 'ngả mũ' kính phục!",
-    "traits": [
-      "Healthy",
-      "Kỷ luật",
-      "Có trách nhiệm"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "23f66eaa-288f-4a09-a372-0b0ac76b1853"
-  },
-  {
-    "result_code": 3,
-    "title": "'Con Chiên Ngoan Đạo' Của Các App",
-    "description": "Bạn là khách hàng 'VIP' của các app giao đồ ăn. Mở app là thấy 'voucher ngập mặt'. Luôn biết tận dụng mọi 'deal' giảm giá, freeship để 'chốt đơn' một cách thông minh. Shipper nào gặp bạn cũng 'mừng như trúng số'!",
-    "traits": [
-      "Thông minh",
-      "Khéo léo",
-      "May mắn"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "5840164c-fef3-4fb0-9a78-04c06107c50f"
-  },
-  {
-    "result_code": 4,
-    "title": "'Dân Văn Phòng' Chính Hiệu - Cơm Trưa Là Chân Ái",
-    "description": "Bạn là 'tín đồ' của cơm trưa văn phòng. Luôn tìm kiếm những quán cơm 'ngon - bổ - rẻ' quanh khu vực làm việc. Bữa trưa là khoảng thời gian 'thiêng liêng' để bạn 'nạp năng lượng' cho buổi chiều 'chiến đấu'. Tối về lại 'ăn kiêng' cho 'đẹp dáng'!",
-    "traits": [
-      "Tiết kiệm",
-      "Thực tế",
-      "Chăm chỉ"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "2a31f0b2-dd5b-4614-a463-ee6618728c61"
-  },
-  {
-    "result_code": 5,
-    "title": "'Thánh Lười' Cấp Độ 'God'",
-    "description": "Bạn lười đến mức 'thở thôi cũng thấy mệt'. Thậm chí còn order nước lọc trên app. Bất cứ khi nào bụng đói, việc đầu tiên là mở app và 'quẹt quẹt'. Nấu ăn ư? Quên đi! Thà nhịn đói còn hơn!",
-    "traits": [
-      "Lười biếng",
-      "Thích hưởng thụ",
-      "Vô tư"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "bf1d8cec-d398-4a24-bf91-a2f951206a0e"
-  },
-  {
-    "result_code": 6,
-    "title": "'Dân Nhậu' Chính Hiệu - Mồi Bén Hơn Cả Người",
-    "description": "Bạn là 'linh hồn' của mọi cuộc nhậu. Luôn biết cách chọn những món mồi 'bén' nhất để 'khích' mọi người 'dzô' hết mình. Khô gà, nem chua rán, đậu phộng rang tỏi... món nào cũng 'gây nghiện'. Coi chừng 'gan' không nghiện kịp đó nha!",
-    "traits": [
-      "Hòa đồng",
-      "Vui vẻ",
-      "Nhiệt tình"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "a3a6c5a6-7779-4d65-b16f-36ae9c0bdd38"
-  },
-  {
-    "result_code": 7,
-    "title": "'Khẩu Vị' Bất Ổn Định",
-    "description": "Sáng thèm bún đậu mắm tôm, trưa lại muốn ăn pizza hải sản, tối thì 'gào thét' đòi lẩu thái. Khẩu vị của bạn 'thay đổi xoành xoạch' như thời tiết Sài Gòn. Khiến ai cũng phải 'chóng mặt' theo. Nhưng nhờ vậy mà bạn luôn có những trải nghiệm ẩm thực 'mới lạ'!",
-    "traits": [
-      "Tò mò",
-      "Sáng tạo",
-      "Dễ thay đổi"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "26e118d7-def1-4766-9d04-e9c974f7d31f",
-    "id": "17724816-dbc8-42c8-bbf6-37ed65c5e2e5"
-  },
-  {
-    "result_code": 0,
-    "title": "'Người Tối Cổ' Gen Z",
-    "description": "Bạn là một 'linh hồn già' trong hình hài Gen Z. Bạn không quan tâm đến những trend 'nhảm nhí' trên mạng. Bạn thích sự ổn định, truyền thống và những giá trị xưa cũ. Đừng lo, bạn không hề 'lỗi thời'. Bạn chỉ là đang sống chậm hơn người khác một chút thôi!",
-    "traits": [
-      "Truyền thống",
-      "Ổn định",
-      "Thực tế"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "db86bf6d-9381-4788-9e7e-a516ce140eef"
-  },
-  {
-    "result_code": 1,
-    "title": "'Thánh Hóng Hớt' Tập Sự",
-    "description": "Bạn là một người khá tò mò và thích 'hóng hớt' chuyện thiên hạ. Tuy nhiên, bạn vẫn còn e dè và chưa dám 'đu' trend một cách 'máu lửa'. Hãy mạnh dạn hơn, thử nghiệm những điều mới mẻ và đừng ngại thể hiện bản thân nhé!",
-    "traits": [
-      "Tò mò",
-      "E dè",
-      "Thích khám phá"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "8059c342-69f1-435c-88df-935641c630c0"
-  },
-  {
-    "result_code": 2,
-    "title": "'Cà Khịa Master' Online",
-    "description": "Bạn là một 'anh hùng bàn phím' thứ thiệt. Bạn có khả năng 'cà khịa' và 'troll' người khác một cách 'điêu luyện'. Tuy nhiên, hãy cẩn thận kẻo bị 'ăn chửi' nhé! Đôi khi, một lời khen chân thành còn giá trị hơn ngàn lời 'cà khịa' đó!",
-    "traits": [
-      "Hài hước",
-      "Thông minh",
-      "Sắc sảo"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "972d87e3-452a-4be7-abae-af74774c82e0"
-  },
-  {
-    "result_code": 3,
-    "title": "'Drama Queen' Gen Z",
-    "description": "Bạn là một 'drama queen' chính hiệu. Bạn thích những câu chuyện 'kịch tính', những mối quan hệ 'phức tạp' và những tình huống 'éo le'. Hãy cẩn thận kẻo bị cuốn vào những rắc rối không đáng có nhé! Đôi khi, một cuộc sống bình yên còn thú vị hơn ngàn bộ phim 'drama' đó!",
-    "traits": [
-      "Kịch tính",
-      "Nhạy cảm",
-      "Thích phiêu lưu"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "4b804857-c6dd-4e8d-9047-f4ac4f9d621a"
-  },
-  {
-    "result_code": 4,
-    "title": "'Fashionista' Vườn",
-    "description": "Bạn là một 'fashionista' tiềm năng. Bạn có gu ăn mặc khá ổn và luôn cập nhật những xu hướng thời trang mới nhất. Tuy nhiên, bạn vẫn còn thiếu một chút tự tin để thể hiện bản thân một cách trọn vẹn. Hãy mạnh dạn hơn, thử nghiệm những phong cách mới và đừng ngại 'cháy' hết mình nhé!",
-    "traits": [
-      "Thời trang",
-      "Sáng tạo",
-      "Tự tin"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "33cf1f2b-07df-40c3-ab78-64df080e49b7"
-  },
-  {
-    "result_code": 5,
-    "title": "'Trend Setter' Tự Phát",
-    "description": "Bạn có tố chất của một 'trend setter'. Bạn không chỉ 'đu' trend mà còn tạo ra trend. Bạn có gu thẩm mỹ độc đáo, khả năng sáng tạo vô biên và một tinh thần dám nghĩ dám làm. Hãy tiếp tục phát huy nhé! Bạn sẽ là người dẫn đầu xu hướng trong tương lai!",
-    "traits": [
-      "Sáng tạo",
-      "Độc đáo",
-      "Dẫn đầu"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "61eb0873-bfcd-4e08-be6c-d61b9b683a75"
-  },
-  {
-    "result_code": 6,
-    "title": "'Influencer' Tập Sự",
-    "description": "Bạn có tố chất của một 'influencer'. Bạn có khả năng gây ảnh hưởng đến người khác, truyền cảm hứng và tạo động lực. Hãy tận dụng những thế mạnh của mình để lan tỏa những thông điệp tích cực và xây dựng một cộng đồng văn minh nhé!",
-    "traits": [
-      "Ảnh hưởng",
-      "Truyền cảm hứng",
-      "Kết nối"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "bdf28df8-ae8f-4cf9-a693-c98764ec3ab0"
-  },
-  {
-    "result_code": 7,
-    "title": "'Trend Hunter' Chuyên Nghiệp",
-    "description": "Bạn là một 'trend hunter' chuyên nghiệp. Bạn luôn cập nhật những xu hướng mới nhất, phân tích và đánh giá chúng một cách kỹ lưỡng. Bạn có khả năng dự đoán xu hướng và tận dụng chúng để tạo ra những cơ hội mới. Hãy tiếp tục phát huy nhé! Bạn sẽ là một 'nhà tiên tri' trong thế giới trend!",
-    "traits": [
-      "Phân tích",
-      "Dự đoán",
-      "Chiến lược"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "6bdb545e-910e-464e-9eea-cd2c6a2014d3",
-    "id": "eb0281e1-4460-4874-a908-b6fa736b94ec"
-  },
-  {
-    "result_code": 0,
-    "title": "Thánh 'nhịn' chuyên nghiệp",
-    "description": "Bạn là 'ninja' nhịn ăn chính hiệu! Ý chí sắt đá, kiên trì hơn cả Tôn Ngộ Không luyện phép. Nhưng mà này, sống là phải hưởng thụ chút đỉnh chứ! Đừng để tuổi trẻ trôi qua trong khổ hạnh nha. Thỉnh thoảng 'bung xõa' một bữa cũng đâu có sao. 😉",
-    "traits": [
-      "Tiết kiệm",
-      "Kỷ luật",
-      "Khó tính"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "1b1a3817-f028-42f8-94bf-3ce6c728c17c"
-  },
-  {
-    "result_code": 1,
-    "title": "Cao thủ 'ăn gian' có nghề",
-    "description": "Bạn thuộc team 'mồm nói giảm cân, tay order gà rán'. Ăn uống thì thả ga, nhưng trong lòng vẫn canh cánh nỗi lo 'eo bánh mì'. Thôi thì cứ ăn đi, rồi mai mình tính tiếp. Dù sao thì bạn cũng biết cách tự 'an ủi' bản thân mà. 😜",
-    "traits": [
-      "Khéo léo",
-      "Vui vẻ",
-      "Hay tự bào chữa"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "440697eb-103b-4159-a994-fce7fd4c7be2"
-  },
-  {
-    "result_code": 2,
-    "title": "Con chiên ngoan đạo của 'Ăn sập Sài Gòn'",
-    "description": "Bạn là 'fan cứng' của các group review đồ ăn! Thấy ai khen gì là phải 'đu trend' cho bằng được. Gu ăn uống của bạn khá 'đa dạng', nhưng đôi khi lại bị 'dắt mũi' bởi những lời quảng cáo. Hãy tỉnh táo hơn nha! Không phải cái gì hot cũng ngon đâu. 🤔",
-    "traits": [
-      "Dễ tin người",
-      "Hòa đồng",
-      "Thích khám phá"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "68beb75a-c6d4-4161-a6f8-a8931978a618"
-  },
-  {
-    "result_code": 3,
-    "title": "Trùm cuối 'ăn sập' delivery",
-    "description": "Bạn là 'đại gia' của làng delivery! Không ngại mưa gió, không sợ béo bụng, chỉ cần thèm là 'chốt đơn' liền. Cuộc sống của bạn là một chuỗi ngày 'ăn-ngủ-ăn'. Thỉnh thoảng hãy ra đường hít thở không khí tí nha! Chứ không khéo lại thành 'cú đêm' lúc nào không hay. 🤣",
-    "traits": [
-      "Ăn chơi",
-      "Hưởng thụ",
-      "Lười vận động"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "2f7c5215-7594-4713-b4e2-dc1864285659"
-  },
-  {
-    "result_code": 4,
-    "title": "Thánh 'bóp mồm' bất đắc dĩ",
-    "description": "Bạn là người con hiếu thảo của ví tiền! Dù bụng đói cồn cào, nhưng vẫn cố gắng 'gồng mình' để tiết kiệm. Bạn luôn tự nhủ 'tiền không tự nhiên sinh ra, mà chỉ chuyển từ túi mình sang túi người khác'. Nhưng mà này, đừng hà khắc với bản thân quá nha! Thỉnh thoảng 'thưởng' cho mình một bữa ra trò đi. 🥰",
-    "traits": [
-      "Tiết kiệm",
-      "Cẩn thận",
-      "Hay lo lắng"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "1c0095e4-38da-466f-9921-7f42bbe1b767"
-  },
-  {
-    "result_code": 5,
-    "title": "Ninja 'ăn vụng' siêu đẳng",
-    "description": "Bạn là 'chuyên gia' trong việc cân bằng giữa 'muốn ăn' và 'phải giữ dáng'. Bạn có thể nhịn ăn cả ngày, nhưng đến đêm khuya lại 'lén lút' order một đống đồ ăn vặt. Bạn luôn tự nhủ 'ăn đêm không béo, vì mình ngủ luôn rồi'. Nhưng mà sự thật thì... thôi, kệ đi! Miễn là bạn vui. 🤪",
-    "traits": [
-      "Thông minh",
-      "Lươn lẹo",
-      "Thích làm trái ý người khác"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "99e2b742-a5ee-48d7-9181-b9ab972dbee8"
-  },
-  {
-    "result_code": 6,
-    "title": "Tín đồ 'review' có tâm",
-    "description": "Bạn không chỉ là người thích ăn ngon, mà còn là người thích chia sẻ niềm vui ăn uống với mọi người. Bạn luôn để lại những review chi tiết, chân thực, giúp người khác có thêm thông tin để lựa chọn. Bạn xứng đáng là một 'food blogger' tiềm năng! Tiếp tục phát huy nha. 😍",
-    "traits": [
-      "Nhiệt tình",
-      "Thích chia sẻ",
-      "Có gu ăn uống"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "78979453-4f95-4ffd-b77c-db430b93b2ef"
-  },
-  {
-    "result_code": 7,
-    "title": "Boss cuối của giới 'delivery'",
-    "description": "Bạn là 'trùm' của các 'trùm'! Không ai có thể sánh được với bạn về độ 'chịu chi' và 'chịu chơi'. Bạn coi việc order đồ ăn như một thú vui tao nhã, một cách để thể hiện đẳng cấp. Bạn luôn tìm kiếm những món ăn mới lạ, độc đáo, để thỏa mãn niềm đam mê ẩm thực của mình. Bạn là 'rich kid' chính hiệu! 😎",
-    "traits": [
-      "Sang chảnh",
-      "Sành điệu",
-      "Thích trải nghiệm"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "1482c633-c135-4158-ae1d-7b62767c8ca7",
-    "id": "da474fc7-6884-41ca-b6e4-ff6d18a9e7a0"
-  },
-  {
-    "result_code": 0,
-    "title": "Thánh Sống Ảo Tập Sự",
-    "description": "Bạn mới 'nhập môn' sống ảo thôi! Vẫn còn giữ chút gì đó 'tỉnh táo' giữa Sài Gòn hoa lệ. Nhưng đừng lo, cứ từ từ 'đu đưa' theo đám đông, bạn sẽ sớm 'lên trình' thôi!",
-    "traits": [
-      "Hiền lành",
-      "Nhút nhát",
-      "Chưa quen"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "94db76e1-2ab1-4293-90cb-c78c4c5493f1"
-  },
-  {
-    "result_code": 1,
-    "title": "Dân Tỉnh Lẻ 'Cosplay' Sài Gòn",
-    "description": "Bạn cố gắng hòa nhập với Sài Gòn bằng cách 'học đòi' theo mấy trend trên mạng. Nhưng mà... hình như hơi 'gồng' quá rồi đó! Cứ là chính mình đi, Sài Gòn dễ thương lắm!",
-    "traits": [
-      "Gồng",
-      "Cố gắng",
-      "Học đòi"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "95da6236-860d-4e8c-8300-0d8fd46ff47d"
-  },
-  {
-    "result_code": 2,
-    "title": "Con Nghiện 'Check-in' Chính Hiệu",
-    "description": "Ở đâu có chỗ 'sống ảo' là ở đó có bạn! Mục tiêu của bạn là 'phủ sóng' Sài Gòn trên Instagram. Coi chừng 'cháy túi' vì mấy chỗ 'chanh sả' đó nha!",
-    "traits": [
-      "Nghiện check-in",
-      "Sành điệu",
-      "Tốn tiền"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "c0d2b926-849b-4b28-8a3c-18a09cd053f6"
-  },
-  {
-    "result_code": 3,
-    "title": "Tín Đồ 'Ăn Sập' Sài Gòn",
-    "description": "Bạn yêu Sài Gòn bằng cả trái tim và... dạ dày! Mọi ngóc ngách ẩm thực của thành phố đều nằm trong 'tầm ngắm' của bạn. Cẩn thận tăng cân đó nha!",
-    "traits": [
-      "Ham ăn",
-      "Khám phá",
-      "Mũm mĩm"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "3c333b16-b64a-4dd5-84b0-7435aa46e974"
-  },
-  {
-    "result_code": 4,
-    "title": "Ninja Đường Phố",
-    "description": "Bạn thuộc nằm lòng mọi con hẻm, mọi ngõ ngách của Sài Gòn. Kẹt xe ư? Chuyện nhỏ! Bạn có 1001 cách để 'lách luật' và đến đích nhanh nhất. Bái phục!",
-    "traits": [
-      "Lanh lợi",
-      "Rành đường",
-      "Thích tốc độ"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "ee4768e4-7ef6-46d2-a288-13c398fe9d91"
-  },
-  {
-    "result_code": 5,
-    "title": "Dân 'Quẩy' Thâm Niên",
-    "description": "Bạn là 'linh hồn' của mọi cuộc vui ở Sài Gòn! Từ bar sang chảnh đến vỉa hè 'chém gió', chỗ nào có nhạc là chỗ đó có bạn. Nhớ giữ gìn sức khỏe nha!",
-    "traits": [
-      "Nhiệt tình",
-      "Vui vẻ",
-      "Máu 'quẩy'"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "5b04bd38-f152-4861-8c3c-163d11f2867e"
-  },
-  {
-    "result_code": 6,
-    "title": "Thánh 'Săn Sale' Bậc Thầy",
-    "description": "Bạn biết mọi chỗ giảm giá, mọi chương trình khuyến mãi ở Sài Gòn. Mua sắm là đam mê, tiết kiệm là chân lý! Ai chơi lại bạn?",
-    "traits": [
-      "Tiết kiệm",
-      "Thông minh",
-      "Khéo léo"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "965a3848-1430-4ab1-80cc-d5e1111f75be"
-  },
-  {
-    "result_code": 7,
-    "title": "Trùm Cuối Sống Ảo",
-    "description": "Bạn là 'huyền thoại' của giới sống ảo Sài Gòn! Mọi bài đăng của bạn đều khiến người khác 'gato' muốn xỉu. Nhưng đừng quên sống thật với chính mình nha!",
-    "traits": [
-      "Sống ảo",
-      "Chảnh",
-      "Gây 'gato'"
-    ],
-    "image_url": "/images/grandma_roast_standing.png",
-    "quiz_id": "eb9389b3-d0dc-46b7-9d0f-e78621ae93b6",
-    "id": "4aed22e3-c83a-4537-ace8-5b8a9f52f3a0"
+    "image_url": "/images/img_1770791982_Result_Image_Main_Subject_Số.png",
+    "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
+    "id": "afa47224-2484-4559-ae2f-e66b4407605e"
   }
 ]

@@ -1,0 +1,161 @@
+.analysis-container {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-bottom: 40px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Removed background gradient to use global app background */
+    font-family: 'Be Vietnam Pro', sans-serif;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+    /* Ensure padding doesn't add to width */
+}
+
+.analysis-header {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 60px;
+    /* Added to replace the padding-top removed from container */
+}
+
+.analysis-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #FF2D85;
+    margin-bottom: 20px;
+}
+
+.analysis-progress-track {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    border: 2px solid #FF2D85;
+    overflow: hidden;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.analysis-progress-fill {
+    height: 100%;
+    background: #FF2D85;
+    width: 0%;
+    transition: width 0.1s linear;
+    border-radius: 8px;
+}
+
+.analysis-subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+}
+
+.analysis-ad-container {
+    width: 100%;
+    max-width: 600px;
+    min-height: 250px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: auto;
+    /* Push bottom bar down */
+}
+
+/* Pull Action Bar (Bottom Sheet Style) */
+.pull-action-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 480px;
+    height: 85px;
+    /* Reduced from 140px */
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    /* Rounded all corners */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100;
+    border: 2px solid #FF2D85;
+    /* Full border instead of top-only */
+}
+
+.pull-action-bar:active {
+    transform: translateX(-50%) scale(0.98);
+    /* Scale instead of height change */
+    background: #FFF0F5;
+}
+
+.pull-action-bar.unlocked {
+    height: 85px;
+    background: #E8F5E9;
+    border: 2px solid #4CAF50;
+    cursor: default;
+}
+
+.pull-handle {
+    display: none;
+}
+
+.pull-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pull-instruction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #FF2D85;
+}
+
+.view-result-btn {
+    width: 100%;
+    max-width: 300px;
+    padding: 16px;
+    background: #FF2D85;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 0 #C2185B;
+    cursor: pointer;
+    animation: popIn 0.3s ease-out;
+}
+
+.view-result-btn:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
