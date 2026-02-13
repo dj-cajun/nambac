@@ -51,7 +51,9 @@
 ## ⚠️ 필수 제약 조건 (CRITICAL)
 
 1. **무조건 2지선다 (A or B Only)**: 3개 이상 절대 금지.
-2. **점수 노출 금지**: 선택지 텍스트 멘트 (Text) 안에 점수(+3)나 성향(I/E)을 암시하는 단어를 절대 넣지 마시오. (Backend 로직용 JSON에는 `score` 필드가 따로 있으니 걱정 ㄴㄴ)
+2. **점수 노출 금지**: 
+   - 선택지 텍스트 멘트 (Text) 안에 점수(+3)나 성향(I/E)을 암시하는 단어를 절대 넣지 마시오. (Backend 로직용 JSON에는 `score` 필드가 따로 있으니 걱정 ㄴㄴ)
+   - **결과 타이틀(type_name)에 점수 코드(000, 001, 100 등)를 절대 포함하지 마십시오.** 예: "Thánh nhậu quán vỉa hè" (○), "Thánh nhậu quán vỉa hè (000)" (X)
 3. **호치민 로컬라이제이션**: 베트남 호치민 관련 주제일 경우, "그랩", "반미", "1군", "타오디엔" 등 현지 용어 적극 사용.
 4. **이미지 프롬프트**: "Cyberpunk", "Vaporwave", "Webtoon" 스타일 명시.
 
@@ -100,7 +102,7 @@
   "results": [
     {
       "score": 0,
-      "type_name": "[Tên kết quả 000 bằng tiếng Việt]",
+      "type_name": "[Tên kết quả bằng tiếng Việt - KHÔNG bao gồm điểm số]",
       "description": "[Phân tích chi tiết dài trên 150 chữ bằng tiếng Việt]",
       "traits": ["Đặc điểm 1", "Đặc điểm 2", "Đặc điểm 3"]
     },

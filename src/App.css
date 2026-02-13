@@ -13,6 +13,11 @@
   /* Optional: Separation from body bg */
 }
 
+.app-layout.wide-layout {
+  max-width: 1200px;
+  /* Expand for admin/wide pages */
+}
+
 /* Base Blob Styles */
 .blob-bg {
   position: absolute;

@@ -145,7 +145,7 @@
   },
   {
     "result_code": 0,
-    "title": "Thánh nhậu quán vỉa hè (000)",
+    "title": "Thánh nhậu quán vỉa hè",
     "description": "Người này chỉ thích nằm dài ở quán nhậu vỉa hè, uống bia tươi và ăn mỳ tôm. Cuộc sống đơn giản như lòng bàn tay.",
     "traits": [
       "Thích ăn vặt",
@@ -157,7 +157,7 @@
   },
   {
     "result_code": 1,
-    "title": "Nghiện café chó (001)",
+    "title": "Nghiện café chó",
     "description": "Người này là fan cuồng của café chó, thích ngắm những chú chó trong quán hơn là nói chuyện với người khác. Chỉ cần có chó là đủ!",
     "traits": [
       "Yêu động vật",
@@ -169,7 +169,7 @@
   },
   {
     "result_code": 2,
-    "title": "Phượt thủ bình dân (010)",
+    "title": "Phượt thủ bình dân",
     "description": "Người này thích đi du lịch nhưng chỉ ở những nơi bình dân, không cần sang chảnh. Phượt là cuộc sống, không cần phải xa hoa.",
     "traits": [
       "Yêu thiên nhiên",
@@ -181,7 +181,7 @@
   },
   {
     "result_code": 3,
-    "title": "Du lịch tự túc (011)",
+    "title": "Du lịch tự túc",
     "description": "Người này thích đi du lịch và có một chút sang chảnh. Thích chụp ảnh sống ảo tại những địa điểm hot nhất.",
     "traits": [
       "Chụp ảnh",
@@ -193,7 +193,7 @@
   },
   {
     "result_code": 4,
-    "title": "Cà phê văn phòng (100)",
+    "title": "Cà phê văn phòng",
     "description": "Người này là nhân viên văn phòng điển hình, thích café nhưng không thích xô bồ. Sống chậm nhưng chắc.",
     "traits": [
       "Công việc ổn định",
@@ -205,7 +205,7 @@
   },
   {
     "result_code": 5,
-    "title": "Thám hiểm thành phố (101)",
+    "title": "Thám hiểm thành phố",
     "description": "Người này thích lên kế hoạch cho những cuộc đi chơi, tìm kiếm quán xá mới lạ. Luôn tìm thấy niềm vui từ những điều nhỏ nhặt.",
     "traits": [
       "Thích khám phá",
@@ -217,7 +217,7 @@
   },
   {
     "result_code": 0,
-    "title": "Thánh Ăn Tối Giản (000)",
+    "title": "Thánh Ăn Tối Giản",
     "description": "Chỉ cần một bánh mì và trà đá là đủ. Mọi thứ khác là xa xỉ. Bạn sống đơn giản như một ninja giấu mặt ở Sài Gòn.",
     "traits": [
       "Tiết kiệm",
@@ -229,7 +229,7 @@
   },
   {
     "result_code": 1,
-    "title": "Góc Nhìn Hướng Nội (001)",
+    "title": "Góc Nhìn Hướng Nội",
     "description": "Là một người nhút nhát nhưng lại thích tìm hiểu những món ăn độc lạ. Bạn như một cục đá quý giữa biển người.",
     "traits": [
       "Sâu sắc",
@@ -241,7 +241,7 @@
   },
   {
     "result_code": 2,
-    "title": "Du Khách Ăn Mặn (010)",
+    "title": "Du Khách Ăn Mặn",
     "description": "Yêu thích trải nghiệm ẩm thực địa phương nhưng không ngại tốn tiền cho một bát phở chính hiệu. Bạn là khách du lịch sang chảnh ở Sài Gòn.",
     "traits": [
       "Khám phá",
@@ -253,7 +253,7 @@
   },
   {
     "result_code": 3,
-    "title": "Sành Ăn Hướng Ngoại (011)",
+    "title": "Sành Ăn Hướng Ngoại",
     "description": "Thích ăn uống tại những địa điểm nổi tiếng nhưng chỉ khi có khuyến mãi. Bạn như một influencer đang tìm kiếm món ăn đẹp cho Instagram.",
     "traits": [
       "Sáng tạo",
@@ -265,7 +265,7 @@
   },
   {
     "result_code": 4,
-    "title": "Người Địa Phương Sang Chảnh (100)",
+    "title": "Người Địa Phương Sang Chảnh",
     "description": "Sống ở Sài Gòn nhưng chỉ ăn những món đắt tiền nhất. Bạn như một vua chúa giữa đám đông.",
     "traits": [
       "Sang trọng",
@@ -277,7 +277,7 @@
   },
   {
     "result_code": 5,
-    "title": "Thực Khách Hướng Nội (101)",
+    "title": "Thực Khách Hướng Nội",
     "description": "Người thích ăn ngon nhưng chỉ thích ăn một mình. Bạn thích nhâm nhi từng món ăn như một nghệ sĩ thưởng thức tác phẩm của mình.",
     "traits": [
       "Cá nhân",
@@ -289,7 +289,7 @@
   },
   {
     "result_code": 0,
-    "title": "Người Bản Địa Nhút Nhát (000)",
+    "title": "Người Bản Địa Nhút Nhát",
     "description": "Tôi chỉ muốn ngồi một góc quán cà phê cũ, nghe nhạc xưa và uống trà sữa, không thích giao lưu xã hội lắm đâu. À mà, bạn có thể đưa tôi menu không?",
     "traits": [
       "Nhút nhát",
@@ -301,7 +301,7 @@
   },
   {
     "result_code": 1,
-    "title": "Khách Du Lịch Nhút Nhát (001)",
+    "title": "Khách Du Lịch Nhút Nhát",
     "description": "Tôi đến Sài Gòn để khám phá, nhưng mà chỉ dám ngồi một góc với ống hút trà sữa. Đừng làm tôi phải nói chuyện với người lạ nhé!",
     "traits": [
       "Nhút nhát",
@@ -313,7 +313,7 @@
   },
   {
     "result_code": 2,
-    "title": "Người Bản Địa Hòa Đồng (010)",
+    "title": "Người Bản Địa Hòa Đồng",
     "description": "Tôi là người Sài Gòn chính hiệu, nhưng tôi thích nói chuyện với mọi người. Đừng ngại, tôi chỉ muốn biết bạn đã ăn phở ở đâu thôi mà!",
     "traits": [
       "Hòa đồng",
@@ -325,7 +325,7 @@
   },
   {
     "result_code": 3,
-    "title": "Khách Du Lịch Hòa Đồng (011)",
+    "title": "Khách Du Lịch Hòa Đồng",
     "description": "Tôi đến để tận hưởng từng khoảnh khắc ở Sài Gòn, và tôi không ngại giao lưu với mọi người. Cùng chụp ảnh sống ảo nào!",
     "traits": [
       "Hòa đồng",
@@ -337,7 +337,7 @@
   },
   {
     "result_code": 4,
-    "title": "Người Bản Địa Sang Chảnh (100)",
+    "title": "Người Bản Địa Sang Chảnh",
     "description": "Tôi là người Sài Gòn, nhưng tôi chỉ đến những quán cà phê sang chảnh nhất. Thời trang của tôi cũng phải đỉnh cao như món ăn tôi chọn!",
     "traits": [
       "Sang chảnh",
@@ -349,7 +349,7 @@
   },
   {
     "result_code": 5,
-    "title": "Khách Du Lịch Sang Chảnh (101)",
+    "title": "Khách Du Lịch Sang Chảnh",
     "description": "Tôi đến Sài Gòn để trải nghiệm những điều tốt nhất, từ món ăn đến chỗ ở. Chỉ cần có wifi và món ăn ngon, tôi sẽ không phàn nàn!",
     "traits": [
       "Sang chảnh",
@@ -361,7 +361,7 @@
   },
   {
     "result_code": 0,
-    "title": "Người nội tâm tiết kiệm (000)",
+    "title": "Người nội tâm tiết kiệm",
     "description": "Bạn là một người sống trong thế giới riêng của mình, thích đếm từng đồng tiền và tránh xa những bữa tiệc xa hoa. Nhìn thấy bạn đã đủ hài lòng rồi.",
     "traits": [
       "Nội tâm",
@@ -373,7 +373,7 @@
   },
   {
     "result_code": 1,
-    "title": "Người nội tâm tiêu xài (001)",
+    "title": "Người nội tâm tiêu xài",
     "description": "Sống kín đáo nhưng vẫn thích đôi khi lăn xả vào những bữa tiệc sang trọng. Cứ như là 'nằm trong tủ lạnh' nhưng thỉnh thoảng lại bật ra như 'ngôi sao'.",
     "traits": [
       "Nội tâm",
@@ -385,7 +385,7 @@
   },
   {
     "result_code": 2,
-    "title": "Người hướng ngoại tiết kiệm (010)",
+    "title": "Người hướng ngoại tiết kiệm",
     "description": "Bạn là người thích giao tiếp nhưng lại có thể ăn mì tôm cả tháng. Mọi người nghĩ bạn là 'nhà sản xuất meme' nhưng thực ra bạn đang tiết kiệm từng xu.",
     "traits": [
       "Hướng ngoại",
@@ -397,7 +397,7 @@
   },
   {
     "result_code": 3,
-    "title": "Người hướng ngoại tiêu xài (011)",
+    "title": "Người hướng ngoại tiêu xài",
     "description": "Bạn là trung tâm của mọi bữa tiệc! Chi tiêu không tiếc tay, vì cuộc sống quá ngắn để không tận hưởng. Nhưng đôi khi cũng cần nhớ ví tiền nhé!",
     "traits": [
       "Hướng ngoại",
@@ -409,7 +409,7 @@
   },
   {
     "result_code": 4,
-    "title": "Người nội tâm địa phương (100)",
+    "title": "Người nội tâm địa phương",
     "description": "Bình yên trong góc nhỏ của Sài Gòn, bạn thích khám phá từng góc phố, nhưng không bao giờ xa rời chiếc ghế yêu thích của mình.",
     "traits": [
       "Nội tâm",
@@ -421,7 +421,7 @@
   },
   {
     "result_code": 5,
-    "title": "Người nội tâm du lịch (101)",
+    "title": "Người nội tâm du lịch",
     "description": "Thích khám phá những nơi mới nhưng luôn một mình. Bạn là 'phượt thủ ngầm' với một chiếc vali mà chỉ có bạn mới biết cách xếp gọn gàng.",
     "traits": [
       "Nội tâm",
@@ -3224,5 +3224,421 @@
     "image_url": "/images/img_1770791982_Result_Image_Main_Subject_Số.png",
     "quiz_id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
     "id": "afa47224-2484-4559-ae2f-e66b4407605e"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh Nhọ Chóp Bu",
+    "description": "Số bạn đen như chó mực! Làm gì cũng xui tận mạng. Nhưng đừng lo, sau cơn mưa trời lại sáng. Hôm nay, hãy mang theo bùa hộ mệnh là... một cọng rau muống!",
+    "traits": [
+      "Xui xẻo",
+      "Vô dụng",
+      "Hay than vãn"
+    ],
+    "image_url": "/images/img_1770958174_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "9e9d36d7-9774-41ac-bb82-9b5821a64b7d"
+  },
+  {
+    "result_code": 1,
+    "title": "Drama Queen/King",
+    "description": "Bạn sống để tạo drama! Thiếu drama là thiếu oxy. Bớt sân si lại thì cuộc đời sẽ bớt khổ. Hôm nay, hãy ăn một trái chuối để hạ hỏa!",
+    "traits": [
+      "Sân si",
+      "Thích gây sự",
+      "Hay làm quá"
+    ],
+    "image_url": "/images/img_1770958171_Result_Image_Main_Subject_Dr.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "1621b9af-d3ca-44ce-8446-8b142f1f6296"
+  },
+  {
+    "result_code": 2,
+    "title": "Ẩn Sĩ Cao Thủ",
+    "description": "Bạn là một người bí ẩn, khó đoán. Thích một mình hơn là đám đông. Đừng sống khép kín quá, ra ngoài hít thở không khí đi! Hôm nay, hãy thử đi dạo ở công viên Tao Đàn!",
+    "traits": [
+      "Khép kín",
+      "Bí ẩn",
+      "Thích ở một mình"
+    ],
+    "image_url": "/images/img_1770958173_Result_Image_Main_Subject_Ẩn.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "85ae16d8-6400-4b24-9996-43eb570a5c62"
+  },
+  {
+    "result_code": 3,
+    "title": "Thánh Lầy Vô Đối",
+    "description": "Bạn hài hước, lầy lội, mang tiếng cười đến cho mọi người. Nhưng đôi khi, lầy quá hóa lố. Bớt bớt lại nha! Hôm nay, hãy kể một câu chuyện cười cho người lạ!",
+    "traits": [
+      "Hài hước",
+      "Lầy lội",
+      "Vô tư"
+    ],
+    "image_url": "/images/img_1770958170_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "b3a4c8a4-8559-4c5f-9acc-a0c4c34a4e0c"
+  },
+  {
+    "result_code": 4,
+    "title": "Con Ông Cháu Cha",
+    "description": "Bạn sinh ra đã ở vạch đích. Cuộc đời trải đầy hoa hồng. Nhưng đừng ngủ quên trên chiến thắng, phải cố gắng hơn nữa! Hôm nay, hãy làm từ thiện!",
+    "traits": [
+      "Giàu có",
+      "May mắn",
+      "Ích kỷ"
+    ],
+    "image_url": "/images/img_1770958178_Result_Image_Main_Subject_Co.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "f63421c7-2295-4e3a-80a1-a7204a46e89b"
+  },
+  {
+    "result_code": 5,
+    "title": "Thánh Nổ Banh Xác",
+    "description": "Bạn thích khoe khoang, phóng đại sự thật. Bớt nổ lại thì mọi người sẽ yêu quý bạn hơn. Hôm nay, hãy im lặng lắng nghe người khác nói!",
+    "traits": [
+      "Hay khoe khoang",
+      "Nổ banh xác",
+      "Tự cao"
+    ],
+    "image_url": "/images/img_1770958179_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "62ff6cf9-27c4-45ee-8141-14903501a298"
+  },
+  {
+    "result_code": 6,
+    "title": "Số hưởng Cấp Độ Max",
+    "description": "Bạn luôn gặp may mắn trong cuộc sống. Ăn ở có đức nên được trời thương. Hãy chia sẻ may mắn của mình với người khác! Hôm nay, hãy mời bạn bè đi ăn!",
+    "traits": [
+      "May mắn",
+      "Tốt bụng",
+      "Hạnh phúc"
+    ],
+    "image_url": "/images/img_1770958182_Result_Image_Main_Subject_Số.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "0f50e239-9d04-446e-a650-b1337d926346"
+  },
+  {
+    "result_code": 7,
+    "title": "Trùm Cuối Phản Diện",
+    "description": "Bạn đầy tham vọng và sẵn sàng làm mọi thứ để đạt được mục tiêu. Đừng đi quá giới hạn, kẻo hối hận không kịp! Hôm nay, hãy làm một việc tốt!",
+    "traits": [
+      "Tham vọng",
+      "Xảo quyệt",
+      "Tàn nhẫn"
+    ],
+    "image_url": "/images/img_1770958180_Result_Image_Main_Subject_Tr.png",
+    "quiz_id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "id": "042adddc-594a-4041-ba97-7fd5a35cb331"
+  },
+  {
+    "result_code": 0,
+    "title": "'Người Tối Cổ' Chính Hiệu",
+    "description": "Bạn là 'khủng long' lạc giữa kỷ nguyên Gen Z! Mấy cái trend 'tóp tóp' này đúng là 'vượt quá tầm hiểu biết' của bạn rồi. Nhưng đừng lo, 'cổ điển' cũng là một phong cách đó nha! Hãy cứ là chính mình, 'gu' của bạn vẫn có người mê!",
+    "traits": [
+      "Không quan tâm trend",
+      "Trung thành với sở thích",
+      "Thích sự ổn định"
+    ],
+    "image_url": "/images/img_1770958612_Result_Image_Main_Subject_N.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "9d5c91fa-5312-46b3-8494-d2989270bcec"
+  },
+  {
+    "result_code": 1,
+    "title": "Hội Nhập Chậm",
+    "description": "Bạn có biết đến các trend nhưng không phải lúc nào cũng 'đu' theo. Bạn thích quan sát hơn là tham gia, và chỉ 'nhập cuộc' khi thấy thực sự thú vị. Điều này giúp bạn tránh được những 'pha' lố lăng và giữ được sự tỉnh táo.",
+    "traits": [
+      "Cập nhật thông tin",
+      "Thận trọng",
+      "Có chọn lọc"
+    ],
+    "image_url": "/images/img_1770958608_Result_Image_Main_Subject_Hộ.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "0a5bb122-429c-4ca0-9ea2-571a94f6cb0f"
+  },
+  {
+    "result_code": 2,
+    "title": "Bắt Trend 'Nửa Mùa'",
+    "description": "Bạn 'đu trend' theo cảm hứng, lúc hứng lên thì 'quẩy' hết mình, lúc chán thì 'bơ' luôn. Điều này khiến bạn trở nên thú vị và khó đoán. Tuy nhiên, đôi khi bạn cũng bị coi là 'sớm nắng chiều mưa' đó nha!",
+    "traits": [
+      "Sáng tạo",
+      "Dễ thay đổi",
+      "Thất thường"
+    ],
+    "image_url": "/images/img_1770958611_Result_Image_Main_Subject_Bắ.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "514d127c-241e-47b0-bb6d-e53997ab3ade"
+  },
+  {
+    "result_code": 3,
+    "title": "Dân 'Tóp Tóp' Chính Hiệu",
+    "description": "Bạn là 'con nghiện' TikTok chính hiệu! Bảng tin của bạn toàn là các video 'triệu view' và bạn không bỏ lỡ bất kỳ trend nào. Tuy nhiên, hãy cẩn thận kẻo bị 'nghiện' quá mà quên mất thế giới thực nha!",
+    "traits": [
+      "Năng động",
+      "Cởi mở",
+      "Dễ bị ảnh hưởng"
+    ],
+    "image_url": "/images/grandma_roast_standing.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "57f425a5-69dd-48a2-8c21-0acf60c0e4b6"
+  },
+  {
+    "result_code": 4,
+    "title": "Thánh 'Sống Ảo' Chuyên Nghiệp",
+    "description": "Bạn 'sống' vì mạng xã hội! Mọi hoạt động của bạn đều được 'update' liên tục trên Instagram và Facebook. Bạn thích được chú ý và luôn cố gắng tạo ra những nội dung 'ấn tượng'. Hãy nhớ rằng, cuộc sống thực còn nhiều điều thú vị hơn nữa đó!",
+    "traits": [
+      "Tự tin",
+      "Thích thể hiện",
+      "Hướng ngoại"
+    ],
+    "image_url": "/images/img_1770958614_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "2ec1c5cc-80ac-434e-8e1c-7085338527df"
+  },
+  {
+    "result_code": 5,
+    "title": "Chiến Thần 'Trendsetter'",
+    "description": "Bạn không chỉ 'đu trend' mà còn tạo ra trend! Phong cách của bạn luôn đi trước thời đại và được nhiều người ngưỡng mộ. Bạn là nguồn cảm hứng cho những người xung quanh và luôn biết cách làm mình nổi bật.",
+    "traits": [
+      "Sáng tạo",
+      "Độc đáo",
+      "Có tầm ảnh hưởng"
+    ],
+    "image_url": "/images/img_1770958616_Result_Image_Main_Subject_Ch.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "4f11bc92-f505-45e1-be32-f2eb56135cd8"
+  },
+  {
+    "result_code": 6,
+    "title": "Ninja 'Bắt Trend' Cao Cấp",
+    "description": "Bạn 'đu trend' một cách kín đáo và tinh tế. Bạn không thích phô trương nhưng luôn biết cách làm mình trở nên 'cool ngầu'. Phong cách của bạn được đánh giá cao bởi sự thông minh và cá tính.",
+    "traits": [
+      "Thông minh",
+      "Kín đáo",
+      "Có gu thẩm mỹ"
+    ],
+    "image_url": "/images/img_1770958616_Result_Image_Main_Subject_Ni.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "e006f3c9-58b2-45cc-9c8c-8575589f5f83"
+  },
+  {
+    "result_code": 7,
+    "title": "Trùm Cuối 'Gen Z'",
+    "description": "Bạn là 'bậc thầy' của thế giới Gen Z! Bạn hiểu rõ mọi ngóc ngách của văn hóa giới trẻ và luôn biết cách tận dụng nó để đạt được mục đích của mình. Bạn là một người thông minh, sáng tạo và đầy tiềm năng.",
+    "traits": [
+      "Thông minh",
+      "Sáng tạo",
+      "Có tầm nhìn"
+    ],
+    "image_url": "/images/img_1770958617_Result_Image_Main_Subject_Tr.png",
+    "quiz_id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "id": "1b478e9d-7dd7-4603-9cb6-f3807d72bd73"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh 'tự luyến' ",
+    "description": "Bạn là chúa hề của vũ trụ! Lúc nào cũng nghĩ mình đẹp trai/xinh gái nhất hệ mặt trời. Bớt ảo tưởng sức mạnh đi nha, nhưng mà... cũng đáng yêu đó!",
+    "traits": [
+      "Tự tin thái quá",
+      "Hài hước",
+      "Vô tư"
+    ],
+    "image_url": "/images/img_1770958742_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "f4352012-0bd6-4a41-9088-7a8a3c1daadd"
+  },
+  {
+    "result_code": 1,
+    "title": "Hot TikToker 'ẩn danh'",
+    "description": "Bạn có tố chất trở thành hot TikToker! Khuôn mặt ưa nhìn, tính cách lầy lội. Chỉ cần chăm chỉ làm video, đảm bảo nổi như cồn! (Nhớ PR cho tui nha!)",
+    "traits": [
+      "Có duyên",
+      "Sáng tạo",
+      "Thích thể hiện"
+    ],
+    "image_url": "/images/img_1770958739_Result_Image_Main_Subject_Ho.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "46f9c94e-d133-4c84-8f25-ae1a73fb068c"
+  },
+  {
+    "result_code": 2,
+    "title": "Ngôi sao 'mạng xã hội' ",
+    "description": "Bạn là 'hoa hậu thân thiện' của mạng xã hội! Ai cũng quý mến bạn vì sự hòa đồng và dễ thương. Nhưng mà... bớt sống ảo lại nha!",
+    "traits": [
+      "Hòa đồng",
+      "Dễ thương",
+      "Sống ảo"
+    ],
+    "image_url": "/images/img_1770958742_Result_Image_Main_Subject_Ng.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "88c9a1e2-b7ef-46b4-9651-30975627165a"
+  },
+  {
+    "result_code": 3,
+    "title": "Gương mặt 'điện ảnh' ",
+    "description": "Bạn có khuôn mặt điện ảnh! Góc nghiêng thần thánh, biểu cảm đa dạng. Nếu không làm diễn viên thì phí cả một đời! (Nhớ mời tui đi xem phim nha!)",
+    "traits": [
+      "Ăn ảnh",
+      "Biểu cảm tốt",
+      "Có tố chất nghệ thuật"
+    ],
+    "image_url": "/images/img_1770958740_Result_Image_Main_Subject_Gư.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "51b3a26f-1818-4690-82aa-9bb41db51898"
+  },
+  {
+    "result_code": 4,
+    "title": "Idol 'Kpop' lạc trôi",
+    "description": "Bạn có nét hao hao idol Kpop! Da trắng, mắt một mí, môi trái tim. Chỉ cần giảm cân và tập nhảy, đảm bảo fan girl xếp hàng dài!",
+    "traits": [
+      "Phong cách",
+      "Sành điệu",
+      "Thích Kpop"
+    ],
+    "image_url": "/images/img_1770958748_Result_Image_Main_Subject_Id.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "60fed90a-113a-4c86-9fa8-7204bb53e3c8"
+  },
+  {
+    "result_code": 5,
+    "title": "Diễn viên 'Hài' tiềm năng",
+    "description": "Bạn sinh ra để làm diễn viên hài! Khuôn mặt đã tấu hài sẵn, khỏi cần diễn cũng thấy mắc cười. Nhưng mà... bớt làm lố lại nha!",
+    "traits": [
+      "Hài hước",
+      "Làm lố",
+      "Tự tin"
+    ],
+    "image_url": "/images/img_1770958749_Result_Image_Main_Subject_Di.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "9589526c-2f32-4abc-a82a-607d23bd3df1"
+  },
+  {
+    "result_code": 6,
+    "title": "Người mẫu 'lookbook'",
+    "description": "Bạn có gu ăn mặc chất lừ! Khuôn mặt high fashion, dáng người chuẩn. Chụp lookbook là auto có tiền! (Nhớ share hoa hồng cho tui nha!)",
+    "traits": [
+      "Có gu",
+      "Thời trang",
+      "Sành điệu"
+    ],
+    "image_url": "/images/img_1770958747_Result_Image_Main_Subject_Ng.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "fe10d8b6-a619-450c-92e7-af2f86effd56"
+  },
+  {
+    "result_code": 7,
+    "title": "Celeb 'Thứ thiệt' ",
+    "description": "Bạn sinh ra đã là celeb! Khuôn mặt đẹp không góc chết, tài năng hơn người. Chỉ cần hít thở thôi cũng đủ khiến người khác ghen tị! (Nhớ follow tui nha!)",
+    "traits": [
+      "Tài năng",
+      "Xinh đẹp",
+      "May mắn"
+    ],
+    "image_url": "/images/img_1770958750_Result_Image_Main_Subject_Ce.png",
+    "quiz_id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "id": "d64c3dcf-9162-4a56-8bb2-4d53aeaf7faf"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh 'Ăn Chay' Giả Trân",
+    "description": "Bạn là 'chuyên gia' lướt app tìm đồ ăn healthy, nhưng lại 'sa chân' vào mấy món chiên xào lúc nào không hay. Đừng tự dối lòng nữa, 'tâm hồn' của bạn thuộc về team 'bánh tráng trộn' rồi!",
+    "traits": [
+      "Healthy-ish",
+      "Dễ bị dụ dỗ",
+      "Thích sống ảo"
+    ],
+    "image_url": "/images/img_1770959868_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "56ede908-c2b9-4f5a-adaa-2ae78a000fe5"
+  },
+  {
+    "result_code": 1,
+    "title": "Cao Thủ 'Săn Sale' Nửa Đêm",
+    "description": "Bạn thuộc team 'không sale không ăn', voucher giảm giá là 'chân ái'. Khả năng 'canh sale' của bạn đỉnh đến mức shipper còn phải 'nể phục'. Cẩn thận kẻo 'lố tay' thành 'con nợ' lúc nào không hay!",
+    "traits": [
+      "Tiết kiệm",
+      "Khôn lỏi",
+      "Nghiện sale"
+    ],
+    "image_url": "/images/img_1770959870_Result_Image_Main_Subject_Ca.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "d63394e8-7481-4fc6-85ab-2e35114ef85b"
+  },
+  {
+    "result_code": 2,
+    "title": "Ninja 'Mì Gói' Biến Hình",
+    "description": "Bạn là 'master' của mì gói, biến tấu đủ kiểu từ mì xào đến mì trộn. Khả năng 'sáng tạo' của bạn chỉ phát huy tối đa khi túi tiền 'cạn đáy'. Đừng quên ăn thêm rau xanh để 'cân bằng' dinh dưỡng nha!",
+    "traits": [
+      "Sáng tạo",
+      "Tiết kiệm",
+      "Nghiện mì"
+    ],
+    "image_url": "/images/img_1770959869_Result_Image_Main_Subject_Ni.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "7f0d794e-42d3-4677-8d1c-29f60951a05f"
+  },
+  {
+    "result_code": 3,
+    "title": "Thánh 'Ăn Vặt' Không Ngại Bụng Mỡ",
+    "description": "Bạn là 'fan cứng' của trà sữa, bánh tráng, xiên que... Mấy món 'healthy' không có cửa trong từ điển của bạn. Cứ vui vẻ tận hưởng đi, 'eo thon' tính sau nha!",
+    "traits": [
+      "Vô tư",
+      "Hảo ngọt",
+      "Không lo nghĩ"
+    ],
+    "image_url": "/images/img_1770959869_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "c6c7f365-5c52-44a4-8f98-1f7dd7496343"
+  },
+  {
+    "result_code": 4,
+    "title": "Trùm 'Ăn Nhậu' Tại Gia",
+    "description": "Bạn là 'linh hồn' của mọi cuộc nhậu online, order đồ ăn 'không tiếc tay'. Khả năng 'chốt đơn' của bạn nhanh như chớp, shipper chỉ biết 'câm nín'. Nhớ giữ gìn 'tửu lượng' để còn 'chiến đấu' tiếp nha!",
+    "traits": [
+      "Hào phóng",
+      "Thích tụ tập",
+      "Uống được"
+    ],
+    "image_url": "/images/img_1770959877_Result_Image_Main_Subject_Tr.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "2edf6dba-dc1a-4d69-bff1-4fe63a6b618c"
+  },
+  {
+    "result_code": 5,
+    "title": "Best 'Cú Đêm' Gọi Đồ Ăn",
+    "description": "Bạn là 'chúa tể' của màn đêm, order đồ ăn lúc 3h sáng là chuyện thường. Mấy quán ăn đêm quen mặt bạn hơn cả người yêu. Đừng quên ngủ đủ giấc để da dẻ 'tươi tắn' nha!",
+    "traits": [
+      "Thức khuya",
+      "Ăn đêm",
+      "Cô đơn"
+    ],
+    "image_url": "/images/img_1770959877_Result_Image_Main_Subject_Be.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "1b869dda-38c7-4631-bc43-17ae9487b313"
+  },
+  {
+    "result_code": 6,
+    "title": "Thánh 'Lười' Gọi Hết Món",
+    "description": "Bạn là 'biểu tượng' của sự lười biếng, đến cả việc nấu ăn cũng 'quá sức'. Order một lần là 'full combo', ăn cả ngày không hết. Cẩn thận kẻo 'béo phì' tìm đến nha!",
+    "traits": [
+      "Lười biếng",
+      "Thích tiện lợi",
+      "Dễ tăng cân"
+    ],
+    "image_url": "/images/img_1770959876_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "694268ab-9574-44a6-ab19-ce7718a676cf"
+  },
+  {
+    "result_code": 7,
+    "title": "Boss 'Ăn Sập' App Giao Đồ Ăn",
+    "description": "Bạn là 'khách hàng VIP' của mọi app giao đồ ăn, order liên tục không ngừng nghỉ. Shipper xếp hàng dài trước cửa nhà bạn mỗi ngày. Coi chừng 'cháy túi' vì ăn uống quá độ nha!",
+    "traits": [
+      "Nghiện ăn",
+      "Mạnh vì gạo",
+      "Chịu chi"
+    ],
+    "image_url": "/images/img_1770959878_Result_Image_Main_Subject_Bo.png",
+    "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "id": "a0021247-dc91-4fac-84e1-8393d8498de5"
   }
 ]

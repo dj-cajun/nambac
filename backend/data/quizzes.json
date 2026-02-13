@@ -29,7 +29,7 @@
     "id": "4f4140a0-0bc8-42d0-aafa-e25cb6e68cc5",
     "created_at": "2026-02-08T23:12:18.334992",
     "is_active": true,
-    "view_count": 5,
+    "view_count": 7,
     "share_count": 0
   },
   {
@@ -139,7 +139,51 @@
     "id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
     "created_at": "2026-02-11T13:39:48.185640",
     "is_active": true,
-    "view_count": 16,
+    "view_count": 17,
+    "share_count": 0
+  },
+  {
+    "title": "Bói Tarot Online: Đoán Vận Mệnh Cực Gắt!",
+    "description": "Bạn có dám đối mặt với sự thật? Chọn lá bài và nhận ngay lời tiên tri 'thật trân trân' từ bà thầy bói Chợ Lớn!",
+    "category": "Fortune",
+    "image_url": "/images/img_1770958172_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "c57db684-b6ef-4324-8143-7e54e0b24f30",
+    "created_at": "2026-02-13T11:49:42.485595",
+    "is_active": true,
+    "view_count": 2,
+    "share_count": 0
+  },
+  {
+    "title": "Bạn là 'Gen Z Trendsetter' hay 'Người Tối Cổ'? Test Ngay!",
+    "description": "Bạn nghĩ mình 'bắt trend' đỉnh của chóp? Làm bài test này để xem bạn thực sự hiểu giới trẻ đến đâu nhé! Cẩn thận, có thể bạn sẽ 'out trình' đó nha!",
+    "category": "Trend_Hunter",
+    "image_url": "/images/img_1770958610_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "f6556024-2040-4579-adbc-54dc9ac481b9",
+    "created_at": "2026-02-13T11:56:58.292943",
+    "is_active": true,
+    "view_count": 1,
+    "share_count": 0
+  },
+  {
+    "title": "Mặt bạn giống ai trong giới showbiz Việt? (Nhưng mà phiên bản 'cà khịa' nhé!)",
+    "description": "Chuyên gia 'dòm mặt' Sisyphus sẽ phán cho bạn một câu xanh rờn. Đừng tin 100% nha, vui là chính!",
+    "category": "Linker_Lookalike",
+    "image_url": "/images/img_1770958741_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "6afff049-3753-4deb-980b-06417b0f64f5",
+    "created_at": "2026-02-13T11:59:10.626504",
+    "is_active": true,
+    "view_count": 0,
+    "share_count": 0
+  },
+  {
+    "title": "Bạn là 'Thánh Ăn' hệ nào trên app giao đồ ăn?",
+    "description": "9h đêm rồi mà bụng vẫn réo? Để tui 'xem tướng' chọn món tủ cho mí bạn nha!",
+    "category": "Delivery_King",
+    "image_url": "/images/img_1770959866_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "d77bbf65-d765-493e-96e9-3c78965f886c",
+    "created_at": "2026-02-13T12:17:58.923037",
+    "is_active": true,
+    "view_count": 1,
     "share_count": 0
   }
 ]
