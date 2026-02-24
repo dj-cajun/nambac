@@ -1,0 +1,42 @@
+# cPanel .htaccess for Nambac
+# 이 파일은 public_html/ 에 위치
+
+# SPA Routing — 모든 프론트엔드 경로를 index.html로
+RewriteEngine On
+RewriteBase /
+
+# API & Share → Passenger FastAPI backend (프록시)
+RewriteRule ^api/(.*)$ http://127.0.0.1:8000/api/$1 [P,L]
+RewriteRule ^share/(.*)$ http://127.0.0.1:8000/share/$1 [P,L]
+
+# Static images → backend data/images
+RewriteRule ^images/(.*)$ /backend/data/images/$1 [L]
+
+# SPA fallback — 존재하지 않는 파일은 index.html로
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+# Gzip Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json text/xml image/svg+xml
+</IfModule>
+
+# Cache Static Assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 30 days"
+    ExpiresByType application/javascript "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 7 days"
+    ExpiresByType application/font-woff2 "access plus 30 days"
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
