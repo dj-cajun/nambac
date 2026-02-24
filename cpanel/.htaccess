@@ -1,21 +1,21 @@
-# cPanel .htaccess for Nambac
-# 이 파일은 public_html/ 에 위치
+# cPanel .htaccess for Nambac (Modified for Stability)
 
-# SPA Routing — 모든 프론트엔드 경로를 index.html로
 RewriteEngine On
 RewriteBase /
 
-# API & Share → Passenger FastAPI backend (프록시)
-RewriteRule ^api/(.*)$ http://127.0.0.1:8000/api/$1 [P,L]
-RewriteRule ^share/(.*)$ http://127.0.0.1:8000/share/$1 [P,L]
+# 1. API & Share는 cPanel의 'Setup Python App' 설정이 우선권을 가집니다.
+# 만약 Setup Python App에서 URL을 'api'로 지정했다면 아래 규칙은 필요 없습니다.
+# 하지만 SPA 라우팅과 충돌을 막기 위해 제외 규칙을 추가합니다.
+RewriteCond %{REQUEST_URI} ^/(api|share) [NC]
+RewriteRule .* - [L]
 
-# Static images → backend data/images
-RewriteRule ^images/(.*)$ /backend/data/images/$1 [L]
-
-# SPA fallback — 존재하지 않는 파일은 index.html로
+# 2. SPA fallback — 존재하지 않는 파일만 index.html로 보냄
+# (이미지나 정적 파일이 실제로 있으면 그 파일을 보여줍니다)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.html [L]
+
+# --- 성능 및 보안 설정 (사장님이 작성하신 좋은 코드 유지) ---
 
 # Gzip Compression
 <IfModule mod_deflate.c>
@@ -30,7 +30,6 @@ RewriteRule . /index.html [L]
     ExpiresByType image/png "access plus 30 days"
     ExpiresByType image/jpeg "access plus 30 days"
     ExpiresByType image/svg+xml "access plus 7 days"
-    ExpiresByType application/font-woff2 "access plus 30 days"
 </IfModule>
 
 # Security Headers
