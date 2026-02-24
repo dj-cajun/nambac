@@ -588,6 +588,62 @@ async def upload_quiz_zip(file: UploadFile = File(...), admin: bool = Depends(ve
         }
 
 
+@app.post("/api/admin/upload-quiz-json")
+async def upload_quiz_json(request: Dict[str, Any] = None, admin: bool = Depends(verify_admin_key)):
+    """
+    JSON 직접 업로드로 퀴즈 생성 (Quiz Editor용)
+    ZIP 없이 JSON 페이로드만으로 퀴즈 저장
+    """
+    import uuid as uuid_mod
+
+    body = request
+    if not body:
+        raise HTTPException(status_code=400, detail="Empty request body")
+
+    if "title" not in body:
+        raise HTTPException(status_code=400, detail="Missing 'title'")
+    if "results" not in body or len(body["results"]) == 0:
+        raise HTTPException(status_code=400, detail="Missing or empty 'results'")
+
+    quiz_id = str(uuid_mod.uuid4())
+
+    quiz_meta = {
+        "id": quiz_id,
+        "title": body["title"],
+        "description": body.get("description", ""),
+        "category": body.get("category", "fun"),
+        "quiz_type": body.get("quiz_type", "binary_5q"),
+        "image_url": body.get("thumbnail", ""),
+        "config": body.get("config"),
+        "design": body.get("design"),
+    }
+
+    questions_data = []
+    for i, q in enumerate(body.get("questions", [])):
+        q["quiz_id"] = quiz_id
+        q["id"] = str(uuid_mod.uuid4())
+        q.setdefault("order_number", i + 1)
+        questions_data.append(q)
+
+    results_data = []
+    for r in body["results"]:
+        r["quiz_id"] = quiz_id
+        r["id"] = str(uuid_mod.uuid4())
+        results_data.append(r)
+
+    json_manager.save_quiz_complete(quiz_meta, questions_data, results_data)
+
+    return {
+        "status": "success",
+        "quiz_id": quiz_id,
+        "title": quiz_meta["title"],
+        "quiz_type": quiz_meta["quiz_type"],
+        "question_count": len(questions_data),
+        "result_count": len(results_data),
+        "images_uploaded": 0
+    }
+
+
 # ========== Question CRUD Endpoints ==========
 
 

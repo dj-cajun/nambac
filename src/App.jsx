@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import QuizPage from './pages/QuizPage';
 import Admin from './pages/Admin';
+import QuizEditor from './pages/QuizEditor';
 import AIServicePage from './pages/AIServicePage';
 import './App.css'; // [FIX]: Added missing style import
 
@@ -23,7 +24,7 @@ function App() {
 
 function AppContent() {
   const location = useLocation();
-  const isAdminPage = location.pathname === '/admin';
+  const isAdminPage = location.pathname === '/admin' || location.pathname === '/editor';
 
   return (
     <div className={`app-layout ${isAdminPage ? 'wide-layout' : ''}`} style={{ position: 'relative', minHeight: '100vh' }}>
@@ -40,6 +41,7 @@ function AppContent() {
         <Route path="/quiz/:id/analysis" element={<AnalysisPage />} />
         <Route path="/quiz/:id/result" element={<Result />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/editor" element={<QuizEditor />} />
         <Route path="/service/:id" element={<AIServicePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
