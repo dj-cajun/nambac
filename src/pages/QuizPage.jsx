@@ -6,6 +6,7 @@ import { calculateScore } from '../logic/scoring';
 import Result from './Result';
 import NameInputQuiz from './NameInputQuiz';
 import MBTIQuiz from './MBTIQuiz';
+import CustomQuiz from './CustomQuiz';
 import './QuizPage.css';
 import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
 import AdPlaceholder from '../components/AdPlaceholder';
@@ -125,6 +126,10 @@ export default function QuizPage({ quizIdProp }) {
 
     if (quizType === 'mbti_12q') {
         return <MBTIQuiz quizInfo={quizInfo} questions={questions} results={results} />;
+    }
+
+    if (quizType === 'sponsor' || quizType === 'full_custom') {
+        return <CustomQuiz quizInfo={quizInfo} questions={questions} results={results} />;
     }
 
     if (showResult) {

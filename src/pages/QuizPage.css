@@ -729,3 +729,44 @@
     font-weight: 700;
     border: 1.5px solid #1E293B;
 }
+
+/* ==== Multi-Choice Grid ==== */
+.answers-grid.multi-choice {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.answers-grid.multi-choice:has(> :nth-child(3)) {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* ==== Sponsor Elements ==== */
+.sponsor-logo-overlay {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 2px solid #1E293B;
+    object-fit: contain;
+    background: white;
+    z-index: 10;
+}
+
+.sponsor-banner {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 12px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #1E293B;
+    box-shadow: 2px 2px 0px 0px #1E293B;
+}
+
+.sponsor-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
