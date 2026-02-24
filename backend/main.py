@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends, Header, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
@@ -7,6 +7,10 @@ from typing import List, Optional, Any, Dict, cast
 from datetime import datetime
 import sys
 import os
+import zipfile
+import tempfile
+import shutil
+import json as json_lib
 from dotenv import load_dotenv
 
 from logic.factory import NambacFactory
@@ -37,17 +41,51 @@ async def verify_admin_key(x_admin_key: str = Header(default="")):
     return True
 
 
+# --- Quiz Type Constants ---
+QUIZ_TYPES = ["binary_5q", "mbti_12q", "name_input", "sponsor", "full_custom"]
+CATEGORIES = ["personality", "mbti", "fortune", "fun", "sponsor", "trend"]
+
+
 # --- Pydantic Models (Response Schemas) ---
+class QuizConfig(BaseModel):
+    scoring_method: str = "binary_3bit"
+    question_count: int = 5
+    result_count: int = 8
+    options_per_question: int = 2
+    show_progress_bar: bool = True
+    allow_back: bool = False
+
+
+class QuizDesign(BaseModel):
+    theme: str = "glass_comic"
+    primary_color: str = "#FF2D85"
+    bg_gradient: List[str] = ["#fce4ec", "#f3e5f5"]
+    font_family: str = "Plus Jakarta Sans"
+    custom_css: Optional[str] = None
+    bg_video_url: Optional[str] = None
+    sponsor_logo: Optional[str] = None
+    sponsor_banner: Optional[str] = None
+
+
 class Question(BaseModel):
     id: str
     quiz_id: str
-    order_number: int
-    question_text: str
-    option_a: str
-    option_b: str
-    score_a: int
-    score_b: int
+    order_number: int = 1
+    question_text: str = ""
+    option_a: str = ""
+    option_b: str = ""
+    score_a: int = 0
+    score_b: int = 0
     image_url: Optional[str] = None
+    # MBTI fields
+    dimension: Optional[str] = None  # "EI", "SN", "TF", "JP"
+    # Name input fields
+    input_type: Optional[str] = None  # "name"
+    placeholder: Optional[str] = None
+    # Custom fields
+    options: Optional[List[dict]] = None  # Multi-choice [{text, score, image}]
+    bg_video: Optional[str] = None
+    effect: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -57,12 +95,15 @@ class QuizResponse(BaseModel):
     id: str
     title: str
     description: str
-    category: str
+    category: str = "fun"
+    quiz_type: str = "binary_5q"
     image_url: Optional[str] = None
-    is_active: bool
-    view_count: int
-    share_count: int
-    created_at: datetime
+    is_active: bool = True
+    view_count: int = 0
+    share_count: int = 0
+    created_at: datetime = None
+    config: Optional[QuizConfig] = None
+    design: Optional[QuizDesign] = None
     questions: List[Question] = []
 
     class Config:
@@ -75,6 +116,7 @@ class QuizRequest(BaseModel):
     generate_images: bool = False
     category: Optional[str] = None
     agent_name: Optional[str] = None
+    quiz_type: str = "binary_5q"
 
 
 # --- FastAPI App Initialization ---
@@ -185,9 +227,13 @@ async def generate_quiz(request: QuizRequest, admin: bool = Depends(verify_admin
 
 
 @app.get("/api/quizzes")
-def get_all_quizzes():
-    """모든 퀴즈 목록 조회"""
+def get_all_quizzes(quiz_type: Optional[str] = None, category: Optional[str] = None):
+    """모든 퀴즈 목록 조회 (quiz_type, category 필터 지원)"""
     quizzes = json_manager.get_all_quizzes()
+    if quiz_type:
+        quizzes = [q for q in quizzes if q.get("quiz_type") == quiz_type]
+    if category:
+        quizzes = [q for q in quizzes if q.get("category") == category]
     return {"quizzes": quizzes}
 
 
@@ -258,7 +304,7 @@ def share_result_og(quiz_id: str, result_code: int):
     elif not image_url:
         image_url = "https://nambac.xyz/og-default.png" # Fallback
 
-    frontend_url = f"https://nambac.xyz/quiz/{quiz_id}/result?score={result_code}"
+    frontend_url = f"https://nambac.xyz/quiz/{quiz_id}"
     
     html_content = f"""
     <!DOCTYPE html>
@@ -428,6 +474,118 @@ def delete_quiz(quiz_id: str, admin: bool = Depends(verify_admin_key)):
         raise HTTPException(status_code=404, detail="Quiz not found")
 
     return {"message": "Quiz deleted successfully"}
+
+
+# ========== ZIP Upload Endpoint ==========
+
+
+@app.post("/api/admin/upload-quiz")
+async def upload_quiz_zip(file: UploadFile = File(...), admin: bool = Depends(verify_admin_key)):
+    """
+    ZIP 파일로 퀴즈 업로드
+    ZIP 구조: quiz.json + images/
+    """
+    if not file.filename.endswith(".zip"):
+        raise HTTPException(status_code=400, detail="Only .zip files allowed")
+
+    # 임시 디렉토리에 저장
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        zip_path = os.path.join(tmp_dir, "upload.zip")
+        with open(zip_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+
+        # ZIP 해제
+        try:
+            with zipfile.ZipFile(zip_path, "r") as zf:
+                zf.extractall(tmp_dir)
+        except zipfile.BadZipFile:
+            raise HTTPException(status_code=400, detail="Invalid ZIP file")
+
+        # quiz.json 찾기
+        quiz_json_path = os.path.join(tmp_dir, "quiz.json")
+        if not os.path.exists(quiz_json_path):
+            raise HTTPException(status_code=400, detail="quiz.json not found in ZIP")
+
+        with open(quiz_json_path, "r", encoding="utf-8") as f:
+            quiz_data = json_lib.load(f)
+
+        # 필수 필드 검증
+        if "title" not in quiz_data:
+            raise HTTPException(status_code=400, detail="Missing 'title' in quiz.json")
+        if "questions" not in quiz_data or len(quiz_data["questions"]) == 0:
+            raise HTTPException(status_code=400, detail="Missing or empty 'questions' in quiz.json")
+        if "results" not in quiz_data or len(quiz_data["results"]) == 0:
+            raise HTTPException(status_code=400, detail="Missing or empty 'results' in quiz.json")
+
+        # UUID 생성
+        import uuid
+        quiz_id = str(uuid.uuid4())
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
+        # 이미지 복사
+        images_src = os.path.join(tmp_dir, "images")
+        images_dst = os.path.join("data", "images")
+        os.makedirs(images_dst, exist_ok=True)
+
+        image_map = {}  # 원본 경로 → 서버 경로 매핑
+        if os.path.isdir(images_src):
+            for img_file in os.listdir(images_src):
+                src = os.path.join(images_src, img_file)
+                new_name = f"upload_{timestamp}_{img_file}"
+                dst = os.path.join(images_dst, new_name)
+                shutil.copy2(src, dst)
+                image_map[f"images/{img_file}"] = f"/images/{new_name}"
+
+        # 이미지 경로 매핑 적용
+        def map_image(path):
+            if not path:
+                return path
+            return image_map.get(path, path)
+
+        # 퀴즈 메타 데이터
+        quiz_meta = {
+            "id": quiz_id,
+            "title": quiz_data["title"],
+            "description": quiz_data.get("description", ""),
+            "category": quiz_data.get("category", "fun"),
+            "quiz_type": quiz_data.get("quiz_type", "binary_5q"),
+            "image_url": map_image(quiz_data.get("thumbnail", "")),
+            "config": quiz_data.get("config"),
+            "design": quiz_data.get("design"),
+        }
+
+        # 질문 데이터
+        questions = []
+        for i, q in enumerate(quiz_data["questions"]):
+            q["quiz_id"] = quiz_id
+            q["id"] = str(uuid.uuid4())
+            q.setdefault("order_number", i + 1)
+            if "image_url" in q:
+                q["image_url"] = map_image(q["image_url"])
+            questions.append(q)
+
+        # 결과 데이터
+        results = []
+        for r in quiz_data["results"]:
+            r["quiz_id"] = quiz_id
+            r["id"] = str(uuid.uuid4())
+            if "image_url" in r:
+                r["image_url"] = map_image(r["image_url"])
+            results.append(r)
+
+        # 저장
+        saved = json_manager.save_quiz_complete(quiz_meta, questions, results)
+
+        return {
+            "status": "success",
+            "quiz_id": quiz_id,
+            "title": quiz_meta["title"],
+            "quiz_type": quiz_meta["quiz_type"],
+            "question_count": len(questions),
+            "result_count": len(results),
+            "images_uploaded": len(image_map)
+        }
 
 
 # ========== Question CRUD Endpoints ==========

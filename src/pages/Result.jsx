@@ -61,7 +61,8 @@ const Result = () => {
         fetchQuizzes();
     }, [quizIdParam]);
 
-    // ogImageUrl 제거. finalResult.image_url을 직접 사용
+    // Share URL for SSR OG tags (crawlers hit this, users get redirected to quiz start)
+    const shareUrl = `https://nambac.xyz/share/${quizIdParam}/${score}`;
 
     const renderDescription = (text = "") => {
         return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;
@@ -112,6 +113,15 @@ const Result = () => {
                         <p className="result-overlay-text">
                             {renderDescription(finalResult.description)}
                         </p>
+
+                        {/* Traits Hashtags */}
+                        {finalResult.traits && finalResult.traits.length > 0 && (
+                            <div className="result-traits">
+                                {finalResult.traits.map((trait, i) => (
+                                    <span key={i} className="trait-tag">#{trait}</span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -170,14 +180,14 @@ const Result = () => {
 
                         <div className="share-options">
                             <button className="share-option zalo" onClick={() => {
-                                window.open(`https://zalo.me/share?url=${encodeURIComponent(window.location.href)}`, '_blank');
+                                window.open(`https://zalo.me/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
                             }}>
                                 <span className="share-icon">💬</span>
                                 <span>Zalo</span>
                             </button>
 
                             <button className="share-option instagram" onClick={() => {
-                                navigator.clipboard.writeText(window.location.href);
+                                navigator.clipboard.writeText(shareUrl);
                                 alert('Đã sao chép link! Hãy dán vào Instagram.');
                             }}>
                                 <span className="share-icon">📷</span>
@@ -185,14 +195,14 @@ const Result = () => {
                             </button>
 
                             <button className="share-option facebook" onClick={() => {
-                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
                             }}>
                                 <span className="share-icon">📘</span>
                                 <span>Facebook</span>
                             </button>
 
                             <button className="share-option copy-link" onClick={() => {
-                                navigator.clipboard.writeText(window.location.href);
+                                navigator.clipboard.writeText(shareUrl);
                                 alert('Đã sao chép link!');
                             }}>
                                 <span className="share-icon">🔗</span>

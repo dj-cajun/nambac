@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Share2, Copy, Check } from 'lucide-react';
 import { calculateScore } from '../logic/scoring';
 import Result from './Result';
+import NameInputQuiz from './NameInputQuiz';
+import MBTIQuiz from './MBTIQuiz';
 import './QuizPage.css';
 import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
 import AdPlaceholder from '../components/AdPlaceholder';
@@ -112,6 +114,17 @@ export default function QuizPage({ quizIdProp }) {
                 </div>
             </div>
         );
+    }
+
+    // --- Quiz Type Routing ---
+    const quizType = quizInfo.quiz_type || 'binary_5q';
+
+    if (quizType === 'name_input') {
+        return <NameInputQuiz quizInfo={quizInfo} results={results} />;
+    }
+
+    if (quizType === 'mbti_12q') {
+        return <MBTIQuiz quizInfo={quizInfo} questions={questions} results={results} />;
     }
 
     if (showResult) {

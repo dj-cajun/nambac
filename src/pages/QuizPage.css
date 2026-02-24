@@ -634,3 +634,98 @@
     flex-direction: column;
     align-items: center;
 }
+
+/* ==== Name Input Quiz ==== */
+.name-input-card {
+    width: calc(100% - 40px);
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.5);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 2px solid #1E293B;
+    border-radius: 32px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: 8px 8px 0px 0px #1E293B;
+    margin-top: 40px;
+}
+
+.name-input-title {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #1E293B;
+    margin: 0 0 8px 0;
+}
+
+.name-input-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.name-input-wrapper {
+    margin-bottom: 20px;
+}
+
+.name-input-field {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid #1E293B;
+    border-radius: 16px;
+    background: white;
+    color: #1E293B;
+    box-shadow: 4px 4px 0px 0px #1E293B;
+    outline: none;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    transition: all 0.2s;
+}
+
+.name-input-field:focus {
+    border-color: #FF2D85;
+    box-shadow: 4px 4px 0px 0px #FF2D85;
+}
+
+.name-input-field::placeholder {
+    color: #CBD5E1;
+    font-weight: 500;
+}
+
+.name-submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: #FF2D85;
+    color: white;
+    border: 2px solid #1E293B;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px 0px #1E293B;
+    transition: all 0.1s;
+}
+
+.name-submit-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+}
+
+.name-submit-btn:disabled {
+    background: #CBD5E1;
+    cursor: not-allowed;
+}
+
+/* ==== MBTI Dimension Tag ==== */
+.mbti-dimension-tag {
+    background: #e9d5ff;
+    color: #1E293B;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1.5px solid #1E293B;
+}

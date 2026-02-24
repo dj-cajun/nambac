@@ -84,6 +84,8 @@ class JSONManager:
         quiz_data.setdefault("is_active", True)
         quiz_data.setdefault("view_count", 0)
         quiz_data.setdefault("share_count", 0)
+        quiz_data.setdefault("quiz_type", "binary_5q")
+        quiz_data.setdefault("category", "fun")
 
         quizzes.append(quiz_data)
         self._write_json(self.quizzes_file, quizzes)
