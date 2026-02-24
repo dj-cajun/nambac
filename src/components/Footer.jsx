@@ -5,8 +5,8 @@ import './Footer.css';
 const Footer = () => {
   return (
     <footer className="footer">
-      <Link to="/" className="footer-logo" style={{ textDecoration: 'none', color: 'inherit' }}>
-        <span className="footer-icon">☁️</span> nambac.xyz
+      <Link to="/" className="footer-logo">
+        <img src="/images/logo.png" alt="NamBắc Logo" className="footer-logo-img" />
       </Link>
       <div className="footer-links">
         <span>About</span>

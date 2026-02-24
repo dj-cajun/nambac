@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    container_name: nambac-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    environment:
+      - ENV=production
+    volumes:
+      # Persist quiz data (JSON files + images)
+      - nambac-data:/app/backend/data
+      # SSL certificates (mount from host after certbot setup)
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: Certbot for Let's Encrypt SSL
+  certbot:
+    image: certbot/certbot
+    container_name: nambac-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    profiles:
+      - ssl
+
+volumes:
+  nambac-data:
+    driver: local

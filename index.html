@@ -4,9 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>nambac.xyz</title>
+  <title>nambac.xyz — Trắc nghiệm tính cách AI | 나의 성향 퀴즈</title>
+  <meta name="description" content="AI가 만드는 호치민 MZ세대 성향 분석 퀴즈. 5문항으로 나만의 유형을 발견하세요!">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nambac.xyz">
+  <meta property="og:title" content="nambac.xyz — Trắc nghiệm tính cách AI">
+  <meta property="og:description" content="AI가 만드는 호치민 MZ세대 성향 분석 퀴즈. 5문항으로 나만의 유형을 발견하세요!">
+  <meta property="og:image" content="https://nambac.xyz/og-default.png">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="nambac.xyz — Trắc nghiệm tính cách AI">
+  <meta property="twitter:image" content="https://nambac.xyz/og-default.png">
+
   <style>
     :root {
       --glass: rgba(255, 255, 255, 0.2);
@@ -64,14 +76,21 @@
     }
   </style>
 
-  <!-- Google Analytics (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_MEASUREMENT_ID%"></script>
+  <!-- Google Analytics (GA4) — only loads if measurement ID is configured -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', '%VITE_GA_MEASUREMENT_ID%');
+    (function() {
+      var gaId = '%VITE_GA_MEASUREMENT_ID%';
+      if (!gaId || gaId.indexOf('VITE_') === 0) return; // Skip if not configured
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', gaId);
+    })();
   </script>
 </head>
 

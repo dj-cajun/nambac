@@ -33,7 +33,7 @@ export default function QuizPage({ quizIdProp }) {
                 // Fetch Quiz Info & Questions
                 const quizRes = await fetch(`${API_BASE_URL}/quizzes/${quizId}`);
                 if (!quizRes.ok) throw new Error('Failed to fetch quiz');
-                const quizData = await quizRes.ok ? await quizRes.json() : null;
+                const quizData = await quizRes.json();
 
                 if (quizData) {
                     setQuizInfo(quizData);

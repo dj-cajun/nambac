@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+.git/
+.DS_Store
+*.pyc
+__pycache__/
+dist/
+.ruff_cache/
+backend/server.log
+backend/아카이브.zip
+*.log
+*.zip
+.env
+.env.local

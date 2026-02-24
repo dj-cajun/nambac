@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
@@ -22,6 +22,19 @@ def log(message):
 
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "../.env"))
+
+# --- Admin API Key Authentication ---
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
+
+
+async def verify_admin_key(x_admin_key: str = Header(default="")):
+    """Verify the admin API key from X-Admin-Key header."""
+    if not ADMIN_API_KEY:
+        log("⚠️ ADMIN_API_KEY is not set in .env — all admin requests are BLOCKED.")
+        raise HTTPException(status_code=500, detail="Server misconfigured: admin key not set")
+    if x_admin_key != ADMIN_API_KEY:
+        raise HTTPException(status_code=401, detail="Unauthorized: Invalid admin key")
+    return True
 
 
 # --- Pydantic Models (Response Schemas) ---
@@ -67,29 +80,42 @@ class QuizRequest(BaseModel):
 # --- FastAPI App Initialization ---
 # cPanel 배포 환경(ENV=production)일 때만 root_path="/api" 설정
 # 로컬 개발 환경(ENV=development 또는 없음)에서는 root_path="" (기본값)
-root_path = "/api" if os.getenv("ENV") == "production" else ""
+is_production = os.getenv("ENV") == "production"
+root_path = "/api" if is_production else ""
 
 app = FastAPI(
     title="Nambac Agent Factory API",
     description="3인의 AI 에이전트(Director, Architect, Analyst)가 협업하는 퀴즈 생성 공장",
     version="1.0.0",
     root_path=root_path,
+    # Disable docs in production
+    docs_url=None if is_production else "/docs",
+    redoc_url=None if is_production else "/redoc",
 )
 
-origins = [
-    "https://nambac.xyz",
-    "http://nambac.xyz",
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:8000",
-]
+# CORS: Environment-aware origins
+if os.getenv("ALLOWED_ORIGINS"):
+    origins = os.getenv("ALLOWED_ORIGINS").split(",")
+elif is_production:
+    origins = [
+        "https://nambac.xyz",
+        "http://nambac.xyz",
+    ]
+else:
+    origins = [
+        "https://nambac.xyz",
+        "http://nambac.xyz",
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:8000",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "X-Admin-Key", "Authorization"],
 )
 
 # JSON Manager 초기화
@@ -105,7 +131,7 @@ def read_root():
 
 
 @app.get("/api/admin/agents")
-def get_available_agents():
+def get_available_agents(admin: bool = Depends(verify_admin_key)):
     """Available agents in .claude/agents/ and agents_nambac/prompts/"""
     base_path = os.path.dirname(os.path.abspath(__file__))
     directories = [
@@ -130,7 +156,7 @@ def get_available_agents():
 
 
 @app.post("/api/quiz/generate")
-async def generate_quiz(request: QuizRequest):
+async def generate_quiz(request: QuizRequest, admin: bool = Depends(verify_admin_key)):
     """
     [에이전트 워크플로우 실행]
     주제를 받아 Director -> Visual Architect / Report Analyst 순서로 협업하여
@@ -178,8 +204,6 @@ def get_quiz(quiz_id: str):
     results = json_manager.get_results_by_quiz_id(quiz_id)
     quiz["questions"] = questions
     quiz["results"] = results
-
-    return quiz
 
     return quiz
 
@@ -274,7 +298,7 @@ def share_result_og(quiz_id: str, result_code: int):
 
 
 @app.post("/api/quizzes")
-async def create_quiz(request: QuizRequest):
+async def create_quiz(request: QuizRequest, admin: bool = Depends(verify_admin_key)):
     """
     퀴즈 생성 (AI 에이전트 활용)
     주제를 받아 AI로 퀴즈를 생성하고 로컬 JSON에 저장
@@ -349,18 +373,13 @@ async def create_quiz(request: QuizRequest):
         saved_quiz = json_manager.save_quiz_complete(quiz_meta, questions, results)
         return {"quiz": saved_quiz, "questions": questions, "results": results}
 
-        # JSON에 저장
-        saved_quiz = json_manager.save_quiz_complete(quiz_meta, questions, results)
-
-        return {"quiz": saved_quiz, "questions": questions, "results": results}
-
     except Exception as e:
         print(f"❌ Error creating quiz: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.put("/api/quizzes/{quiz_id}")
-def update_quiz(quiz_id: str, updates: Dict):
+def update_quiz(quiz_id: str, updates: Dict, admin: bool = Depends(verify_admin_key)):
     """퀴즈, 질문, 결과 수정"""
     # 1. Update/Create Questions if present
     if "questions" in updates:
@@ -400,7 +419,7 @@ def update_quiz(quiz_id: str, updates: Dict):
 
 
 @app.delete("/api/quizzes/{quiz_id}")
-def delete_quiz(quiz_id: str):
+def delete_quiz(quiz_id: str, admin: bool = Depends(verify_admin_key)):
     """퀴즈 삭제"""
     log(f"🔥 Attempting to delete quiz: {quiz_id}")
     success = json_manager.delete_quiz(quiz_id)
@@ -422,7 +441,7 @@ def get_questions(quiz_id: str):
 
 
 @app.put("/api/questions/{question_id}")
-def update_question(question_id: str, updates: Dict):
+def update_question(question_id: str, updates: Dict, admin: bool = Depends(verify_admin_key)):
     """질문 수정"""
     updated_question = json_manager.update_question(question_id, updates)
 
@@ -433,7 +452,7 @@ def update_question(question_id: str, updates: Dict):
 
 
 @app.delete("/api/questions/{question_id}")
-def delete_question(question_id: str):
+def delete_question(question_id: str, admin: bool = Depends(verify_admin_key)):
     """질문 삭제"""
     success = json_manager.delete_question(question_id)
 
@@ -450,8 +469,6 @@ def delete_question(question_id: str):
 def get_results(quiz_id: str):
     """퀴즈별 결과 유형 조회"""
     results = json_manager.get_results_by_quiz_id(quiz_id)
-    return {"results": results}
-
     return {"results": results}
 
 
@@ -475,13 +492,13 @@ def get_services():
 
 
 @app.post("/api/services")
-def create_service(service: Service):
+def create_service(service: Service, admin: bool = Depends(verify_admin_key)):
     """외부 서비스 추가"""
     return json_manager.create_service(service.dict())
 
 
 @app.delete("/api/services/{service_id}")
-def delete_service(service_id: str):
+def delete_service(service_id: str, admin: bool = Depends(verify_admin_key)):
     """외부 서비스 삭제"""
     success = json_manager.delete_service(service_id)
     if not success:
@@ -495,7 +512,7 @@ class CatDogRequest(BaseModel):
 
 
 @app.post("/api/ai-service/cats-vs-dog")
-async def analyze_cat_dog(request: CatDogRequest):
+async def analyze_cat_dog(request: CatDogRequest, admin: bool = Depends(verify_admin_key)):
     try:
         manager = AIServiceManager()
         result = await manager.run_cat_dog_analysis(request.name, request.image)
@@ -511,7 +528,7 @@ async def analyze_cat_dog(request: CatDogRequest):
 
 
 @app.post("/api/automation/daily-cycle")
-async def run_daily_cycle():
+async def run_daily_cycle(admin: bool = Depends(verify_admin_key)):
     """
     [Sisyphus Loop] 24/7 자동화 파이프라인 트리거
     1. Trend Hunter: 트렌드 분석
@@ -592,16 +609,15 @@ async def run_daily_cycle():
 
     except Exception as e:
         print(f"❌ Automation Error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.get("/api/magazine")
+def get_magazine_articles():
+    """NAMBAC MAG 기사 목록 조회"""
+    return {"articles": json_manager.get_all_articles()}
 
 
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-
-
-@app.get("/api/magazine")
-def get_magazine_articles():
-    """NAMBAC MAG 기사 목록 조회"""
-    return {"articles": json_manager.get_all_articles()}

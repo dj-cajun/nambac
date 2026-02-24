@@ -51,7 +51,7 @@
     "id": "3bbd202a-b308-44d4-a277-f1326285901d",
     "created_at": "2026-02-08T23:15:36.903804",
     "is_active": true,
-    "view_count": 7,
+    "view_count": 8,
     "share_count": 0
   },
   {
@@ -95,7 +95,7 @@
     "id": "d2bd0505-cef6-4259-993d-d8ac0560d6bb",
     "created_at": "2026-02-09T01:44:33.182197",
     "is_active": true,
-    "view_count": 3,
+    "view_count": 4,
     "share_count": 0
   },
   {
@@ -106,7 +106,7 @@
     "id": "45ca7eae-a08e-4d33-a4eb-22d5100053ce",
     "created_at": "2026-02-09T01:53:51.590523",
     "is_active": true,
-    "view_count": 6,
+    "view_count": 7,
     "share_count": 0
   },
   {
@@ -139,7 +139,7 @@
     "id": "e990ba12-0808-4da6-b5cf-ffd5a41593b3",
     "created_at": "2026-02-11T13:39:48.185640",
     "is_active": true,
-    "view_count": 17,
+    "view_count": 18,
     "share_count": 0
   },
   {
@@ -161,7 +161,7 @@
     "id": "f6556024-2040-4579-adbc-54dc9ac481b9",
     "created_at": "2026-02-13T11:56:58.292943",
     "is_active": true,
-    "view_count": 1,
+    "view_count": 2,
     "share_count": 0
   },
   {
@@ -172,7 +172,7 @@
     "id": "6afff049-3753-4deb-980b-06417b0f64f5",
     "created_at": "2026-02-13T11:59:10.626504",
     "is_active": true,
-    "view_count": 0,
+    "view_count": 1,
     "share_count": 0
   },
   {
@@ -183,7 +183,40 @@
     "id": "d77bbf65-d765-493e-96e9-3c78965f886c",
     "created_at": "2026-02-13T12:17:58.923037",
     "is_active": true,
-    "view_count": 1,
+    "view_count": 4,
+    "share_count": 0
+  },
+  {
+    "title": "Bói Tarot: Tiên đoán vận mệnh 'cà khịa' kiểu Chợ Lớn",
+    "description": "Bạn có gan đối mặt với sự thật phũ phàng? Bà thầy bói Chợ Lớn phán cho vài câu nghe chơi!",
+    "category": "Fortune",
+    "image_url": "/images/img_1771331560_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "created_at": "2026-02-17T19:32:52.541617",
+    "is_active": true,
+    "view_count": 3,
+    "share_count": 0
+  },
+  {
+    "title": "Mặt bạn giống ngôi sao nào nhất? (Phiên bản 'cà khịa' Sài Gòn)",
+    "description": "Đừng tin AI! Phân tích tướng số 'made in Vietnam' sẽ cho bạn biết bạn giống ai hơn. Chuẩn bị tinh thần 'ăn hành' nhé!",
+    "category": "Linker_Lookalike",
+    "image_url": "/images/img_1771391134_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "da991653-5411-4786-b191-600795a4879c",
+    "created_at": "2026-02-18T12:05:45.315098",
+    "is_active": true,
+    "view_count": 2,
+    "share_count": 0
+  },
+  {
+    "title": "Bói Tarot Dạo: Xem Chỉ Tay Biết Ngay 'Số Nhọ' Hay 'Số Đỏ'!",
+    "description": "Đừng tưởng bói Tarot là chuyện đùa! Bà đây nhìn thấu tâm can, biết ngay kiếp này 'ăn ở' thế nào. Trả lời thật lòng, đừng hòng qua mặt được bà!",
+    "category": "Fortune",
+    "image_url": "/images/img_1771404226_Quiz_Cover_Thumbnail_Include_.png",
+    "id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "created_at": "2026-02-18T15:43:54.932072",
+    "is_active": true,
+    "view_count": 3,
     "share_count": 0
   }
 ]

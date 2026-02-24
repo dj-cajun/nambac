@@ -3640,5 +3640,317 @@
     "image_url": "/images/img_1770959878_Result_Image_Main_Subject_Bo.png",
     "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
     "id": "a0021247-dc91-4fac-84e1-8393d8498de5"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh 'Ế' bền vững",
+    "description": "Mấy đứa bạn có bồ hết rồi mà bạn vẫn 'một mình tao chấp hết'. Thôi thì ráng cày tiền mua biệt thự nuôi chó nha. Đừng quên 'cúng cô hồn' mỗi tháng để đường tình duyên bớt lận đận. Bùa hộ mệnh: cục xà bông cục.",
+    "traits": [
+      "Ế",
+      "Cô đơn",
+      "Tự lập"
+    ],
+    "image_url": "/images/img_1771331561_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "2233f87b-0e51-4385-be8d-9f797ab9fcfa"
+  },
+  {
+    "result_code": 1,
+    "title": "Dân chơi 'hệ tâm linh'",
+    "description": "Bạn sống ảo tung chảo, tin vào mấy thứ nhảm nhí trên mạng. Bớt bớt lại nha con. Không ai rảnh hóng drama của bạn đâu. Ráng mà kiếm tiền đi rồi hẵng tính tới chuyện 'giải nghiệp'. Hôm nay ra đường nhớ mang theo cái 'bàn chải đánh răng' để trừ tà nha.",
+    "traits": [
+      "Sống ảo",
+      "Mê tín",
+      "Drama queen"
+    ],
+    "image_url": "/images/img_1771331558_Result_Image_Main_Subject_Dâ.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "80f7f295-a735-4d75-a2b6-5f6789a887ae"
+  },
+  {
+    "result_code": 2,
+    "title": "Trùm 'lười' vô đối",
+    "description": "Bạn lười chảy thây, việc gì tới tay bạn là y như rằng 'delay'. Ráng mà kiếm việc gì nhẹ nhàng thôi nha, chứ không thì 'tạch' sớm đó. Tối nay ngủ nhớ để cái 'remote TV' dưới gối, may ra bớt lười được chút nào hay chút đó.",
+    "traits": [
+      "Lười biếng",
+      "Trì hoãn",
+      "Vô trách nhiệm"
+    ],
+    "image_url": "/images/img_1771331562_Result_Image_Main_Subject_Tr.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "6a03d53e-1890-4064-9cb9-93d73bfe6524"
+  },
+  {
+    "result_code": 3,
+    "title": "Thánh 'nhậu' quán vỉa hè",
+    "description": "Bạn chỉ giỏi ba cái trò 'rượu chè be bét'. Tỉnh dậy thì 'hối hận' nhưng hôm sau lại 'ngựa quen đường cũ'. Ráng mà giữ cái gan nha con. Không thôi 'ung thư' sớm đó. Tối nay đi nhậu nhớ mang theo 'cái nón bảo hiểm' để lỡ có xỉn thì còn có cái che.",
+    "traits": [
+      "Nhậu nhẹt",
+      "Vô tư",
+      "Háo thắng"
+    ],
+    "image_url": "/images/img_1771331563_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "7e951af4-8acd-4d6c-a930-542c5bcba626"
+  },
+  {
+    "result_code": 4,
+    "title": "Con 'ong chăm chỉ'",
+    "description": "Bạn chỉ biết có công việc. Ngoài công việc ra thì bạn là ai? Hãy sống cho bản thân mình một chút đi. Đừng để đến lúc 'hối hận' thì đã muộn. Mang theo 'cái bật lửa' bên mình, biết đâu có lúc cần đốt bỏ hết mọi thứ.",
+    "traits": [
+      "Chăm chỉ",
+      "Cần cù",
+      "Tham công tiếc việc"
+    ],
+    "image_url": "/images/img_1771331571_Result_Image_Main_Subject_Co.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "48228690-00f8-4bbd-aa31-bd7808154432"
+  },
+  {
+    "result_code": 5,
+    "title": "Nghệ sĩ 'tự do'",
+    "description": "Bạn sống theo cảm hứng, thích thì làm không thích thì nghỉ. Đừng để đến lúc 'cháy túi' thì mới hối hận nha con. Hãy cố gắng kiếm một công việc ổn định, để có thể 'nuôi sống' đam mê của mình. Đừng quên mang theo 'cây bút chì' bên mình, biết đâu có lúc cần vẽ vời.",
+    "traits": [
+      "Sáng tạo",
+      "Tự do",
+      "Phóng khoáng"
+    ],
+    "image_url": "/images/img_1771331571_Result_Image_Main_Subject_Ng.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "8406bf0b-fe0e-466c-932f-510941ee8978"
+  },
+  {
+    "result_code": 6,
+    "title": "Nhà 'ngoại giao' ba phải",
+    "description": "Bạn giỏi 'lươn lẹo', ai nói gì cũng 'ừ ừ dạ dạ'. Ráng mà giữ cái mồm nha con. Không thôi 'vạ miệng' lúc nào không hay đó. Hôm nay ra đường nhớ mang theo 'cái kẹp tóc' để giữ cái mồm lại.",
+    "traits": [
+      "Ngoại giao",
+      "Khéo léo",
+      "Ba phải"
+    ],
+    "image_url": "/images/img_1771331569_Result_Image_Main_Subject_Nh.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "182ccc70-10c1-49e0-bb75-e19119aedcf6"
+  },
+  {
+    "result_code": 7,
+    "title": "Thánh 'quẩy' xuyên lục địa",
+    "description": "Bạn chỉ giỏi ba cái trò 'ăn chơi sa đọa'. Tỉnh dậy thì 'hối hận' nhưng hôm sau lại 'ngựa quen đường cũ'. Ráng mà giữ cái mạng nha con. Không thôi 'tổ trác' sớm đó. Tối nay đi quẩy nhớ mang theo 'cái bịch nilon' để lỡ có ói thì còn có cái đựng.",
+    "traits": [
+      "Ăn chơi",
+      "Sành điệu",
+      "Vô lo"
+    ],
+    "image_url": "/images/img_1771331570_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "065da2fd-623d-4374-b74c-f899dc996f44"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh 'nhạt' Phú Mỹ Hưng",
+    "description": "Bạn là kiểu người 'vô thưởng vô phạt', sống ở Phú Mỹ Hưng mà cứ như đang ở...Bình Chánh. Chẳng ai nhớ bạn là ai, nhưng cũng chẳng ai ghét bạn. Nói chung là...nhạt!",
+    "traits": [
+      "Hiền lành",
+      "Dễ tính",
+      "Không có gì nổi bật"
+    ],
+    "image_url": "/images/img_1771391133_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "85040c0e-565d-417b-8661-4fc74bb504b8"
+  },
+  {
+    "result_code": 1,
+    "title": "Dân 'quẩy' Bùi Viện hết mình",
+    "description": "Bạn là 'linh hồn' của Bùi Viện, nơi mà bạn có thể 'quẩy' hết mình mà không sợ ai đánh giá. Tuy nhiên, sáng hôm sau bạn sẽ hối hận vì đã uống quá nhiều 'bia ôm'!",
+    "traits": [
+      "Nhiệt tình",
+      "Vui vẻ",
+      "Hơi 'lố'"
+    ],
+    "image_url": "/images/img_1771391135_Result_Image_Main_Subject_Dâ.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "5a3caa33-ddcd-4470-8a63-4645451090ff"
+  },
+  {
+    "result_code": 2,
+    "title": "Trùm 'sống ảo' Thảo Điền",
+    "description": "Bạn là 'chúa tể' của Thảo Điền, nơi mà bạn có thể 'sống ảo' một cách chuyên nghiệp. Tuy nhiên, đừng quên rằng cuộc sống thực tế không phải lúc nào cũng 'ảo diệu' như trên mạng!",
+    "traits": [
+      "Sành điệu",
+      "Sang chảnh",
+      "Hơi 'làm màu'"
+    ],
+    "image_url": "/images/img_1771391133_Result_Image_Main_Subject_Tr.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "059604a1-d617-4cd6-a011-1e4fa39d2927"
+  },
+  {
+    "result_code": 3,
+    "title": "Thánh 'lầy' chợ Bến Thành",
+    "description": "Bạn là 'cây hài' của chợ Bến Thành, nơi mà bạn có thể 'chọc cười' mọi người một cách tự nhiên. Tuy nhiên, đừng 'lầy lội' quá mà bị đuổi ra khỏi chợ nhé!",
+    "traits": [
+      "Hài hước",
+      "Duyên dáng",
+      "Hơi 'tăng động'"
+    ],
+    "image_url": "/images/img_1771391132_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "ae0d9b5f-6412-44b0-9d30-f422dc9a0ba9"
+  },
+  {
+    "result_code": 4,
+    "title": "Cao thủ 'drama' khu Quận 1",
+    "description": "Bạn là 'ngôi sao' của khu Quận 1, nơi mà bạn có thể tạo ra những 'drama' không ai ngờ tới. Tuy nhiên, hãy cẩn thận kẻo 'drama' quay lại 'cắn' bạn nhé!",
+    "traits": [
+      "Sắc sảo",
+      "Thông minh",
+      "Hơi 'thảo mai'"
+    ],
+    "image_url": "/images/img_1771391140_Result_Image_Main_Subject_Ca.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "e4f1fb97-b131-4a2d-b48e-f85a84d5622a"
+  },
+  {
+    "result_code": 5,
+    "title": "Chiến thần 'troll' giới văn phòng",
+    "description": "Bạn là 'ác mộng' của giới văn phòng, nơi mà bạn có thể 'troll' đồng nghiệp một cách 'vô tư'. Tuy nhiên, đừng 'troll' quá mà bị 'bay màu' khỏi công ty nhé!",
+    "traits": [
+      "Lém lỉnh",
+      "Tinh nghịch",
+      "Hơi 'ác'"
+    ],
+    "image_url": "/images/img_1771391142_Result_Image_Main_Subject_Ch.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "841d0d77-80f0-4c02-bc41-dcfca20a04bd"
+  },
+  {
+    "result_code": 6,
+    "title": "Idol 'bán hàng' online",
+    "description": "Bạn là 'thiên tài' của giới 'bán hàng' online, nơi mà bạn có thể 'chốt đơn' một cách dễ dàng. Tuy nhiên, đừng 'bán' quá mà bị 'bom hàng' nhé!",
+    "traits": [
+      "Năng động",
+      "Khéo léo",
+      "Hơi 'lươn'"
+    ],
+    "image_url": "/images/img_1771391144_Result_Image_Main_Subject_Id.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "344043c8-d41a-4235-bc43-a22585a514a1"
+  },
+  {
+    "result_code": 7,
+    "title": "Legend 'ăn chơi' phố đi bộ",
+    "description": "Bạn là 'huyền thoại' của phố đi bộ, nơi mà bạn có thể 'ăn chơi' quên lối về. Tuy nhiên, đừng 'ăn chơi' quá mà 'về mo' nhé!",
+    "traits": [
+      "Phong cách",
+      "Tự tin",
+      "Hơi 'phá'"
+    ],
+    "image_url": "/images/img_1771391143_Result_Image_Main_Subject_Le.png",
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "8e8f253f-edd7-4bec-aef7-6a222c625c8f"
+  },
+  {
+    "result_code": 0,
+    "title": "Thánh Nhẫn Nhịn",
+    "description": "Mày là chúa nhẫn! Ai làm gì cũng kệ, miễn mình được yên thân. Nhưng mà sống vậy uổng lắm con ơi! Phải 'bung' ra cho đời nó 'tới'. Bùa hộ mệnh cho mày là cục gạch vỡ, để khi nào bí quá thì... đập đầu cho tỉnh!",
+    "traits": [
+      "Hiền lành",
+      "Chịu đựng giỏi",
+      "Thiếu quyết đoán"
+    ],
+    "image_url": "/images/img_1771404224_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "daf1188e-ad23-41d5-8cc2-0a7cc96b5f0d"
+  },
+  {
+    "result_code": 1,
+    "title": "Khẩu Nghiệp Quật",
+    "description": "Mồm mày hại cái thân! Cứ mở miệng ra là 'toxic', không 'khịa' người khác là không chịu được. Coi chừng có ngày 'ăn đấm'. Bùa hộ mệnh cho mày là cái bịt miệng, để bớt 'khẩu nghiệp' lại!",
+    "traits": [
+      "Thẳng tính",
+      "Nóng nảy",
+      "Hay gây sự"
+    ],
+    "image_url": "/images/img_1771404225_Result_Image_Main_Subject_Kh.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "0d34af37-323b-4c28-acd2-e25f29692806"
+  },
+  {
+    "result_code": 2,
+    "title": "Drama Queen/King",
+    "description": "Cuộc đời mày là một bộ phim dài tập! Chuyện bé xé ra to, thích làm trung tâm của vũ trụ. Bớt 'dẹo' lại đi con, người ta cười cho thúi đầu. Bùa hộ mệnh cho mày là cái máy quay phim, để tự quay tự diễn một mình!",
+    "traits": [
+      "Sống ảo",
+      "Thích gây sự chú ý",
+      "Hay làm quá"
+    ],
+    "image_url": "/images/img_1771404223_Result_Image_Main_Subject_Dr.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "d026266e-8849-4971-8ed8-24a058a0cac1"
+  },
+  {
+    "result_code": 3,
+    "title": "Thánh Lươn Lẹo",
+    "description": "Mày là trùm 'lươn'! Nói một đằng làm một nẻo, ai mà tin được. Sống vậy không ai chơi đâu con. Bùa hộ mệnh cho mày là con lươn, để mày 'lươn' cho tới khi nào 'trượt vỏ chuối' thì thôi!",
+    "traits": [
+      "Không trung thực",
+      "Hay trốn tránh",
+      "Khó tin"
+    ],
+    "image_url": "/images/img_1771404225_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "9fdb57f7-00eb-4a89-82a8-5c781af1cf75"
+  },
+  {
+    "result_code": 4,
+    "title": "Số Nhọ Toàn Tập",
+    "description": "Số mày đúng là 'nhọ' thật! Làm gì cũng xui xẻo, đen đủi. Thôi thì ráng mà sống tiếp đi con, biết sao giờ. Bùa hộ mệnh cho mày là cục than đá, để mày 'đen' thêm chút nữa cho đủ bộ!",
+    "traits": [
+      "Xui xẻo",
+      "Hay gặp khó khăn",
+      "Bi quan"
+    ],
+    "image_url": "/images/img_1771404232_Result_Image_Main_Subject_Số.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "99f261f3-db33-444f-b6cc-d082c6067774"
+  },
+  {
+    "result_code": 5,
+    "title": "Nghịch Tặc Vô Số Tội",
+    "description": "Mày là đứa 'nghịch như quỷ'! Không phá phách là không chịu được. Coi chừng có ngày 'ăn' đủ. Bùa hộ mệnh cho mày là cây roi mây, để ai 'dạy dỗ' mày nên người!",
+    "traits": [
+      "Nghịch ngợm",
+      "Hiếu động",
+      "Hay gây rối"
+    ],
+    "image_url": "/images/img_1771404231_Result_Image_Main_Subject_Ng.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "9928c4cf-d0a5-4793-a952-a743ff4c3a33"
+  },
+  {
+    "result_code": 6,
+    "title": "Sống Hai Mặt",
+    "description": "Mày là 'hai mặt' chính hiệu! Trước mặt thì tươi cười, sau lưng thì 'đâm sau lưng'. Sống vậy không ai ưa đâu con. Bùa hộ mệnh cho mày là cái mặt nạ, để mày 'diễn' cho tới khi nào rớt mặt nạ thì thôi!",
+    "traits": [
+      "Giả tạo",
+      "Không chân thành",
+      "Khó đoán"
+    ],
+    "image_url": "/images/img_1771404233_Result_Image_Main_Subject_Số.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "28385a9e-929a-4817-928c-9c101f07d161"
+  },
+  {
+    "result_code": 7,
+    "title": "Thánh Cục Súc",
+    "description": "Mày là đứa 'cục súc' nhất quả đất! Nói năng thô lỗ, hành xử bạo lực. Coi chừng có ngày 'vô tù'. Bùa hộ mệnh cho mày là cái bao cát, để mày 'đấm' cho bớt 'cục súc' lại!",
+    "traits": [
+      "Thô lỗ",
+      "Bạo lực",
+      "Thiếu kiềm chế"
+    ],
+    "image_url": "/images/img_1771404234_Result_Image_Main_Subject_Th.png",
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "1c3d7c1e-5713-4f99-ab36-bce089fdcd73"
   }
 ]

@@ -7,7 +7,9 @@ const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [passwordError, setPasswordError] = useState(false);
-    const ADMIN_PASSWORD = '0922';
+    const [adminKey, setAdminKey] = useState('');
+    const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '0922';
+    const ADMIN_API_KEY = import.meta.env.VITE_ADMIN_API_KEY || password;
 
     const passwordInputRef = useRef(null);
 
@@ -18,9 +20,31 @@ const Admin = () => {
         }
     }, [isAuthenticated]);
 
-    const handlePasswordSubmit = (e) => {
+    // Authenticated fetch wrapper — adds X-Admin-Key header
+    const adminFetch = async (url, options = {}) => {
+        const res = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Admin-Key': adminKey,
+                ...options.headers,
+            },
+        });
+        if (res.status === 401) {
+            alert('🚫 인증 만료. 다시 로그인해주세요.');
+            setIsAuthenticated(false);
+            setAdminKey('');
+            setPassword('');
+        }
+        return res;
+    };
+
+    const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         if (password === ADMIN_PASSWORD) {
+            // Use the password as the admin API key for backend auth
+            const key = import.meta.env.VITE_ADMIN_API_KEY || password;
+            setAdminKey(key);
             setIsAuthenticated(true);
             setPasswordError(false);
         } else {
@@ -98,7 +122,6 @@ const Admin = () => {
             const response = await fetch(`${API_BASE_URL}/quizzes`);
             const data = await response.json();
             const quizList = data.quizzes || data || [];
-            // Sort by Created Date descend (UUID strings aren't subtractable)
             quizList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             setQuizzes(quizList);
             setFilteredQuizzes(quizList);
@@ -121,7 +144,8 @@ const Admin = () => {
 
     const fetchAgents = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/admin/agents`);
+            const response = await adminFetch(`${API_BASE_URL}/admin/agents`);
+            if (!response.ok) return;
             const data = await response.json();
             setAvailableAgents(data.agents || []);
         } catch (error) {
@@ -162,14 +186,12 @@ const Admin = () => {
     const handleGenerate = async (persona) => {
         setLoading(true);
         try {
-            // Call actual AI endpoint to create quiz
-            const response = await fetch(`${API_BASE_URL}/quizzes`, {
+            const response = await adminFetch(`${API_BASE_URL}/quizzes`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    topic: persona.prompt, // Backend expects 'topic'
+                    topic: persona.prompt,
                     category: persona.category,
-                    agent_name: persona.agent_name, // Pass the specific agent file name
+                    agent_name: persona.agent_name,
                     generate_images: true
                 })
             });
@@ -199,9 +221,8 @@ const Admin = () => {
             // Optimistic update
             setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newStatus === 'visible' } : q));
 
-            await fetch(`${API_BASE_URL}/quizzes/${id}`, {
+            await adminFetch(`${API_BASE_URL}/quizzes/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus, is_active: newStatus === 'visible' })
             });
 
@@ -214,7 +235,7 @@ const Admin = () => {
     const deleteQuiz = async (id) => {
         if (!window.confirm("Are you sure you want to delete this quiz?")) return;
         try {
-            await fetch(`${API_BASE_URL}/quizzes/${id}`, { method: 'DELETE' });
+            await adminFetch(`${API_BASE_URL}/quizzes/${id}`, { method: 'DELETE' });
             setQuizzes(prev => prev.filter(q => q.id !== id));
         } catch (error) {
             console.error("Error deleting quiz:", error);
@@ -228,9 +249,8 @@ const Admin = () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/services`, {
+            const response = await adminFetch(`${API_BASE_URL}/services`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: newServiceTitle,
                     description: newServiceDesc,
@@ -366,7 +386,7 @@ const Admin = () => {
         // If it has an ID, delete from backend
         if (question.id) {
             try {
-                const response = await fetch(`${API_BASE_URL}/questions/${question.id}`, {
+                const response = await adminFetch(`${API_BASE_URL}/questions/${question.id}`, {
                     method: 'DELETE'
                 });
                 if (!response.ok) {
@@ -389,17 +409,15 @@ const Admin = () => {
         if (!editingQuiz) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/quizzes/${editingQuiz.id}`, {
+            const response = await adminFetch(`${API_BASE_URL}/quizzes/${editingQuiz.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: editTitle,
                     description: editDescription,
                     category: editCategory,
                     questions: editQuestions,
                     results: editResults,
-                    // image handling would need form data or base64 usually, sticking to JSON for now
-                    image_url: editImagePreview // Simplification
+                    image_url: editImagePreview
                 }),
             });
 
@@ -973,7 +991,7 @@ const Admin = () => {
                                                         <button
                                                             onClick={async () => {
                                                                 if (window.confirm('Delete service?')) {
-                                                                    await fetch(`${API_BASE_URL}/services/${svc.id}`, { method: 'DELETE' });
+                                                                    await adminFetch(`${API_BASE_URL}/services/${svc.id}`, { method: 'DELETE' });
                                                                     fetchServices();
                                                                 }
                                                             }}

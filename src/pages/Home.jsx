@@ -31,23 +31,27 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [quizRes, serviceRes, magRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/quizzes`, { cache: 'no-store' }),
-          fetch(`${API_BASE_URL}/services`, { cache: 'no-store' }),
-          fetch(`${API_BASE_URL}/magazine`, { cache: 'no-store' })
-        ]);
+        // Fetch independently so one failure doesn't block others
+        const quizRes = await fetch(`${API_BASE_URL}/quizzes`, { cache: 'no-store' }).catch(() => null);
+        const serviceRes = await fetch(`${API_BASE_URL}/services`, { cache: 'no-store' }).catch(() => null);
+        const magRes = await fetch(`${API_BASE_URL}/magazine`, { cache: 'no-store' }).catch(() => null);
 
-        const quizData = await quizRes.json();
-        const serviceData = await serviceRes.json();
-        const magData = await magRes.json();
+        if (quizRes?.ok) {
+          const quizData = await quizRes.json();
+          const quizList = quizData.quizzes || quizData || [];
+          quizList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+          setQuizzes(quizList);
+        }
 
-        const quizList = quizData.quizzes || quizData || [];
-        // Sort by created_at desc
-        quizList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-        setQuizzes(quizList);
+        if (serviceRes?.ok) {
+          const serviceData = await serviceRes.json();
+          setServices(serviceData.services || []);
+        }
 
-        setServices(serviceData.services || []);
-        setMagazineArticles(magData.articles || []);
+        if (magRes?.ok) {
+          const magData = await magRes.json();
+          setMagazineArticles(magData.articles || []);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -352,12 +356,12 @@ export default function Home() {
           <HomeIcon size={24} strokeWidth={2.5} color="#FF2D85" />
           <span className="text-[10px] font-bold text-[#FF2D85]">Trang chủ</span>
         </div>
-        <div className="nav-item-col">
+        <div className="nav-item-col" onClick={() => alert('🔜 Khám phá — Sắp ra mắt!')}>
           <Compass size={24} color="#94A3B8" />
           <span className="text-[10px] font-bold text-gray-400">Khám phá</span>
         </div>
         <div className="w-12"></div>
-        <div className="nav-item-col">
+        <div className="nav-item-col" onClick={() => alert('🔜 BXH — Sắp ra mắt!')}>
           <BarChart2 size={24} color="#94A3B8" />
           <span className="text-[10px] font-bold text-gray-400">BXH</span>
         </div>

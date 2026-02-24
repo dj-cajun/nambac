@@ -11,8 +11,7 @@ const Header = () => {
             <div className="container header-content">
                 <div className="header-left">
                     <a href="/" className="logo">
-                        <Cloud className="logo-icon" fill="currentColor" />
-                        <span className="logo-text">nambac.xyz</span>
+                        <img src="/images/logo.png" alt="NamBắc Logo" className="logo-img" />
                     </a>
 
                     <nav className="main-nav">

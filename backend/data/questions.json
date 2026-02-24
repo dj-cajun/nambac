@@ -933,5 +933,170 @@
     "quiz_id": "d77bbf65-d765-493e-96e9-3c78965f886c",
     "id": "2cb32cc4-d72e-47e6-b06a-250ecc76e449",
     "image_url": null
+  },
+  {
+    "order_number": 1,
+    "question_text": "Rút được lá 'The Tower' ngược: Tối nay có kèo nhậu với đám bạn thân. Bạn sẽ...",
+    "option_a": "Ở nhà ôm gấu bông xem Netflix. Bão bùng gì tầm này!",
+    "option_b": "Quất luôn! Biết đâu gặp được 'chân ái' trong cơn say?",
+    "score_a": 0,
+    "score_b": 4,
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "3562a789-94c0-4b34-a72e-c2d00ab9a3a1",
+    "image_url": null
+  },
+  {
+    "order_number": 2,
+    "question_text": "Lá 'Death' hiện lên: Sếp dí deadline như dí nợ. Bạn sẽ...",
+    "option_a": "Cắn răng làm cho xong. 'Khách hàng là thượng đế' mà!",
+    "option_b": "Nghỉ mẹ luôn! Đời còn dài, việc gì phải khổ?",
+    "score_a": 0,
+    "score_b": 2,
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "64a99586-93ea-4660-ab7a-296648aca9ce",
+    "image_url": null
+  },
+  {
+    "order_number": 3,
+    "question_text": "Bốc trúng 'The Devil': Thằng crush thả thính bạn sml. Bạn...",
+    "option_a": "Block thẳng tay! 'Trai đểu' thì next lẹ!",
+    "option_b": "Nhào vô luôn! Biết đâu lại 'tình một đêm'?",
+    "score_a": 0,
+    "score_b": 1,
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "db90f7eb-6e97-433a-a724-cfece848eaa0",
+    "image_url": null
+  },
+  {
+    "order_number": 4,
+    "question_text": "Thấy con mèo đen băng qua đường. Bạn...",
+    "option_a": "Nhổ nước bọt 3 lần rồi đi tiếp.",
+    "option_b": "Chạy theo chụp ảnh check-in khoe Instagram.",
+    "score_a": 0,
+    "score_b": 0,
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "e302ac41-f3a2-4617-87f3-d2348a2efcab",
+    "image_url": null
+  },
+  {
+    "order_number": 5,
+    "question_text": "Đi Grab gặp ngay anh tài xế đẹp trai như Soái ca. Bạn...",
+    "option_a": "Im lặng tận hưởng chuyến xe.",
+    "option_b": "Bắt chuyện làm quen xin info liền.",
+    "score_a": 0,
+    "score_b": 0,
+    "quiz_id": "93ff9e21-b937-4ab1-94c6-3e296ea66423",
+    "id": "170e56ae-338d-43e4-a77a-4fe19eaa87e9",
+    "image_url": null
+  },
+  {
+    "order_number": 1,
+    "question_text": "AI bảo mặt bạn giống 'búp bê sống'. Phản ứng của bạn?",
+    "option_a": "Búp bê thì búp bê, quan trọng là có ai 'nâng đỡ' không thôi!",
+    "option_b": "Búp bê gì mà mặt mụn tè le, chắc AI nó lú rồi...",
+    "score_a": 0,
+    "score_b": 4,
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "32af8a97-a7ad-4d7f-95e6-b32c1f5d5596",
+    "image_url": null
+  },
+  {
+    "order_number": 2,
+    "question_text": "Bạn bè bảo bạn có nét 'tổng tài'. Bạn nghĩ...",
+    "option_a": "Tổng tài thì cũng phải đi xe ôm công nghệ thôi, thời buổi này ai hơn ai!",
+    "option_b": "Chắc là do mình hay 'tổng' tiền của tụi nó đi ăn lẩu...",
+    "score_a": 0,
+    "score_b": 2,
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "05b20a16-bd79-4815-84df-7e28899987be",
+    "image_url": null
+  },
+  {
+    "order_number": 3,
+    "question_text": "AI nói bạn có 'vibe' nghệ sĩ. Bạn tự thấy...",
+    "option_a": "Nghệ sĩ gì mà suốt ngày ăn mì tôm, chắc nghệ...èo quá!",
+    "option_b": "Chắc là do mình hay 'nghệch ngoạc' vẽ bậy lên tường...",
+    "score_a": 0,
+    "score_b": 1,
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "4fd8415f-2d84-4909-bc26-044accfa495b",
+    "image_url": null
+  },
+  {
+    "order_number": 4,
+    "question_text": "Đi ngoài đường, có người bảo bạn giống 'streamer'. Bạn...",
+    "option_a": "Streamer gì mà toàn 'stream' mấy chuyện xàm xí...",
+    "option_b": "Chắc là do mình hay 'stream' nước mắt mỗi khi kẹt xe...",
+    "score_a": 0,
+    "score_b": 0,
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "edf87a8f-27a7-4aa2-8408-6ea623dfb8aa",
+    "image_url": null
+  },
+  {
+    "order_number": 5,
+    "question_text": "Bạn thấy mình giống nhân vật nào trong phim 'Nhà Bà Nữ'?",
+    "option_a": "Giống bà Nữ, lúc nào cũng 'nữ tính' quá mức...",
+    "option_b": "Giống con Như, lúc nào cũng 'như nhược'...",
+    "score_a": 0,
+    "score_b": 0,
+    "quiz_id": "da991653-5411-4786-b191-600795a4879c",
+    "id": "f7e0758f-3d4c-4cff-a1d6-dd32f4ae2a22",
+    "image_url": null
+  },
+  {
+    "order_number": 1,
+    "question_text": "Mở mắt ra thấy tin nhắn đòi nợ từ 'con ghệ' cũ. Phản ứng đầu tiên của bạn là?",
+    "option_a": "Block thẳng tay, coi như chưa từng quen biết. 'Tiền bạc phân minh, ái tình dứt khoát!'",
+    "option_b": "Lật đật đi vay mượn khắp xóm, sợ 'ả' làm um lên thì mất mặt.",
+    "score_a": 0,
+    "score_b": 4,
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "f762ad33-fde5-48a7-99be-30294eb23f6d",
+    "image_url": null
+  },
+  {
+    "order_number": 2,
+    "question_text": "Đang 'chill' ở rooftop bar Thảo Điền, bỗng dưng gặp lại đứa bạn cấp 3 từng 'cắm sừng' bạn. Bạn làm gì?",
+    "option_a": "Giả lơ, quay mặt đi hướng khác. 'Đời còn dài, gái còn nhiều!'",
+    "option_b": "Tới 'khịa' nó vài câu cho bõ ghét, rồi 'block' luôn cho đỡ ngứa mắt.",
+    "score_a": 0,
+    "score_b": 2,
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "020ecdb2-6417-4742-ad70-544162b1526f",
+    "image_url": null
+  },
+  {
+    "order_number": 3,
+    "question_text": "Đi GrabBike gặp ngay anh tài xế 'báo đời', chạy xe như 'điên'. Bạn sẽ...",
+    "option_a": "Im lặng chịu đựng, cầu trời khấn phật cho tới nơi an toàn.",
+    "option_b": "Bắt ảnh chạy chậm lại, không thì 'bo' luôn cuốc xe.",
+    "score_a": 0,
+    "score_b": 1,
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "2d65cdc0-130b-400e-bdd5-63ce2d77368e",
+    "image_url": null
+  },
+  {
+    "order_number": 4,
+    "question_text": "Tự dưng trúng số Vietlott 10 tỷ. Việc đầu tiên bạn làm là gì?",
+    "option_a": "Âm thầm đi nhận giải, rồi 'lặn' luôn cho chắc cú.",
+    "option_b": "Khoe khắp Facebook, Instagram cho cả thế giới biết.",
+    "score_a": 0,
+    "score_b": 0,
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "80dbc1d1-3818-48b3-9995-35e651f3a86e",
+    "image_url": null
+  },
+  {
+    "order_number": 5,
+    "question_text": "Đi ăn bún đậu mắm tôm gặp ngay quán 'dỏm', vừa dơ vừa mắc. Bạn sẽ...",
+    "option_a": "Cắn răng ăn cho xong, rồi thề không bao giờ quay lại.",
+    "option_b": "Gọi chủ quán ra 'combat' liền, cho chừa cái tật 'chặt chém' khách.",
+    "score_a": 0,
+    "score_b": 0,
+    "quiz_id": "d61d7d2e-0dad-40c6-b8e7-d621bb432713",
+    "id": "5738f528-c216-45d7-9f61-cf2e646f86e8",
+    "image_url": null
   }
 ]

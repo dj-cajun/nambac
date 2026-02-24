@@ -180,7 +180,7 @@ class ImageGenerator:
         except:
             font = ImageFont.load_default()
             
-        text = "nambac.xyz"
+        text = "NamBắc"
         bbox = draw.textbbox((0, 0), text, font=font)
         tw, th = bbox[2]-bbox[0], bbox[3]-bbox[1]
         x, y = width - tw - 20, height - th - 20

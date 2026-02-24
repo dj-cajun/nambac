@@ -13,11 +13,7 @@ const Navbar = () => {
         <div className="navbar-pill">
           {/* LEFT: Logo */}
           <div className="nav-left" onClick={() => navigate('/')}>
-            {/* Simple Icon placeholder */}
-            <div className="w-6 h-6 bg-[#FF2D85] rounded-md flex items-center justify-center mr-2">
-              <div className="w-3 h-3 bg-white rounded-full"></div>
-            </div>
-            <span className="nav-brand-text">nambac<span className="nav-brand-suffix">.xyz</span></span>
+            <img src="/images/logo.png" alt="NamBắc Logo" className="nav-logo-img" onClick={() => navigate('/')} />
           </div>
 
           {/* CENTER: Links Removed */}
