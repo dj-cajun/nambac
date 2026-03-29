@@ -19,6 +19,9 @@
   <meta property="twitter:title" content="nambac.xyz — Trắc nghiệm tính cách AI">
   <meta property="twitter:image" content="https://nambac.xyz/og-default.png">
 
+  <!-- Google AdSense Verification -->
+  <meta name="google-adsense-account" content="ca-pub-7386903584540643">
+
   <style>
     :root {
       --glass: rgba(255, 255, 255, 0.2);
@@ -76,11 +79,10 @@
     }
   </style>
 
-  <!-- Google Analytics (GA4) — only loads if measurement ID is configured -->
+  <!-- Google Analytics (GA4) -->
   <script>
-    (function() {
-      var gaId = '%VITE_GA_MEASUREMENT_ID%';
-      if (!gaId || gaId.indexOf('VITE_') === 0) return; // Skip if not configured
+    var gaId = '%VITE_GA_MEASUREMENT_ID%';
+    if (gaId && gaId.indexOf('VITE_') !== 0) {
       var s = document.createElement('script');
       s.async = true;
       s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
@@ -90,20 +92,19 @@
       window.gtag = gtag;
       gtag('js', new Date());
       gtag('config', gaId);
-    })();
+    }
   </script>
 
   <!-- Google AdSense -->
   <script>
-    (function() {
-      var pubId = '%VITE_ADSENSE_PUB_ID%';
-      if (!pubId || pubId.indexOf('VITE_') === 0) return; // Skip if not configured
+    var pubId = '%VITE_ADSENSE_PUB_ID%';
+    if (pubId && pubId.indexOf('VITE_') !== 0) {
       var s = document.createElement('script');
       s.async = true;
       s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + pubId;
       s.crossOrigin = 'anonymous';
       document.head.appendChild(s);
-    })();
+    }
   </script>
 
   <script async src="https://tally.so/widgets/embed.js"></script>
