@@ -56,8 +56,7 @@ const Result = () => {
                     .select('*')
                     .eq('is_active', true)
                     .neq('id', quizIdParam)
-                    .order('created_at', { ascending: false })
-                    .limit(4);
+                    .order('created_at', { ascending: false });
                 
                 if (!error && data) {
                     setRecommendedQuizzes(data);
@@ -148,7 +147,7 @@ const Result = () => {
                                 <div
                                     key={quiz.id}
                                     className="recommended-card"
-                                    onClick={() => { window.location.href = `/quiz/${quiz.id}`; }}
+                                    onClick={() => { navigate(`/quiz/${quiz.id}`); }}
                                 >
                                     <img
                                         src={getImageUrl(quiz.thumbnail_url || quiz.image_url)}
