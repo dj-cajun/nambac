@@ -103,7 +103,7 @@ const Result = () => {
                 <div className="result-unified-card">
                     {/* Full Result Image */}
                     <img
-                        src={getImageUrl(finalResult.image_url) || "/images/grandma_roast_standing.png"}
+                        src={getImageUrl(finalResult.image_url)}
                         onError={(e) => { e.target.src = "/images/grandma_roast_standing.png" }}
                         alt="Result Character"
                         className="result-full-img"
