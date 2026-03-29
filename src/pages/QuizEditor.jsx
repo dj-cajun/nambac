@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../lib/apiConfig';
+import { getImageUrl } from '../lib/apiConfig';
+import { supabase } from '../lib/supabase';
 import './QuizEditor.css';
 
 const QUIZ_TYPES = [
@@ -59,7 +60,6 @@ export default function QuizEditor() {
     const [isAuth, setIsAuth] = useState(false);
     const [password, setPassword] = useState('');
     const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '0922';
-    const ADMIN_API_KEY = import.meta.env.VITE_ADMIN_API_KEY || '';
 
     // Editor state
     const [step, setStep] = useState(1); // 1=type, 2=info, 3=questions, 4=results, 5=preview
@@ -157,36 +157,12 @@ export default function QuizEditor() {
         }
     };
 
-    // ZIP Upload
+    // ZIP Upload (Disabled in serverless)
     const handleZipUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        setSaving(true);
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/admin/upload-quiz`, {
-                method: 'POST',
-                headers: { 'X-Admin-Key': ADMIN_API_KEY || password },
-                body: formData,
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setSaveResult({ success: true, data });
-                setStep(5);
-            } else {
-                alert(`❌ 업로드 실패: ${data.detail}`);
-            }
-        } catch (err) {
-            alert(`❌ 오류: ${err.message}`);
-        } finally {
-            setSaving(false);
-        }
+        alert("ZIP upload is disabled in serverless mode. Please create quizzes from scratch.");
     };
 
-    // Save quiz (JSON upload)
+    // Save quiz (Supabase direct upload)
     const handleSave = async () => {
         if (!title.trim()) return alert('제목을 입력하세요');
         if (quizType !== 'name_input' && questions.some(q => !q.question_text.trim())) {
@@ -198,65 +174,41 @@ export default function QuizEditor() {
 
         setSaving(true);
         try {
-            // Build quiz.json payload
-            const quizPayload = {
-                title,
-                description,
-                category,
-                quiz_type: quizType,
-                thumbnail: '',
-                questions: questions.map((q, i) => ({
-                    ...q,
-                    order_number: i + 1,
-                })),
-                results,
-            };
-
-            // If thumbnail, use FormData + ZIP approach; else use JSON
+            let finalThumbnailUrl = null;
             if (thumbnail) {
-                // Create a ZIP in-browser using Blob
-                // For simplicity, we'll upload as JSON and thumbnail separately
-                const formData = new FormData();
-                const blob = new Blob([JSON.stringify(quizPayload)], { type: 'application/json' });
-
-                // Create minimal zip with quiz.json + thumbnail
-                // Since browser ZIP is complex, upload as multipart JSON
-                const res = await fetch(`${API_BASE_URL}/admin/upload-quiz-json`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Admin-Key': ADMIN_API_KEY || password,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(quizPayload),
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    setSaveResult({ success: true, data });
-                    setStep(5);
-                } else {
-                    alert(`❌ 저장 실패: ${data.detail}`);
-                }
-            } else {
-                const res = await fetch(`${API_BASE_URL}/admin/upload-quiz-json`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Admin-Key': ADMIN_API_KEY || password,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(quizPayload),
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    setSaveResult({ success: true, data });
-                    setStep(5);
-                } else {
-                    alert(`❌ 저장 실패: ${data.detail}`);
-                }
+                const fileName = `quiz_${Date.now()}_${thumbnail.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                const { error: uploadError } = await supabase.storage.from('quiz-images').upload(fileName, thumbnail);
+                if (uploadError) throw uploadError;
+                finalThumbnailUrl = `/${fileName}`; // getImageUrl automatically appends supabase URL based on filename
             }
+
+            // Insert Quiz
+            const { data: qData, error: qError } = await supabase.from('quizzes').insert({
+                title, description, category, quiz_type: quizType, image_url: finalThumbnailUrl
+            }).select().single();
+            
+            if (qError) throw qError;
+            const newQuizId = qData.id;
+
+            // Insert Questions
+            if (quizType !== 'name_input' && questions.length > 0) {
+                const qPayload = questions.map((q, i) => ({ ...q, quiz_id: newQuizId, order_number: i + 1 }));
+                const { error: errQ } = await supabase.from('questions').insert(qPayload);
+                if (errQ) throw errQ;
+            }
+
+            // Insert Results
+            if (results.length > 0) {
+                const rPayload = results.map(r => ({ ...r, quiz_id: newQuizId }));
+                const { error: errR } = await supabase.from('results').insert(rPayload);
+                if (errR) throw errR;
+            }
+
+            setSaveResult({ success: true, data: { title, quiz_type: quizType, question_count: questions.length, result_count: results.length } });
+            setStep(5);
         } catch (err) {
-            alert(`❌ 오류: ${err.message}`);
+            console.error("Save Error:", err);
+            alert(`❌ Error: ${err.message}`);
         } finally {
             setSaving(false);
         }

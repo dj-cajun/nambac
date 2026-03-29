@@ -39,26 +39,10 @@ export default function AIServicePage() {
         if (!name || !preview) return;
 
         setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/ai-service/cats-vs-dog`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: name,
-                    image: preview
-                })
-            });
-
-            if (!response.ok) throw new Error('Analysis failed');
-
-            const data = await response.json();
-            setResult(data);
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Analysis failed. Please try again.');
-        } finally {
+        setTimeout(() => {
+            alert('AI phân tích hiện đang được bảo trì/nâng cấp! Vui lòng quay lại sau.');
             setLoading(false);
-        }
+        }, 1000);
     };
 
     const handleReset = () => {

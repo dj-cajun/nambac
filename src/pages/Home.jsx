@@ -6,7 +6,8 @@ import {
 } from 'lucide-react';
 import './Home.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS } from '../constants/categories';
-import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
+import { getImageUrl } from '../lib/apiConfig';
+import { supabase } from '../lib/supabase';
 import AdPlaceholder from '../components/AdPlaceholder';
 
 export default function Home() {
@@ -27,33 +28,27 @@ export default function Home() {
   const [magazineArticles, setMagazineArticles] = useState([]);
   const [isConnecting, setIsConnecting] = useState(false);
 
-  // Fetch Quizzes & Services & Magazine from API
+  // Fetch Quizzes from Supabase
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch independently so one failure doesn't block others
-        const quizRes = await fetch(`${API_BASE_URL}/quizzes`, { cache: 'no-store' }).catch(() => null);
-        const serviceRes = await fetch(`${API_BASE_URL}/services`, { cache: 'no-store' }).catch(() => null);
-        const magRes = await fetch(`${API_BASE_URL}/magazine`, { cache: 'no-store' }).catch(() => null);
+        const { data, error } = await supabase
+          .from('quizzes')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-        if (quizRes?.ok) {
-          const quizData = await quizRes.json();
-          const quizList = quizData.quizzes || quizData || [];
-          quizList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-          setQuizzes(quizList);
-        }
+        if (error) throw error;
+        
+        // Only show active quizzes
+        const activeQuizzes = (data || []).filter(q => q.is_active);
+        setQuizzes(activeQuizzes);
 
-        if (serviceRes?.ok) {
-          const serviceData = await serviceRes.json();
-          setServices(serviceData.services || []);
-        }
-
-        if (magRes?.ok) {
-          const magData = await magRes.json();
-          setMagazineArticles(magData.articles || []);
-        }
+        // For now, services and magazines are disabled during migration
+        setServices([]);
+        setMagazineArticles([]);
+        
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data from Supabase:", error);
       } finally {
         setLoading(false);
       }
@@ -178,7 +173,13 @@ export default function Home() {
   const handleQuizClick = async (quizId) => {
     // 1. Fire and forget view increment
     try {
-      fetch(`${API_BASE_URL}/quizzes/${quizId}/view`, { method: 'POST' });
+      const quizToUpdate = quizzes.find(q => q.id === quizId);
+      if (quizToUpdate) {
+        supabase.from('quizzes')
+          .update({ view_count: (quizToUpdate.view_count || 0) + 1 })
+          .eq('id', quizId)
+          .then();
+      }
     } catch (e) {
       console.error("View increment failed", e);
     }

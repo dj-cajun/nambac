@@ -8,7 +8,8 @@ import NameInputQuiz from './NameInputQuiz';
 import MBTIQuiz from './MBTIQuiz';
 import CustomQuiz from './CustomQuiz';
 import './QuizPage.css';
-import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
+import { getImageUrl } from '../lib/apiConfig';
+import { supabase } from '../lib/supabase';
 import AdPlaceholder from '../components/AdPlaceholder';
 
 export default function QuizPage({ quizIdProp }) {
@@ -33,26 +34,35 @@ export default function QuizPage({ quizIdProp }) {
             if (!quizId) return;
             try {
                 setLoading(true);
-                // Fetch Quiz Info & Questions
-                const quizRes = await fetch(`${API_BASE_URL}/quizzes/${quizId}`);
-                if (!quizRes.ok) throw new Error('Failed to fetch quiz');
-                const quizData = await quizRes.json();
+                
+                // Fetch Quiz Info
+                const { data: quizData, error: quizError } = await supabase
+                    .from('quizzes')
+                    .select('*')
+                    .eq('id', quizId)
+                    .single();
 
-                if (quizData) {
-                    setQuizInfo(quizData);
-                    setQuestions(quizData.questions || []);
-                }
+                if (quizError || !quizData) throw new Error('Failed to fetch quiz');
+                setQuizInfo(quizData);
+
+                // Fetch Questions
+                const { data: qData } = await supabase
+                    .from('questions')
+                    .select('*')
+                    .eq('quiz_id', quizId)
+                    .order('order_number', { ascending: true });
+                setQuestions(qData || []);
 
                 // Fetch Results
-                const resultRes = await fetch(`${API_BASE_URL}/quizzes/${quizId}/results`);
-                if (resultRes.ok) {
-                    const resData = await resultRes.json();
-                    setResults(resData.results || []);
-                }
+                const { data: rData } = await supabase
+                    .from('results')
+                    .select('*')
+                    .eq('quiz_id', quizId);
+                setResults(rData || []);
 
                 setLoading(false);
             } catch (err) {
-                console.error('Error fetching quiz data:', err);
+                console.error('Error fetching quiz data from Supabase:', err);
                 setLoading(false);
             }
         };

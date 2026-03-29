@@ -5,7 +5,8 @@ import { Helmet } from 'react-helmet-async';
 import ShareModal from '../components/ShareModal';
 import AdPlaceholder from '../components/AdPlaceholder';
 import './Result.css';
-import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
+import { getImageUrl } from '../lib/apiConfig';
+import { supabase } from '../lib/supabase';
 
 const Result = () => {
     const navigate = useNavigate();
@@ -24,13 +25,15 @@ const Result = () => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/quizzes/${quizIdParam}/results`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setResults(data.results || []);
+                const { data, error } = await supabase
+                    .from('results')
+                    .select('*')
+                    .eq('quiz_id', quizIdParam);
+                if (!error && data) {
+                    setResults(data);
                 }
             } catch (err) {
-                console.error("Failed to fetch results", err);
+                console.error("Failed to fetch results from Supabase", err);
             }
         };
         fetchResults();
@@ -47,15 +50,20 @@ const Result = () => {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/quizzes`);
-                if (res.ok) {
-                    const data = await res.json();
-                    // Filter out current quiz
-                    const filtered = (data.quizzes || data).filter(q => q.id !== parseInt(quizIdParam));
-                    setRecommendedQuizzes(filtered);
+                // Fetch active quizzes excluding the current one
+                const { data, error } = await supabase
+                    .from('quizzes')
+                    .select('*')
+                    .eq('is_active', true)
+                    .neq('id', quizIdParam)
+                    .order('created_at', { ascending: false })
+                    .limit(4);
+                
+                if (!error && data) {
+                    setRecommendedQuizzes(data);
                 }
             } catch (err) {
-                console.error('Failed to fetch recommended quizzes:', err);
+                console.error('Failed to fetch recommended quizzes from Supabase:', err);
             }
         };
         fetchQuizzes();

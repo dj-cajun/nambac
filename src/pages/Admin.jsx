@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { QUIZ_CATEGORIES, SERVICE_CATEGORIES, getFilterTypes, getCategoryLabel, getPersonas } from '../constants/categories';
 import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
+import { supabase } from '../lib/supabase';
 
 const Admin = () => {
     // Password Protection
@@ -119,38 +120,28 @@ const Admin = () => {
     const fetchQuizzes = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/quizzes`);
-            const data = await response.json();
-            const quizList = data.quizzes || data || [];
-            quizList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            setQuizzes(quizList);
-            setFilteredQuizzes(quizList);
+            const { data, error } = await supabase
+                .from('quizzes')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            setQuizzes(data || []);
+            setFilteredQuizzes(data || []);
         } catch (error) {
-            console.error("Error fetching quizzes:", error);
+            console.error("Error fetching quizzes from Supabase:", error);
         } finally {
             setLoading(false);
         }
     };
 
     const fetchServices = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/services`);
-            const data = await response.json();
-            setServices(data.services || []);
-        } catch (error) {
-            console.error("Error fetching services:", error);
-        }
+        setServices([]);
     };
 
     const fetchAgents = async () => {
-        try {
-            const response = await adminFetch(`${API_BASE_URL}/admin/agents`);
-            if (!response.ok) return;
-            const data = await response.json();
-            setAvailableAgents(data.agents || []);
-        } catch (error) {
-            console.error("Error fetching agents:", error);
-        }
+        setAvailableAgents([]);
     };
 
     useEffect(() => {
@@ -184,48 +175,24 @@ const Admin = () => {
     // --- Actions ---
 
     const handleGenerate = async (persona) => {
-        setLoading(true);
-        try {
-            const response = await adminFetch(`${API_BASE_URL}/quizzes`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    topic: persona.prompt,
-                    category: persona.category,
-                    agent_name: persona.agent_name,
-                    generate_images: true
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                alert(`✅ Quiz Generated Successfully!\nTitle: ${data.quiz?.title || 'Unknown'}`);
-                fetchQuizzes();
-            } else {
-                const err = await response.json();
-                console.error("AI Generation Failed:", err);
-                alert(`❌ Generation Failed: ${err.detail || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error("Network Error:", error);
-            alert("❌ Network Error during generation.");
-        } finally {
-            setLoading(false);
-        }
+        alert("AI Quiz Generation is disabled in serverless mode temporarily.");
     };
 
     const toggleStatus = async (id) => {
         try {
             const quiz = quizzes.find(q => q.id === id);
-            const newStatus = (quiz.status === 'visible' || quiz.is_active !== false) ? 'hidden' : 'visible';
+            const newIsActive = quiz.is_active === false ? true : false;
+            const newStatus = newIsActive ? 'visible' : 'hidden';
 
             // Optimistic update
-            setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newStatus === 'visible' } : q));
+            setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newIsActive } : q));
 
-            await adminFetch(`${API_BASE_URL}/quizzes/${id}`, {
-                method: 'PUT',
-                body: JSON.stringify({ status: newStatus, is_active: newStatus === 'visible' })
-            });
+            const { error } = await supabase
+                .from('quizzes')
+                .update({ is_active: newIsActive, status: newStatus })
+                .eq('id', id);
 
+            if (error) throw error;
         } catch (error) {
             console.error("Error toggling status:", error);
             fetchQuizzes(); // Revert
@@ -235,46 +202,17 @@ const Admin = () => {
     const deleteQuiz = async (id) => {
         if (!window.confirm("Are you sure you want to delete this quiz?")) return;
         try {
-            await adminFetch(`${API_BASE_URL}/quizzes/${id}`, { method: 'DELETE' });
+            const { error } = await supabase.from('quizzes').delete().eq('id', id);
+            if (error) throw error;
             setQuizzes(prev => prev.filter(q => q.id !== id));
         } catch (error) {
             console.error("Error deleting quiz:", error);
+            alert("Error deleting quiz.");
         }
     };
 
     const handleAddService = async () => {
-        if (!newServiceTitle || !newServiceUrl) {
-            alert("Title and URL are required!");
-            return;
-        }
-
-        try {
-            const response = await adminFetch(`${API_BASE_URL}/services`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    title: newServiceTitle,
-                    description: newServiceDesc,
-                    url: newServiceUrl,
-                    image_url: newServiceImage || 'https://via.placeholder.com/150',
-                    category: newServiceCategory || 'Other'
-                })
-            });
-
-            if (response.ok) {
-                alert("✅ Service Added!");
-                setNewServiceTitle('');
-                setNewServiceDesc('');
-                setNewServiceUrl('');
-                setNewServiceImage('');
-                setNewServiceCategory('');
-                fetchServices();
-            } else {
-                alert("Failed to add service");
-            }
-        } catch (error) {
-            console.error("Error adding service:", error);
-            alert("Error adding service");
-        }
+        alert("Adding services is disabled in serverless mode.");
     };
 
     // --- Edit Modal Functions ---
@@ -299,15 +237,13 @@ const Admin = () => {
 
         // Fetch full details including questions and results
         try {
-            const response = await fetch(`${API_BASE_URL}/quizzes/${quiz.id}`);
-            const data = await response.json();
-            if (data.questions) {
-                setEditQuestions(data.questions);
-            }
-            if (data.results && data.results.length > 0) {
-                // Merge with default results to ensure all 8 exist
+            const { data: qData } = await supabase.from('questions').select('*').eq('quiz_id', quiz.id).order('order_number', { ascending: true });
+            if (qData) setEditQuestions(qData);
+
+            const { data: rData } = await supabase.from('results').select('*').eq('quiz_id', quiz.id);
+            if (rData && rData.length > 0) {
                 const mergedResults = defaultResults.map(dr => {
-                    const found = data.results.find(r => r.result_code === dr.result_code);
+                    const found = rData.find(r => r.result_code === dr.result_code);
                     return found || dr;
                 });
                 setEditResults(mergedResults);
@@ -386,10 +322,8 @@ const Admin = () => {
         // If it has an ID, delete from backend
         if (question.id) {
             try {
-                const response = await adminFetch(`${API_BASE_URL}/questions/${question.id}`, {
-                    method: 'DELETE'
-                });
-                if (!response.ok) {
+                const { error } = await supabase.from('questions').delete().eq('id', question.id);
+                if (error) {
                     alert("Failed to delete question from server.");
                     return;
                 }
@@ -409,29 +343,50 @@ const Admin = () => {
         if (!editingQuiz) return;
 
         try {
-            const response = await adminFetch(`${API_BASE_URL}/quizzes/${editingQuiz.id}`, {
-                method: 'PUT',
-                body: JSON.stringify({
+            // Update Quiz Info
+            const { error: qError } = await supabase
+                .from('quizzes')
+                .update({
                     title: editTitle,
                     description: editDescription,
                     category: editCategory,
-                    questions: editQuestions,
-                    results: editResults,
                     image_url: editImagePreview
-                }),
-            });
+                })
+                .eq('id', editingQuiz.id);
 
-            if (response.ok) {
-                setQuizzes(prev => prev.map(q =>
-                    q.id === editingQuiz.id
-                        ? { ...q, title: editTitle, description: editDescription, category: editCategory, questions: editQuestions }
-                        : q
-                ));
-                alert('✅ Quiz updated successfully!');
-                closeEditModal();
-            } else {
-                alert('Failed to update quiz.');
+            if (qError) throw qError;
+
+            // Upsert Questions
+            if (editQuestions.length > 0) {
+                const questionsToUpsert = editQuestions.map((q, idx) => ({
+                    ...q,
+                    quiz_id: editingQuiz.id,
+                    order_number: idx + 1
+                }));
+                const { error: errQ } = await supabase.from('questions').upsert(questionsToUpsert, { onConflict: 'id' });
+                if (errQ) console.error("Error saving questions:", errQ);
             }
+
+            // Upsert Results
+            if (editResults.length > 0) {
+                const resultsToUpsert = editResults.filter(r => r.title || r.description).map(r => ({
+                    ...r,
+                    quiz_id: editingQuiz.id
+                }));
+                if (resultsToUpsert.length > 0) {
+                    const { error: errR } = await supabase.from('results').upsert(resultsToUpsert, { onConflict: 'id' });
+                    if (errR) console.error("Error saving results:", errR);
+                }
+            }
+
+            setQuizzes(prev => prev.map(q =>
+                q.id === editingQuiz.id
+                    ? { ...q, title: editTitle, description: editDescription, category: editCategory, image_url: editImagePreview }
+                    : q
+            ));
+            
+            alert('✅ Quiz updated successfully!');
+            closeEditModal();
         } catch (error) {
             console.error('Error updating quiz:', error);
             alert('Error updating quiz.');

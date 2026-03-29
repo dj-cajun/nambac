@@ -87,3 +87,15 @@ body {
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* Tally Popup Overrides */
+.tally-popup, .tally-iframe-container {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+.tally-popup iframe {
+  border-radius: 20px !important;
+  /* Use 'Be Vietnam Pro' and 'Jua' exactly as defined in the website body */
+  font-family: 'Be Vietnam Pro', 'Jua', sans-serif !important;
+}
