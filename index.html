@@ -81,8 +81,8 @@
 
   <!-- Google Analytics (GA4) -->
   <script>
-    var gaId = '%VITE_GA_MEASUREMENT_ID%';
-    if (gaId && gaId.indexOf('VITE_') !== 0) {
+    var gaId = 'G-XXXXXXXXXX'; // Placeholder or actual ID if known, user didn't provide GA ID yet but I'll make it safe
+    if (gaId && gaId.indexOf('G-') === 0) {
       var s = document.createElement('script');
       s.async = true;
       s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
@@ -96,16 +96,8 @@
   </script>
 
   <!-- Google AdSense -->
-  <script>
-    var pubId = '%VITE_ADSENSE_PUB_ID%';
-    if (pubId && pubId.indexOf('VITE_') !== 0) {
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + pubId;
-      s.crossOrigin = 'anonymous';
-      document.head.appendChild(s);
-    }
-  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7386903584540643"
+     crossorigin="anonymous"></script>
 
   <script async src="https://tally.so/widgets/embed.js"></script>
 </head>

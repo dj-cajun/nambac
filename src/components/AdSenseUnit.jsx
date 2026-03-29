@@ -8,7 +8,7 @@ const AdSenseUnit = ({
     className = "",
     location = "auto"
 }) => {
-    const pubId = import.meta.env.VITE_ADSENSE_PUB_ID;
+    const pubId = import.meta.env.VITE_ADSENSE_PUB_ID || "ca-pub-7386903584540643";
 
     useEffect(() => {
         // Only run if pubId and adSlot exist
