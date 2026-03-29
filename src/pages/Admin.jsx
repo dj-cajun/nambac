@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { QUIZ_CATEGORIES, SERVICE_CATEGORIES, getFilterTypes, getCategoryLabel, getPersonas } from '../constants/categories';
 import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
 import { supabase } from '../lib/supabase';
 
 const Admin = () => {
+    const navigate = useNavigate();
     // Password Protection
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
@@ -174,8 +176,9 @@ const Admin = () => {
 
     // --- Actions ---
 
-    const handleGenerate = async (persona) => {
-        alert("AI Quiz Generation is disabled in serverless mode temporarily.");
+    const handleGenerate = (persona) => {
+        // Redirect to QuizEditor which now handles AI generation
+        navigate('/editor');
     };
 
     const toggleStatus = async (id) => {

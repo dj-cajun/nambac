@@ -507,3 +507,46 @@
         display: none;
     }
 }
+/* AI Generation */
+.ai-gen-wrapper {
+    background: #fdf2f8;
+    border: 2px dashed #FF2D85;
+    border-radius: 20px;
+    padding: 24px;
+    margin: 10px 0;
+    transition: all 0.2s;
+}
+
+.editor-btn.ai-btn {
+    width: 100%;
+    background: white;
+    color: #FF2D85;
+    border-color: #FF2D85;
+    font-size: 16px;
+    padding: 16px;
+}
+
+.editor-btn.ai-btn:hover {
+    background: #fff1f2;
+}
+
+.ai-input-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ai-btn-group {
+    display: flex;
+    gap: 12px;
+}
+
+.ai-btn-group button {
+    flex: 1;
+}
+
+@media (max-width: 480px) {
+    .ai-btn-group {
+        flex-direction: column;
+    }
+}

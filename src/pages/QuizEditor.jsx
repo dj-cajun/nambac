@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../lib/apiConfig';
 import { supabase } from '../lib/supabase';
+import { generateQuizContent } from '../lib/gemini';
+import { QUIZ_CATEGORIES } from '../constants/categories';
 import './QuizEditor.css';
 
 const QUIZ_TYPES = [
@@ -74,6 +76,11 @@ export default function QuizEditor() {
     const [saving, setSaving] = useState(false);
     const [saveResult, setSaveResult] = useState(null);
 
+    // AI Generation state
+    const [isAiGenerating, setIsAiGenerating] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [showAiInput, setShowAiInput] = useState(false);
+
     // Auth handler
     const handleAuth = (e) => {
         e.preventDefault();
@@ -115,6 +122,56 @@ export default function QuizEditor() {
         const rCount = typeConfig?.rCount || 8;
         setResults(Array.from({ length: rCount }, (_, i) => emptyResult(i)));
         setStep(2);
+    };
+
+    // AI Generation handler
+    const handleAiGenerate = async (e) => {
+        e.preventDefault();
+        if (!aiTopic.trim()) return alert('주제를 입력하세요 (예: 고양이, 호치민 맛집)');
+
+        setIsAiGenerating(true);
+        try {
+            // Find current persona based on category or default
+            const persona = QUIZ_CATEGORIES.find(c => c.id === category)?.label || "General";
+            const data = await generateQuizContent(aiTopic, persona);
+
+            // Populate state
+            setQuizType('binary_5q'); // AI currently creates binary_5q by default
+            setTitle(data.title || '');
+            setDescription(data.description || '');
+            setCategory(data.category || 'fun');
+            
+            // Format Questions (Ensuring score_a=0, score_b follows binary pattern)
+            const formattedQs = (data.questions || []).map((q, i) => ({
+                ...q,
+                order_number: i + 1,
+                score_a: 0,
+                score_b: BINARY_SCORES[i] ? BINARY_SCORES[i][1] : 0
+            }));
+            setQuestions(formattedQs);
+
+            // Format Results
+            const formattedRs = (data.results || []).map(r => ({
+                ...r,
+                traits: Array.isArray(r.traits) ? r.traits : []
+            }));
+            
+            // Ensure we have exactly 8 results for binary_5q
+            const finalResults = Array.from({ length: 8 }, (_, i) => {
+                const found = formattedRs.find(r => r.result_code === i);
+                return found || emptyResult(i);
+            });
+            setResults(finalResults);
+
+            setStep(2);
+            setShowAiInput(false);
+            alert('✨ AI가 퀴즈를 생성했습니다! 내용을 확인하시고 저장해주세요.');
+        } catch (err) {
+            console.error("AI Gen Error:", err);
+            alert(`❌ AI 생성 실패: ${err.message}`);
+        } finally {
+            setIsAiGenerating(false);
+        }
     };
 
     // Question handlers
@@ -271,6 +328,36 @@ export default function QuizEditor() {
                                 <span className="type-meta">Q: {t.qCount} / R: {t.rCount}</span>
                             </button>
                         ))}
+                    </div>
+
+                    <div className="divider-or">또는</div>
+                    
+                    <div className="ai-gen-wrapper">
+                        {!showAiInput ? (
+                            <button 
+                                className="editor-btn ai-btn"
+                                onClick={() => setShowAiInput(true)}
+                                disabled={isAiGenerating}
+                            >
+                                ✨ AI로 자동 생성하기
+                            </button>
+                        ) : (
+                            <form onSubmit={handleAiGenerate} className="ai-input-form">
+                                <input 
+                                    className="editor-input"
+                                    placeholder="주제를 입력하세요 (예: 고양이, 커피, 호치민 생활)"
+                                    value={aiTopic}
+                                    onChange={(e) => setAiTopic(e.target.value)}
+                                    autoFocus
+                                />
+                                <div className="ai-btn-group">
+                                    <button type="button" className="editor-btn secondary" onClick={() => setShowAiInput(false)}>취소</button>
+                                    <button type="submit" className="editor-btn primary" disabled={isAiGenerating || !aiTopic.trim()}>
+                                        {isAiGenerating ? 'AI 생각 중...' : '생성 시작 🚀'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
 
                     <div className="divider-or">또는</div>
