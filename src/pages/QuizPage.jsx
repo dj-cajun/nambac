@@ -10,7 +10,7 @@ import CustomQuiz from './CustomQuiz';
 import './QuizPage.css';
 import { getImageUrl } from '../lib/apiConfig';
 import { supabase } from '../lib/supabase';
-import AdPlaceholder from '../components/AdPlaceholder';
+import AdSenseUnit from '../components/AdSenseUnit';
 
 export default function QuizPage({ quizIdProp }) {
     const { id } = useParams();
@@ -287,7 +287,7 @@ export default function QuizPage({ quizIdProp }) {
             </AnimatePresence>
 
             {/* AdSense Slot (Bottom of Quiz Page) */}
-            <AdPlaceholder location="quiz-bottom" />
+            <AdSenseUnit adSlot="1234567890" location="quiz-bottom" />
         </div>
     );
 }

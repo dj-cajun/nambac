@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Download, Share2, Home } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import ShareModal from '../components/ShareModal';
-import AdPlaceholder from '../components/AdPlaceholder';
+import AdSenseUnit from '../components/AdSenseUnit';
 import './Result.css';
 import { getImageUrl } from '../lib/apiConfig';
 import { supabase } from '../lib/supabase';
@@ -133,10 +133,10 @@ const Result = () => {
                 </div>
 
                 {/* AdSense Slot (Below Result Image) */}
-                <AdPlaceholder location="result-bottom" />
+                <AdSenseUnit adSlot="1234567890" location="result-bottom-1" />
 
                 {/* AdSense Slot (Below Result Image) */}
-                <AdPlaceholder location="result-bottom" />
+                <AdSenseUnit adSlot="0987654321" location="result-bottom-2" />
 
                 {/* Recommended Quizzes Section */}
                 {recommendedQuizzes.length > 0 && (

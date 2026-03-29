@@ -90,7 +90,22 @@
       window.gtag = gtag;
       gtag('js', new Date());
       gtag('config', gaId);
-    </script>
+    })();
+  </script>
+
+  <!-- Google AdSense -->
+  <script>
+    (function() {
+      var pubId = '%VITE_ADSENSE_PUB_ID%';
+      if (!pubId || pubId.indexOf('VITE_') === 0) return; // Skip if not configured
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + pubId;
+      s.crossOrigin = 'anonymous';
+      document.head.appendChild(s);
+    })();
+  </script>
+
   <script async src="https://tally.so/widgets/embed.js"></script>
 </head>
 

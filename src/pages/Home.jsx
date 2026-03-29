@@ -8,7 +8,7 @@ import './Home.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS } from '../constants/categories';
 import { getImageUrl } from '../lib/apiConfig';
 import { supabase } from '../lib/supabase';
-import AdPlaceholder from '../components/AdPlaceholder';
+import AdSenseUnit from '../components/AdSenseUnit';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -320,7 +320,7 @@ export default function Home() {
       </div>
 
       {/* AdSense Slot (Between Quiz List and AI Services) */}
-      <AdPlaceholder location="home-middle" />
+      <AdSenseUnit adSlot="1234567890" location="home-middle" />
 
       {/* 5. AI Service Hub (New) */}
       <div className="mt-8 mb-24">

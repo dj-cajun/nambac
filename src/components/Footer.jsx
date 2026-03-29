@@ -9,7 +9,7 @@ const Footer = () => {
         <img src="/images/logo.png" alt="NamBắc Logo" className="footer-logo-img" />
       </Link>
       <div className="footer-links">
-        <span>About</span>
+        <Link to="/about" style={{ textDecoration: 'none', color: 'inherit' }}>About</Link>
         <Link to="/privacy-policy" style={{ textDecoration: 'none', color: 'inherit' }}>Privacy</Link>
         <Link to="/terms-of-service" style={{ textDecoration: 'none', color: 'inherit' }}>Terms</Link>
         <button

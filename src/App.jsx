@@ -12,6 +12,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 
 import AnalysisPage from './pages/AnalysisPage';
+import About from './pages/About';
 import Result from './pages/Result';
 
 function App() {
@@ -43,6 +44,7 @@ function AppContent() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/editor" element={<QuizEditor />} />
         <Route path="/service/:id" element={<AIServicePage />} />
+        <Route path="/about" element={<About />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>
