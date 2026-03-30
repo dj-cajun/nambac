@@ -1,0 +1,28 @@
+{
+    "articles": [
+        {
+            "id": "1",
+            "title": "[특집] 벤탄 시장 호구 탈출 가이드",
+            "summary": "100만동 부르면 30만동부터 시작해라. 안 팔면 그냥 가라. 10미터 가면 붙잡는다.",
+            "image_url": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?q=80&w=600&auto=format&fit=crop",
+            "category": "Survival",
+            "created_at": "2024-02-01T10:00:00"
+        },
+        {
+            "id": "2",
+            "title": "타오디엔 브런치 카페 Best 3",
+            "summary": "맛은 서울과 똑같은데 가격도 서울과 똑같음. 인스타용 사진 찍으러 가는 곳.",
+            "image_url": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=600&auto=format&fit=crop",
+            "category": "Trendy",
+            "created_at": "2024-02-02T10:00:00"
+        },
+        {
+            "id": "3",
+            "title": "그랩 기사가 길을 잃었을 때 대처법",
+            "summary": "1. 전화를 건다. 2. 'Em toi roi' (도착했어) 라고 외친다. 3. 사실 아직 안 왔다.",
+            "image_url": "https://images.unsplash.com/photo-1557754897-ca12c5049d83?q=80&w=600&auto=format&fit=crop",
+            "category": "Local Hack",
+            "created_at": "2024-02-03T10:00:00"
+        }
+    ]
+}
