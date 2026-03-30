@@ -218,6 +218,13 @@ const Admin = () => {
         alert("Adding services is disabled in serverless mode.");
     };
 
+    const copyQuizLink = (id) => {
+        const url = `${window.location.origin}/quiz/${id}`;
+        navigator.clipboard.writeText(url).then(() => {
+            alert("🔗 Link copied to clipboard!");
+        });
+    };
+
     // --- Edit Modal Functions ---
 
     const openEditModal = async (quiz) => {
@@ -267,6 +274,23 @@ const Admin = () => {
         setEditResults([]);
         setEditImage(null);
         setEditImagePreview('');
+    };
+
+    const handleAddQuestion = () => {
+        const orderNum = editQuestions.length + 1;
+        const newQ = {
+            quiz_id: editingQuiz.id,
+            order_number: orderNum,
+            question_text: '',
+            option_a: '',
+            option_b: '',
+            score_a: 0,
+            score_b: orderNum === 1 ? 4 : orderNum === 2 ? 2 : orderNum === 3 ? 1 : 0,
+            image_url: null,
+            dimension: null,
+            options: null
+        };
+        setEditQuestions([...editQuestions, newQ]);
     };
 
     const handleQuestionChange = (index, field, value) => {
@@ -346,40 +370,27 @@ const Admin = () => {
         if (!editingQuiz) return;
 
         try {
-            // Update Quiz Info
-            const { error: qError } = await supabase
-                .from('quizzes')
-                .update({
+            // --- [LOCAL BACKEND REDIRECTION] ---
+            // 로컬 백엔드 API를 통해 저장합니다. (기존 Supabase 직접 저장을 대체)
+            const response = await fetch(`http://localhost:8000/api/quizzes/${editingQuiz.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Key': 'nambac2026!'
+                },
+                body: JSON.stringify({
                     title: editTitle,
                     description: editDescription,
                     category: editCategory,
-                    image_url: editImagePreview
+                    image_url: editImagePreview,
+                    questions: editQuestions.map((q, idx) => ({ ...q, order_number: idx + 1 })),
+                    results: editResults.filter(r => r.title || r.description)
                 })
-                .eq('id', editingQuiz.id);
+            });
 
-            if (qError) throw qError;
-
-            // Upsert Questions
-            if (editQuestions.length > 0) {
-                const questionsToUpsert = editQuestions.map((q, idx) => ({
-                    ...q,
-                    quiz_id: editingQuiz.id,
-                    order_number: idx + 1
-                }));
-                const { error: errQ } = await supabase.from('questions').upsert(questionsToUpsert, { onConflict: 'id' });
-                if (errQ) console.error("Error saving questions:", errQ);
-            }
-
-            // Upsert Results
-            if (editResults.length > 0) {
-                const resultsToUpsert = editResults.filter(r => r.title || r.description).map(r => ({
-                    ...r,
-                    quiz_id: editingQuiz.id
-                }));
-                if (resultsToUpsert.length > 0) {
-                    const { error: errR } = await supabase.from('results').upsert(resultsToUpsert, { onConflict: 'id' });
-                    if (errR) console.error("Error saving results:", errR);
-                }
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || '백엔드 서버 저장 실패 (localhost:8000)');
             }
 
             setQuizzes(prev => prev.map(q =>
@@ -388,11 +399,11 @@ const Admin = () => {
                     : q
             ));
             
-            alert('✅ Quiz updated successfully!');
+            alert('✅ Quiz updated successfully (Local Backend)!');
             closeEditModal();
         } catch (error) {
             console.error('Error updating quiz:', error);
-            alert('Error updating quiz.');
+            alert(`Error updating quiz: ${error.message}`);
         }
     };
 
@@ -401,10 +412,15 @@ const Admin = () => {
     // 1. Login View
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#FFF0F6]">
-                <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-2 border-pink-200">
-                    <h2 className="text-2xl font-black text-[#FF2D85] mb-6 text-center">🔐 Admin Access</h2>
-                    <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div className="min-h-screen flex items-center justify-center bg-[#fff9fc] p-6">
+                <div className="jelly-card p-10 w-full max-w-md bg-white">
+                    <div className="text-center mb-8">
+                        <div className="text-4xl mb-4">🔐</div>
+                        <h2 className="text-3xl font-black text-[#FF2D85] tracking-tight">Admin Access</h2>
+                        <p className="text-gray-500 font-medium mt-1">Unlock the Power Station</p>
+                    </div>
+                    
+                    <form onSubmit={handlePasswordSubmit} className="space-y-6">
                         <div>
                             <input
                                 ref={passwordInputRef}
@@ -413,15 +429,17 @@ const Admin = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter Admin Password"
                                 autoFocus
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FF2D85] focus:outline-none transition-colors"
+                                className="w-full px-5 py-4 bg-white border-2 border-black rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#FF2D85]/20 transition-all font-medium"
                             />
                             {passwordError && (
-                                <p className="text-red-500 text-sm font-bold mt-2 ml-1">🚫 Access Denied. Try again.</p>
+                                <p className="text-red-500 text-sm font-bold mt-3 ml-1 flex items-center gap-1">
+                                    <span>🚫</span> Access Denied. Try again.
+                                </p>
                             )}
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-[#FF2D85] text-white font-bold py-3 rounded-xl hover:bg-[#E01E70] transition-colors shadow-lg shadow-pink-200"
+                            className="w-full jelly-btn bg-[#FF2D85] text-white font-black py-4 text-lg hover:scale-[1.02] active:scale-95 transition-all shadow-[4px_4px_0px_0px_#000000]"
                         >
                             Unlock Dashboard
                         </button>
@@ -595,6 +613,12 @@ const Admin = () => {
                                             </div>
                                         </div>
                                     ))}
+                                    <button
+                                        onClick={handleAddQuestion}
+                                        className="w-full py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 font-bold hover:border-black hover:text-black transition-all mb-4"
+                                    >
+                                        ➕ Add New Question
+                                    </button>
                                 </div>
                             )}
 
@@ -684,27 +708,31 @@ const Admin = () => {
             )}
 
             {/* Main Content */}
-            <div className="min-h-screen bg-[#FFF0F6] p-8 pt-24 font-sans text-gray-800">
+            <div className="min-h-screen bg-[#fff9fc] p-8 pt-24 font-sans text-gray-800">
                 <div className="max-w-6xl mx-auto">
                     {/* Header */}
-                    <header className="mb-10 text-center">
-                        <h1 className="text-4xl font-black text-[#FF2D85] mb-2 drop-shadow-sm">
+                    <header className="mb-12 text-center">
+                        <div className="flex justify-center mb-4">
+                            <img src="/logo192.png" alt="NamBac" className="w-16 h-16 drop-shadow-md" onError={(e) => e.target.style.display='none'} />
+                        </div>
+                        <h1 className="text-5xl font-black text-[#FF2D85] tracking-tighter drop-shadow-sm">
                             ⚡ AI POWER STATION
                         </h1>
+                        <p className="text-gray-500 font-bold mt-2 uppercase tracking-[0.2em] text-sm">Control Center</p>
                     </header>
 
                     {/* Tabs */}
-                    <div className="flex justify-center mb-8">
-                        <div className="bg-white border-b-2 border-black flex shadow-none">
+                    <div className="flex justify-center mb-10">
+                        <div className="flex bg-gray-100/50 p-2 rounded-[2rem] border-2 border-black shadow-[4px_4px_0px_0px_#000000] space-x-2">
                             <button
                                 onClick={() => setActiveTab('quizzes')}
-                                className={`px-4 py-2 font-black transition-all border-b-2 ${activeTab === 'quizzes' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black hover:bg-gray-50'}`}
+                                className={`px-8 py-3 rounded-full font-black transition-all ${activeTab === 'quizzes' ? 'bg-[#FF2D85] text-white' : 'text-gray-500 hover:text-black'}`}
                             >
                                 🧩 Quizzes
                             </button>
                             <button
                                 onClick={() => setActiveTab('services')}
-                                className={`px-4 py-2 font-black transition-all border-b-2 ${activeTab === 'services' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black hover:bg-gray-50'}`}
+                                className={`px-8 py-3 rounded-full font-black transition-all ${activeTab === 'services' ? 'bg-[#FF2D85] text-white' : 'text-gray-500 hover:text-black'}`}
                             >
                                 🔗 AI Services
                             </button>
@@ -713,73 +741,66 @@ const Admin = () => {
 
                     {/* AI Buttons (Only for Quizzes) */}
                     {activeTab === 'quizzes' && (
-                        <section className="bg-white border-[1.5px] border-black rounded-lg p-6 mb-12 shadow-md">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {personas.map((persona, index) => {
-                                    const pastelColors = [
-                                        'bg-blue-100 hover:bg-blue-200',
-                                        'bg-yellow-100 hover:bg-yellow-200',
-                                        'bg-green-100 hover:bg-green-200',
-                                        'bg-purple-100 hover:bg-purple-200',
-                                        'bg-pink-100 hover:bg-pink-200',
-                                        'bg-orange-100 hover:bg-orange-200',
-                                        'bg-teal-100 hover:bg-teal-200',
-                                        'bg-rose-100 hover:bg-rose-200'
-                                    ];
-                                    const colorClass = pastelColors[index % pastelColors.length];
-
-                                    return (
-                                        <button
-                                            key={index}
-                                            onClick={() => handleGenerate(persona)}
-                                            disabled={loading}
-                                            className={`group relative p-4 flex flex-col items-center justify-center transition-all duration-200 transform
-                                                 bg-white border-[1.5px] border-black rounded-lg hover:bg-gray-100 ${loading ? 'opacity-50 cursor-not-allowed' : ''}
-                                             `}
-                                        >
-                                            <span className="text-4xl mb-3 block group-hover:scale-110 transition-transform filter drop-shadow-sm">
-                                                {persona.emoji}
-                                            </span>
-                                            <span className="font-black text-sm text-gray-800 text-center leading-tight">
-                                                {persona.name}
-                                            </span>
-                                            <span className="text-[10px] font-bold text-gray-500 mt-1 uppercase tracking-wider">
-                                                {persona.category}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
+                        <div className="mb-16 text-center">
+                            <h3 className="font-black text-gray-400 uppercase tracking-widest text-xs mb-6 text-center w-full">Create with AI Persona</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+                                {personas.map((persona, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleGenerate(persona)}
+                                        disabled={loading}
+                                        className={`sticker-tile group p-6 flex flex-col items-center justify-center bg-white hover:rotate-2 transition-transform ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        <span className="text-4xl mb-3 block group-hover:scale-125 transition-transform">
+                                            {persona.emoji}
+                                        </span>
+                                        <span className="font-black text-xs text-center leading-tight">
+                                            {persona.name}
+                                        </span>
+                                    </button>
+                                ))}
                             </div>
-
+                            
                             {loading && (
-                                <div className="mt-6 flex items-center justify-center gap-3">
+                                <div className="flex items-center justify-center gap-3 py-4">
                                     <div className="w-8 h-8 border-4 border-[#FF2D85] border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="text-[#FF2D85] font-bold animate-pulse">AI is generating your quiz...</span>
+                                    <span className="text-[#FF2D85] font-black animate-pulse">AI is generating your quiz...</span>
                                 </div>
                             )}
-                        </section>
+                        </div>
                     )}
 
                     {/* Dashboard Content */}
-                    <section className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-                        <div className="bg-gradient-to-r from-[#FF2D85] to-pink-400 p-4 flex justify-between items-center">
-                            <h2 className="text-2xl font-black text-white">
-                                {activeTab === 'quizzes' ? '🎮 Quiz Management' : '🔗 Service Management'}
-                            </h2>
+                    <section className="bg-white rounded-3xl border-2 border-black shadow-[8px_8px_0px_0px_#000000] overflow-hidden mb-12">
+                        <div className="bg-white border-b-2 border-black p-6 flex justify-between items-center">
+                            <div>
+                                <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+                                    {activeTab === 'quizzes' ? '🎮 Quiz Management' : '🔗 Service Management'}
+                                </h2>
+                                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Total {filteredQuizzes.length} Items</p>
+                            </div>
+                            {activeTab === 'quizzes' && (
+                                <button
+                                    onClick={() => navigate('/editor')}
+                                    className="jelly-btn bg-[#FF2D85] text-white px-6 py-2 rounded-xl font-black text-sm hover:scale-105 transition-transform"
+                                >
+                                    + Manual Create
+                                </button>
+                            )}
                         </div>
 
                         {activeTab === 'quizzes' ? (
                             <>
                                 {/* Filters */}
-                                <div className="p-4 border-b border-gray-100">
-                                    <div className="flex flex-wrap gap-2">
+                                <div className="p-6 bg-gray-50/50 border-b-2 border-black/5">
+                                    <div className="flex flex-wrap gap-3">
                                         {filterTypes.map((type) => (
                                             <button
                                                 key={type}
                                                 onClick={() => setFilterType(type)}
-                                                className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${filterType === type
-                                                    ? 'bg-[#FF2D85] text-white shadow-md'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider transition-all duration-200 border-2 ${filterType === type
+                                                    ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                                                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
                                                     }`}
                                             >
                                                 {type === 'all' ? 'All' : getTypeLabel(type)}
@@ -790,24 +811,23 @@ const Admin = () => {
 
                                 {/* Table */}
                                 {loading && !quizzes.length ? (
-                                    <div className="p-12 text-center">
-                                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
-                                        <p className="text-gray-500">Loading quizzes...</p>
+                                    <div className="p-20 text-center">
+                                        <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
+                                        <p className="text-gray-400 font-bold">Loading quizzes...</p>
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
                                         <table className="w-full">
-                                            <thead className="bg-gray-50">
-                                                <tr>
-                                                    <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
-                                                    <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Title</th>
-                                                    <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                                                    <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Created</th>
-                                                    <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                                    <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                                            <thead>
+                                                <tr className="border-b-2 border-black/5">
+                                                    <th className="p-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ID / Date</th>
+                                                    <th className="p-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Quiz Info</th>
+                                                    <th className="p-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Type</th>
+                                                    <th className="p-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                                                    <th className="p-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-gray-100">
+                                            <tbody className="divide-y-2 divide-black/5">
                                                 {filteredQuizzes.length === 0 ? (
                                                     <tr>
                                                         <td colSpan={6} className="p-8 text-center text-gray-400">
@@ -816,44 +836,70 @@ const Admin = () => {
                                                     </tr>
                                                 ) : (
                                                     filteredQuizzes.map((quiz) => (
-                                                        <tr key={quiz.id} className="hover:bg-pink-50 transition-colors">
-                                                            <td className="p-4 text-sm text-gray-600 font-mono">
-                                                                {quiz.id?.toString().slice(0, 8)}...
+                                                        <tr key={quiz.id} className="hover:bg-gray-50/50 transition-colors group">
+                                                            <td className="p-6">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] font-black font-mono text-gray-400">#{quiz.id?.toString().slice(0, 8)}</span>
+                                                                    <span className="text-xs font-bold text-gray-500 mt-1">{formatDate(quiz.created_at)}</span>
+                                                                </div>
                                                             </td>
-                                                            <td className="p-4">
-                                                                <button
-                                                                    onClick={() => openEditModal(quiz)}
-                                                                    className="font-medium text-gray-900 hover:text-[#FF2D85] hover:underline text-left transition-colors"
-                                                                >
-                                                                    {quiz.title}
-                                                                </button>
+                                                            <td className="p-6">
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="bg-gray-100 rounded-xl border-2 border-black/5 overflow-hidden flex-shrink-0" style={{ width: '200px', height: '200px' }}>
+                                                                        {quiz.image_url ? (
+                                                                            <img src={getImageUrl(quiz.image_url)} alt="" className="w-full h-full object-cover" />
+                                                                        ) : (
+                                                                            <div className="w-full h-full flex items-center justify-center text-4xl">🧩</div>
+                                                                        )}
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => openEditModal(quiz)}
+                                                                        className="font-black text-gray-900 hover:text-[#FF2D85] text-left transition-colors text-sm group-hover:translate-x-1 duration-200"
+                                                                    >
+                                                                        {quiz.title}
+                                                                    </button>
+                                                                </div>
                                                             </td>
-                                                            <td className="p-4 text-center">
-                                                                <span className="inline-block px-3 py-1 bg-pink-100 text-[#FF2D85] rounded-full text-sm font-medium">
+                                                            <td className="p-6 text-center">
+                                                                <span className="inline-block px-3 py-1 bg-white border-2 border-black/10 rounded-full text-[10px] font-black uppercase tracking-wider text-gray-600">
                                                                     {getTypeLabel(quiz.category)}
                                                                 </span>
                                                             </td>
-                                                            <td className="p-4 text-center text-sm text-gray-600">
-                                                                {formatDate(quiz.created_at)}
-                                                            </td>
-                                                            <td className="p-4 text-center">
+                                                            <td className="p-6 text-center">
                                                                 <button
                                                                     onClick={() => toggleStatus(quiz.id)}
-                                                                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${quiz.status === 'visible' || quiz.is_active !== false
-                                                                        ? 'bg-green-500 text-white hover:bg-green-600'
-                                                                        : 'bg-red-500 text-white hover:bg-red-600'
+                                                                    className={`px-4 py-1.5 rounded-full text-[10px] font-black transition-all duration-200 border-2 ${quiz.status === 'visible' || quiz.is_active !== false
+                                                                        ? 'bg-[#FF2D85] text-white border-black shadow-[2px_2px_0px_0px_#000000]'
+                                                                        : 'bg-white text-gray-400 border-gray-200'
                                                                         }`}
                                                                 >
-                                                                    {quiz.status === 'visible' || quiz.is_active !== false ? 'ON' : 'OFF'}
+                                                                    {quiz.status === 'visible' || quiz.is_active !== false ? 'VISIBLE' : 'HIDDEN'}
                                                                 </button>
                                                             </td>
-                                                            <td className="p-4 text-center">
-                                                                <button
-                                                                    onClick={() => deleteQuiz(quiz.id)}
-                                                                    className="px-3 py-1.5 text-xs font-bold text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 hover:border-red-500 rounded-lg transition-all duration-200"
-                                                                >
-                                                                    🗑️ Delete
-                                                                </button>
+                                                            <td className="p-6 text-center">
+                                                                <div className="flex items-center justify-center gap-2">
+                                                                    <button
+                                                                        onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')}
+                                                                        className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#00C2FF] hover:bg-blue-50 rounded-xl transition-all duration-200 border-2 border-transparent hover:border-blue-100"
+                                                                        title="View Quiz Start Screen"
+                                                                    >
+                                                                        👁️
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => copyQuizLink(quiz.id)}
+                                                                        className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#FF2D85] hover:bg-pink-50 rounded-xl transition-all duration-200 border-2 border-transparent hover:border-pink-100"
+                                                                        title="Copy Share Link"
+                                                                    >
+                                                                        🔗
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => deleteQuiz(quiz.id)}
+                                                                        className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200 hover:rotate-12 border-2 border-transparent hover:border-red-100"
+                                                                        title="Delete Quiz"
+                                                                    >
+                                                                        🗑️
+                                                                    </button>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     ))

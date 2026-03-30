@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../lib/apiConfig';
 import { supabase } from '../lib/supabase';
 import { generateQuizContent } from '../lib/gemini';
+import { generateCoverImage, generateResultImage, base64ToFile } from '../lib/imagen';
 import { QUIZ_CATEGORIES } from '../constants/categories';
 import './QuizEditor.css';
 
@@ -78,7 +79,6 @@ export default function QuizEditor() {
 
     // AI Generation state
     const [isAiGenerating, setIsAiGenerating] = useState(false);
-    const [aiTopic, setAiTopic] = useState('');
     const [showAiInput, setShowAiInput] = useState(false);
 
     // Auth handler
@@ -125,47 +125,169 @@ export default function QuizEditor() {
     };
 
     // AI Generation handler
+    // AI Generation handler — Category-based Expert Agents
+    const [selectedPersona, setSelectedPersona] = useState({ name: 'MBTI', emoji: '🧠', prompt: 'MBTI' });
+    const personas = [
+        { name: 'MBTI', emoji: '🧠', prompt: 'MBTI' },
+        { name: 'Personality', emoji: '🎭', prompt: 'Personality' },
+        { name: 'PastLife', emoji: '🧞', prompt: 'PastLife' },
+        { name: 'Fortune', emoji: '🔮', prompt: 'Fortune' },
+        { name: 'Survival', emoji: '🏋️', prompt: 'Survival' },
+        { name: 'Trendy', emoji: '🔥', prompt: 'Trendy' },
+        { name: 'Delivery', emoji: '🛵', prompt: 'Delivery' },
+        { name: 'Lookalike', emoji: '🔗', prompt: 'Lookalike' },
+    ];
+
     const handleAiGenerate = async (e) => {
         e.preventDefault();
-        if (!aiTopic.trim()) return alert('주제를 입력하세요 (예: 고양이, 호치민 맛집)');
-
         setIsAiGenerating(true);
+        setGenerateStatus('🤖 AI 에이전트가 퀴즈를 기획하는 중...');
+        
         try {
-            // Find current persona based on category or default
-            const persona = QUIZ_CATEGORIES.find(c => c.id === category)?.label || "General";
-            const data = await generateQuizContent(aiTopic, persona);
+            // 로컬 백엔드 API 호출 (localhost:8000)
+            const response = await fetch('http://localhost:8000/api/quiz/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Key': 'nambac2026!' 
+                },
+                body: JSON.stringify({
+                    topic: selectedPersona.prompt,
+                    generate_images: false,
+                    category: category,
+                    quiz_type: quizType
+                })
+            });
 
-            // Populate state
-            setQuizType('binary_5q'); // AI currently creates binary_5q by default
-            setTitle(data.title || '');
-            setDescription(data.description || '');
-            setCategory(data.category || 'fun');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || '백엔드 서버 통신 실패 (localhost:8000을 확인하세요)');
+            }
+
+            const data = await response.json();
+            console.log("AI Generation Successful (Local):", data);
+
+            // Populating state from backend response
+            const meta = data.meta || {};
+            setTitle(meta.title || meta.quiz_title || '');
+            setDescription(meta.description || meta.quiz_description || '');
+            setCategory(meta.category || meta.quiz_category || 'fun');
             
-            // Format Questions (Ensuring score_a=0, score_b follows binary pattern)
+            // Format Questions
             const formattedQs = (data.questions || []).map((q, i) => ({
                 ...q,
                 order_number: i + 1,
-                score_a: 0,
-                score_b: BINARY_SCORES[i] ? BINARY_SCORES[i][1] : 0
+                score_a: q.score_a ?? 0,
+                score_b: q.score_b ?? 0
             }));
             setQuestions(formattedQs);
 
             // Format Results
             const formattedRs = (data.results || []).map(r => ({
                 ...r,
+                result_code: r.result_code ?? r.score ?? 0,
+                title: r.type_name || r.result_title || r.title || '',
+                description: r.description || r.result_description || '',
                 traits: Array.isArray(r.traits) ? r.traits : []
             }));
-            
+
+            // Populate state
             // Ensure we have exactly 8 results for binary_5q
             const finalResults = Array.from({ length: 8 }, (_, i) => {
-                const found = formattedRs.find(r => r.result_code === i);
-                return found || emptyResult(i);
+                const found = formattedRs.find(r => r.score === i || r.result_code === i);
+                const resultObj = found || formattedRs[i] || emptyResult(i);
+                return { ...resultObj, result_code: i, title: resultObj.type_name || resultObj.title || '' };
             });
             setResults(finalResults);
 
-            setStep(2);
-            setShowAiInput(false);
-            alert('✨ AI가 퀴즈를 생성했습니다! 내용을 확인하시고 저장해주세요.');
+            // Notify user of progress (Do NOT go to step 2 yet)
+            console.log('✨ 텍스트 완성! 백그라운드 이미지 생성 시작...');
+
+            // Background Image Generation & Save
+            try {
+                // Cover Image
+                let finalThumbnailUrl = null;
+                const quizTitleStr = data.title || '';
+                const quizCatStr = data.category || 'fun';
+                const quizDescStr = data.description || '';
+                
+                let coverB64 = null;
+                try {
+                    coverB64 = await generateCoverImage(quizTitleStr, quizCatStr, quizDescStr);
+                } catch(e) { console.error("Cover image error:", e); }
+
+                let coverFile = null;
+                if (coverB64) {
+                    coverFile = base64ToFile(coverB64, 'cover.png');
+                    setThumbnail(coverFile);
+                    setThumbnailPreview(URL.createObjectURL(coverFile));
+                    // Upload cover directly to Supabase
+                    const fileName = `quiz_${Date.now()}_cover.png`;
+                    const { error: uploadError } = await supabase.storage.from('quiz-images').upload(fileName, coverFile);
+                    if (!uploadError) finalThumbnailUrl = `/${fileName}`;
+                }
+
+                // Result Images
+                let completedResults = [...finalResults];
+                
+                for (let i = 0; i < completedResults.length; i++) {
+                    const r = completedResults[i];
+                    try {
+                        const b64 = await generateResultImage(r.title || '', r.description || '');
+                        if (b64) {
+                            const file = base64ToFile(b64, `result_${i}.png`);
+                            // Upload result image to Supabase
+                            const rFileName = `result_${Date.now()}_${i}.png`;
+                            const { error: rUploadError } = await supabase.storage.from('quiz-images').upload(rFileName, file);
+                            if (!rUploadError) {
+                                r.image_url = `/${rFileName}`;
+                            }
+                            setResults(prev => prev.map((res, idx) => idx === i ? { ...res, image_file: file, preview_url: URL.createObjectURL(file), image_url: r.image_url } : res));
+                        }
+                    } catch (e) {
+                        console.error(`Result ${i} image err:`, e);
+                    }
+                    // Short delay between requests to prevent 429 Too Many Requests
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+
+                // 🚀 AUTO-SAVE: Local Backend Redirection 🚀
+                setSaving(true);
+                try {
+                    const response = await fetch('http://localhost:8000/api/admin/upload-quiz-json', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Admin-Key': 'nambac2026!'
+                        },
+                        body: JSON.stringify({
+                            title: quizTitleStr,
+                            description: quizDescStr,
+                            category: quizCatStr,
+                            quiz_type: 'binary_5q',
+                            image_url: finalThumbnailUrl,
+                            questions: formattedQs,
+                            results: completedResults
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.detail || '백엔드 서버 저장 실패 (localhost:8000)');
+                    }
+
+                    alert('🎉 AI 퀴즈가 성공적으로 생성되고 로컬 백엔드에 저장되었습니다!');
+                    navigate('/admin'); // Redirect to Admin
+                } catch (saveErr) {
+                    console.error("Auto-save Error:", saveErr);
+                    alert(`❌ 로컬 저장 실패: ${saveErr.message}\n하지만 텍스트와 이미지는 에디터에 남겨두었습니다.`);
+                } finally {
+                    setSaving(false);
+                }
+
+            } catch (err) {
+                console.error("AI Image Trigger Error:", err);
+            }
         } catch (err) {
             console.error("AI Gen Error:", err);
             alert(`❌ AI 생성 실패: ${err.message}`);
@@ -256,7 +378,17 @@ export default function QuizEditor() {
 
             // Insert Results
             if (results.length > 0) {
-                const rPayload = results.map(r => ({ ...r, quiz_id: newQuizId }));
+                const rPayload = await Promise.all(results.map(async r => {
+                    let finalResUrl = r.image_url;
+                    if (r.image_file) {
+                        const rFileName = `result_${Date.now()}_${r.result_code}_${r.image_file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                        const { error: rUploadError } = await supabase.storage.from('quiz-images').upload(rFileName, r.image_file);
+                        if (rUploadError) throw rUploadError;
+                        finalResUrl = `/${rFileName}`;
+                    }
+                    const { image_file, preview_url, ...dbPayload } = r;
+                    return { ...dbPayload, image_url: finalResUrl, quiz_id: newQuizId };
+                }));
                 const { error: errR } = await supabase.from('results').insert(rPayload);
                 if (errR) throw errR;
             }
@@ -274,19 +406,26 @@ export default function QuizEditor() {
     // Auth Screen
     if (!isAuth) {
         return (
-            <div className="editor-container">
-                <div className="editor-auth-card">
-                    <h1>🔐 Quiz Editor</h1>
-                    <form onSubmit={handleAuth}>
+            <div className="editor-container flex items-center justify-center p-6">
+                <div className="editor-auth-card w-full max-w-md">
+                    <div className="text-center mb-10">
+                        <div className="text-5xl mb-6">⚙️</div>
+                        <h1 className="text-3xl font-black text-[#FF2D85] tracking-tight m-0">Quiz Editor</h1>
+                        <p className="text-gray-500 font-bold mt-2 uppercase tracking-widest text-xs">NamBac Dashboard</p>
+                    </div>
+                    
+                    <form onSubmit={handleAuth} className="flex flex-col gap-4">
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Admin Password"
-                            className="editor-input"
+                            className="editor-input text-center"
                             autoFocus
                         />
-                        <button type="submit" className="editor-btn primary">접속</button>
+                        <button type="submit" className="editor-btn primary w-full text-lg py-4">
+                            접속하기
+                        </button>
                     </form>
                 </div>
             </div>
@@ -297,7 +436,11 @@ export default function QuizEditor() {
         <div className="editor-container">
             {/* Header */}
             <div className="editor-header">
-                <h1 className="editor-logo">🎮 Quiz Editor</h1>
+                <div className="flex flex-col items-center mb-2">
+                    <h1 className="editor-logo">🎮 EDITOR</h1>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">AI Quiz Factory</p>
+                </div>
+                
                 <div className="editor-steps">
                     {['타입', '정보', '질문', '결과', '완료'].map((label, i) => (
                         <div
@@ -305,7 +448,7 @@ export default function QuizEditor() {
                             className={`step-dot ${step === i + 1 ? 'active' : ''} ${step > i + 1 ? 'done' : ''}`}
                             onClick={() => step > i + 1 && setStep(i + 1)}
                         >
-                            <span className="step-num">{step > i + 1 ? '✓' : i + 1}</span>
+                            <span className="step-num text-[10px]">{step > i + 1 ? '✓' : i + 1}</span>
                             <span className="step-label">{label}</span>
                         </div>
                     ))}
@@ -335,27 +478,44 @@ export default function QuizEditor() {
                     <div className="ai-gen-wrapper">
                         {!showAiInput ? (
                             <button 
-                                className="editor-btn ai-btn"
+                                className="editor-btn ai-btn transition-transform hover:scale-[1.02]"
                                 onClick={() => setShowAiInput(true)}
                                 disabled={isAiGenerating}
                             >
-                                ✨ AI로 자동 생성하기
+                                <span className="text-2xl">✨</span>
+                                <span>AI로 10초 만에 퀴즈 만들기</span>
                             </button>
                         ) : (
                             <form onSubmit={handleAiGenerate} className="ai-input-form">
-                                <input 
-                                    className="editor-input"
-                                    placeholder="주제를 입력하세요 (예: 고양이, 커피, 호치민 생활)"
-                                    value={aiTopic}
-                                    onChange={(e) => setAiTopic(e.target.value)}
-                                    autoFocus
-                                />
-                                <div className="ai-btn-group">
-                                    <button type="button" className="editor-btn secondary" onClick={() => setShowAiInput(false)}>취소</button>
-                                    <button type="submit" className="editor-btn primary" disabled={isAiGenerating || !aiTopic.trim()}>
-                                        {isAiGenerating ? 'AI 생각 중...' : '생성 시작 🚀'}
-                                    </button>
+                                <h3 className="text-sm font-black text-[#FF2D85] mb-2 uppercase tracking-widest text-center">AI Persona Choice</h3>
+                                <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-6">
+                                    {personas.map((p) => (
+                                        <button
+                                            key={p.name}
+                                            type="button"
+                                            onClick={() => setSelectedPersona(p)}
+                                            className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1 transition-all ${selectedPersona.name === p.name 
+                                                ? 'bg-black text-white border-black scale-110 z-10' 
+                                                : 'bg-white text-gray-400 border-gray-100 opacity-60 hover:opacity-100'}`}
+                                        >
+                                            <span className="text-xl">{p.emoji}</span>
+                                            <span className="text-[8px] font-black">{p.name}</span>
+                                        </button>
+                                    ))}
                                 </div>
+
+                                <button 
+                                    type="submit" 
+                                    className="w-full bg-[#FF2D85] text-white py-4 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-transform disabled:opacity-50 mt-4 shadow-lg flex items-center justify-center gap-2"
+                                    disabled={isAiGenerating}
+                                >
+                                    {isAiGenerating ? (
+                                        <>생성 중... <span className="animate-spin text-lg">⏳</span></>
+                                    ) : (
+                                        <>이 카테고리로 AI 퀴즈 자동 생성하기 🚀</>
+                                    )}
+                                </button>
+                                <button type="button" className="text-gray-400 font-bold text-[10px] mt-4 underline block w-full text-center" onClick={() => setShowAiInput(false)}>취소</button>
                             </form>
                         )}
                     </div>
@@ -382,9 +542,9 @@ export default function QuizEditor() {
             {/* Step 2: Quiz Info */}
             {step === 2 && (
                 <div className="editor-section">
-                    <h2 className="section-title">퀴즈 정보</h2>
+                    <h2 className="section-title">✨ Quiz Information</h2>
                     <div className="form-group">
-                        <label>퀴즈 제목</label>
+                        <label>Title</label>
                         <input
                             className="editor-input"
                             value={title}
@@ -394,7 +554,7 @@ export default function QuizEditor() {
                         />
                     </div>
                     <div className="form-group">
-                        <label>설명</label>
+                        <label>Description</label>
                         <textarea
                             className="editor-textarea"
                             value={description}
@@ -404,7 +564,7 @@ export default function QuizEditor() {
                         />
                     </div>
                     <div className="form-group">
-                        <label>카테고리</label>
+                        <label>Category</label>
                         <div className="category-chips">
                             {CATEGORIES.map(c => (
                                 <button
@@ -418,13 +578,23 @@ export default function QuizEditor() {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label>썸네일 이미지</label>
-                        <div className="thumbnail-upload" onClick={() => fileInputRef.current?.click()}>
-                            {thumbnailPreview ? (
-                                <img src={thumbnailPreview} alt="thumb" className="thumb-preview" />
-                            ) : (
-                                <span className="thumb-placeholder">📷 클릭해서 업로드</span>
-                            )}
+                        <label>Thumbnail Image</label>
+                        <div className="flex items-center gap-6">
+                            <div className="thumbnail-upload group relative" onClick={() => fileInputRef.current?.click()}>
+                                {thumbnailPreview ? (
+                                    <img src={thumbnailPreview} alt="thumb" className="thumb-preview" />
+                                ) : (
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-4xl group-hover:scale-125 transition-transform">📷</span>
+                                        <span className="text-[10px] font-black text-gray-400">UPLOAD</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="text-xs text-gray-400 font-bold leading-relaxed">
+                                <p>• 추천 사이즈: 1080x1080</p>
+                                <p>• JPG, PNG, WEBP 지원</p>
+                                <p>• 5MB 이하 권장</p>
+                            </div>
                         </div>
                         <input
                             ref={fileInputRef}
@@ -434,14 +604,14 @@ export default function QuizEditor() {
                             style={{ display: 'none' }}
                         />
                     </div>
-                    <div className="form-row">
-                        <button className="editor-btn secondary" onClick={() => setStep(1)}>← 이전</button>
+                    <div className="form-row mt-10">
+                        <button className="editor-btn secondary px-10" onClick={() => setStep(1)}>Back</button>
                         <button
-                            className="editor-btn primary"
+                            className="editor-btn primary px-10"
                             onClick={() => setStep(quizType === 'name_input' ? 4 : 3)}
                             disabled={!title.trim()}
                         >
-                            다음 →
+                            Next Step
                         </button>
                     </div>
                 </div>
@@ -450,71 +620,83 @@ export default function QuizEditor() {
             {/* Step 3: Questions */}
             {step === 3 && quizType !== 'name_input' && (
                 <div className="editor-section">
-                    <h2 className="section-title">
-                        질문 편집 ({questions.length}개)
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="section-title !m-0">📝 Questions</h2>
                         <span className="badge">{QUIZ_TYPES.find(t => t.value === quizType)?.label}</span>
-                    </h2>
+                    </div>
 
                     <div className="questions-list">
                         {questions.map((q, idx) => (
-                            <div key={idx} className="question-editor-card">
-                                <div className="q-header">
-                                    <span className="q-num">Q{idx + 1}</span>
-                                    {quizType === 'mbti_12q' && (
-                                        <select
-                                            className="dim-select"
-                                            value={q.dimension || 'EI'}
-                                            onChange={(e) => updateQuestion(idx, 'dimension', e.target.value)}
-                                        >
-                                            {MBTI_DIMENSIONS.map(d => (
-                                                <option key={d} value={d}>{d}</option>
-                                            ))}
-                                        </select>
-                                    )}
+                            <div key={idx} className="question-editor-card group relative">
+                                <div className="q-header mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <span className="q-num">Q{idx + 1}</span>
+                                        {quizType === 'mbti_12q' && (
+                                            <select
+                                                className="dim-select"
+                                                value={q.dimension || 'EI'}
+                                                onChange={(e) => updateQuestion(idx, 'dimension', e.target.value)}
+                                            >
+                                                {MBTI_DIMENSIONS.map(d => (
+                                                    <option key={d} value={d}>{d}</option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </div>
                                     {(quizType === 'full_custom' || quizType === 'sponsor') && (
-                                        <button className="q-remove" onClick={() => removeQuestion(idx)}>✕</button>
+                                        <button className="q-remove hover:scale-110 transition-transform" onClick={() => removeQuestion(idx)}>✕</button>
                                     )}
                                 </div>
 
-                                <input
-                                    className="editor-input"
-                                    placeholder="질문 텍스트"
-                                    value={q.question_text}
-                                    onChange={(e) => updateQuestion(idx, 'question_text', e.target.value)}
-                                />
-                                <div className="option-row">
+                                <div className="flex flex-col gap-4">
                                     <input
-                                        className="editor-input option-input"
-                                        placeholder="Option A"
-                                        value={q.option_a}
-                                        onChange={(e) => updateQuestion(idx, 'option_a', e.target.value)}
+                                        className="editor-input"
+                                        placeholder="Type your question here..."
+                                        value={q.question_text}
+                                        onChange={(e) => updateQuestion(idx, 'question_text', e.target.value)}
                                     />
-                                    <input
-                                        className="editor-input option-input"
-                                        placeholder="Option B"
-                                        value={q.option_b}
-                                        onChange={(e) => updateQuestion(idx, 'option_b', e.target.value)}
-                                    />
-                                </div>
-                                {quizType === 'binary_5q' && (
-                                    <div className="score-row">
-                                        <span className="score-label">A점수: {q.score_a}</span>
-                                        <span className="score-label">B점수: {q.score_b}</span>
+                                    <div className="option-row">
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300">A</span>
+                                            <input
+                                                className="editor-input option-input !pl-8"
+                                                placeholder="Option A"
+                                                value={q.option_a}
+                                                onChange={(e) => updateQuestion(idx, 'option_a', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300">B</span>
+                                            <input
+                                                className="editor-input option-input !pl-8"
+                                                placeholder="Option B"
+                                                value={q.option_b}
+                                                onChange={(e) => updateQuestion(idx, 'option_b', e.target.value)}
+                                            />
+                                        </div>
                                     </div>
-                                )}
+                                    {quizType === 'binary_5q' && (
+                                        <div className="flex gap-4 px-2">
+                                            <span className="text-[10px] font-black text-[#FF2D85]">{q.score_a}pt</span>
+                                            <span className="text-[10px] font-black text-gray-400">SCORE PATTERN</span>
+                                            <span className="text-[10px] font-black text-[#FF2D85]">{q.score_b}pt</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>
 
                     {(quizType === 'full_custom' || quizType === 'sponsor') && (
-                        <button className="editor-btn secondary add-btn" onClick={addQuestion}>
-                            + 질문 추가
+                        <button className="editor-btn secondary add-btn group" onClick={addQuestion}>
+                            <span className="group-hover:rotate-90 transition-transform inline-block">+</span>
+                            <span>Add Question</span>
                         </button>
                     )}
 
-                    <div className="form-row">
-                        <button className="editor-btn secondary" onClick={() => setStep(2)}>← 이전</button>
-                        <button className="editor-btn primary" onClick={() => setStep(4)}>다음 →</button>
+                    <div className="form-row mt-6">
+                        <button className="editor-btn secondary px-10" onClick={() => setStep(2)}>Back</button>
+                        <button className="editor-btn primary px-10" onClick={() => setStep(4)}>Next Step</button>
                     </div>
                 </div>
             )}
@@ -522,63 +704,71 @@ export default function QuizEditor() {
             {/* Step 4: Results */}
             {step === 4 && (
                 <div className="editor-section">
-                    <h2 className="section-title">
-                        결과 유형 ({results.length}개)
-                        {quizType === 'mbti_12q' && <span className="badge">16 MBTI Types</span>}
-                    </h2>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="section-title !m-0">🏆 Results</h2>
+                        {quizType === 'mbti_12q' && <span className="badge">16 Types</span>}
+                    </div>
 
                     <div className="results-list">
                         {results.map((r, idx) => (
                             <div key={idx} className="result-editor-card">
-                                <div className="r-header">
+                                <div className="r-header mb-4">
                                     <span className="r-code">
-                                        {quizType === 'binary_5q' ? `Score ${r.result_code}` :
-                                            quizType === 'mbti_12q' ? `#${idx + 1}` :
+                                        {quizType === 'binary_5q' ? `Level ${r.result_code}` :
+                                            quizType === 'mbti_12q' ? `Type #${idx + 1}` :
                                                 `Result ${idx + 1}`}
                                     </span>
                                     {(quizType === 'full_custom' || quizType === 'sponsor' || quizType === 'name_input') && (
-                                        <button className="q-remove" onClick={() => removeResult(idx)}>✕</button>
+                                        <button className="q-remove hover:scale-110 transition-transform" onClick={() => removeResult(idx)}>✕</button>
                                     )}
                                 </div>
-                                <input
-                                    className="editor-input"
-                                    placeholder="결과 제목 (예: Espresso 타입 ☕)"
-                                    value={r.title}
-                                    onChange={(e) => updateResult(idx, 'title', e.target.value)}
-                                />
-                                <textarea
-                                    className="editor-textarea small"
-                                    placeholder="결과 설명..."
-                                    value={r.description}
-                                    onChange={(e) => updateResult(idx, 'description', e.target.value)}
-                                    rows={2}
-                                />
-                                <input
-                                    className="editor-input"
-                                    placeholder="특성 태그 (쉼표로 구분: 강함, 집중, 단순)"
-                                    value={(r.traits || []).join(', ')}
-                                    onChange={(e) => updateResultTraits(idx, e.target.value)}
-                                />
+                                <div className="flex flex-col gap-3">
+                                    <input
+                                        className="editor-input"
+                                        placeholder="Result Title (e.g. The Coffee Master ☕)"
+                                        value={r.title}
+                                        onChange={(e) => updateResult(idx, 'title', e.target.value)}
+                                    />
+                                    <textarea
+                                        className="editor-textarea !min-h-[80px]"
+                                        placeholder="Detailed description..."
+                                        value={r.description}
+                                        onChange={(e) => updateResult(idx, 'description', e.target.value)}
+                                        rows={2}
+                                    />
+                                    <input
+                                        className="editor-input"
+                                        placeholder="Tags (comma separated: strong, bold, fast)"
+                                        value={(r.traits || []).join(', ')}
+                                        onChange={(e) => updateResultTraits(idx, e.target.value)}
+                                    />
+                                </div>
                             </div>
                         ))}
                     </div>
 
                     {(quizType === 'full_custom' || quizType === 'sponsor' || quizType === 'name_input') && (
-                        <button className="editor-btn secondary add-btn" onClick={addResult}>
-                            + 결과 추가
+                        <button className="editor-btn secondary add-btn group" onClick={addResult}>
+                            <span className="group-hover:rotate-90 transition-transform inline-block">+</span>
+                            <span>Add Result Type</span>
                         </button>
                     )}
 
-                    <div className="form-row">
-                        <button className="editor-btn secondary" onClick={() => setStep(quizType === 'name_input' ? 2 : 3)}>
-                            ← 이전
+                    <div className="form-row mt-6">
+                        <button className="editor-btn secondary px-10" onClick={() => setStep(quizType === 'name_input' ? 2 : 3)}>
+                            Back
                         </button>
                         <button
-                            className="editor-btn primary save-btn"
+                            className="editor-btn primary save-btn px-10"
                             onClick={handleSave}
                             disabled={saving}
                         >
-                            {saving ? '저장 중...' : '💾 퀴즈 저장'}
+                            {saving ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <span>Saving...</span>
+                                </div>
+                            ) : '💾 Save Quiz'}
                         </button>
                     </div>
                 </div>
@@ -588,16 +778,32 @@ export default function QuizEditor() {
             {step === 5 && saveResult?.success && (
                 <div className="editor-section complete-section">
                     <div className="complete-card">
-                        <span className="complete-emoji">🎉</span>
-                        <h2>퀴즈 생성 완료!</h2>
-                        <div className="complete-info">
-                            <p><strong>제목:</strong> {saveResult.data.title}</p>
-                            <p><strong>타입:</strong> {saveResult.data.quiz_type}</p>
-                            <p><strong>질문:</strong> {saveResult.data.question_count}개</p>
-                            <p><strong>결과:</strong> {saveResult.data.result_count}개</p>
+                        <span className="complete-emoji">💎</span>
+                        <h2 className="text-3xl font-black mb-2">Quiz Published!</h2>
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mb-8">Successfully saved to database</p>
+                        
+                        <div className="complete-info mb-10">
+                            <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                                <span className="text-xs font-black text-gray-400 uppercase">Title</span>
+                                <span className="font-bold text-gray-900">{saveResult.data.title}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase mb-1">Type</span>
+                                    <span className="font-bold text-sm bg-pink-50 text-[#FF2D85] px-2 py-1 rounded-lg border border-pink-100">{saveResult.data.quiz_type}</span>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase mb-1">Stats</span>
+                                    <span className="font-bold text-sm">{saveResult.data.question_count}Q / {saveResult.data.result_count}R</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="form-row">
-                            <button className="editor-btn secondary" onClick={() => {
+
+                        <div className="flex flex-col gap-4">
+                            <button className="editor-btn primary w-full text-lg py-5" onClick={() => navigate('/admin')}>
+                                Go to Admin Dashboard
+                            </button>
+                            <button className="text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-[#FF2D85] transition-colors" onClick={() => {
                                 setStep(1);
                                 setTitle('');
                                 setDescription('');
@@ -607,10 +813,7 @@ export default function QuizEditor() {
                                 setThumbnailPreview('');
                                 setSaveResult(null);
                             }}>
-                                새 퀴즈 만들기
-                            </button>
-                            <button className="editor-btn primary" onClick={() => navigate('/admin')}>
-                                Admin으로 이동
+                                Create New Quiz
                             </button>
                         </div>
                     </div>
