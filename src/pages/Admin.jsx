@@ -122,17 +122,32 @@ const Admin = () => {
     const fetchQuizzes = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            // 1. Supabase에서 퀴즈 가져오기
+            const { data: cloudData, error: cloudError } = await supabase
                 .from('quizzes')
                 .select('*')
                 .order('created_at', { ascending: false });
             
-            if (error) throw error;
-            
-            setQuizzes(data || []);
-            setFilteredQuizzes(data || []);
+            // 2. Local Backend에서 퀴즈 가져오기
+            let localQuizzes = [];
+            try {
+                const response = await fetch('http://localhost:8000/api/quizzes');
+                if (response.ok) {
+                    const localData = await response.json();
+                    localQuizzes = (localData.quizzes || []).map(q => ({ ...q, is_local: true }));
+                }
+            } catch (err) {
+                console.warn("Local backend fetch failed (is it running?):", err);
+            }
+
+            // 3. 데이터 병합 (중복 제거 및 최신순 정렬)
+            const combined = [...localQuizzes, ...(cloudData || []).filter(cq => !localQuizzes.some(lq => lq.id === cq.id))];
+            combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            setQuizzes(combined);
+            setFilteredQuizzes(combined);
         } catch (error) {
-            console.error("Error fetching quizzes from Supabase:", error);
+            console.error("Error fetching quizzes:", error);
         } finally {
             setLoading(false);
         }
@@ -202,15 +217,46 @@ const Admin = () => {
         }
     };
 
-    const deleteQuiz = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this quiz?")) return;
+    const deleteQuiz = async (quiz) => {
+        const id = typeof quiz === 'string' ? quiz : quiz.id;
+        if (!window.confirm(`Are you sure you want to delete this quiz?${(quiz.is_local ? ' (LOCAL)' : '')}`)) return;
+        
         try {
-            const { error } = await supabase.from('quizzes').delete().eq('id', id);
-            if (error) throw error;
-            setQuizzes(prev => prev.filter(q => q.id !== id));
+            let deleted = false;
+
+            // --- 1. Local Backend에서 삭제 시도 ---
+            try {
+                const response = await fetch(`http://localhost:8000/api/quizzes/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Admin-Key': 'nambac2026!' }
+                });
+                if (response.ok) {
+                    console.log("Deleted from local backend");
+                    deleted = true;
+                }
+            } catch (err) {
+                console.warn("Local delete failed:", err);
+            }
+
+            // --- 2. Supabase에서 삭제 시도 ---
+            const { error: cloudError } = await supabase.from('quizzes').delete().eq('id', id);
+            if (!cloudError) {
+                console.log("Deleted from Supabase");
+                deleted = true;
+            } else {
+                console.error("Supabase delete failed:", cloudError);
+            }
+
+            if (deleted) {
+                setQuizzes(prev => prev.filter(q => q.id !== id));
+                setFilteredQuizzes(prev => prev.filter(q => q.id !== id));
+                alert("✅ Quiz deleted successfully.");
+            } else {
+                throw new Error("Could not delete quiz from any source.");
+            }
         } catch (error) {
             console.error("Error deleting quiz:", error);
-            alert("Error deleting quiz.");
+            alert(`Error deleting quiz: ${error.message}`);
         }
     };
 
@@ -247,16 +293,39 @@ const Admin = () => {
 
         // Fetch full details including questions and results
         try {
-            const { data: qData } = await supabase.from('questions').select('*').eq('quiz_id', quiz.id).order('order_number', { ascending: true });
-            if (qData) setEditQuestions(qData);
+            // Priority: Local Backend if is_local
+            if (quiz.is_local) {
+                const [qRes, rRes] = await Promise.all([
+                    fetch(`http://localhost:8000/api/quizzes/${quiz.id}/questions`),
+                    fetch(`http://localhost:8000/api/quizzes/${quiz.id}/results`)
+                ]);
+                if (qRes.ok) {
+                    const qData = await qRes.json();
+                    setEditQuestions(qData.questions || []);
+                }
+                if (rRes.ok) {
+                    const rData = await rRes.json();
+                    if (rData.results && rData.results.length > 0) {
+                        const mergedResults = defaultResults.map(dr => {
+                            const found = rData.results.find(r => r.result_code === dr.result_code);
+                            return found || dr;
+                        });
+                        setEditResults(mergedResults);
+                    }
+                }
+            } else {
+                // Secondary: Supabase
+                const { data: qData } = await supabase.from('questions').select('*').eq('quiz_id', quiz.id).order('order_number', { ascending: true });
+                if (qData) setEditQuestions(qData);
 
-            const { data: rData } = await supabase.from('results').select('*').eq('quiz_id', quiz.id);
-            if (rData && rData.length > 0) {
-                const mergedResults = defaultResults.map(dr => {
-                    const found = rData.find(r => r.result_code === dr.result_code);
-                    return found || dr;
-                });
-                setEditResults(mergedResults);
+                const { data: rData } = await supabase.from('results').select('*').eq('quiz_id', quiz.id);
+                if (rData && rData.length > 0) {
+                    const mergedResults = defaultResults.map(dr => {
+                        const found = rData.find(r => r.result_code === dr.result_code);
+                        return found || dr;
+                    });
+                    setEditResults(mergedResults);
+                }
             }
         } catch (error) {
             console.error("Error fetching quiz details:", error);
@@ -346,24 +415,28 @@ const Admin = () => {
 
         if (!window.confirm("Are you sure you want to delete this question?")) return;
 
-        // If it has an ID, delete from backend
-        if (question.id) {
-            try {
-                const { error } = await supabase.from('questions').delete().eq('id', question.id);
-                if (error) {
-                    alert("Failed to delete question from server.");
-                    return;
+        try {
+            if (question.id) {
+                if (editingQuiz.is_local) {
+                    // --- 로컬 백엔드에서 삭제 ---
+                    const response = await fetch(`http://localhost:8000/api/questions/${question.id}`, {
+                        method: 'DELETE',
+                        headers: { 'X-Admin-Key': 'nambac2026!' }
+                    });
+                    if (!response.ok) throw new Error("Local backend delete failed");
+                } else {
+                    // --- Supabase에서 삭제 ---
+                    const { error } = await supabase.from('questions').delete().eq('id', question.id);
+                    if (error) throw error;
                 }
-            } catch (error) {
-                console.error("Error deleting question:", error);
-                alert("Error connecting to server.");
-                return;
             }
+            
+            // 상태 업데이트 (화면에서 제거)
+            setEditQuestions(prev => prev.filter((_, i) => i !== idx));
+        } catch (error) {
+            console.error("Error deleting question:", error);
+            alert(`Error deleting question: ${error.message}`);
         }
-
-        // Update local state
-        const updatedQuestions = editQuestions.filter((_, i) => i !== idx);
-        setEditQuestions(updatedQuestions);
     };
 
     const saveQuiz = async () => {
@@ -852,12 +925,21 @@ const Admin = () => {
                                                                             <div className="w-full h-full flex items-center justify-center text-4xl">🧩</div>
                                                                         )}
                                                                     </div>
-                                                                    <button
-                                                                        onClick={() => openEditModal(quiz)}
-                                                                        className="font-black text-gray-900 hover:text-[#FF2D85] text-left transition-colors text-sm group-hover:translate-x-1 duration-200"
-                                                                    >
-                                                                        {quiz.title}
-                                                                    </button>
+                                                                    <div className="flex flex-col">
+                                                                        <div className="flex items-center gap-2 mb-1">
+                                                                            {quiz.is_local ? (
+                                                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-green-100 text-green-700 border border-green-300 uppercase letter-spacing-widest">LOCAL</span>
+                                                                            ) : (
+                                                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-blue-100 text-blue-700 border border-blue-300 uppercase letter-spacing-widest">CLOUD</span>
+                                                                            )}
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={() => openEditModal(quiz)}
+                                                                            className="font-black text-gray-900 hover:text-[#FF2D85] text-left transition-colors text-sm group-hover:translate-x-1 duration-200"
+                                                                        >
+                                                                            {quiz.title}
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                             <td className="p-6 text-center">
@@ -878,6 +960,15 @@ const Admin = () => {
                                                             </td>
                                                             <td className="p-6 text-center">
                                                                 <div className="flex items-center justify-center gap-2">
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            deleteQuiz(quiz);
+                                                                        }}
+                                                                        className="px-3 py-1.5 rounded-lg bg-white border-2 border-red-200 text-red-500 font-black text-[10px] hover:bg-red-500 hover:text-white hover:border-black transition-all duration-200"
+                                                                    >
+                                                                        DELETE
+                                                                    </button>
                                                                     <button
                                                                         onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')}
                                                                         className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#00C2FF] hover:bg-blue-50 rounded-xl transition-all duration-200 border-2 border-transparent hover:border-blue-100"
