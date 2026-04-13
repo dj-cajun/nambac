@@ -386,144 +386,62 @@ const Admin = () => {
     return (
         <>
             {editingQuiz && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col relative shadow-2xl overflow-hidden">
-                        {/* Header: Clean White */}
-                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
-                            <div className="flex items-center gap-3">
-                                {editImagePreview && (
-                                    <img src={getImageUrl(editImagePreview)} alt="Quiz Thumbnail" className="w-10 h-10 rounded-lg object-cover border border-gray-100" />
-                                )}
-                                <h3 className="text-xl font-black text-gray-800 tracking-tight">
-                                    {editTitle || 'Untitled Quiz'}
-                                </h3>
-                            </div>
-                            <button
-                                onClick={closeEditModal}
-                                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                            >
-                                ✕
-                            </button>
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+                    <div style={{ backgroundColor: '#FFFFFF' }} className="border-[3px] border-black rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col relative shadow-md overflow-hidden">
+                        <div className="px-6 py-4 border-b-[1.5px] border-black flex justify-between items-center bg-white">
+                            <h3 className="text-lg font-bold text-black">Quiz Editor — {editTitle || 'Untitled'}</h3>
+                            <button onClick={closeEditModal} className="w-8 h-8 bg-white text-black rounded-sm border-[1.5px] border-black">✕</button>
                         </div>
-
-                        {/* Tab Navigation: Underline Style */}
-                        <div className="flex gap-4 px-6 bg-gray-50 border-b border-gray-100 pt-2">
-                            {[
-                                { id: 'info', label: 'Basic Info' },
-                                { id: 'questions', label: 'Questions' },
-                                { id: 'results', label: 'Results' }
-                            ].map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setModalTab(tab.id)}
-                                    className={`px-4 py-3 font-bold text-sm transition-all relative
-                                         ${modalTab === tab.id
-                                            ? 'text-[#FF2D85]'
-                                            : 'text-gray-500 hover:text-gray-800'
-                                        }`}
-                                >
-                                    {tab.label}
-                                    {modalTab === tab.id && (
-                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FF2D85] rounded-t-full"></div>
-                                    )}
-                                </button>
+                        <div className="flex gap-0 bg-white border-b-[1.5px] border-black">
+                            {[{ id: 'info', label: 'Basic Info' }, { id: 'questions', label: 'Questions' }, { id: 'results', label: 'Results' }].map(tab => (
+                                <button key={tab.id} onClick={() => setModalTab(tab.id)} className={`px-4 py-2 font-black text-sm ${modalTab === tab.id ? 'text-black border-b-[3px] border-black' : 'text-gray-500'}`}>{tab.label}</button>
                             ))}
                         </div>
-
-                        {/* Main Content: Scrollable White */}
                         <div className="p-6 overflow-y-auto flex-1 bg-white">
-                            {/* [INFO TAB] */}
                             {modalTab === 'info' && (
-                                <div className="space-y-6 max-w-2xl">
-                                    <div className="flex gap-6">
-                                        <div className="flex-1 space-y-5">
-                                            <div>
-                                                <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Quiz Title</label>
-                                                <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]/20 focus:border-[#FF2D85] transition-all" placeholder="Enter quiz title..." />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Description</label>
-                                                <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={4} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]/20 focus:border-[#FF2D85] transition-all" placeholder="Description..." />
-                                            </div>
+                                <div className="space-y-5 max-w-2xl">
+                                    {editImagePreview && (
+                                        <div className="flex items-center gap-4">
+                                            <img src={getImageUrl(editImagePreview)} alt="Cover" className="w-24 h-24 object-cover rounded-lg border-[1.5px] border-black shadow-sm" />
+                                            <span className="text-xs font-bold text-gray-400">Cover Thumbnail</span>
                                         </div>
-                                    </div>
+                                    )}
+                                    <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="Quiz title..." />
+                                    <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={4} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="Description..." />
                                 </div>
                             )}
-
-                            {/* [QUESTIONS TAB] */}
                             {modalTab === 'questions' && (
                                 <div className="space-y-4">
-                                    {editQuestions.length === 0 && <div className="text-gray-400 text-center py-8">No questions for this quiz.</div>}
                                     {editQuestions.map((q, idx) => (
-                                        <div key={idx} className="border border-gray-100 bg-gray-50/50 p-5 rounded-2xl relative group">
-                                            <div className="flex gap-4">
-                                                {q.image_url && (
-                                                    <img src={getImageUrl(q.image_url)} alt={`Q${idx+1}`} className="w-24 h-24 rounded-xl object-cover border border-gray-200" />
-                                                )}
-                                                <div className="flex-1">
-                                                    <div className="flex justify-between items-center mb-3">
-                                                        <span className="text-xs font-black text-gray-400 bg-white px-2 py-1 rounded-md border border-gray-100">QUESTION {idx + 1}</span>
-                                                        <button onClick={() => handleDeleteQuestion(idx)} className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-sm font-bold">Delete</button>
-                                                    </div>
-                                                    <input type="text" value={q.question_text || ''} onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)} className="w-full px-4 py-2 mb-3 bg-white border border-gray-200 rounded-lg font-medium text-gray-800 focus:ring-2 focus:ring-[#FF2D85]/20 focus:outline-none transition-all" placeholder="Enter question..." />
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label className="text-[10px] font-bold text-gray-400 uppercase ml-1 mb-1 block">Option A</label>
-                                                            <input type="text" value={q.option_a || ''} onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700" placeholder="A answer" />
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-[10px] font-bold text-gray-400 uppercase ml-1 mb-1 block">Option B</label>
-                                                            <input type="text" value={q.option_b || ''} onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700" placeholder="B answer" />
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                        <div key={idx} className="border-[1.5px] border-black p-5 rounded-lg">
+                                            <input type="text" value={q.question_text || ''} onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)} className="w-full px-4 py-2 mb-3 border-[1.5px] border-black" />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <input type="text" value={q.option_a || ''} onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)} className="px-3 py-2 border-[1.5px] border-black" />
+                                                <input type="text" value={q.option_b || ''} onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)} className="px-3 py-2 border-[1.5px] border-black" />
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             )}
-
-                            {/* [RESULTS TAB] */}
                             {modalTab === 'results' && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {editResults.map((result, idx) => (
-                                        <div key={idx} className="border border-gray-100 bg-white p-4 rounded-2xl shadow-sm hover:border-[#FF2D85]/30 transition-colors">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <span className="text-[11px] font-black text-[#FF2D85] bg-pink-50 px-2.5 py-1 rounded-full uppercase tracking-wider">Result {result.result_code || idx}</span>
-                                                <button onClick={() => handleClearResult(idx)} className="text-gray-400 hover:text-red-500 text-xs font-bold transition-colors">Clear</button>
-                                            </div>
-                                            <div className="flex gap-4">
-                                                <div className="w-24 h-24 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center relative group">
-                                                    {result.image_url ? (
-                                                        <img src={getImageUrl(result.image_url)} alt={result.title} className="w-full h-full object-cover group-hover:opacity-90 transition-opacity" />
-                                                    ) : (
-                                                        <span className="text-gray-300 text-xs font-bold px-2 text-center leading-tight">No Image</span>
-                                                    )}
+                                        <div key={idx} className="border-[1.5px] border-black p-4 rounded-lg flex flex-col">
+                                            {result.image_url && (
+                                                <div className="mb-3 shrink-0">
+                                                    <img src={getImageUrl(result.image_url)} alt="Result" className="w-16 h-16 object-cover rounded-md border border-gray-300" />
                                                 </div>
-                                                <div className="flex-1 min-w-0 flex flex-col gap-2">
-                                                    <input type="text" value={result.title || ''} onChange={(e) => handleResultChange(idx, 'title', e.target.value)} className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-bold text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#FF2D85]/50 transition-all" placeholder="Result title" />
-                                                    <textarea value={result.description || ''} onChange={(e) => handleResultChange(idx, 'description', e.target.value)} rows={3} className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#FF2D85]/50 transition-all resize-none" placeholder="Description..." />
-                                                </div>
-                                            </div>
+                                            )}
+                                            <input type="text" value={result.title || ''} onChange={(e) => handleResultChange(idx, 'title', e.target.value)} className="w-full px-3 py-2 mb-2 border-[1.5px] border-black" placeholder="Result title" />
+                                            <textarea value={result.description || ''} onChange={(e) => handleResultChange(idx, 'description', e.target.value)} rows={2} className="w-full px-3 py-2 border-[1.5px] border-black" placeholder="Description..." />
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
-
-                        {/* Footer */}
-                        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
-                            <button onClick={() => deleteQuiz(editingQuiz.id, editingQuiz.is_local)} className="text-red-500 hover:text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-bold text-sm transition-colors">
-                                Delete Quiz
-                            </button>
-                            <div className="flex gap-3">
-                                <button onClick={closeEditModal} className="px-5 py-2 font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
-                                    Cancel
-                                </button>
-                                <button onClick={saveQuiz} className="px-6 py-2 bg-[#FF2D85] hover:bg-[#E01E70] text-white font-bold rounded-xl shadow-md transition-all active:scale-95">
-                                    Save Changes
-                                </button>
-                            </div>
+                        <div className="px-6 py-4 border-t-[1.5px] border-black bg-white flex justify-between">
+                            <button onClick={() => deleteQuiz(editingQuiz.id, editingQuiz.is_local)} className="text-red-600 font-semibold text-sm">Delete Quiz</button>
+                            <button onClick={saveQuiz} className="px-6 py-2.5 bg-black text-white font-semibold rounded-lg">Save Changes</button>
                         </div>
                     </div>
                 </div>
@@ -620,19 +538,12 @@ const Admin = () => {
                                                                     {quiz.id?.toString().slice(0, 8)}...
                                                                 </td>
                                                                 <td className="p-4">
-                                                                    <div className="flex items-center gap-4">
-                                                                        {quiz.image_url ? (
-                                                                            <img src={getImageUrl(quiz.image_url)} alt="" className="w-12 h-12 rounded-xl object-cover shadow-sm bg-gray-50 border border-gray-100" />
-                                                                        ) : (
-                                                                            <div className="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 text-xs">No Img</div>
-                                                                        )}
-                                                                        <button
-                                                                            onClick={() => openEditModal(quiz)}
-                                                                            className="font-bold text-gray-900 hover:text-[#FF2D85] text-left transition-colors text-base p-0 m-0"
-                                                                        >
-                                                                            {quiz.title || 'Untitled Quiz'}
-                                                                        </button>
-                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => openEditModal(quiz)}
+                                                                        className="font-medium text-gray-900 hover:text-[#FF2D85] hover:underline text-left transition-colors"
+                                                                    >
+                                                                        {quiz.title}
+                                                                    </button>
                                                                 </td>
                                                                 <td className="p-4 text-center">
                                                                     <span className="inline-block px-3 py-1 bg-pink-100 text-[#FF2D85] rounded-full text-sm font-medium">
