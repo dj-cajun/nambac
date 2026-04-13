@@ -144,34 +144,15 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
         setGenerateStatus('🤖 AI 에이전트가 퀴즈를 기획하는 중...');
         
         try {
-            // 로컬 백엔드 API 호출 (localhost:8000)
-            const response = await fetch('http://localhost:8000/api/quiz/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Admin-Key': 'nambac2026!' 
-                },
-                body: JSON.stringify({
-                    topic: selectedPersona.prompt,
-                    generate_images: false,
-                    category: category,
-                    quiz_type: quizType
-                })
-            });
+            // Direct Gemini API call (works on both local and production)
+            const topic = selectedPersona?.prompt || aiTopic || category;
+            const data = await generateQuizContent(topic, category);
+            console.log("AI Generation Successful:", data);
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || '백엔드 서버 통신 실패 (localhost:8000을 확인하세요)');
-            }
-
-            const data = await response.json();
-            console.log("AI Generation Successful (Local):", data);
-
-            // Populating state from backend response (Check both 'quiz' and 'meta' for compatibility)
-            const quizInfo = data.quiz || data.meta || {};
-            setTitle(quizInfo.title || quizInfo.quiz_title || '');
-            setDescription(quizInfo.description || quizInfo.quiz_description || '');
-            setCategory(quizInfo.category || quizInfo.quiz_category || 'fun');
+            // Populate state from Gemini response
+            setTitle(data.title || '');
+            setDescription(data.description || '');
+            if (data.category) setCategory(data.category);
             
             // Format Questions
             const formattedQs = (data.questions || []).map((q, i) => ({
@@ -191,7 +172,6 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                 traits: Array.isArray(r.traits) ? r.traits : []
             }));
 
-            // Populate state
             // Ensure we have exactly 8 results for binary_5q
             const finalResults = Array.from({ length: 8 }, (_, i) => {
                 const found = formattedRs.find(r => r.score === i || r.result_code === i);
