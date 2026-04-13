@@ -67,18 +67,20 @@ export default async function handler(req, res) {
     const ua = req.headers['user-agent'] || '';
     const url = req.url || '';
 
-    // Parse path
-    const shareMatch = url.match(/\/share\/([^/]+)\/(\d+)/);
-    const shareQuizMatch = url.match(/\/share\/([^/?]+)$/);
+    // Parse path using Vercel injected query params first, or fallback to regex
+    let quizId = req.query?.id || null;
+    let scoreCode = req.query?.score ? parseInt(req.query.score) : null;
 
-    let quizId = null;
-    let scoreCode = null;
+    if (!quizId) {
+      const shareMatch = url.match(/\/share\/([^/]+)\/(\d+)/);
+      const shareQuizMatch = url.match(/\/share\/([^/?]+)/); // removed $ to allow query params
 
-    if (shareMatch) {
-      quizId = shareMatch[1];
-      scoreCode = parseInt(shareMatch[2]);
-    } else if (shareQuizMatch) {
-      quizId = shareQuizMatch[1];
+      if (shareMatch) {
+        quizId = shareMatch[1];
+        scoreCode = parseInt(shareMatch[2]);
+      } else if (shareQuizMatch) {
+        quizId = shareQuizMatch[1];
+      }
     }
 
     if (!quizId) {
