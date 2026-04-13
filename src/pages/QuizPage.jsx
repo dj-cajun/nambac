@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Share2, Copy, Check } from 'lucide-react';
-import { Play, Share2, Copy, Check } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { calculateScore } from '../logic/scoring';
 import MBTIQuiz from './MBTIQuiz';
@@ -190,7 +189,7 @@ export default function QuizPage({ quizIdProp }) {
     // --- Intro View ---
     if (!started) {
         // Derive dynamic share URL for Quiz OG Tags
-        const shareUrl = `${window.location.origin}/quiz/${quizId}`;
+        const shareUrl = `https://nambac.xyz/quiz/${quizId}`;
         
         return (
             <>
