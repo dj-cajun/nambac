@@ -92,6 +92,11 @@ export default async function handler(req, res) {
       return res.redirect(302, `https://nambac.xyz/quiz/${quizId}`);
     }
 
+    // Detect host to keep protocol/domain consistent (important for og:url)
+    const host = req.headers.host || 'nambac.xyz';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const currentBase = `${protocol}://${host}`;
+
     // Bot → serve OG HTML
     // Try result share first
     if (scoreCode !== null) {
@@ -101,12 +106,13 @@ export default async function handler(req, res) {
 
       if (results && results.length > 0) {
         const r = results[0];
+        const fullShareUrl = `${currentBase}/share/${quizId}/${scoreCode}`;
         const html = ogHtml({
           title: `Kết quả: ${r.title} — Bạn thử đi! 🔥`,
           description: r.description || 'Trắc nghiệm tính cách AI',
           image: getImageUrl(r.image_url),
-          url: `https://nambac.xyz/share/${quizId}/${scoreCode}`,
-          redirectUrl: `https://nambac.xyz/quiz/${quizId}`,
+          url: fullShareUrl,
+          redirectUrl: `${currentBase}/quiz/${quizId}`,
         });
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
@@ -121,12 +127,13 @@ export default async function handler(req, res) {
 
     if (quizzes && quizzes.length > 0) {
       const q = quizzes[0];
+      const fullShareUrl = `${currentBase}/share/${quizId}`;
       const html = ogHtml({
         title: `${q.title} | nambac.xyz`,
         description: q.description || 'Trắc nghiệm tính cách AI — Bạn là kiểu người nào?',
         image: getImageUrl(q.image_url),
-        url: `https://nambac.xyz/quiz/${quizId}`,
-        redirectUrl: `https://nambac.xyz/quiz/${quizId}`,
+        url: fullShareUrl,
+        redirectUrl: `${currentBase}/quiz/${quizId}`,
       });
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
