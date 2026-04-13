@@ -90,7 +90,7 @@ const Result = () => {
     }, [quizIdParam]);
 
     // Share URL for SSR OG tags (crawlers hit this, users get redirected to quiz start)
-    const shareUrl = `https://nambac.xyz/share/${quizIdParam}/${score}`;
+    const shareUrl = `${window.location.origin}/share/${quizIdParam}/${score}`;
 
     const renderDescription = (text = "") => {
         return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;

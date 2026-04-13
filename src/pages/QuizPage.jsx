@@ -210,17 +210,21 @@ export default function QuizPage({ quizIdProp }) {
                     <div className="share-modal-overlay" onClick={() => setShowShareModal(false)}>
                         <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
                             <h3 className="share-modal-title">Chia sẻ bài quiz</h3>
-
-                            <div className="share-options">
-                                <button className="share-option zalo" onClick={() => {
-                                    window.open(`https://zalo.me/share?url=${encodeURIComponent(`https://nambac.xyz/share/${id}`)}`, '_blank');
-                                }}>
+                            
+                            {/* Derive dynamic share URL for Quiz */}
+                            {(() => {
+                                const shareUrl = `${window.location.origin}/quiz/${quizId}`;
+                                return (
+                                    <div className="share-options">
+                                        <button className="share-option zalo" onClick={() => {
+                                            window.open(`https://zalo.me/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
+                                        }}>
                                     <span className="share-icon">💬</span>
                                     <span>Zalo</span>
                                 </button>
 
                                 <button className="share-option instagram" onClick={() => {
-                                    navigator.clipboard.writeText(`https://nambac.xyz/share/${id}`);
+                                    navigator.clipboard.writeText(shareUrl);
                                     alert('Đã sao chép link! Hãy dán vào Instagram.');
                                 }}>
                                     <span className="share-icon">📷</span>
@@ -228,20 +232,22 @@ export default function QuizPage({ quizIdProp }) {
                                 </button>
 
                                 <button className="share-option facebook" onClick={() => {
-                                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://nambac.xyz/share/${id}`)}`, '_blank');
+                                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
                                 }}>
                                     <span className="share-icon">📘</span>
                                     <span>Facebook</span>
                                 </button>
 
                                 <button className="share-option copy-link" onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href);
+                                    navigator.clipboard.writeText(shareUrl);
                                     alert('Đã sao chép link!');
                                 }}>
                                     <span className="share-icon">🔗</span>
                                     <span>Sao chép</span>
                                 </button>
-                            </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
                 )}
