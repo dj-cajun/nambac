@@ -213,14 +213,14 @@ export default function QuizPage({ quizIdProp }) {
 
                             <div className="share-options">
                                 <button className="share-option zalo" onClick={() => {
-                                    window.open(`https://zalo.me/share?url=${encodeURIComponent(window.location.href)}`, '_blank');
+                                    window.open(`https://zalo.me/share?url=${encodeURIComponent(`https://nambac.xyz/share/${id}`)}`, '_blank');
                                 }}>
                                     <span className="share-icon">💬</span>
                                     <span>Zalo</span>
                                 </button>
 
                                 <button className="share-option instagram" onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href);
+                                    navigator.clipboard.writeText(`https://nambac.xyz/share/${id}`);
                                     alert('Đã sao chép link! Hãy dán vào Instagram.');
                                 }}>
                                     <span className="share-icon">📷</span>
@@ -228,7 +228,7 @@ export default function QuizPage({ quizIdProp }) {
                                 </button>
 
                                 <button className="share-option facebook" onClick={() => {
-                                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+                                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://nambac.xyz/share/${id}`)}`, '_blank');
                                 }}>
                                     <span className="share-icon">📘</span>
                                     <span>Facebook</span>
