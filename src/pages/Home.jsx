@@ -41,24 +41,8 @@ export default function Home() {
 
         if (cloudError) console.error("Supabase fetch error:", cloudError);
         
-        // 2. 로컬 백엔드에서 퀴즈 가져오기
-        let localData = [];
-        try {
-          const response = await fetch('http://localhost:8000/api/quizzes');
-          if (response.ok) {
-            const json = await response.json();
-            localData = (json.quizzes || []).map(q => ({ ...q, is_local: true }));
-          }
-        } catch (err) {
-          console.warn("Local backend fetch failed (is it running?):", err);
-        }
-
-        // 3. 데이터 병합 (중복 제거 및 최신순 정렬)
-        // 로컬 퀴즈와 클라우드 퀴즈를 합치되, ID가 겹치면 로컬을 우선시할 수도 있지만 보통 ID는 유니크합니다.
-        const combined = [...localData, ...(cloudData || []).filter(cq => !localData.some(lq => lq.id === cq.id))];
-        
         // Only show active quizzes
-        const activeQuizzes = combined.filter(q => q.is_active !== false && q.status !== 'hidden');
+        const activeQuizzes = (cloudData || []).filter(q => q.is_active !== false && q.status !== 'hidden');
         
         // 최신순 정렬
         activeQuizzes.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
