@@ -13,15 +13,44 @@ const ShareRedirect = () => {
     useEffect(() => {
         const fetchResultInfo = async () => {
             try {
-                const { data, error } = await supabase
-                    .from('results')
-                    .select('*, quizzes(title)')
-                    .eq('quiz_id', quizId)
-                    .eq('result_code', parseInt(score))
-                    .single();
-                
-                if (data) {
-                    setResultData(data);
+                setLoading(true);
+                // 1. Try fetching from Supabase FIRST (Cloud)
+                let foundResult = null;
+
+                try {
+                    const { data, error } = await supabase
+                        .from('results')
+                        .select('*, quizzes(title)')
+                        .eq('quiz_id', quizId)
+                        .eq('result_code', parseInt(score))
+                        .single();
+                    
+                    if (data) foundResult = data;
+                } catch (err) {
+                    console.log("Supabase share fetch failed, trying local...");
+                }
+
+                // 2. Try fetching from Local Backend
+                if (!foundResult) {
+                    try {
+                        const response = await fetch(`http://localhost:8000/api/quizzes/${quizId}`);
+                        if (response.ok) {
+                            const json = await response.json();
+                            const result = (json.results || []).find(r => parseInt(r.result_code) === parseInt(score));
+                            if (result) {
+                                foundResult = {
+                                    ...result,
+                                    quizzes: { title: json.quiz.title } // Match expected structure
+                                };
+                            }
+                        }
+                    } catch (err) {
+                        console.warn("Local share fetch failed:", err);
+                    }
+                }
+
+                if (foundResult) {
+                    setResultData(foundResult);
                 }
             } catch (err) {
                 console.error("Error fetching share preview:", err);

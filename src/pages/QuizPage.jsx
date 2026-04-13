@@ -35,34 +35,49 @@ export default function QuizPage({ quizIdProp }) {
             try {
                 setLoading(true);
                 
-                // Fetch Quiz Info
-                const { data: quizData, error: quizError } = await supabase
-                    .from('quizzes')
-                    .select('*')
-                    .eq('id', quizId)
-                    .single();
+                // 1. Try fetching from Supabase FIRST (Cloud)
+                let quizData = null;
+                let questionsData = [];
+                let resultsData = [];
+                let isLocalResult = false;
 
-                if (quizError || !quizData) throw new Error('Failed to fetch quiz');
+                try {
+                    const { data: qz, error: qzErr } = await supabase.from('quizzes').select('*').eq('id', quizId).single();
+                    if (!qzErr && qz) {
+                        quizData = qz;
+                        const { data: qs } = await supabase.from('questions').select('*').eq('quiz_id', quizId).order('order_number', { ascending: true });
+                        const { data: rs } = await supabase.from('results').select('*').eq('quiz_id', quizId);
+                        questionsData = qs || [];
+                        resultsData = rs || [];
+                    }
+                } catch (err) {
+                    console.log("Supabase fetch skip or fail, trying local...");
+                }
+
+                // 2. Try fetching from Local Backend if Cloud failed (or ID not found)
+                if (!quizData) {
+                    try {
+                        const response = await fetch(`http://localhost:8000/api/quizzes/${quizId}`);
+                        if (response.ok) {
+                            const json = await response.json();
+                            quizData = { ...json.quiz, is_local: true };
+                            questionsData = json.questions || [];
+                            resultsData = json.results || [];
+                            isLocalResult = true;
+                        }
+                    } catch (err) {
+                        console.warn("Local backend fetch failed:", err);
+                    }
+                }
+
+                if (!quizData) throw new Error('Failed to fetch quiz from any source');
+
                 setQuizInfo(quizData);
-
-                // Fetch Questions
-                const { data: qData } = await supabase
-                    .from('questions')
-                    .select('*')
-                    .eq('quiz_id', quizId)
-                    .order('order_number', { ascending: true });
-                setQuestions(qData || []);
-
-                // Fetch Results
-                const { data: rData } = await supabase
-                    .from('results')
-                    .select('*')
-                    .eq('quiz_id', quizId);
-                setResults(rData || []);
-
+                setQuestions(questionsData);
+                setResults(resultsData);
                 setLoading(false);
             } catch (err) {
-                console.error('Error fetching quiz data from Supabase:', err);
+                console.error('Error fetching quiz data:', err);
                 setLoading(false);
             }
         };

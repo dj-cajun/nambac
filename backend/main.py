@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from logic.factory import NambacFactory
 from logic.json_manager import JSONManager
 from logic.image_generator import ImageGenerator
-from logic.ai_service_manager import AIServiceManager
+
 
 
 # Log messages to stderr (Updated for result fix)
@@ -686,56 +686,6 @@ def get_results(quiz_id: str):
     return {"results": results}
 
 
-# ========== External Services Endpoints ==========
-
-
-class Service(BaseModel):
-    id: Optional[str] = None
-    title: str
-    description: str
-    image_url: str
-    url: str
-    category: str
-
-
-@app.get("/api/services")
-def get_services():
-    """모든 외부 서비스 조회"""
-    services = json_manager.get_all_services()
-    return {"services": services}
-
-
-@app.post("/api/services")
-def create_service(service: Service, admin: bool = Depends(verify_admin_key)):
-    """외부 서비스 추가"""
-    return json_manager.create_service(service.dict())
-
-
-@app.delete("/api/services/{service_id}")
-def delete_service(service_id: str, admin: bool = Depends(verify_admin_key)):
-    """외부 서비스 삭제"""
-    success = json_manager.delete_service(service_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Service not found")
-    return {"message": "Service deleted successfully"}
-
-
-class CatDogRequest(BaseModel):
-    name: str
-    image: str
-
-
-@app.post("/api/ai-service/cats-vs-dog")
-async def analyze_cat_dog(request: CatDogRequest, admin: bool = Depends(verify_admin_key)):
-    try:
-        manager = AIServiceManager()
-        result = await manager.run_cat_dog_analysis(request.name, request.image)
-        if not result:
-            raise HTTPException(status_code=500, detail="AI Analysis failed")
-        return result
-    except Exception as e:
-        print(f"❌ AI Service Error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Server Error: {str(e)}")
 
 
 # ========== Automation Endpoints (Phase 2) ==========

@@ -25,15 +25,27 @@ const Result = () => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
+                // 1. Try Supabase
                 const { data, error } = await supabase
                     .from('results')
                     .select('*')
                     .eq('quiz_id', quizIdParam);
-                if (!error && data) {
+                
+                if (!error && data && data.length > 0) {
                     setResults(data);
+                    return;
+                }
+
+                // 2. Try Local Backend
+                const response = await fetch(`http://localhost:8000/api/quizzes/${quizIdParam}`);
+                if (response.ok) {
+                    const json = await response.json();
+                    if (json.results) {
+                        setResults(json.results);
+                    }
                 }
             } catch (err) {
-                console.error("Failed to fetch results from Supabase", err);
+                console.error("Failed to fetch results", err);
             }
         };
         fetchResults();
@@ -50,26 +62,35 @@ const Result = () => {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                // Fetch active quizzes excluding the current one
-                const { data, error } = await supabase
+                // 1. Fetch Cloud
+                const { data: cloudData } = await supabase
                     .from('quizzes')
                     .select('*')
                     .eq('is_active', true)
                     .neq('id', quizIdParam)
                     .order('created_at', { ascending: false });
                 
-                if (!error && data) {
-                    setRecommendedQuizzes(data);
-                }
+                // 2. Fetch Local
+                let localData = [];
+                try {
+                    const resp = await fetch('http://localhost:8000/api/quizzes');
+                    if (resp.ok) {
+                        const json = await resp.json();
+                        localData = (json.quizzes || []).filter(q => q.id !== quizIdParam && (q.is_active !== false && q.status !== 'hidden'));
+                    }
+                } catch (e) {}
+
+                const combined = [...localData, ...(cloudData || [])];
+                setRecommendedQuizzes(combined.slice(0, 8));
             } catch (err) {
-                console.error('Failed to fetch recommended quizzes from Supabase:', err);
+                console.error('Failed to fetch recommended quizzes:', err);
             }
         };
         fetchQuizzes();
     }, [quizIdParam]);
 
     // Share URL for SSR OG tags (crawlers hit this, users get redirected to quiz start)
-    const shareUrl = `https://nambac.xyz/share/${quizIdParam}/${score}`;
+    const shareUrl = `https://www.nambac.xyz/share/${quizIdParam}/${score}`;
 
     const renderDescription = (text = "") => {
         return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;
@@ -173,7 +194,25 @@ const Result = () => {
                         </div>
                     </button>
 
-                    <button className="share-btn" onClick={() => setShowShareModal(true)}>
+                    <button className="share-btn" onClick={() => {
+                        setShowShareModal(true);
+                        // Increment share_count (fire and forget, once per session)
+                        if (!window.__sharedQuiz?.[quizIdParam]) {
+                            supabase.from('quizzes')
+                                .select('share_count')
+                                .eq('id', quizIdParam)
+                                .single()
+                                .then(({ data }) => {
+                                    if (data) {
+                                        supabase.from('quizzes')
+                                            .update({ share_count: (data.share_count || 0) + 1 })
+                                            .eq('id', quizIdParam)
+                                            .then();
+                                    }
+                                });
+                            window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
+                        }
+                    }}>
                         <Share2 size={24} />
                     </button>
                 </div>

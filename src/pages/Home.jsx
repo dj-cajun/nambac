@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bell, User, Heart, MessageCircle, Send, Plus,
@@ -24,31 +24,52 @@ export default function Home() {
     ...QUIZ_CATEGORIES.map(c => ({ id: c.id, label: c.label, color: c.color })),
   ];
 
-  const [services, setServices] = useState([]);
+
   const [magazineArticles, setMagazineArticles] = useState([]);
   const [isConnecting, setIsConnecting] = useState(false);
 
-  // Fetch Quizzes from Supabase
+  // Fetch Quizzes from Supabase and Local Backend
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const { data, error } = await supabase
+        // 1. Supabase에서 퀴즈 가져오기
+        const { data: cloudData, error: cloudError } = await supabase
           .from('quizzes')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (cloudError) console.error("Supabase fetch error:", cloudError);
+        
+        // 2. 로컬 백엔드에서 퀴즈 가져오기
+        let localData = [];
+        try {
+          const response = await fetch('http://localhost:8000/api/quizzes');
+          if (response.ok) {
+            const json = await response.json();
+            localData = (json.quizzes || []).map(q => ({ ...q, is_local: true }));
+          }
+        } catch (err) {
+          console.warn("Local backend fetch failed (is it running?):", err);
+        }
+
+        // 3. 데이터 병합 (중복 제거 및 최신순 정렬)
+        // 로컬 퀴즈와 클라우드 퀴즈를 합치되, ID가 겹치면 로컬을 우선시할 수도 있지만 보통 ID는 유니크합니다.
+        const combined = [...localData, ...(cloudData || []).filter(cq => !localData.some(lq => lq.id === cq.id))];
         
         // Only show active quizzes
-        const activeQuizzes = (data || []).filter(q => q.is_active);
+        const activeQuizzes = combined.filter(q => q.is_active !== false && q.status !== 'hidden');
+        
+        // 최신순 정렬
+        activeQuizzes.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
         setQuizzes(activeQuizzes);
 
-        // For now, services and magazines are disabled during migration
-        setServices([]);
+
         setMagazineArticles([]);
         
       } catch (error) {
-        console.error("Error fetching data from Supabase:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -58,9 +79,27 @@ export default function Home() {
 
   const getRandomCount = () => Math.floor(Math.random() * (500 - 50 + 1)) + 50;
 
-  const filteredQuizzes = activeTab === 'all'
-    ? quizzes
-    : quizzes.filter(q => q.category === activeTab || (activeTab === 'Trendy' && !q.category));
+  // Legacy category mapping for backward compatibility with existing DB records
+  const legacyCategoryMap = {
+    'MBTI': ['MBTI', 'Tính Cách (MBTI)'],
+    'Personality': ['Personality', 'Tính Cách', 'Lifestyle'],
+    'Fortune': ['Fortune', 'Bói Toán (Tarot)'],
+    'PastLife': ['PastLife', 'Kiếp Trước'],
+    'Survival': ['Survival', 'Sinh Tồn', 'HCMC_Guide'],
+    'Trendy': ['Trendy', 'Xu Hướng', 'Trend_Hunter'],
+    'Delivery': ['Delivery', 'Giao Hàng', 'Delivery_King'],
+    'Lookalike': ['Lookalike', 'Ai Giống?', 'Linker_Lookalike'],
+  };
+
+  // Derived state for Main List
+  const filteredQuizzes = useMemo(() => {
+    let result = quizzes;
+    if (activeTab !== 'all') {
+      const allowedCategories = legacyCategoryMap[activeTab] || [activeTab];
+      result = result.filter(q => allowedCategories.includes(q.category));
+    }
+    return result;
+  }, [quizzes, activeTab]);
 
   // Get top 3 quizzes for carousel
   const heroQuizzes = quizzes.slice(0, 3);
@@ -152,24 +191,6 @@ export default function Home() {
   };
 
 
-  const [connectingService, setConnectingService] = useState(null);
-
-  const handleServiceClick = (service) => {
-    setIsConnecting(true);
-    setConnectingService(service);
-
-    // Fake loading delay for effect
-    setTimeout(() => {
-      if (service.url.startsWith('/')) {
-        navigate(service.url);
-      } else {
-        window.open(service.url, '_blank');
-      }
-      setIsConnecting(false);
-      setConnectingService(null);
-    }, 1500);
-  };
-
   const handleQuizClick = async (quizId) => {
     // 1. Fire and forget view increment
     try {
@@ -199,26 +220,6 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      {/* 0. Connecting Overlay (Fake Loader) */}
-      {isConnecting && (
-        <div className="connecting-overlay">
-          <div className="connecting-box">
-            <div className="spinner-pink"></div>
-            <h3 className="text-lg font-bold mt-4 animate-pulse">
-              Đang kết nối AI... 📡
-            </h3>
-            <p className="text-xs text-gray-500 mt-2">
-              (Dữ liệu đang đi qua Hầm Thủ Thiêm...)
-            </p>
-            {connectingService && (
-              <div className="mt-4 p-2 bg-pink-50 rounded-lg text-xs font-bold text-[#FF2D85] border border-pink-200">
-                Target: {connectingService.title}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* 2. Hero Carousel (3 Slides) */}
       <div className="hero-carousel-wrapper">
         <div
@@ -318,36 +319,35 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      {/* AdSense Slot (Between Quiz List and AI Services) */}
+      {/* AdSense Slot (Between Quiz List and About Section) */}
       <AdSenseUnit adSlot="1234567890" location="home-middle" />
 
-      {/* 5. AI Service Hub (New) */}
-      <div className="mt-8 mb-24">
-        <h3 className="glass-section-title text-[#FF2D85]">✨ AI Partner Services</h3>
-        <p className="px-4 text-xs text-gray-500 mb-3">Công cụ AI xịn xò từ Hugging Face & Friends</p>
-
-        <div className="glass-list">
-          {services.map((service) => (
-            <div
-              key={service.id}
-              className="glass-card border-2 border-pink-100 bg-gradient-to-br from-white to-pink-50 hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer"
-              onClick={() => handleServiceClick(service)}
-            >
-              <div className="card-tape bg-pink-300"></div>
-              <div className="glass-card-thumb">
-                <img src={service.image_url} alt="service" className="filter hover:brightness-110 transition-all" />
-              </div>
-              <div className="glass-card-info">
-                <div className="info-category bg-pink-100 text-[#FF2D85]">{service.category || 'AI Tool'}</div>
-                <h4 className="info-title line-clamp-1 text-[#FF2D85]">{service.title}</h4>
-                <p className="text-xs text-gray-500 mt-1 line-clamp-2">{service.description}</p>
-                <div className="mt-2 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                  External App ↗
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* About Section — Rich text content for AdSense compliance */}
+      <div style={{
+        marginTop: '32px',
+        marginBottom: '100px',
+        padding: '24px',
+        background: 'rgba(255,255,255,0.7)',
+        borderRadius: '20px',
+        border: '1px solid rgba(0,0,0,0.05)',
+      }}>
+        <h3 style={{ fontSize: '16px', fontWeight: '900', color: '#1a1a1a', marginBottom: '12px' }}>
+          🎯 nambac.xyz — Trắc nghiệm tính cách AI
+        </h3>
+        <p style={{ fontSize: '13px', color: '#555', lineHeight: '1.8', marginBottom: '12px' }}>
+          nambac.xyz là nền tảng trắc nghiệm tính cách trực tuyến sử dụng trí tuệ nhân tạo (AI) tiên tiến. Chúng tôi kết hợp Google Gemini AI với tâm lý học hiện đại để tạo ra những bài trắc nghiệm thú vị giúp bạn khám phá tính cách và sở thích cá nhân. Mỗi bài chỉ gồm 5 câu hỏi — nhanh, vui và đầy bất ngờ!
+        </p>
+        <p style={{ fontSize: '13px', color: '#555', lineHeight: '1.8', marginBottom: '12px' }}>
+          Khám phá các chủ đề đa dạng: MBTI & tính cách, tình yêu & mối quan hệ, ẩm thực & lối sống, nghề nghiệp & tài chính, và nhiều hơn nữa. Tất cả hoàn toàn miễn phí!
+        </p>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
+          <a href="/about" style={{ fontSize: '12px', color: '#FF2D85', fontWeight: '700', textDecoration: 'underline' }}>Giới thiệu</a>
+          <span style={{ color: '#ddd' }}>|</span>
+          <a href="/faq" style={{ fontSize: '12px', color: '#FF2D85', fontWeight: '700', textDecoration: 'underline' }}>FAQ</a>
+          <span style={{ color: '#ddd' }}>|</span>
+          <a href="/privacy-policy" style={{ fontSize: '12px', color: '#FF2D85', fontWeight: '700', textDecoration: 'underline' }}>Bảo mật</a>
+          <span style={{ color: '#ddd' }}>|</span>
+          <a href="/terms-of-service" style={{ fontSize: '12px', color: '#FF2D85', fontWeight: '700', textDecoration: 'underline' }}>Điều khoản</a>
         </div>
       </div>
 

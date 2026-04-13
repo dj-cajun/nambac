@@ -4,6 +4,8 @@ import { QUIZ_CATEGORIES, SERVICE_CATEGORIES, getFilterTypes, getCategoryLabel, 
 import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
 import { supabase } from '../lib/supabase';
 
+import QuizEditor from './QuizEditor';
+
 const Admin = () => {
     const navigate = useNavigate();
     // Password Protection
@@ -58,22 +60,15 @@ const Admin = () => {
 
     // State Management
     const [quizzes, setQuizzes] = useState([]);
-    const [services, setServices] = useState([]);
-    const [activeTab, setActiveTab] = useState('quizzes');
     const [filteredQuizzes, setFilteredQuizzes] = useState([]);
+    const [showEditor, setShowEditor] = useState(false);
+    const [editingQuiz, setEditingQuiz] = useState(null);
     const [filterType, setFilterType] = useState('all');
     const [loading, setLoading] = useState(false);
     const [availableAgents, setAvailableAgents] = useState([]);
 
-    // Service Form State
-    const [newServiceTitle, setNewServiceTitle] = useState('');
-    const [newServiceDesc, setNewServiceDesc] = useState('');
-    const [newServiceUrl, setNewServiceUrl] = useState('');
-    const [newServiceImage, setNewServiceImage] = useState('');
-    const [newServiceCategory, setNewServiceCategory] = useState('');
 
     // Edit Modal State
-    const [editingQuiz, setEditingQuiz] = useState(null);
     const [modalTab, setModalTab] = useState('info'); // 'info' | 'questions' | 'results'
     const [editTitle, setEditTitle] = useState('');
     const [editDescription, setEditDescription] = useState('');
@@ -118,17 +113,26 @@ const Admin = () => {
 
     const personas = [...syncedPersonas, ...extraPersonas];
 
-    // Fetch Quizzes and Services
+    // Handle filtering
+    useEffect(() => {
+        if (filterType === 'all') {
+            setFilteredQuizzes(quizzes);
+        } else {
+            setFilteredQuizzes(quizzes.filter(q => 
+                q.quiz_type === filterType || q.category === filterType
+            ));
+        }
+    }, [quizzes, filterType]);
+
+    // Fetch Quizzes
     const fetchQuizzes = async () => {
         setLoading(true);
         try {
-            // 1. Supabase에서 퀴즈 가져오기
-            const { data: cloudData, error: cloudError } = await supabase
+            const { data: cloudData } = await supabase
                 .from('quizzes')
                 .select('*')
                 .order('created_at', { ascending: false });
             
-            // 2. Local Backend에서 퀴즈 가져오기
             let localQuizzes = [];
             try {
                 const response = await fetch('http://localhost:8000/api/quizzes');
@@ -137,35 +141,30 @@ const Admin = () => {
                     localQuizzes = (localData.quizzes || []).map(q => ({ ...q, is_local: true }));
                 }
             } catch (err) {
-                console.warn("Local backend fetch failed (is it running?):", err);
+                console.warn("Local backend fetch failed:", err);
             }
 
-            // 3. 데이터 병합 (중복 제거 및 최신순 정렬)
+            const agentsRes = await adminFetch(`${API_BASE_URL}/admin/agents`);
+            if (agentsRes.ok) {
+                const data = await agentsRes.json();
+                setAvailableAgents(data.agents || []);
+            }
+
             const combined = [...localQuizzes, ...(cloudData || []).filter(cq => !localQuizzes.some(lq => lq.id === cq.id))];
             combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             setQuizzes(combined);
             setFilteredQuizzes(combined);
         } catch (error) {
-            console.error("Error fetching quizzes:", error);
+            console.error("Error fetching data:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchServices = async () => {
-        setServices([]);
-    };
-
-    const fetchAgents = async () => {
-        setAvailableAgents([]);
-    };
-
     useEffect(() => {
         if (isAuthenticated) {
             fetchQuizzes();
-            fetchServices();
-            fetchAgents();
         }
     }, [isAuthenticated]);
 
@@ -178,73 +177,67 @@ const Admin = () => {
         }
     }, [filterType, quizzes]);
 
-    // Format Date
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString();
     };
 
-    // Get Type Label (from shared categories)
     const getTypeLabel = (type) => getCategoryLabel(type) || type;
 
-    // getImageUrl is now imported from apiConfig.js
-
-    // --- Actions ---
-
     const handleGenerate = (persona) => {
-        // Redirect to QuizEditor which now handles AI generation
         navigate('/editor');
     };
 
     const toggleStatus = async (id) => {
         try {
             const quiz = quizzes.find(q => q.id === id);
+            if (!quiz) return;
+            
             const newIsActive = quiz.is_active === false ? true : false;
             const newStatus = newIsActive ? 'visible' : 'hidden';
 
-            // Optimistic update
             setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newIsActive } : q));
 
-            const { error } = await supabase
-                .from('quizzes')
-                .update({ is_active: newIsActive, status: newStatus })
-                .eq('id', id);
-
-            if (error) throw error;
+            if (quiz.is_local) {
+                const response = await fetch(`http://localhost:8000/api/quizzes/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Key': 'nambac2026!'
+                    },
+                    body: JSON.stringify({ is_active: newIsActive, status: newStatus })
+                });
+                if (!response.ok) throw new Error("Local toggle failed");
+            } else {
+                const { error } = await supabase
+                    .from('quizzes')
+                    .update({ is_active: newIsActive, status: newStatus })
+                    .eq('id', id);
+                if (error) throw error;
+            }
         } catch (error) {
             console.error("Error toggling status:", error);
-            fetchQuizzes(); // Revert
+            alert(`Error toggling status: ${error.message}`);
+            fetchQuizzes();
         }
     };
 
-    const deleteQuiz = async (quiz) => {
-        const id = typeof quiz === 'string' ? quiz : quiz.id;
-        if (!window.confirm(`Are you sure you want to delete this quiz?${(quiz.is_local ? ' (LOCAL)' : '')}`)) return;
+    const deleteQuiz = async (quizId, isLocal) => {
+        const id = quizId;
+        if (!window.confirm(`Are you sure you want to delete this quiz?`)) return;
         
         try {
             let deleted = false;
-
-            // --- 1. Local Backend에서 삭제 시도 ---
-            try {
-                const response = await fetch(`http://localhost:8000/api/quizzes/${id}`, {
+            
+            if (isLocal) {
+                const response = await fetch(`${API_BASE_URL}/quizzes/${id}`, {
                     method: 'DELETE',
-                    headers: { 'X-Admin-Key': 'nambac2026!' }
+                    headers: { 'X-Admin-Key': ADMIN_API_KEY }
                 });
-                if (response.ok) {
-                    console.log("Deleted from local backend");
-                    deleted = true;
-                }
-            } catch (err) {
-                console.warn("Local delete failed:", err);
-            }
-
-            // --- 2. Supabase에서 삭제 시도 ---
-            const { error: cloudError } = await supabase.from('quizzes').delete().eq('id', id);
-            if (!cloudError) {
-                console.log("Deleted from Supabase");
-                deleted = true;
+                if (response.ok) deleted = true;
             } else {
-                console.error("Supabase delete failed:", cloudError);
+                const { error: cloudError } = await supabase.from('quizzes').delete().eq('id', id);
+                if (!cloudError) deleted = true;
             }
 
             if (deleted) {
@@ -252,16 +245,12 @@ const Admin = () => {
                 setFilteredQuizzes(prev => prev.filter(q => q.id !== id));
                 alert("✅ Quiz deleted successfully.");
             } else {
-                throw new Error("Could not delete quiz from any source.");
+                throw new Error("Could not delete quiz. Please check if the backend is connected.");
             }
         } catch (error) {
             console.error("Error deleting quiz:", error);
             alert(`Error deleting quiz: ${error.message}`);
         }
-    };
-
-    const handleAddService = async () => {
-        alert("Adding services is disabled in serverless mode.");
     };
 
     const copyQuizLink = (id) => {
@@ -271,19 +260,15 @@ const Admin = () => {
         });
     };
 
-    // --- Edit Modal Functions ---
-
     const openEditModal = async (quiz) => {
         setEditingQuiz(quiz);
-        setModalTab('info'); // Reset to info tab
+        setModalTab('info');
         setEditTitle(quiz.title || '');
         setEditDescription(quiz.description || '');
         setEditCategory(quiz.category || '');
-        setEditImage(null);
         setEditImagePreview(quiz.image_url || '');
         setEditQuestions([]);
 
-        // Initialize 8 default results (Score: 0-7)
         const defaultResults = Array.from({ length: 8 }, (_, i) => ({
             result_code: i,
             title: '',
@@ -291,9 +276,7 @@ const Admin = () => {
         }));
         setEditResults(defaultResults);
 
-        // Fetch full details including questions and results
         try {
-            // Priority: Local Backend if is_local
             if (quiz.is_local) {
                 const [qRes, rRes] = await Promise.all([
                     fetch(`http://localhost:8000/api/quizzes/${quiz.id}/questions`),
@@ -314,7 +297,6 @@ const Admin = () => {
                     }
                 }
             } else {
-                // Secondary: Supabase
                 const { data: qData } = await supabase.from('questions').select('*').eq('quiz_id', quiz.id).order('order_number', { ascending: true });
                 if (qData) setEditQuestions(qData);
 
@@ -341,25 +323,7 @@ const Admin = () => {
         setEditCategory('');
         setEditQuestions([]);
         setEditResults([]);
-        setEditImage(null);
         setEditImagePreview('');
-    };
-
-    const handleAddQuestion = () => {
-        const orderNum = editQuestions.length + 1;
-        const newQ = {
-            quiz_id: editingQuiz.id,
-            order_number: orderNum,
-            question_text: '',
-            option_a: '',
-            option_b: '',
-            score_a: 0,
-            score_b: orderNum === 1 ? 4 : orderNum === 2 ? 2 : orderNum === 3 ? 1 : 0,
-            image_url: null,
-            dimension: null,
-            options: null
-        };
-        setEditQuestions([...editQuestions, newQ]);
     };
 
     const handleQuestionChange = (index, field, value) => {
@@ -386,52 +350,26 @@ const Admin = () => {
         setEditResults(updatedResults);
     };
 
-    // Helper: Format result_code to display score
-    const toScoreDisplay = (code) => {
-        return `${code} pts`;
-    };
-
-    const handleImageSelect = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setEditImage(file);
-            setEditImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        setIsDragging(false);
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            const file = e.dataTransfer.files[0];
-            setEditImage(file);
-            setEditImagePreview(URL.createObjectURL(file));
-        }
-    };
+    const toScoreDisplay = (code) => `${code} pts`;
 
     const handleDeleteQuestion = async (idx) => {
         const question = editQuestions[idx];
         if (!question) return;
-
         if (!window.confirm("Are you sure you want to delete this question?")) return;
 
         try {
             if (question.id) {
                 if (editingQuiz.is_local) {
-                    // --- 로컬 백엔드에서 삭제 ---
                     const response = await fetch(`http://localhost:8000/api/questions/${question.id}`, {
                         method: 'DELETE',
                         headers: { 'X-Admin-Key': 'nambac2026!' }
                     });
                     if (!response.ok) throw new Error("Local backend delete failed");
                 } else {
-                    // --- Supabase에서 삭제 ---
                     const { error } = await supabase.from('questions').delete().eq('id', question.id);
                     if (error) throw error;
                 }
             }
-            
-            // 상태 업데이트 (화면에서 제거)
             setEditQuestions(prev => prev.filter((_, i) => i !== idx));
         } catch (error) {
             console.error("Error deleting question:", error);
@@ -443,27 +381,62 @@ const Admin = () => {
         if (!editingQuiz) return;
 
         try {
-            // --- [LOCAL BACKEND REDIRECTION] ---
-            // 로컬 백엔드 API를 통해 저장합니다. (기존 Supabase 직접 저장을 대체)
-            const response = await fetch(`http://localhost:8000/api/quizzes/${editingQuiz.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Admin-Key': 'nambac2026!'
-                },
-                body: JSON.stringify({
-                    title: editTitle,
-                    description: editDescription,
-                    category: editCategory,
-                    image_url: editImagePreview,
-                    questions: editQuestions.map((q, idx) => ({ ...q, order_number: idx + 1 })),
-                    results: editResults.filter(r => r.title || r.description)
-                })
-            });
+            if (editingQuiz.is_local) {
+                const response = await fetch(`http://localhost:8000/api/quizzes/${editingQuiz.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Key': 'nambac2026!'
+                    },
+                    body: JSON.stringify({
+                        title: editTitle,
+                        description: editDescription,
+                        category: editCategory,
+                        image_url: editImagePreview,
+                        questions: editQuestions.map((q, idx) => ({ ...q, order_number: idx + 1 })),
+                        results: editResults.filter(r => r.title || r.description)
+                    })
+                });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || '백엔드 서버 저장 실패 (localhost:8000)');
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || '백엔드 서버 저장 실패');
+                }
+            } else {
+                const { error: qError } = await supabase
+                    .from('quizzes')
+                    .update({
+                        title: editTitle,
+                        description: editDescription,
+                        category: editCategory,
+                        image_url: editImagePreview
+                    })
+                    .eq('id', editingQuiz.id);
+                if (qError) throw qError;
+
+                if (editQuestions.length > 0) {
+                    const questionsToUpsert = editQuestions.map((q, idx) => {
+                        const { id, quiz_id, order_number, question_text, option_a, option_b, score_a, score_b, image_url, dimension, options } = q;
+                        const cleanQ = { quiz_id: quiz_id || editingQuiz.id, order_number: idx + 1, question_text, option_a, option_b, score_a, score_b, image_url, dimension, options };
+                        if (id && id.length > 20) cleanQ.id = id;
+                        return cleanQ;
+                    });
+                    const { error: errQ } = await supabase.from('questions').upsert(questionsToUpsert, { onConflict: 'id' });
+                    if (errQ) throw errQ;
+                }
+
+                if (editResults.length > 0) {
+                    const resultsToUpsert = editResults.filter(r => r.title || r.description).map((r, idx) => {
+                        const { id, quiz_id, result_code, title, description, traits, image_url } = r;
+                        const cleanR = { quiz_id: quiz_id || editingQuiz.id, result_code: r.result_code ?? idx, title, description, traits, image_url };
+                        if (id && id.length > 20) cleanR.id = id;
+                        return cleanR;
+                    });
+                    if (resultsToUpsert.length > 0) {
+                        const { error: errR } = await supabase.from('results').upsert(resultsToUpsert, { onConflict: 'id' });
+                        if (errR) throw errR;
+                    }
+                }
             }
 
             setQuizzes(prev => prev.map(q =>
@@ -472,7 +445,7 @@ const Admin = () => {
                     : q
             ));
             
-            alert('✅ Quiz updated successfully (Local Backend)!');
+            alert(`✅ Quiz updated successfully!`);
             closeEditModal();
         } catch (error) {
             console.error('Error updating quiz:', error);
@@ -480,9 +453,6 @@ const Admin = () => {
         }
     };
 
-    // --- Render ---
-
-    // 1. Login View
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#fff9fc] p-6">
@@ -490,616 +460,188 @@ const Admin = () => {
                     <div className="text-center mb-8">
                         <div className="text-4xl mb-4">🔐</div>
                         <h2 className="text-3xl font-black text-[#FF2D85] tracking-tight">Admin Access</h2>
-                        <p className="text-gray-500 font-medium mt-1">Unlock the Power Station</p>
                     </div>
-                    
                     <form onSubmit={handlePasswordSubmit} className="space-y-6">
-                        <div>
-                            <input
-                                ref={passwordInputRef}
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter Admin Password"
-                                autoFocus
-                                className="w-full px-5 py-4 bg-white border-2 border-black rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#FF2D85]/20 transition-all font-medium"
-                            />
-                            {passwordError && (
-                                <p className="text-red-500 text-sm font-bold mt-3 ml-1 flex items-center gap-1">
-                                    <span>🚫</span> Access Denied. Try again.
-                                </p>
-                            )}
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full jelly-btn bg-[#FF2D85] text-white font-black py-4 text-lg hover:scale-[1.02] active:scale-95 transition-all shadow-[4px_4px_0px_0px_#000000]"
-                        >
-                            Unlock Dashboard
-                        </button>
+                        <input
+                            ref={passwordInputRef}
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter Admin Password"
+                            className="w-full px-5 py-4 bg-white border-2 border-black rounded-2xl focus:outline-none"
+                        />
+                        <button type="submit" className="w-full jelly-btn bg-[#FF2D85] text-white font-black py-4 text-lg">Unlock Dashboard</button>
                     </form>
                 </div>
             </div>
         );
     }
 
-    // 2. Dashboard View
     return (
         <>
-            {/* ✅ Opaque Business Contrast Modal */}
             {editingQuiz && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
-                    {/* Modal Container: 100% Opaque White + Thin Black Border */}
                     <div style={{ backgroundColor: '#FFFFFF' }} className="border-[3px] border-black rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col relative shadow-md overflow-hidden">
-
-                        {/* Header: Clean White */}
                         <div className="px-6 py-4 border-b-[1.5px] border-black flex justify-between items-center bg-white">
-                            <h3 className="text-lg font-bold text-black tracking-tight">
-                                Quiz Editor — {editTitle || 'Untitled'}
-                            </h3>
-                            <button
-                                onClick={closeEditModal}
-                                className="w-8 h-8 bg-white text-black rounded-sm flex items-center justify-center font-bold text-lg hover:bg-gray-100 transition-colors border-[1.5px] border-black"
-                            >
-                                ✕
-                            </button>
+                            <h3 className="text-lg font-bold text-black">Quiz Editor — {editTitle || 'Untitled'}</h3>
+                            <button onClick={closeEditModal} className="w-8 h-8 bg-white text-black rounded-sm border-[1.5px] border-black">✕</button>
                         </div>
-
-                        {/* Tab Navigation: Underline Style */}
                         <div className="flex gap-0 bg-white border-b-[1.5px] border-black">
-                            {[
-                                { id: 'info', label: 'Basic Info' },
-                                { id: 'questions', label: 'Questions' },
-                                { id: 'results', label: 'Results' }
-                            ].map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setModalTab(tab.id)}
-                                    className={`px-4 py-2 font-black text-sm transition-all
-                                         ${modalTab === tab.id
-                                            ? 'text-black border-b-[3px] border-black -mb-[1.5px] bg-white'
-                                            : 'text-gray-500 hover:text-black hover:bg-white'
-                                        }`}
-                                >
-                                    {tab.label}
-                                </button>
+                            {[{ id: 'info', label: 'Basic Info' }, { id: 'questions', label: 'Questions' }, { id: 'results', label: 'Results' }].map(tab => (
+                                <button key={tab.id} onClick={() => setModalTab(tab.id)} className={`px-4 py-2 font-black text-sm ${modalTab === tab.id ? 'text-black border-b-[3px] border-black' : 'text-gray-500'}`}>{tab.label}</button>
                             ))}
                         </div>
-
-                        {/* Main Content: Scrollable White */}
                         <div className="p-6 overflow-y-auto flex-1 bg-white">
-
-                            {/* [INFO TAB] */}
                             {modalTab === 'info' && (
                                 <div className="space-y-5 max-w-2xl">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Quiz Title</label>
-                                        <input
-                                            type="text"
-                                            value={editTitle}
-                                            onChange={(e) => setEditTitle(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                            placeholder="Enter quiz title..."
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Category</label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {QUIZ_CATEGORIES.map(cat => (
-                                                <button
-                                                    key={cat.id}
-                                                    onClick={() => setEditCategory(cat.id)}
-                                                    className={`px-4 py-2 rounded-sm font-medium text-sm border-[1.5px] border-black transition-all
-                                                        ${editCategory === cat.id
-                                                            ? 'bg-black text-white'
-                                                            : 'bg-white text-black hover:bg-gray-100'
-                                                        }`}
-                                                >
-                                                    {cat.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Description</label>
-                                        <textarea
-                                            value={editDescription}
-                                            onChange={(e) => setEditDescription(e.target.value)}
-                                            rows={4}
-                                            className="w-full px-4 py-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
-                                            placeholder="Enter quiz description..."
-                                        />
-                                    </div>
-
-                                    {/* Quiz Thumbnail Preview */}
-                                    <div className="pt-4 border-t border-gray-100">
-                                        <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Quiz Thumbnail</label>
-                                        <div className="flex gap-4 items-start">
-                                            <div className="flex-1">
-                                                <input
-                                                    type="text"
-                                                    value={editImagePreview}
-                                                    onChange={(e) => setEditImagePreview(e.target.value)}
-                                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs font-mono text-black focus:outline-none focus:border-black"
-                                                    placeholder="/images/..."
-                                                />
-                                            </div>
-                                            <div className="w-32 h-32 bg-gray-50 border border-black rounded flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                {editImagePreview ? (
-                                                    <img src={getImageUrl(editImagePreview)} alt="Thumbnail Preview" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <span className="text-xs text-gray-300 font-bold">No Image</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="Quiz title..." />
+                                    <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={4} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="Description..." />
                                 </div>
                             )}
-
-                            {/* [QUESTIONS TAB] */}
                             {modalTab === 'questions' && (
-                                <div className="space-y-4 bg-white">
+                                <div className="space-y-4">
                                     {editQuestions.map((q, idx) => (
-                                        <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-5">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-black">Question {idx + 1}</span>
-                                                    <button
-                                                        onClick={() => handleDeleteQuestion(idx)}
-                                                        className="px-2 py-0.5 text-red-500 hover:bg-red-50 text-[10px] font-bold border border-red-200 rounded transition-all flex items-center gap-1"
-                                                        title="Delete Question"
-                                                    >
-                                                        🗑️ DELETE
-                                                    </button>
-                                                </div>
-                                                <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-semibold border border-black">
-                                                    Weight: +{idx === 0 ? 4 : idx === 1 ? 2 : idx === 2 ? 1 : 0}
-                                                </span>
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={q.question_text || ''}
-                                                onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)}
-                                                className="w-full px-4 py-2.5 mb-3 bg-white border-[1.5px] border-black rounded-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                placeholder="Question text..."
-                                            />
+                                        <div key={idx} className="border-[1.5px] border-black p-5 rounded-lg">
+                                            <input type="text" value={q.question_text || ''} onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)} className="w-full px-4 py-2 mb-3 border-[1.5px] border-black" />
                                             <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <span className="text-xs font-semibold text-gray-500 block mb-1">Option A (0 pt)</span>
-                                                    <input
-                                                        type="text"
-                                                        value={q.option_a || ''}
-                                                        onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)}
-                                                        className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <span className="text-xs font-semibold text-gray-500 block mb-1">Option B (+{idx === 0 ? 4 : idx === 1 ? 2 : idx === 2 ? 1 : 0} pt)</span>
-                                                    <input
-                                                        type="text"
-                                                        value={q.option_b || ''}
-                                                        onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)}
-                                                        className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-sm font-medium text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                    />
-                                                </div>
+                                                <input type="text" value={q.option_a || ''} onChange={(e) => handleQuestionChange(idx, 'option_a', e.target.value)} className="px-3 py-2 border-[1.5px] border-black" />
+                                                <input type="text" value={q.option_b || ''} onChange={(e) => handleQuestionChange(idx, 'option_b', e.target.value)} className="px-3 py-2 border-[1.5px] border-black" />
                                             </div>
                                         </div>
                                     ))}
-                                    <button
-                                        onClick={handleAddQuestion}
-                                        className="w-full py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 font-bold hover:border-black hover:text-black transition-all mb-4"
-                                    >
-                                        ➕ Add New Question
-                                    </button>
                                 </div>
                             )}
-
-                            {/* [RESULTS TAB] */}
                             {modalTab === 'results' && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {editResults.map((result, idx) => (
-                                        <div key={idx} className="bg-white border-[1.5px] border-black rounded-lg p-4">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="text-xs font-bold text-gray-600">Result #{idx + 1}</span>
-                                                <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded border border-black">
-                                                    {toScoreDisplay(result.result_code)}
-                                                </span>
-                                                <button
-                                                    onClick={() => handleClearResult(idx)}
-                                                    className="text-gray-400 hover:text-red-500 text-[10px] font-bold uppercase tracking-tighter"
-                                                    title="Clear Result"
-                                                >
-                                                    🗑️ Clear
-                                                </button>
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={result.title || ''}
-                                                onChange={(e) => handleResultChange(idx, 'title', e.target.value)}
-                                                className="w-full px-3 py-2 mb-2 bg-white border-[1.5px] border-black rounded-sm font-semibold text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                placeholder="Result title"
-                                            />
-                                            <textarea
-                                                value={result.description || ''}
-                                                onChange={(e) => handleResultChange(idx, 'description', e.target.value)}
-                                                rows={2}
-                                                className="w-full px-3 py-2 bg-white border-[1.5px] border-black rounded-sm text-xs font-medium text-black resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                placeholder="Result description..."
-                                            />
-
-                                            {/* Result Image Management */}
-                                            <div className="mt-3 flex gap-3 items-center">
-                                                <div className="flex-1">
-                                                    <input
-                                                        type="text"
-                                                        value={result.image_url || ''}
-                                                        onChange={(e) => handleResultChange(idx, 'image_url', e.target.value)}
-                                                        className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-[10px] font-mono focus:outline-none"
-                                                        placeholder="Result Image URL..."
-                                                    />
-                                                </div>
-                                                <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                    {result.image_url ? (
-                                                        <img src={getImageUrl(result.image_url)} alt="" className="w-full h-full object-cover" />
-                                                    ) : (
-                                                        <span className="text-[8px] text-gray-300 font-bold uppercase">No Img</span>
-                                                    )}
-                                                </div>
-                                            </div>
+                                        <div key={idx} className="border-[1.5px] border-black p-4 rounded-lg">
+                                            <input type="text" value={result.title || ''} onChange={(e) => handleResultChange(idx, 'title', e.target.value)} className="w-full px-3 py-2 mb-2 border-[1.5px] border-black" placeholder="Result title" />
+                                            <textarea value={result.description || ''} onChange={(e) => handleResultChange(idx, 'description', e.target.value)} rows={2} className="w-full px-3 py-2 border-[1.5px] border-black" placeholder="Description..." />
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
-
-                        {/* Footer: Action Buttons */}
-                        <div className="px-6 py-4 border-t-[1.5px] border-black bg-white flex justify-between items-center">
-                            <button
-                                onClick={() => { if (window.confirm('Are you sure you want to delete this quiz?')) { deleteQuiz(editingQuiz.id); closeEditModal(); } }}
-                                className="text-red-600 font-semibold text-sm hover:underline"
-                            >
-                                Delete Quiz
-                            </button>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={closeEditModal}
-                                    className="px-5 py-2.5 bg-white text-black font-semibold rounded-lg border-[1.5px] border-black hover:bg-gray-100 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={saveQuiz}
-                                    className="px-6 py-2.5 bg-black text-white font-semibold rounded-lg border-[1.5px] border-black hover:bg-gray-800 transition-colors"
-                                >
-                                    Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    </div >
-                </div >
-            )}
-
-            {/* Main Content */}
-            <div className="min-h-screen bg-[#fff9fc] p-8 pt-24 font-sans text-gray-800">
-                <div className="max-w-6xl mx-auto">
-                    {/* Header */}
-                    <header className="mb-12 text-center">
-                        <div className="flex justify-center mb-4">
-                            <img src="/logo192.png" alt="NamBac" className="w-16 h-16 drop-shadow-md" onError={(e) => e.target.style.display='none'} />
-                        </div>
-                        <h1 className="text-5xl font-black text-[#FF2D85] tracking-tighter drop-shadow-sm">
-                            ⚡ AI POWER STATION
-                        </h1>
-                        <p className="text-gray-500 font-bold mt-2 uppercase tracking-[0.2em] text-sm">Control Center</p>
-                    </header>
-
-                    {/* Tabs */}
-                    <div className="flex justify-center mb-10">
-                        <div className="flex bg-gray-100/50 p-2 rounded-[2rem] border-2 border-black shadow-[4px_4px_0px_0px_#000000] space-x-2">
-                            <button
-                                onClick={() => setActiveTab('quizzes')}
-                                className={`px-8 py-3 rounded-full font-black transition-all ${activeTab === 'quizzes' ? 'bg-[#FF2D85] text-white' : 'text-gray-500 hover:text-black'}`}
-                            >
-                                🧩 Quizzes
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('services')}
-                                className={`px-8 py-3 rounded-full font-black transition-all ${activeTab === 'services' ? 'bg-[#FF2D85] text-white' : 'text-gray-500 hover:text-black'}`}
-                            >
-                                🔗 AI Services
-                            </button>
+                        <div className="px-6 py-4 border-t-[1.5px] border-black bg-white flex justify-between">
+                            <button onClick={() => deleteQuiz(editingQuiz.id, editingQuiz.is_local)} className="text-red-600 font-semibold text-sm">Delete Quiz</button>
+                            <button onClick={saveQuiz} className="px-6 py-2.5 bg-black text-white font-semibold rounded-lg">Save Changes</button>
                         </div>
                     </div>
+                </div>
+            )}
 
-                    {/* AI Buttons (Only for Quizzes) */}
-                    {activeTab === 'quizzes' && (
-                        <div className="mb-16 text-center">
-                            <h3 className="font-black text-gray-400 uppercase tracking-widest text-xs mb-6 text-center w-full">Create with AI Persona</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
-                                {personas.map((persona, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleGenerate(persona)}
-                                        disabled={loading}
-                                        className={`sticker-tile group p-6 flex flex-col items-center justify-center bg-white hover:rotate-2 transition-transform ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    >
-                                        <span className="text-4xl mb-3 block group-hover:scale-125 transition-transform">
-                                            {persona.emoji}
-                                        </span>
-                                        <span className="font-black text-xs text-center leading-tight">
-                                            {persona.name}
-                                        </span>
-                                    </button>
-                                ))}
+            <div className="min-h-screen bg-[#fff9fc] p-8 pt-24 font-sans text-gray-800">
+                <div className="max-w-6xl mx-auto">
+                    <header className="mb-12 text-center">
+                        <h1 className="text-4xl font-black text-[#FF2D85] tracking-tight">Admin Dashboard</h1>
+                        <p className="text-gray-500 font-bold mt-2">Manage your interactive quizzes</p>
+                    </header>
+
+                    {/* Compact Header for Admin */}
+                    {!showEditor && (
+                        <div className="flex justify-between items-center mb-8 px-4">
+                            <div>
+                                <h2 className="text-3xl font-black text-gray-900">🧩 Quiz Inventory</h2>
+                                <p className="text-gray-400 text-sm font-bold mt-1">Manage your interactive content</p>
                             </div>
-                            
-                            {loading && (
-                                <div className="flex items-center justify-center gap-3 py-4">
-                                    <div className="w-8 h-8 border-4 border-[#FF2D85] border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="text-[#FF2D85] font-black animate-pulse">AI is generating your quiz...</span>
-                                </div>
-                            )}
+                            <button 
+                                onClick={() => setShowEditor(true)}
+                                className="bg-[#FF2D85] text-white px-8 py-3 rounded-2xl font-black shadow-[4px_4px_0px_0px_#000000] border-2 border-black hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
+                            >
+                                ✨ CREATE NEW QUIZ
+                            </button>
                         </div>
                     )}
 
-                    {/* Dashboard Content */}
-                    <section className="bg-white rounded-3xl border-2 border-black shadow-[8px_8px_0px_0px_#000000] overflow-hidden mb-12">
-                        <div className="bg-white border-b-2 border-black p-6 flex justify-between items-center">
-                            <div>
-                                <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-                                    {activeTab === 'quizzes' ? '🎮 Quiz Management' : '🔗 Service Management'}
-                                </h2>
-                                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Total {filteredQuizzes.length} Items</p>
-                            </div>
-                            {activeTab === 'quizzes' && (
-                                <button
-                                    onClick={() => navigate('/editor')}
-                                    className="jelly-btn bg-[#FF2D85] text-white px-6 py-2 rounded-xl font-black text-sm hover:scale-105 transition-transform"
+                    <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-12 min-h-[600px]">
+                        {showEditor ? (
+                            <div className="p-0 bg-gray-50 relative">
+                                <button 
+                                    onClick={() => setShowEditor(false)}
+                                    className="absolute top-4 right-4 z-10 bg-white border-2 border-black px-4 py-2 rounded-xl font-black text-xs hover:bg-gray-50"
                                 >
-                                    + Manual Create
+                                    ✕ CLOSE EDITOR
                                 </button>
-                            )}
-                        </div>
-
-                        {activeTab === 'quizzes' ? (
-                            <>
+                                <QuizEditor embedded={true} initialAuth={true} />
+                            </div>
+                        ) : (
+                            <div className="p-6">
                                 {/* Filters */}
-                                <div className="p-6 bg-gray-50/50 border-b-2 border-black/5">
-                                    <div className="flex flex-wrap gap-3">
-                                        {filterTypes.map((type) => (
-                                            <button
-                                                key={type}
-                                                onClick={() => setFilterType(type)}
-                                                className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider transition-all duration-200 border-2 ${filterType === type
-                                                    ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                                                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
-                                                    }`}
-                                            >
-                                                {type === 'all' ? 'All' : getTypeLabel(type)}
-                                            </button>
-                                        ))}
-                                    </div>
+                                <div className="flex flex-wrap gap-2 mb-8">
+                                    {filterTypes.map((type) => (
+                                        <button
+                                            key={type}
+                                            onClick={() => setFilterType(type)}
+                                            className={`px-5 py-2 rounded-xl font-black text-[11px] uppercase tracking-wider transition-all border-2 ${filterType === type
+                                                ? 'bg-black text-white border-black'
+                                                : 'bg-white text-gray-400 border-gray-100 hover:border-black'
+                                                }`}
+                                        >
+                                            {type === 'all' ? 'All Content' : getTypeLabel(type)}
+                                        </button>
+                                    ))}
                                 </div>
 
-                                {/* Table */}
-                                {loading && !quizzes.length ? (
-                                    <div className="p-20 text-center">
-                                        <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
-                                        <p className="text-gray-400 font-bold">Loading quizzes...</p>
+                                {loading ? (
+                                    <div className="py-24 text-center">
+                                        <div className="animate-bounce text-4xl mb-4">🔮</div>
+                                        <div className="text-gray-400 font-black uppercase tracking-widest text-xs">Summoning Data...</div>
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
                                         <table className="w-full">
                                             <thead>
-                                                <tr className="border-b-2 border-black/5">
-                                                    <th className="p-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ID / Date</th>
-                                                    <th className="p-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Quiz Info</th>
-                                                    <th className="p-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Type</th>
-                                                    <th className="p-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
-                                                    <th className="p-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
+                                                <tr className="border-b border-gray-100 bg-gray-50/50 text-left">
+                                                    <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Quiz Info</th>
+                                                    <th className="p-4 text-center text-[10px] font-black text-gray-500 uppercase tracking-widest">Visibility</th>
+                                                    <th className="p-4 text-center text-[10px] font-black text-gray-500 uppercase tracking-widest">Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y-2 divide-black/5">
-                                                {filteredQuizzes.length === 0 ? (
-                                                    <tr>
-                                                        <td colSpan={6} className="p-8 text-center text-gray-400">
-                                                            No quizzes found.
+                                            <tbody className="divide-y divide-gray-100">
+                                                {filteredQuizzes.map((quiz) => (
+                                                    <tr key={quiz.id} className="hover:bg-pink-50/30 transition-colors group">
+                                                        <td className="p-4">
+                                                            <div className="flex items-center gap-5">
+                                                                <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform">
+                                                                    <img src={getImageUrl(quiz.image_url)} alt="" className="w-full h-full object-cover" />
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-black border ${quiz.is_local ? 'bg-green-50 text-green-600 border-green-200' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>
+                                                                            {quiz.is_local ? 'LOCAL DB' : 'CLOUD STORAGE'}
+                                                                        </span>
+                                                                        <span className="text-[10px] font-bold text-gray-400">ID: {quiz.id?.toString().slice(0, 8)}</span>
+                                                                    </div>
+                                                                    <button onClick={() => openEditModal(quiz)} className="font-black text-gray-900 hover:text-[#FF2D85] text-base text-left transition-colors">
+                                                                        {quiz.title}
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-4 text-center">
+                                                            <button
+                                                                onClick={() => toggleQuizStatus(quiz)}
+                                                                className={`px-4 py-1.5 rounded-xl text-[10px] font-black border-2 transition-all ${quiz.is_active !== false
+                                                                    ? 'bg-[#FF2D85] text-white border-black shadow-[2px_2px_0px_0px_#000000]'
+                                                                    : 'bg-white text-gray-300 border-gray-100 opacity-50'
+                                                                    }`}
+                                                            >
+                                                                {quiz.is_active !== false ? 'PUBLIC' : 'DRAFT'}
+                                                            </button>
+                                                        </td>
+                                                        <td className="p-4">
+                                                            <div className="flex items-center justify-center gap-3">
+                                                                <button onClick={() => openEditModal(quiz)} className="p-2.5 text-gray-400 hover:text-[#FF2D85] hover:bg-pink-50 rounded-xl transition-all" title="Edit Quiz">⚙️</button>
+                                                                <button onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')} className="p-2.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all" title="Preview">👁️</button>
+                                                                <button onClick={() => deleteQuiz(quiz.id, quiz.is_local)} className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Delete">🗑️</button>
+                                                            </div>
                                                         </td>
                                                     </tr>
-                                                ) : (
-                                                    filteredQuizzes.map((quiz) => (
-                                                        <tr key={quiz.id} className="hover:bg-gray-50/50 transition-colors group">
-                                                            <td className="p-6">
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-[10px] font-black font-mono text-gray-400">#{quiz.id?.toString().slice(0, 8)}</span>
-                                                                    <span className="text-xs font-bold text-gray-500 mt-1">{formatDate(quiz.created_at)}</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-6">
-                                                                <div className="flex items-center gap-4">
-                                                                    <div className="bg-gray-100 rounded-xl border-2 border-black/5 overflow-hidden flex-shrink-0" style={{ width: '200px', height: '200px' }}>
-                                                                        {quiz.image_url ? (
-                                                                            <img src={getImageUrl(quiz.image_url)} alt="" className="w-full h-full object-cover" />
-                                                                        ) : (
-                                                                            <div className="w-full h-full flex items-center justify-center text-4xl">🧩</div>
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="flex flex-col">
-                                                                        <div className="flex items-center gap-2 mb-1">
-                                                                            {quiz.is_local ? (
-                                                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-green-100 text-green-700 border border-green-300 uppercase letter-spacing-widest">LOCAL</span>
-                                                                            ) : (
-                                                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-blue-100 text-blue-700 border border-blue-300 uppercase letter-spacing-widest">CLOUD</span>
-                                                                            )}
-                                                                        </div>
-                                                                        <button
-                                                                            onClick={() => openEditModal(quiz)}
-                                                                            className="font-black text-gray-900 hover:text-[#FF2D85] text-left transition-colors text-sm group-hover:translate-x-1 duration-200"
-                                                                        >
-                                                                            {quiz.title}
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-6 text-center">
-                                                                <span className="inline-block px-3 py-1 bg-white border-2 border-black/10 rounded-full text-[10px] font-black uppercase tracking-wider text-gray-600">
-                                                                    {getTypeLabel(quiz.category)}
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-6 text-center">
-                                                                <button
-                                                                    onClick={() => toggleStatus(quiz.id)}
-                                                                    className={`px-4 py-1.5 rounded-full text-[10px] font-black transition-all duration-200 border-2 ${quiz.status === 'visible' || quiz.is_active !== false
-                                                                        ? 'bg-[#FF2D85] text-white border-black shadow-[2px_2px_0px_0px_#000000]'
-                                                                        : 'bg-white text-gray-400 border-gray-200'
-                                                                        }`}
-                                                                >
-                                                                    {quiz.status === 'visible' || quiz.is_active !== false ? 'VISIBLE' : 'HIDDEN'}
-                                                                </button>
-                                                            </td>
-                                                            <td className="p-6 text-center">
-                                                                <div className="flex items-center justify-center gap-2">
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            deleteQuiz(quiz);
-                                                                        }}
-                                                                        className="px-3 py-1.5 rounded-lg bg-white border-2 border-red-200 text-red-500 font-black text-[10px] hover:bg-red-500 hover:text-white hover:border-black transition-all duration-200"
-                                                                    >
-                                                                        DELETE
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')}
-                                                                        className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#00C2FF] hover:bg-blue-50 rounded-xl transition-all duration-200 border-2 border-transparent hover:border-blue-100"
-                                                                        title="View Quiz Start Screen"
-                                                                    >
-                                                                        👁️
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => copyQuizLink(quiz.id)}
-                                                                        className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#FF2D85] hover:bg-pink-50 rounded-xl transition-all duration-200 border-2 border-transparent hover:border-pink-100"
-                                                                        title="Copy Share Link"
-                                                                    >
-                                                                        🔗
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => deleteQuiz(quiz.id)}
-                                                                        className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200 hover:rotate-12 border-2 border-transparent hover:border-red-100"
-                                                                        title="Delete Quiz"
-                                                                    >
-                                                                        🗑️
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                )}
+                                                ))}
                                             </tbody>
                                         </table>
                                     </div>
                                 )}
-                            </>
-                        ) : (
-                            <div className="p-6">
-                                {/* Add Service Form */}
-                                <div className="bg-pink-50 rounded-xl p-6 mb-8 border border-pink-100">
-                                    <h3 className="text-lg font-bold text-[#FF2D85] mb-4">✨ Add New AI Service</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <input
-                                            type="text"
-                                            placeholder="Service Name"
-                                            value={newServiceTitle}
-                                            onChange={(e) => setNewServiceTitle(e.target.value)}
-                                            className="px-4 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
-                                        />
-                                        <select
-                                            value={newServiceCategory}
-                                            onChange={(e) => setNewServiceCategory(e.target.value)}
-                                            className="px-4 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
-                                        >
-                                            <option value="">Select Category</option>
-                                            {SERVICE_CATEGORIES.map(cat => (
-                                                <option key={cat.id} value={cat.id}>{cat.label}</option>
-                                            ))}
-                                        </select>
-                                        <input
-                                            type="text"
-                                            placeholder="Service URL (https://...)"
-                                            value={newServiceUrl}
-                                            onChange={(e) => setNewServiceUrl(e.target.value)}
-                                            className="px-4 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Image URL"
-                                            value={newServiceImage}
-                                            onChange={(e) => setNewServiceImage(e.target.value)}
-                                            className="px-4 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
-                                        />
-                                        <div className="md:col-span-2">
-                                            <textarea
-                                                placeholder="Description (Short & Catchy)"
-                                                value={newServiceDesc}
-                                                onChange={(e) => setNewServiceDesc(e.target.value)}
-                                                className="w-full px-4 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#FF2D85]"
-                                                rows="2"
-                                            />
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={handleAddService}
-                                        className="bg-[#FF2D85] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#E01E70] transition-colors shadow-md"
-                                    >
-                                        + Add Service
-                                    </button>
-                                </div>
-
-                                {/* Services List */}
-                                <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
-                                    <table className="w-full">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Service Name</th>
-                                                <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">URL</th>
-                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
-                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-100">
-                                            {services.map((svc) => (
-                                                <tr key={svc.id} className="hover:bg-pink-50 transition-colors">
-                                                    <td className="p-4 flex items-center gap-3">
-                                                        <img src={svc.image_url} alt="" className="w-10 h-10 rounded-lg object-cover" />
-                                                        <div>
-                                                            <div className="font-bold text-gray-800">{svc.title}</div>
-                                                            <div className="text-xs text-gray-500">{svc.description}</div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-4 text-sm text-blue-500 truncate max-w-[200px]">
-                                                        <a href={svc.url} target="_blank" rel="noreferrer" className="hover:underline">{svc.url}</a>
-                                                    </td>
-                                                    <td className="p-4 text-center">
-                                                        <span className="px-2 py-1 bg-gray-100 rounded text-xs font-bold text-gray-500">{svc.category}</span>
-                                                    </td>
-                                                    <td className="p-4 text-center">
-                                                        <button
-                                                            onClick={async () => {
-                                                                if (window.confirm('Delete service?')) {
-                                                                    await adminFetch(`${API_BASE_URL}/services/${svc.id}`, { method: 'DELETE' });
-                                                                    fetchServices();
-                                                                }
-                                                            }}
-                                                            className="text-red-500 hover:text-red-700 font-bold text-sm"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
                             </div>
                         )}
                     </section>

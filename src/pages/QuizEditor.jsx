@@ -54,13 +54,13 @@ const BINARY_SCORES = [
     [0, 4], [0, 2], [0, 1], [0, 0], [0, 0] // Q1=4, Q2=2, Q3=1, Q4/Q5=0
 ];
 
-export default function QuizEditor() {
+export default function QuizEditor({ embedded = false, initialAuth = false }) {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const zipInputRef = useRef(null);
 
     // Auth
-    const [isAuth, setIsAuth] = useState(false);
+    const [isAuth, setIsAuth] = useState(initialAuth);
     const [password, setPassword] = useState('');
     const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '0922';
 
@@ -167,11 +167,11 @@ export default function QuizEditor() {
             const data = await response.json();
             console.log("AI Generation Successful (Local):", data);
 
-            // Populating state from backend response
-            const meta = data.meta || {};
-            setTitle(meta.title || meta.quiz_title || '');
-            setDescription(meta.description || meta.quiz_description || '');
-            setCategory(meta.category || meta.quiz_category || 'fun');
+            // Populating state from backend response (Check both 'quiz' and 'meta' for compatibility)
+            const quizInfo = data.quiz || data.meta || {};
+            setTitle(quizInfo.title || quizInfo.quiz_title || '');
+            setDescription(quizInfo.description || quizInfo.quiz_description || '');
+            setCategory(quizInfo.category || quizInfo.quiz_category || 'fun');
             
             // Format Questions
             const formattedQs = (data.questions || []).map((q, i) => ({
@@ -433,14 +433,16 @@ export default function QuizEditor() {
     }
 
     return (
-        <div className="editor-container">
+        <div className={`editor-container ${embedded ? 'embedded' : ''}`}>
             {/* Header */}
-            <div className="editor-header">
-                <div className="flex flex-col items-center mb-2">
-                    <h1 className="editor-logo">🎮 EDITOR</h1>
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">AI Quiz Factory</p>
+            {!embedded && (
+                <div className="editor-header">
+                    <div className="flex flex-col items-center mb-2">
+                        <h1 className="editor-logo">🎮 EDITOR</h1>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">AI Quiz Factory</p>
+                    </div>
                 </div>
-                
+            )}
                 <div className="editor-steps">
                     {['타입', '정보', '질문', '결과', '완료'].map((label, i) => (
                         <div
@@ -453,7 +455,6 @@ export default function QuizEditor() {
                         </div>
                     ))}
                 </div>
-            </div>
 
             {/* Step 1: Quiz Type Selection */}
             {step === 1 && (

@@ -17,6 +17,12 @@
     margin: 16px 20px;
 }
 
+@media (max-width: 400px) {
+    .hero-carousel-wrapper {
+        margin: 16px 12px;
+    }
+}
+
 .hero-carousel {
     display: flex;
     overflow-x: auto;
@@ -261,6 +267,13 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+}
+
+@media (max-width: 440px) {
+    .glass-list.grid-cols-2 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
 .glass-card {

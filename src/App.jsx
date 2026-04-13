@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import QuizPage from './pages/QuizPage';
 import Admin from './pages/Admin';
 import QuizEditor from './pages/QuizEditor';
-import AIServicePage from './pages/AIServicePage';
+
 import './App.css'; // [FIX]: Added missing style import
 
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -14,6 +14,8 @@ import TermsOfService from './pages/TermsOfService';
 import AnalysisPage from './pages/AnalysisPage';
 import About from './pages/About';
 import Result from './pages/Result';
+import ShareRedirect from './pages/ShareRedirect';
+import FAQ from './pages/FAQ';
 
 function App() {
   return (
@@ -40,11 +42,14 @@ function AppContent() {
         {/* 어떤 퀴즈 번호로 들어오든 처리하는 동적 라우팅 */}
         <Route path="/quiz/:id" element={<QuizPage />} />
         <Route path="/quiz/:id/analysis" element={<AnalysisPage />} />
-        <Route path="/quiz/:id/result" element={<Result />} />
+         <Route path="/quiz/:id/result" element={<Result />} />
+        <Route path="/share/:id/:score" element={<ShareRedirect />} />
+        <Route path="/share/:id" element={<ShareRedirect />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/editor" element={<QuizEditor />} />
-        <Route path="/service/:id" element={<AIServicePage />} />
+
         <Route path="/about" element={<About />} />
+        <Route path="/faq" element={<FAQ />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>

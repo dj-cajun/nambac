@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ChevronUp, Lock, Unlock } from 'lucide-react';
 import './AnalysisPage.css';
-import AdPlaceholder from '../components/AdPlaceholder';
 
 const AnalysisPage = () => {
     const navigate = useNavigate();
@@ -99,7 +98,6 @@ const AnalysisPage = () => {
 
             {/* AdSense Slot (Fixed Height) */}
             <div className="analysis-ad-container">
-                <AdPlaceholder location="analysis-interstitial" />
             </div>
 
             {/* Bottom Interaction Area */}
