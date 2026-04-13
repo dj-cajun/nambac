@@ -188,8 +188,8 @@ export default function QuizPage({ quizIdProp }) {
 
     // --- Intro View ---
     if (!started) {
-        // Derive dynamic share URL for Quiz OG Tags
-        const shareUrl = `https://nambac.xyz/quiz/${quizId}`;
+        // Derive dynamic share URL for Quiz OG Tags (Route through /share/ for SSR OG api wrapper)
+        const shareUrl = `https://nambac.xyz/share/${quizId}`;
         
         return (
             <>
