@@ -527,12 +527,19 @@ const Admin = () => {
                                                                     {quiz.id?.toString().slice(0, 8)}...
                                                                 </td>
                                                                 <td className="p-4">
-                                                                    <button
-                                                                        onClick={() => openEditModal(quiz)}
-                                                                        className="font-medium text-gray-900 hover:text-[#FF2D85] hover:underline text-left transition-colors"
-                                                                    >
-                                                                        {quiz.title}
-                                                                    </button>
+                                                                    <div className="flex items-center gap-4">
+                                                                        {quiz.image_url ? (
+                                                                            <img src={getImageUrl(quiz.image_url)} alt="" className="w-12 h-12 rounded-xl object-cover shadow-sm bg-gray-50 border border-gray-100" />
+                                                                        ) : (
+                                                                            <div className="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 text-xs">No Img</div>
+                                                                        )}
+                                                                        <button
+                                                                            onClick={() => openEditModal(quiz)}
+                                                                            className="font-bold text-gray-900 hover:text-[#FF2D85] text-left transition-colors text-base p-0 m-0"
+                                                                        >
+                                                                            {quiz.title || 'Untitled Quiz'}
+                                                                        </button>
+                                                                    </div>
                                                                 </td>
                                                                 <td className="p-4 text-center">
                                                                     <span className="inline-block px-3 py-1 bg-pink-100 text-[#FF2D85] rounded-full text-sm font-medium">
