@@ -192,30 +192,19 @@ const Admin = () => {
         }
     };
 
-    const deleteQuiz = async (quizId, isLocal) => {
+    const deleteQuiz = async (quizId) => {
         const id = quizId;
         if (!window.confirm(`Are you sure you want to delete this quiz?`)) return;
         
         try {
-            let deleted = false;
+            const { error: cloudError } = await supabase.from('quizzes').delete().eq('id', id);
             
-            if (isLocal) {
-                const response = await fetch(`${API_BASE_URL}/quizzes/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'X-Admin-Key': ADMIN_API_KEY }
-                });
-                if (response.ok) deleted = true;
-            } else {
-                const { error: cloudError } = await supabase.from('quizzes').delete().eq('id', id);
-                if (!cloudError) deleted = true;
-            }
-
-            if (deleted) {
+            if (!cloudError) {
                 setQuizzes(prev => prev.filter(q => q.id !== id));
                 setFilteredQuizzes(prev => prev.filter(q => q.id !== id));
                 alert("✅ Quiz deleted successfully.");
             } else {
-                throw new Error("Could not delete quiz. Please check if the backend is connected.");
+                throw new Error(cloudError.message || "Could not delete quiz from database.");
             }
         } catch (error) {
             console.error("Error deleting quiz:", error);
@@ -470,96 +459,120 @@ const Admin = () => {
                         </div>
                     )}
 
-                    <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-12 min-h-[600px]">
+                    <section className="bg-white rounded-xl shadow-lg overflow-hidden mb-12 min-h-[600px]">
                         {showEditor ? (
                             <div className="p-0 bg-gray-50 relative">
                                 <button 
                                     onClick={() => setShowEditor(false)}
-                                    className="absolute top-4 right-4 z-10 bg-white border-2 border-black px-4 py-2 rounded-xl font-black text-xs hover:bg-gray-50"
+                                    className="absolute top-4 right-4 z-10 bg-white px-4 py-2 rounded-lg font-bold text-sm text-gray-600 hover:bg-gray-100 shadow-sm"
                                 >
                                     ✕ CLOSE EDITOR
                                 </button>
                                 <QuizEditor embedded={true} initialAuth={true} />
                             </div>
                         ) : (
-                            <div className="p-6">
-                                {/* Filters */}
-                                <div className="flex flex-wrap gap-2 mb-8">
-                                    {filterTypes.map((type) => (
-                                        <button
-                                            key={type}
-                                            onClick={() => setFilterType(type)}
-                                            className={`px-5 py-2 rounded-xl font-black text-[11px] uppercase tracking-wider transition-all border-2 ${filterType === type
-                                                ? 'bg-black text-white border-black'
-                                                : 'bg-white text-gray-400 border-gray-100 hover:border-black'
-                                                }`}
-                                        >
-                                            {type === 'all' ? 'All Content' : getTypeLabel(type)}
-                                        </button>
-                                    ))}
+                            <>
+                                <div className="bg-gradient-to-r from-[#FF2D85] to-pink-400 p-4 flex justify-between items-center">
+                                    <h2 className="text-2xl font-black text-white">
+                                        🎮 Quiz Management
+                                    </h2>
                                 </div>
-
-                                {loading ? (
-                                    <div className="py-24 text-center">
-                                        <div className="animate-bounce text-4xl mb-4">🔮</div>
-                                        <div className="text-gray-400 font-black uppercase tracking-widest text-xs">Summoning Data...</div>
+                                <div className="p-6">
+                                    {/* Filters */}
+                                    <div className="flex flex-wrap gap-2 mb-6">
+                                        {filterTypes.map((type) => (
+                                            <button
+                                                key={type}
+                                                onClick={() => setFilterType(type)}
+                                                className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${filterType === type
+                                                    ? 'bg-[#FF2D85] text-white shadow-md'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                    }`}
+                                            >
+                                                {type === 'all' ? 'All Content' : getTypeLabel(type)}
+                                            </button>
+                                        ))}
                                     </div>
-                                ) : (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full">
-                                            <thead>
-                                                <tr className="border-b border-gray-100 bg-gray-50/50 text-left">
-                                                    <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Quiz Info</th>
-                                                    <th className="p-4 text-center text-[10px] font-black text-gray-500 uppercase tracking-widest">Visibility</th>
-                                                    <th className="p-4 text-center text-[10px] font-black text-gray-500 uppercase tracking-widest">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-gray-100">
-                                                {filteredQuizzes.map((quiz) => (
-                                                    <tr key={quiz.id} className="hover:bg-pink-50/30 transition-colors group">
-                                                        <td className="p-4">
-                                                            <div className="flex items-center gap-5">
-                                                                <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform">
-                                                                    <img src={getImageUrl(quiz.image_url)} alt="" className="w-full h-full object-cover" />
-                                                                </div>
-                                                                <div className="flex flex-col">
-                                                                    <div className="flex items-center gap-2 mb-1">
-                                                                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-black border ${quiz.is_local ? 'bg-green-50 text-green-600 border-green-200' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>
-                                                                            {quiz.is_local ? 'LOCAL DB' : 'CLOUD STORAGE'}
-                                                                        </span>
-                                                                        <span className="text-[10px] font-bold text-gray-400">ID: {quiz.id?.toString().slice(0, 8)}</span>
-                                                                    </div>
-                                                                    <button onClick={() => openEditModal(quiz)} className="font-black text-gray-900 hover:text-[#FF2D85] text-base text-left transition-colors">
+
+                                    {/* Table */}
+                                    {loading && !quizzes.length ? (
+                                        <div className="p-12 text-center">
+                                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
+                                            <p className="text-gray-500">Loading quizzes...</p>
+                                        </div>
+                                    ) : (
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full">
+                                                <thead className="bg-gray-50">
+                                                    <tr>
+                                                        <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
+                                                        <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Title</th>
+                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Created</th>
+                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-gray-100">
+                                                    {filteredQuizzes.length === 0 ? (
+                                                        <tr>
+                                                            <td colSpan="6" className="p-8 text-center text-gray-400">
+                                                                No quizzes found.
+                                                            </td>
+                                                        </tr>
+                                                    ) : (
+                                                        filteredQuizzes.map((quiz) => (
+                                                            <tr key={quiz.id} className="hover:bg-pink-50 transition-colors">
+                                                                <td className="p-4 text-sm text-gray-600 font-mono">
+                                                                    {quiz.id?.toString().slice(0, 8)}...
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    <button
+                                                                        onClick={() => openEditModal(quiz)}
+                                                                        className="font-medium text-gray-900 hover:text-[#FF2D85] hover:underline text-left transition-colors"
+                                                                    >
                                                                         {quiz.title}
                                                                     </button>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-4 text-center">
-                                                            <button
-                                                                onClick={() => toggleQuizStatus(quiz)}
-                                                                className={`px-4 py-1.5 rounded-xl text-[10px] font-black border-2 transition-all ${quiz.is_active !== false
-                                                                    ? 'bg-[#FF2D85] text-white border-black shadow-[2px_2px_0px_0px_#000000]'
-                                                                    : 'bg-white text-gray-300 border-gray-100 opacity-50'
-                                                                    }`}
-                                                            >
-                                                                {quiz.is_active !== false ? 'PUBLIC' : 'DRAFT'}
-                                                            </button>
-                                                        </td>
-                                                        <td className="p-4">
-                                                            <div className="flex items-center justify-center gap-3">
-                                                                <button onClick={() => openEditModal(quiz)} className="p-2.5 text-gray-400 hover:text-[#FF2D85] hover:bg-pink-50 rounded-xl transition-all" title="Edit Quiz">⚙️</button>
-                                                                <button onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')} className="p-2.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all" title="Preview">👁️</button>
-                                                                <button onClick={() => deleteQuiz(quiz.id, quiz.is_local)} className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Delete">🗑️</button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
+                                                                </td>
+                                                                <td className="p-4 text-center">
+                                                                    <span className="inline-block px-3 py-1 bg-pink-100 text-[#FF2D85] rounded-full text-sm font-medium">
+                                                                        {getTypeLabel(quiz.category)}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="p-4 text-center text-sm text-gray-600">
+                                                                    {new Date(quiz.created_at).toLocaleDateString()}
+                                                                </td>
+                                                                <td className="p-4 text-center">
+                                                                    <button
+                                                                        onClick={() => toggleStatus(quiz.id)}
+                                                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${quiz.is_active !== false && quiz.status !== 'hidden'
+                                                                            ? 'bg-green-500 text-white hover:bg-green-600'
+                                                                            : 'bg-red-500 text-white hover:bg-red-600'
+                                                                            }`}
+                                                                    >
+                                                                        {quiz.is_active !== false && quiz.status !== 'hidden' ? 'ON' : 'OFF'}
+                                                                    </button>
+                                                                </td>
+                                                                <td className="p-4 text-center">
+                                                                    <div className="flex items-center justify-center gap-2">
+                                                                        <button onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')} className="px-2 py-1.5 text-xs font-bold text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all" title="Preview">👁️</button>
+                                                                        <button
+                                                                            onClick={() => deleteQuiz(quiz.id, quiz.is_local)}
+                                                                            className="px-3 py-1.5 text-xs font-bold text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 hover:border-red-500 rounded-lg transition-all duration-200"
+                                                                        >
+                                                                            🗑️ Delete
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
                         )}
                     </section>
                 </div>
