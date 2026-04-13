@@ -80,6 +80,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
     // AI Generation state
     const [isAiGenerating, setIsAiGenerating] = useState(false);
     const [showAiInput, setShowAiInput] = useState(false);
+    const [generateStatus, setGenerateStatus] = useState('');
 
     // Auth handler
     const handleAuth = (e) => {
@@ -145,7 +146,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
         
         try {
             // Direct Gemini API call (works on both local and production)
-            const topic = selectedPersona?.prompt || aiTopic || category;
+            const topic = selectedPersona?.prompt || category;
             const data = await generateQuizContent(topic, category);
             console.log("AI Generation Successful:", data);
 
@@ -182,7 +183,6 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
 
             // Notify user of progress (Do NOT go to step 2 yet)
             console.log('✨ 텍스트 완성! 백그라운드 이미지 생성 시작...');
-            setGenerateStatus('🎨 메인 커버 이미지를 생성하는 중...');
 
             // Background Image Generation & Save
             try {
@@ -213,7 +213,6 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                 
                 for (let i = 0; i < completedResults.length; i++) {
                     const r = completedResults[i];
-                    setGenerateStatus(`🖼️ 결과 이미지 생성 중... (${i + 1}/${completedResults.length})`);
                     try {
                         const b64 = await generateResultImage(r.title || '', r.description || '');
                         if (b64) {
@@ -232,8 +231,6 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                     // Short delay between requests to prevent 429 Too Many Requests
                     await new Promise(resolve => setTimeout(resolve, 2000));
                 }
-
-                setGenerateStatus('💾 Supabase에 데이터를 저장하는 중...');
 
                 // 🚀 AUTO-SAVE: Direct Supabase Save 🚀
                 setSaving(true);
