@@ -402,7 +402,7 @@ const Admin = () => {
                                 <div className="space-y-5 max-w-2xl">
                                     {editImagePreview && (
                                         <div className="flex items-center gap-4">
-                                            <img src={getImageUrl(editImagePreview)} alt="Cover" className="w-[100px] h-[100px] object-cover rounded-lg border-[1.5px] border-black shadow-sm" />
+                                            <img src={getImageUrl(editImagePreview)} alt="Cover" className="w-[300px] h-[300px] object-cover rounded-lg border-[1.5px] border-black shadow-sm" />
                                             <span className="text-xs font-bold text-gray-400">Cover Thumbnail</span>
                                         </div>
                                     )}
@@ -429,7 +429,7 @@ const Admin = () => {
                                         <div key={idx} className="border-[1.5px] border-black p-4 rounded-lg flex flex-col">
                                             {result.image_url && (
                                                 <div className="mb-3 shrink-0 flex justify-center">
-                                                    <img src={getImageUrl(result.image_url)} alt="Result" className="w-[100px] h-[100px] object-cover rounded-md border border-gray-300" />
+                                                    <img src={getImageUrl(result.image_url)} alt="Result" className="w-[300px] h-[300px] object-cover rounded-md border border-gray-300" />
                                                 </div>
                                             )}
                                             <input type="text" value={result.title || ''} onChange={(e) => handleResultChange(idx, 'title', e.target.value)} className="w-full px-3 py-2 mb-2 border-[1.5px] border-black" placeholder="Result title" />
