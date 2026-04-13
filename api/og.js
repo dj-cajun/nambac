@@ -1,27 +1,20 @@
-import { createClient } from '@supabase/supabase-js';
+// Supabase REST API - no library dependency needed
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// Known bot/crawler User-Agents
 const BOT_AGENTS = [
-  'facebookexternalhit', 'Facebot',
-  'ZaloShareBot', 'zalo',
-  'Twitterbot',
-  'LinkedInBot',
-  'Googlebot',
-  'Slackbot',
-  'Discordbot',
-  'WhatsApp',
-  'TelegramBot',
-  'Viber',
+  'facebookexternalhit', 'facebot',
+  'zalosharebot', 'zalo',
+  'twitterbot', 'linkedinbot',
+  'googlebot', 'slackbot',
+  'discordbot', 'whatsapp',
+  'telegrambot', 'viber',
 ];
 
-function isBot(userAgent) {
-  if (!userAgent) return false;
-  return BOT_AGENTS.some(bot => userAgent.toLowerCase().includes(bot.toLowerCase()));
+function isBot(ua) {
+  if (!ua) return false;
+  const lower = ua.toLowerCase();
+  return BOT_AGENTS.some(bot => lower.includes(bot));
 }
 
 function getImageUrl(path) {
@@ -31,93 +24,85 @@ function getImageUrl(path) {
   return `${SUPABASE_URL}/storage/v1/object/public/quiz-images/${filename}`;
 }
 
-function buildOgHtml({ title, description, image, url, redirectUrl }) {
+async function supabaseQuery(table, params) {
+  const url = `${SUPABASE_URL}/rest/v1/${table}?${params}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+    },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+function ogHtml({ title, description, image, url, redirectUrl }) {
+  // Escape HTML special chars
+  const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>${title}</title>
-  <meta name="description" content="${description}">
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="${title}">
-  <meta property="og:description" content="${description}">
-  <meta property="og:image" content="${image}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:url" content="${url}">
-  <meta property="og:site_name" content="nambac.xyz">
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${title}">
-  <meta name="twitter:description" content="${description}">
-  <meta name="twitter:image" content="${image}">
-  
-  <!-- Redirect for humans (fallback) -->
-  <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+<html><head>
+<meta charset="utf-8">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:image" content="${esc(image)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="${esc(url)}">
+<meta property="og:site_name" content="nambac.xyz">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:image" content="${esc(image)}">
+<meta http-equiv="refresh" content="0;url=${esc(redirectUrl)}">
 </head>
-<body>
-  <p>Redirecting to <a href="${redirectUrl}">${redirectUrl}</a>...</p>
-</body>
+<body><p>Redirecting...</p></body>
 </html>`;
 }
 
 export default async function handler(req, res) {
-  const userAgent = req.headers['user-agent'] || '';
-  const url = req.url;
-  const referer = req.headers['referer'] || '';
+  try {
+    const ua = req.headers['user-agent'] || '';
+    const url = req.url || '';
 
-  // Parse the path: /share/:quizId/:score or /quiz/:quizId
-  // Check both the actual URL and the referer (middleware rewrites to /api/og)
-  let quizId = null;
-  let scoreCode = null;
-  let isShareRoute = false;
+    // Parse path
+    const shareMatch = url.match(/\/share\/([^/]+)\/(\d+)/);
+    const shareQuizMatch = url.match(/\/share\/([^/?]+)$/);
 
-  const pathsToCheck = [url, referer];
-  for (const path of pathsToCheck) {
-    const shareMatch = path.match(/\/share\/([^/]+)\/(\d+)/);
-    const quizMatch = path.match(/\/quiz\/([^/?]+)/);
+    let quizId = null;
+    let scoreCode = null;
 
     if (shareMatch) {
       quizId = shareMatch[1];
       scoreCode = parseInt(shareMatch[2]);
-      isShareRoute = true;
-      break;
-    } else if (quizMatch) {
-      quizId = quizMatch[1];
-      break;
+    } else if (shareQuizMatch) {
+      quizId = shareQuizMatch[1];
     }
-  }
 
-  if (!quizId) {
-    return res.redirect(302, 'https://nambac.xyz/');
-  }
+    if (!quizId) {
+      return res.redirect(302, 'https://nambac.xyz/');
+    }
 
-  // If not a bot, redirect immediately
-  if (!isBot(userAgent)) {
-    const redirectTo = `/quiz/${quizId}`;
-    return res.redirect(302, redirectTo);
-  }
+    // Non-bot → redirect to quiz
+    if (!isBot(ua)) {
+      return res.redirect(302, `https://nambac.xyz/quiz/${quizId}`);
+    }
 
-  // Bot detected — fetch data and return OG HTML
-  try {
-    if (isShareRoute && scoreCode !== null) {
-      // ===== RESULT SHARE =====
-      const { data: result } = await supabase
-        .from('results')
-        .select('*, quizzes(title)')
-        .eq('quiz_id', quizId)
-        .eq('result_code', scoreCode)
-        .single();
+    // Bot → serve OG HTML
+    // Try result share first
+    if (scoreCode !== null) {
+      const results = await supabaseQuery('results',
+        `quiz_id=eq.${quizId}&result_code=eq.${scoreCode}&select=title,description,image_url,traits`
+      );
 
-      if (result) {
-        const hashtags = result.traits ? result.traits.map(t => `#${t}`).join(' ') : '';
-        const html = buildOgHtml({
-          title: `Kết quả của tôi: [${result.title}]! Bạn thử đi 🔥`,
-          description: `${result.description || ''} ${hashtags}`.trim(),
-          image: getImageUrl(result.image_url),
+      if (results && results.length > 0) {
+        const r = results[0];
+        const html = ogHtml({
+          title: `Kết quả: ${r.title} — Bạn thử đi! 🔥`,
+          description: r.description || 'Trắc nghiệm tính cách AI',
+          image: getImageUrl(r.image_url),
           url: `https://nambac.xyz/share/${quizId}/${scoreCode}`,
           redirectUrl: `https://nambac.xyz/quiz/${quizId}`,
         });
@@ -127,18 +112,17 @@ export default async function handler(req, res) {
       }
     }
 
-    // ===== QUIZ START SHARE (or fallback) =====
-    const { data: quiz } = await supabase
-      .from('quizzes')
-      .select('*')
-      .eq('id', quizId)
-      .single();
+    // Quiz share (or result not found fallback)
+    const quizzes = await supabaseQuery('quizzes',
+      `id=eq.${quizId}&select=title,description,image_url`
+    );
 
-    if (quiz) {
-      const html = buildOgHtml({
-        title: `${quiz.title} | nambac.xyz`,
-        description: quiz.description || 'Trắc nghiệm tính cách AI — Bạn là kiểu người nào?',
-        image: getImageUrl(quiz.image_url),
+    if (quizzes && quizzes.length > 0) {
+      const q = quizzes[0];
+      const html = ogHtml({
+        title: `${q.title} | nambac.xyz`,
+        description: q.description || 'Trắc nghiệm tính cách AI — Bạn là kiểu người nào?',
+        image: getImageUrl(q.image_url),
         url: `https://nambac.xyz/quiz/${quizId}`,
         redirectUrl: `https://nambac.xyz/quiz/${quizId}`,
       });
@@ -147,10 +131,10 @@ export default async function handler(req, res) {
       return res.status(200).send(html);
     }
 
-    // Fallback — quiz not found
-    return res.redirect(302, `https://nambac.xyz/quiz/${quizId || ''}`);
-  } catch (error) {
-    console.error('OG handler error:', error);
+    // Fallback
     return res.redirect(302, `https://nambac.xyz/`);
+  } catch (err) {
+    console.error('OG Error:', err);
+    return res.redirect(302, 'https://nambac.xyz/');
   }
 }
