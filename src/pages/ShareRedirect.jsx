@@ -81,9 +81,9 @@ const ShareRedirect = () => {
         <div className="min-h-screen bg-[#fff9fc] p-4 flex flex-col items-center justify-center font-['Be_Vietnam_Pro']">
             {resultData && (
                 <Helmet>
-                    <title>{`[${resultData.title}] - nambac.xyz`}</title>
+                    <title>{`[${resultData.type_name || resultData.title}] - nambac.xyz`}</title>
                     <meta name="description" content={displayDescription} />
-                    <meta property="og:title" content={`Kết quả của tôi là [${resultData.title}]!`} />
+                    <meta property="og:title" content={`Kết quả của tôi là [${resultData.type_name || resultData.title}]!`} />
                     <meta property="og:description" content={displayDescription} />
                     <meta property="og:image" content={getImageUrl(resultData.image_url)} />
                     <meta property="og:url" content={window.location.href} />

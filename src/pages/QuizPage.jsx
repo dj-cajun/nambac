@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Share2, Copy, Check } from 'lucide-react';
+import { Play, Share2, Copy, Check } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { calculateScore } from '../logic/scoring';
-import Result from './Result';
-import NameInputQuiz from './NameInputQuiz';
 import MBTIQuiz from './MBTIQuiz';
 import CustomQuiz from './CustomQuiz';
 import './QuizPage.css';
@@ -83,11 +83,34 @@ export default function QuizPage({ quizIdProp }) {
         };
 
         fetchData();
+        
+        // Track view_count when quiz page loads (if not already tracked by Home)
+        if (quizId && !window.__viewedQuiz?.[quizId]) {
+            const trackView = async () => {
+                const { data } = await supabase.from('quizzes').select('view_count').eq('id', quizId).single();
+                if (data) {
+                    supabase.from('quizzes').update({ view_count: (data.view_count || 0) + 1 }).eq('id', quizId).then();
+                }
+            };
+            trackView();
+            window.__viewedQuiz = { ...(window.__viewedQuiz || {}), [quizId]: true };
+        }
     }, [quizId]);
 
     const handleStart = () => {
         setStarted(true);
         window.scrollTo(0, 0);
+        
+        // Track participant_count
+        if (quizId && !window.__participatedQuiz?.[quizId]) {
+            supabase.from('quizzes').select('participant_count').eq('id', quizId).single()
+                .then(({ data }) => {
+                    if (data) {
+                        supabase.from('quizzes').update({ participant_count: (data.participant_count || 0) + 1 }).eq('id', quizId).then();
+                    }
+                });
+            window.__participatedQuiz = { ...(window.__participatedQuiz || {}), [quizId]: true };
+        }
     };
 
     const handleAnswer = (isA) => {
@@ -166,8 +189,21 @@ export default function QuizPage({ quizIdProp }) {
 
     // --- Intro View ---
     if (!started) {
+        // Derive dynamic share URL for Quiz OG Tags
+        const shareUrl = `${window.location.origin}/quiz/${quizId}`;
+        
         return (
             <>
+                <Helmet>
+                    <title>{quizInfo.title} - nambac.xyz</title>
+                    <meta name="description" content={quizInfo.description || quizInfo.title} />
+                    <meta property="og:title" content={quizInfo.title} />
+                    <meta property="og:description" content={quizInfo.description || quizInfo.title} />
+                    <meta property="og:image" content={getImageUrl(quizInfo.image_url) || "/images/default_cover.png"} />
+                    <meta property="og:url" content={shareUrl} />
+                    <meta property="twitter:card" content="summary_large_image" />
+                </Helmet>
+                
                 <div className="quiz-intro-card full-screen-mode">
                     {/* Full Screen Cover Image */}
                     <div className="intro-image-container full-screen-bg">
@@ -198,7 +234,19 @@ export default function QuizPage({ quizIdProp }) {
                                 <span className="btn-label">BẮT ĐẦU</span>
                             </button>
 
-                            <button className="share-sheet-btn" onClick={() => setShowShareModal(true)}>
+                            <button className="share-sheet-btn" onClick={() => {
+                                setShowShareModal(true);
+                                // Increment share_count
+                                if (!window.__sharedQuiz?.[quizId]) {
+                                    supabase.from('quizzes').select('share_count').eq('id', quizId).single()
+                                        .then(({ data }) => {
+                                            if (data) {
+                                                supabase.from('quizzes').update({ share_count: (data.share_count || 0) + 1 }).eq('id', quizId).then();
+                                            }
+                                        });
+                                    window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizId]: true };
+                                }
+                            }}>
                                 <span className="btn-label">CHIA SẺ</span>
                             </button>
                         </div>
