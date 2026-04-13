@@ -132,26 +132,8 @@ const Admin = () => {
                 .from('quizzes')
                 .select('*')
                 .order('created_at', { ascending: false });
-            
-            let localQuizzes = [];
-            try {
-                const response = await fetch('http://localhost:8000/api/quizzes');
-                if (response.ok) {
-                    const localData = await response.json();
-                    localQuizzes = (localData.quizzes || []).map(q => ({ ...q, is_local: true }));
-                }
-            } catch (err) {
-                console.warn("Local backend fetch failed:", err);
-            }
 
-            const agentsRes = await adminFetch(`${API_BASE_URL}/admin/agents`);
-            if (agentsRes.ok) {
-                const data = await agentsRes.json();
-                setAvailableAgents(data.agents || []);
-            }
-
-            const combined = [...localQuizzes, ...(cloudData || []).filter(cq => !localQuizzes.some(lq => lq.id === cq.id))];
-            combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const combined = (cloudData || []);
 
             setQuizzes(combined);
             setFilteredQuizzes(combined);
@@ -198,23 +180,11 @@ const Admin = () => {
 
             setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newIsActive } : q));
 
-            if (quiz.is_local) {
-                const response = await fetch(`http://localhost:8000/api/quizzes/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Admin-Key': 'nambac2026!'
-                    },
-                    body: JSON.stringify({ is_active: newIsActive, status: newStatus })
-                });
-                if (!response.ok) throw new Error("Local toggle failed");
-            } else {
-                const { error } = await supabase
-                    .from('quizzes')
-                    .update({ is_active: newIsActive, status: newStatus })
-                    .eq('id', id);
-                if (error) throw error;
-            }
+            const { error } = await supabase
+                .from('quizzes')
+                .update({ is_active: newIsActive, status: newStatus })
+                .eq('id', id);
+            if (error) throw error;
         } catch (error) {
             console.error("Error toggling status:", error);
             alert(`Error toggling status: ${error.message}`);
@@ -277,37 +247,16 @@ const Admin = () => {
         setEditResults(defaultResults);
 
         try {
-            if (quiz.is_local) {
-                const [qRes, rRes] = await Promise.all([
-                    fetch(`http://localhost:8000/api/quizzes/${quiz.id}/questions`),
-                    fetch(`http://localhost:8000/api/quizzes/${quiz.id}/results`)
-                ]);
-                if (qRes.ok) {
-                    const qData = await qRes.json();
-                    setEditQuestions(qData.questions || []);
-                }
-                if (rRes.ok) {
-                    const rData = await rRes.json();
-                    if (rData.results && rData.results.length > 0) {
-                        const mergedResults = defaultResults.map(dr => {
-                            const found = rData.results.find(r => r.result_code === dr.result_code);
-                            return found || dr;
-                        });
-                        setEditResults(mergedResults);
-                    }
-                }
-            } else {
-                const { data: qData } = await supabase.from('questions').select('*').eq('quiz_id', quiz.id).order('order_number', { ascending: true });
-                if (qData) setEditQuestions(qData);
+            const { data: qData } = await supabase.from('questions').select('*').eq('quiz_id', quiz.id).order('order_number', { ascending: true });
+            if (qData) setEditQuestions(qData);
 
-                const { data: rData } = await supabase.from('results').select('*').eq('quiz_id', quiz.id);
-                if (rData && rData.length > 0) {
-                    const mergedResults = defaultResults.map(dr => {
-                        const found = rData.find(r => r.result_code === dr.result_code);
-                        return found || dr;
-                    });
-                    setEditResults(mergedResults);
-                }
+            const { data: rData } = await supabase.from('results').select('*').eq('quiz_id', quiz.id);
+            if (rData && rData.length > 0) {
+                const mergedResults = defaultResults.map(dr => {
+                    const found = rData.find(r => r.result_code === dr.result_code);
+                    return found || dr;
+                });
+                setEditResults(mergedResults);
             }
         } catch (error) {
             console.error("Error fetching quiz details:", error);
@@ -359,16 +308,8 @@ const Admin = () => {
 
         try {
             if (question.id) {
-                if (editingQuiz.is_local) {
-                    const response = await fetch(`http://localhost:8000/api/questions/${question.id}`, {
-                        method: 'DELETE',
-                        headers: { 'X-Admin-Key': 'nambac2026!' }
-                    });
-                    if (!response.ok) throw new Error("Local backend delete failed");
-                } else {
-                    const { error } = await supabase.from('questions').delete().eq('id', question.id);
-                    if (error) throw error;
-                }
+                const { error } = await supabase.from('questions').delete().eq('id', question.id);
+                if (error) throw error;
             }
             setEditQuestions(prev => prev.filter((_, i) => i !== idx));
         } catch (error) {
@@ -381,29 +322,7 @@ const Admin = () => {
         if (!editingQuiz) return;
 
         try {
-            if (editingQuiz.is_local) {
-                const response = await fetch(`http://localhost:8000/api/quizzes/${editingQuiz.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Admin-Key': 'nambac2026!'
-                    },
-                    body: JSON.stringify({
-                        title: editTitle,
-                        description: editDescription,
-                        category: editCategory,
-                        image_url: editImagePreview,
-                        questions: editQuestions.map((q, idx) => ({ ...q, order_number: idx + 1 })),
-                        results: editResults.filter(r => r.title || r.description)
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.detail || '백엔드 서버 저장 실패');
-                }
-            } else {
-                const { error: qError } = await supabase
+            const { error: qError } = await supabase
                     .from('quizzes')
                     .update({
                         title: editTitle,
@@ -437,8 +356,6 @@ const Admin = () => {
                         if (errR) throw errR;
                     }
                 }
-            }
-
             setQuizzes(prev => prev.map(q =>
                 q.id === editingQuiz.id
                     ? { ...q, title: editTitle, description: editDescription, category: editCategory, image_url: editImagePreview }

@@ -231,36 +231,56 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                     await new Promise(resolve => setTimeout(resolve, 2000));
                 }
 
-                // 🚀 AUTO-SAVE: Local Backend Redirection 🚀
+                // 🚀 AUTO-SAVE: Direct Supabase Save 🚀
                 setSaving(true);
                 try {
-                    const response = await fetch('http://localhost:8000/api/admin/upload-quiz-json', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Admin-Key': 'nambac2026!'
-                        },
-                        body: JSON.stringify({
+                    // 1. Save quiz metadata
+                    const { data: quizData, error: quizError } = await supabase
+                        .from('quizzes')
+                        .insert({
                             title: quizTitleStr,
                             description: quizDescStr,
                             category: quizCatStr,
                             quiz_type: 'binary_5q',
                             image_url: finalThumbnailUrl,
-                            questions: formattedQs,
-                            results: completedResults
+                            is_active: true,
                         })
-                    });
+                        .select()
+                        .single();
 
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.detail || '백엔드 서버 저장 실패 (localhost:8000)');
-                    }
+                    if (quizError) throw new Error(`퀴즈 저장 실패: ${quizError.message}`);
+                    const newQuizId = quizData.id;
 
-                    alert('🎉 AI 퀴즈가 성공적으로 생성되고 로컬 백엔드에 저장되었습니다!');
-                    navigate('/admin'); // Redirect to Admin
+                    // 2. Save questions
+                    const questionRows = formattedQs.map(q => ({
+                        quiz_id: newQuizId,
+                        order_number: q.order_number,
+                        question_text: q.question_text,
+                        option_a: q.option_a,
+                        option_b: q.option_b,
+                        score_a: q.score_a,
+                        score_b: q.score_b,
+                    }));
+                    const { error: qError } = await supabase.from('questions').insert(questionRows);
+                    if (qError) console.error('질문 저장 에러:', qError);
+
+                    // 3. Save results
+                    const resultRows = completedResults.map(r => ({
+                        quiz_id: newQuizId,
+                        result_code: r.result_code,
+                        title: r.title || r.type_name || '',
+                        description: r.description || '',
+                        traits: r.traits || [],
+                        image_url: r.image_url || null,
+                    }));
+                    const { error: rError } = await supabase.from('results').insert(resultRows);
+                    if (rError) console.error('결과 저장 에러:', rError);
+
+                    alert('🎉 AI 퀴즈가 성공적으로 생성되고 저장되었습니다!');
+                    navigate('/admin');
                 } catch (saveErr) {
                     console.error("Auto-save Error:", saveErr);
-                    alert(`❌ 로컬 저장 실패: ${saveErr.message}\n하지만 텍스트와 이미지는 에디터에 남겨두었습니다.`);
+                    alert(`❌ 저장 실패: ${saveErr.message}\n하지만 텍스트와 이미지는 에디터에 남겨두었습니다.`);
                 } finally {
                     setSaving(false);
                 }
