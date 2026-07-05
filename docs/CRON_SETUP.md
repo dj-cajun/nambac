@@ -1,6 +1,6 @@
 # Vercel Cron — 일일 퀴즈 자동 생성
 
-> API는 Hobby 12함수 제한 대응으로 **`api/[[...path]].js` 단일 라우터**에 통합되어 있습니다.
+> API는 Hobby 12함수 제한 대응으로 **`api/[...path].js` 단일 라우터**에 통합되어 있습니다.
 
 n8n 없이 **Vercel Cron**이 매일 Gemini → Turso → Push까지 처리합니다.
 
@@ -67,6 +67,8 @@ Vercel이 Cron 호출 시 `Authorization: Bearer ${CRON_SECRET}` 헤더를 자�
 
 이미지가 필요하면 생성 후 `npm run images:backfill -- --quiz-id=...` 실행.
 
-## 6. Hobby 플랜
+## 6. Hobby 제한
 
-Cron은 **Pro**에서 안정적입니다. Hobby는 제한이 있을 수 있어, 실패 시 `npm run daily:quiz`를 GitHub Actions cron으로 대체할 수 있습니다.
+- **Serverless Functions**: 1개 (`api/[...path].js`)
+- **일일 배포 100회**: 한도 초과 시 익일 자동 배포 — `docs/VERCEL_ENV.md`
+- Cron **Pro** 권장; 로컬 대안: `npm run daily:quiz`

@@ -30,9 +30,10 @@
 
 ## Ops checklist
 
-1. `CRON_SECRET` + Gemini key on Vercel → Redeploy (Cron 10:00 ICT)
-2. `npm run vapid:generate` → Vercel env (push)
-3. `npm run db:migrate-phase2` on Turso
-4. GTM 4 events publish (`docs/GTM_SETUP.md`)
-5. AdSense slot IDs in Vercel env
-6. `nambac.xyz` domain restore (Onamae clientHold)
+1. ✅ `CRON_SECRET` + Gemini — Vercel 등록됨 (배포 한도 해제 후 자동 반영)
+2. `VAPID_*` 3개 — Vercel env (`docs/VERCEL_ENV.md`, 로컬 `.env.local` 완료)
+3. ✅ Turso migrate (`npm run db:migrate-phase2`)
+4. GTM 4 events — `docs/GTM_SETUP.md` (대시보드)
+5. AdSense slot IDs — Vercel env
+6. `nambac.xyz` domain — Onamae clientHold 해제
+7. 배포 후: `docs/VERCEL_ENV.md` smoke test

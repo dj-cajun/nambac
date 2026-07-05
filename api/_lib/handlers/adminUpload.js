@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { requireAdmin } from '../adminAuth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const imagesDir = path.join(__dirname, '../../public/images');
+const imagesDir = path.join(__dirname, '../../../public/images');
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

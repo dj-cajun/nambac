@@ -15,6 +15,7 @@
     "demo:ai-quiz": "node scripts/create_ai_quiz_demo.mjs",
     "images:backfill": "node scripts/backfill_images.mjs",
     "daily:quiz": "node scripts/daily_quiz.mjs",
+    "verify:api": "node scripts/verify_api.mjs",
     "db:migrate-phase2": "node scripts/migrate_phase2.js",
     "vapid:generate": "node scripts/generate_vapid_keys.mjs",
     "build": "vite build",

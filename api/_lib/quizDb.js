@@ -265,6 +265,22 @@ export async function upsertResults(quizId, results) {
   }
 }
 
+export async function updateQuizImageUrl(quizId, imageUrl) {
+  const db = getTurso();
+  await db.execute({
+    sql: 'UPDATE quizzes SET image_url = ? WHERE id = ?',
+    args: [imageUrl, quizId],
+  });
+}
+
+export async function updateResultImageUrl(resultId, imageUrl) {
+  const db = getTurso();
+  await db.execute({
+    sql: 'UPDATE results SET image_url = ? WHERE id = ?',
+    args: [imageUrl, resultId],
+  });
+}
+
 function buildQuizConfig(payload) {
   const config = { ...(payload.config || {}) };
   if (payload.quiz_type === 'sponsor' && !config.brand_report_token) {
