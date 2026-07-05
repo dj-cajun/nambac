@@ -23,15 +23,13 @@
 | `VAPID_PRIVATE_KEY` | ↑ |
 | `VAPID_SUBJECT` | `mailto:nam@nambac.xyz` |
 
-## AdSense (선택)
+## AdSense (기본 OFF — `docs/ADSENSE_SETUP.md`)
 
 | Key | |
 |-----|--|
+| `VITE_ADSENSE_ENABLED` | `true` 로 켜기 |
 | `VITE_ADSENSE_PUB_ID` | ca-pub-... |
-| `VITE_ADSENSE_SLOT_HOME` | |
-| `VITE_ADSENSE_SLOT_QUIZ` | |
-| `VITE_ADSENSE_SLOT_RESULT_1` | |
-| `VITE_ADSENSE_SLOT_RESULT_2` | |
+| `VITE_ADSENSE_SLOT_*` | 4개 슬롯 |
 
 ## 기타
 

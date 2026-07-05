@@ -12,7 +12,7 @@
 - [x] Result 9:16 Story download
 - [x] Android PWA install prompt
 - [x] Image backfill script + GTM guide
-- [ ] Real AdSense slot IDs — Vercel env에 슬롯 ID 입력 (코드 준비됨)
+- [ ] AdSense — `VITE_ADSENSE_ENABLED=true` + 슬롯 ID (`docs/ADSENSE_SETUP.md`)
 - [ ] GTM triggers — `docs/GTM_SETUP.md` 대시보드 설정 (코드 준비됨)
 
 ## Phase 2 — Viral ✅ (code)
@@ -34,6 +34,6 @@
 2. `VAPID_*` 3개 — Vercel env (`docs/VERCEL_ENV.md`, 로컬 `.env.local` 완료)
 3. ✅ Turso migrate (`npm run db:migrate-phase2`)
 4. GTM 4 events — `docs/GTM_SETUP.md` (대시보드)
-5. AdSense slot IDs — Vercel env
+5. AdSense — `docs/ADSENSE_SETUP.md` (지금 OFF)
 6. `nambac.xyz` domain — Onamae clientHold 해제
 7. 배포 후: `docs/VERCEL_ENV.md` smoke test

@@ -6,9 +6,45 @@ function resolveSlot(raw) {
   return slot;
 }
 
+/** Set VITE_ADSENSE_ENABLED=true + pub ID + slot IDs to show ads later */
+export const ADS_ENABLED = import.meta.env.VITE_ADSENSE_ENABLED === 'true';
+
+export const AD_PUB_ID = String(import.meta.env.VITE_ADSENSE_PUB_ID || '').trim();
+
 export const AD_SLOTS = {
   home: resolveSlot(import.meta.env.VITE_ADSENSE_SLOT_HOME),
   quiz: resolveSlot(import.meta.env.VITE_ADSENSE_SLOT_QUIZ),
   result1: resolveSlot(import.meta.env.VITE_ADSENSE_SLOT_RESULT_1),
   result2: resolveSlot(import.meta.env.VITE_ADSENSE_SLOT_RESULT_2),
 };
+
+export function isAdsEnabled() {
+  return ADS_ENABLED && Boolean(AD_PUB_ID);
+}
+
+let scriptLoading = false;
+let scriptLoaded = false;
+
+/** Load adsbygoogle.js only when ads are enabled (not in index.html) */
+export function loadAdSenseScript() {
+  if (!isAdsEnabled() || scriptLoaded || scriptLoading) return;
+  if (document.querySelector('script[data-nambac-adsense]')) {
+    scriptLoaded = true;
+    return;
+  }
+
+  scriptLoading = true;
+  const s = document.createElement('script');
+  s.async = true;
+  s.crossOrigin = 'anonymous';
+  s.dataset.nambacAdsense = '1';
+  s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(AD_PUB_ID)}`;
+  s.onload = () => {
+    scriptLoaded = true;
+    scriptLoading = false;
+  };
+  s.onerror = () => {
+    scriptLoading = false;
+  };
+  document.head.appendChild(s);
+}
