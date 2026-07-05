@@ -18,7 +18,8 @@
 ## Phase 2 — Viral ✅ (code)
 
 - [x] Web push (`sw.js`, `/api/push/*`, PushPrompt)
-- [x] Daily quiz automation — n8n → `/api/webhooks/n8n-quiz` (`docs/N8N_SETUP.md`)
+- [x] **Daily quiz — Vercel Cron** → `/api/cron/daily-quiz` (`docs/CRON_SETUP.md`) ← **권장**
+- [x] Daily quiz — n8n webhook (선택) → `docs/N8N_SETUP.md`
 - [x] Influencer / brand quiz templates (`shared/quizTemplates.js`)
 
 ## Phase 3 — Monetization ✅ (code)
@@ -29,9 +30,9 @@
 
 ## Ops checklist
 
-1. `npm run vapid:generate` → Vercel env
-2. `npm run db:migrate-phase2` on Turso
-3. `N8N_WEBHOOK_SECRET` on Vercel + n8n workflow import
-4. GTM 4 events publish
+1. `CRON_SECRET` + Gemini key on Vercel → Redeploy (Cron 10:00 ICT)
+2. `npm run vapid:generate` → Vercel env (push)
+3. `npm run db:migrate-phase2` on Turso
+4. GTM 4 events publish (`docs/GTM_SETUP.md`)
 5. AdSense slot IDs in Vercel env
 6. `nambac.xyz` domain restore (Onamae clientHold)

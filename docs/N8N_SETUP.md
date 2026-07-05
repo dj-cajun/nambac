@@ -1,4 +1,6 @@
-# n8n → Turso 자동 퀴즈 배포
+# n8n → Turso 자동 퀴즈 배포 (선택)
+
+> **권장:** n8n 대신 **Vercel Cron** 사용 → `docs/CRON_SETUP.md`
 
 ## 1. 환경 변수 (n8n + Vercel)
 

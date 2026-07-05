@@ -71,6 +71,10 @@ app.post('/api/push/notify', wrap(pushNotifyHandler));
 app.get('/api/brand/stats', wrap(brandStatsHandler));
 app.get('/api/admin/analytics', wrap(adminAnalyticsHandler));
 
+const dailyQuizHandler = await loadHandler('../api/cron/daily-quiz.js');
+app.get('/api/cron/daily-quiz', wrap(dailyQuizHandler));
+app.post('/api/cron/daily-quiz', wrap(dailyQuizHandler));
+
 const port = process.env.TURSO_API_PORT || 8787;
 app.listen(port, () => {
   console.log(`Turso API dev server → http://localhost:${port}/api/quizzes`);
