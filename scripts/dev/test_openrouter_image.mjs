@@ -12,7 +12,7 @@ dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 
 const adminKey = process.env.ADMIN_API_KEY || process.env.VITE_ADMIN_API_KEY || '';
 const model = process.env.OPENROUTER_IMAGE_MODEL || 'black-forest-labs/flux.2-klein-4b';
-const apiBase = process.env.TEST_API_URL || 'http://localhost:8787/api';
+const apiBase = process.env.TEST_API_URL || 'http://localhost:5173/api';
 
 console.log('\n🎨 OpenRouter image test');
 console.log(`   Model: ${model}`);

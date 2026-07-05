@@ -3,12 +3,14 @@ import react from '@vitejs/plugin-react'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { nambacApiPlugin } from './server/viteApiPlugin.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [
     react(),
+    nambacApiPlugin(),
     {
       name: 'missing-static-images-404',
       configureServer(server) {
@@ -26,11 +28,5 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8787',
-        changeOrigin: true,
-      },
-    },
   },
 })

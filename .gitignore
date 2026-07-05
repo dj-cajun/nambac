@@ -38,6 +38,7 @@ venv/
 # Data
 data/
 backend/data/
+.backfill-force-progress.json
 
 backend/아카이브.zip
 nambac_upload.zip

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Jua&family=Patrick+Hand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Patrick+Hand&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,19 +10,24 @@
   --jelly-radius: 2rem;
   --comic-charcoal: #1e293b;
   --primary-pink: #ff85a1;
+  --font-primary: 'Patrick Hand', cursive;
+  --font-display: 'Caveat', cursive;
 }
 
 html,
 body {
   margin: 0;
-  font-family: 'Be Vietnam Pro', 'Jua', sans-serif;
+  font-family: var(--font-primary), cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Pastel Gradient Background */
   background: linear-gradient(to bottom right, #fff9fc, #ffffff, #eef2ff);
   overflow-x: hidden;
   color: #1a1a1a;
   min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), var(--font-primary), cursive;
 }
 
 #root {
@@ -104,6 +109,5 @@ body {
 
 .tally-popup iframe {
   border-radius: 20px !important;
-  /* Use 'Be Vietnam Pro' and 'Jua' exactly as defined in the website body */
-  font-family: 'Be Vietnam Pro', 'Jua', sans-serif !important;
+  font-family: var(--font-primary), cursive !important;
 }

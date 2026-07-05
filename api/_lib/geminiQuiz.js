@@ -14,6 +14,7 @@ function getApiKey() {
 export async function generateQuizContent(categoryId, customTopic = '') {
   return generateQuizContentShared({
     apiKey: getApiKey(),
+    openrouterKey: process.env.OPENROUTER_API_KEY || '',
     categoryId,
     customTopic,
   });

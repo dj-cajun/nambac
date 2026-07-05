@@ -7,7 +7,7 @@ import { PROJECT_ROOT } from '../_root.mjs';
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 
-const base = `http://localhost:${process.env.TURSO_API_PORT || 8787}`;
+const base = process.env.TEST_API_URL || `http://localhost:${process.env.VITE_DEV_PORT || 5173}/api`;
 
 const checks = [
   { name: 'GET /api/quizzes', url: `${base}/api/quizzes` },

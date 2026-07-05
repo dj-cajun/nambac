@@ -34,7 +34,7 @@ n8n 없이 **Vercel Cron**이 매일 Gemini → Turso → Push까지 처리합�
 
 ```bash
 # .env.local에 CRON_SECRET 추가
-npm run dev:api   # 터미널 1
+npm run dev:api   # optional — standalone API on 8787
 npm run daily:quiz   # 터미널 2
 ```
 

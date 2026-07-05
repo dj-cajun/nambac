@@ -1,0 +1,82 @@
+# 원격 이미지 백필 — 로컬 없이 GitHub에서 실행 → Turso 업데이트 → 이미지 커밋 → Vercel 배포
+#
+# 필수 Secrets (Settings → Secrets → Actions):
+#   TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, GEMINI_API_KEY, OPENROUTER_API_KEY
+# 선택: OPENROUTER_TEXT_MODEL, OPENROUTER_IMAGE_MODEL, VITE_GEMINI_API_KEY
+
+name: Remote image backfill
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_batches:
+        description: 'Max quiz batches (1 batch ≈ 1 quiz, ~2–3 min)'
+        required: false
+        default: '15'
+      force:
+        description: 'Force re-gen backfill_* images'
+        type: boolean
+        default: false
+  schedule:
+    # 6시간마다 누락 이미지 채우기 (UTC)
+    - cron: '0 */6 * * *'
+
+concurrency:
+  group: backfill-images
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Run backfill
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_TEXT_MODEL: ${{ secrets.OPENROUTER_TEXT_MODEL }}
+          OPENROUTER_IMAGE_MODEL: ${{ secrets.OPENROUTER_IMAGE_MODEL }}
+          BACKFILL_MAX: ${{ github.event.inputs.max_batches || '10' }}
+          BACKFILL_FORCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force == true && '--force' || '' }}
+          BACKFILL_DELAY: '4000'
+          BACKFILL_PAUSE: '8000'
+        run: npm run images:backfill:all 2>&1 | tee backfill.log
+
+      - name: Upload log artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backfill-log-${{ github.run_id }}
+          path: backfill.log
+          retention-days: 14
+
+      - name: Commit new images
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images/backfill_*.png 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No new backfill images to commit."
+            exit 0
+          fi
+          git commit -m "chore(images): remote backfill $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push

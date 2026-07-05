@@ -14,6 +14,7 @@ import { fetchQuizBundle, incrementQuizStat } from '../lib/quizApi';
 import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizStart, trackShare } from '../lib/analytics';
+import QuizImage from '../components/QuizImage';
 import { buildShareUrl } from '../lib/siteUrl';
 
 export default function QuizPage({ quizIdProp }) {
@@ -288,8 +289,17 @@ export default function QuizPage({ quizIdProp }) {
                     exit={{ x: -50, opacity: 0 }}
                     className="question-anim-wrapper"
                 >
-                    {/* Question Card */}
+                    {/* Question Card — image shows situation; text shown in app UI */}
                     <div className="question-glass-panel">
+                        {currentQuestion.image_url && (
+                            <div className="question-scene-img-wrap">
+                                <QuizImage
+                                    src={currentQuestion.image_url}
+                                    alt=""
+                                    className="question-scene-img"
+                                />
+                            </div>
+                        )}
                         <h2 className="question-text">{currentQuestion.question_text}</h2>
                     </div>
 

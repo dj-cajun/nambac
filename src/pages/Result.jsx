@@ -97,7 +97,7 @@ const Result = () => {
             ctx.drawImage(source, x, y, drawW, drawH);
 
             ctx.fillStyle = '#FF2D85';
-            ctx.font = 'bold 28px "Be Vietnam Pro", sans-serif';
+            ctx.font = 'bold 28px "Caveat", "Patrick Hand", cursive';
             ctx.textAlign = 'center';
             ctx.fillText('nambac — Trắc nghiệm AI', storyW / 2, storyH - 80);
 
@@ -156,27 +156,24 @@ const Result = () => {
 
                 {/* Result Card - Unified Image Style */}
                 <div className="result-unified-card" ref={cardRef}>
-                    {/* Full Result Image */}
-                    <img
-                        src={getImageUrl(finalResult.image_url)}
-                        onError={(e) => { e.target.src = "/images/grandma_roast_standing.png" }}
-                        alt="Result Character"
-                        className="result-full-img"
-                    />
+                    <div className="result-image-wrap">
+                        <img
+                            src={getImageUrl(finalResult.image_url)}
+                            onError={(e) => { e.target.src = "/images/grandma_roast_standing.png" }}
+                            alt="Result Character"
+                            className="result-full-img"
+                        />
+                    </div>
 
-                    {/* Dark Overlay for Text */}
-                    <div className="result-overlay-right">
-                        {/* Result Title */}
+                    <div className="result-text-panel">
                         <div className="result-title-badge">
                             {finalResult.type_name || finalResult.title}
                         </div>
 
-                        {/* Description */}
-                        <p className="result-overlay-text">
+                        <p className="result-description-text">
                             {renderDescription(finalResult.description)}
                         </p>
 
-                        {/* Traits Hashtags */}
                         {finalResult.traits && finalResult.traits.length > 0 && (
                             <div className="result-traits">
                                 {finalResult.traits.map((trait, i) => (

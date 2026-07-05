@@ -5,7 +5,6 @@ import { User, Send } from 'lucide-react';
 import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import QuizImage from '../components/QuizImage';
-import BottomNav from '../components/BottomNav';
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -75,7 +74,6 @@ export default function ExplorePage() {
       </div>
 
       <div style={{ marginBottom: '100px' }} />
-      <BottomNav />
     </div>
   );
 }

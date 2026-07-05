@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import SiteLogoBar from './components/SiteLogoBar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import QuizPage from './pages/QuizPage';
@@ -14,6 +14,7 @@ import FAQ from './pages/FAQ';
 import CompatibilityPage from './pages/CompatibilityPage';
 import InstallBanner from './components/InstallBanner';
 import PushPrompt from './components/PushPrompt';
+import BottomNav from './components/BottomNav';
 import BrandsLanding from './pages/BrandsLanding';
 import BrandReport from './pages/BrandReport';
 import ExplorePage from './pages/ExplorePage';
@@ -32,15 +33,22 @@ function App() {
 function AppContent() {
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin' || location.pathname === '/editor';
-  const hideFooter = ['/', '/explore', '/leaderboard'].includes(location.pathname);
+  const isBrandsPage = location.pathname === '/brands' || location.pathname.startsWith('/brands/');
+  const mainTabPaths = ['/', '/explore', '/leaderboard'];
+  const showBottomNav = mainTabPaths.includes(location.pathname);
+  const hideFooter = showBottomNav || isBrandsPage;
 
   return (
-    <div className={`app-layout ${isAdminPage ? 'wide-layout' : ''}`} style={{ position: 'relative', minHeight: '100vh' }}>
+    <div
+      className={`app-layout ${isAdminPage ? 'wide-layout' : ''}${isBrandsPage ? ' brands-layout' : ''}`}
+      style={{ position: 'relative', minHeight: '100vh' }}
+    >
       <div className="blob-bg blob-1"></div>
       <div className="blob-bg blob-2"></div>
       <div className="blob-bg blob-3"></div>
 
-      <Navbar />
+      {!isAdminPage && location.pathname !== '/brands' && <SiteLogoBar />}
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/quiz/:id" element={<QuizPage />} />
@@ -63,6 +71,7 @@ function AppContent() {
         <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>
       {!hideFooter && <Footer />}
+      {showBottomNav && <BottomNav />}
       <InstallBanner />
       <PushPrompt />
     </div>

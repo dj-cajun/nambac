@@ -265,6 +265,14 @@ export async function upsertResults(quizId, results) {
   }
 }
 
+export async function updateQuestionImageUrl(questionId, imageUrl) {
+  const db = getTurso();
+  await db.execute({
+    sql: 'UPDATE questions SET image_url = ? WHERE id = ?',
+    args: [imageUrl, questionId],
+  });
+}
+
 export async function updateQuizImageUrl(quizId, imageUrl) {
   const db = getTurso();
   await db.execute({

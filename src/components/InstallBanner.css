@@ -4,16 +4,12 @@
 
 .install-banner-container {
     position: fixed;
-    bottom: 100px; /* Positioned right above the bottom nav bar */
+    bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
     max-width: 440px;
-    background: #ffffff;
-    border: 2px solid var(--comic-charcoal, #1e293b);
-    border-radius: 20px;
     padding: 16px;
-    box-shadow: 4px 4px 0px 0px var(--comic-charcoal, #1e293b);
     z-index: 999;
     display: flex;
     flex-direction: column;
@@ -69,7 +65,7 @@
 }
 
 .install-title {
-    font-family: 'Jua', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 15px;
     margin: 0;
     color: var(--comic-charcoal, #1e293b);
@@ -86,9 +82,6 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: #f8fafc;
-    border: 1.5px dashed #cbd5e1;
-    border-radius: 12px;
     padding: 10px;
     box-sizing: border-box;
 }
@@ -107,18 +100,13 @@
     align-items: center;
     justify-content: center;
     background: white;
-    border: 1px solid #e2e8f0;
     border-radius: 4px;
     padding: 3px;
-    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
 }
 
 .install-android-btn {
     width: 100%;
     padding: 12px;
-    border: 2px solid var(--comic-charcoal, #1e293b);
-    border-radius: 12px;
-    background: #FF2D85;
     color: white;
     font-weight: 800;
     font-size: 14px;
@@ -127,5 +115,9 @@
     justify-content: center;
     gap: 8px;
     cursor: pointer;
-    box-shadow: 3px 3px 0 0 var(--comic-charcoal, #1e293b);
+    transition: transform 0.15s ease;
+}
+
+.install-android-btn:active {
+    transform: scale(0.98);
 }

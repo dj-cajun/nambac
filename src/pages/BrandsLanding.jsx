@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, CheckCircle2, ChevronRight, Award, TrendingUp, Zap, Sparkles } from 'lucide-react';
+import { Send, CheckCircle2, ChevronRight, Award, TrendingUp, Zap, Sparkles, ArrowLeft } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { submitBrandInquiry } from '../lib/quizApi';
 import './BrandsLanding.css';
 
 const BrandsLanding = () => {
     const navigate = useNavigate();
-    
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, []);
+
+    const handleBack = () => {
+        if (window.history.length > 1) {
+            navigate(-1);
+        } else {
+            navigate('/');
+        }
+    };
+
     // Form State
     const [companyName, setCompanyName] = useState('');
     const [contactPerson, setContactPerson] = useState('');
@@ -51,6 +63,13 @@ const BrandsLanding = () => {
                 <title>Hợp Tác Thương Hiệu - Trắc Nghiệm AI MZ | nambac.xyz</title>
                 <meta name="description" content="Tạo chiến dịch Marketing Viral cùng Nambac. Tiếp cận 100k+ thế hệ Gen Z Sài Gòn chỉ trong 5 giây." />
             </Helmet>
+
+            <div className="brands-top-bar">
+                <button type="button" className="brands-back-btn" onClick={handleBack}>
+                    <ArrowLeft size={20} strokeWidth={2.5} />
+                    <span>Quay lại</span>
+                </button>
+            </div>
 
             {/* Glowing Blobs */}
             <div className="compat-glow-blob b2b-blob-1"></div>
@@ -237,12 +256,6 @@ const BrandsLanding = () => {
                             </button>
                         </form>
                     )}
-                </div>
-
-                <div className="brands-footer">
-                    <button className="back-home-btn-b2b" onClick={() => navigate('/')}>
-                        Quay lại trang chủ nambac.xyz
-                    </button>
                 </div>
             </main>
         </div>

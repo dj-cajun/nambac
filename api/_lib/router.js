@@ -3,6 +3,8 @@ import quizById from './handlers/quizById.js';
 import quizStats from './handlers/quizStats.js';
 import brandInquiries from './handlers/brandInquiries.js';
 import generateImage from './handlers/generateImage.js';
+import generateQuizImages from './handlers/generateQuizImages.js';
+import adminGenerateArchetypeQuiz from './handlers/adminGenerateArchetypeQuiz.js';
 import adminQuizzes from './handlers/adminQuizzes.js';
 import adminQuizById from './handlers/adminQuizById.js';
 import adminBrandInquiries from './handlers/adminBrandInquiries.js';
@@ -45,6 +47,12 @@ export async function dispatch(req, res, segments = []) {
 
   // ── Image generation ──
   if (a === 'generate-image' && !b && method === 'POST') return generateImage(req, res);
+  if (a === 'admin' && b === 'generate-quiz-images' && !c && (method === 'POST' || method === 'OPTIONS')) {
+    return generateQuizImages(req, res);
+  }
+  if (a === 'admin' && b === 'generate-archetype-quiz' && !c && (method === 'POST' || method === 'OPTIONS')) {
+    return adminGenerateArchetypeQuiz(req, res);
+  }
 
   // ── Admin quizzes ──
   if (a === 'admin' && b === 'quizzes' && !c && (method === 'GET' || method === 'POST')) return adminQuizzes(req, res);

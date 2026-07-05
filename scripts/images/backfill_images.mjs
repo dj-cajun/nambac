@@ -1,7 +1,10 @@
 /**
- * Backfill missing quiz cover + result images via OpenRouter
+ * Backfill quiz images: LLM prompts (Gemini → OpenRouter) + OpenRouter render.
+ * Cover + 8 results = 9 images per quiz (question images off by default).
+ *
  * Run: npm run images:backfill
- * Options: --dry-run  --limit=50  --max-quizzes=1  --quiz-id=xxx  --delay=3500
+ * Options: --dry-run  --limit=50  --max-quizzes=1  --quiz-id=xxx  --delay=3500  --force
+ *          --with-questions  --results-only  --cover-only
  */
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -17,6 +20,9 @@ dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const force = args.includes('--force');
+const skipQuestions = args.includes('--skip-questions') || !args.includes('--with-questions');
+const resultsOnly = args.includes('--results-only');
+const coverOnly = args.includes('--cover-only');
 const limitArg = args.find((a) => a.startsWith('--limit='));
 const maxQuizzesArg = args.find((a) => a.startsWith('--max-quizzes='));
 const quizIdArg = args.find((a) => a.startsWith('--quiz-id='));
@@ -25,13 +31,11 @@ const imageLimit = limitArg ? parseInt(limitArg.split('=')[1], 10) : 9999;
 const maxQuizzes = maxQuizzesArg ? parseInt(maxQuizzesArg.split('=')[1], 10) : 999;
 const filterQuizId = quizIdArg ? quizIdArg.split('=')[1] : null;
 const delayMs = delayArg ? parseInt(delayArg.split('=')[1], 10) : 3500;
+const clearForceProgress = args.includes('--clear-force-progress');
 
-const PLACEHOLDER_PATTERNS = [
-  'default_cover',
-  'grandma_roast',
-  'placeholder',
-  'img_1770', // old generated batch without real content — optional skip
-];
+const PROGRESS_FILE = path.join(PROJECT_ROOT, '.backfill-force-progress.json');
+
+const PLACEHOLDER_PATTERNS = ['default_cover', 'grandma_roast', 'placeholder', 'img_1770'];
 
 function isPlaceholder(url) {
   if (!url) return true;
@@ -52,16 +56,30 @@ function fileMissing(url) {
   return !fs.existsSync(fp);
 }
 
-function needsImage(url, forceRegen = false) {
-  if (forceRegen && url?.includes('backfill_')) return true;
-  return isPlaceholder(url) || fileMissing(url);
+function loadForceDoneSet() {
+  try {
+    const data = JSON.parse(fs.readFileSync(PROGRESS_FILE, 'utf8'));
+    return new Set(data.quizIds || []);
+  } catch {
+    return new Set();
+  }
 }
 
-function saveImage(b64, prefix) {
-  const filename = `${prefix}_${Date.now()}.png`;
-  const fp = path.join(PROJECT_ROOT, 'public', 'images', filename);
-  fs.writeFileSync(fp, Buffer.from(b64, 'base64'));
-  return `/images/${filename}`;
+function markForceDone(quizId, forceDoneSet) {
+  forceDoneSet.add(quizId);
+  fs.writeFileSync(
+    PROGRESS_FILE,
+    JSON.stringify({ quizIds: [...forceDoneSet], updatedAt: new Date().toISOString() }, null, 2),
+  );
+}
+
+function needsImage(url, forceRegen = false) {
+  if (isPlaceholder(url) || fileMissing(url)) return true;
+  if (forceRegen && url?.includes('backfill_')) return true;
+  if (forceRegen && url?.includes('_q')) return true;
+  if (forceRegen && url?.includes('_r')) return true;
+  if (forceRegen && url?.includes('_cover')) return true;
+  return false;
 }
 
 async function sleep(ms) {
@@ -73,14 +91,21 @@ async function main() {
     console.error('❌ OPENROUTER_API_KEY required (.env.local)');
     process.exit(1);
   }
+  const hasGemini = !!(process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY);
+  if (!hasGemini && !process.env.OPENROUTER_API_KEY) {
+    console.error('❌ GEMINI_API_KEY or OPENROUTER_API_KEY required for image prompts');
+    process.exit(1);
+  }
   if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
     console.error('❌ TURSO_* required');
     process.exit(1);
   }
 
-  const { getTurso, rowToQuiz, rowToResult } = await import('../../api/_lib/turso.js');
+  const { getTurso, rowToQuiz, rowToQuestion, rowToResult } = await import('../../api/_lib/turso.js');
+  const { generateQuizImagePrompts } = await import('../../shared/imagePromptEngine.js');
+  const { getOpenRouterTextModel } = await import('../../shared/openrouterText.js');
+  const { finalizeImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt } = await import('../../shared/imagePrompts.js');
   const { generateOpenRouterImage } = await import('../../api/_lib/openrouterImage.js');
-  const { coverPrompt, resultPrompt } = await import('../../shared/imagePrompts.js');
 
   const db = getTurso();
   let sql = `SELECT * FROM quizzes WHERE is_active = 1 ORDER BY datetime(created_at) DESC`;
@@ -92,49 +117,98 @@ async function main() {
   const quizzesRs = await db.execute({ sql, args: queryArgs });
   const quizzes = quizzesRs.rows.map(rowToQuiz);
 
+  if (clearForceProgress && fs.existsSync(PROGRESS_FILE)) {
+    fs.unlinkSync(PROGRESS_FILE);
+    console.log('🗑️  Cleared force-progress file\n');
+  }
+
+  const forceDoneSet = force ? loadForceDoneSet() : new Set();
   let generated = 0;
   let skipped = 0;
   let quizzesTouched = 0;
 
-  console.log(`\n🖼️  Image backfill ${dryRun ? '(DRY RUN)' : ''}${force ? ' [FORCE backfill_*]' : ''} — ${quizzes.length} quiz(es), max ${maxQuizzes} quiz/run, delay ${delayMs}ms\n`);
+  console.log(
+    `\n🖼️  Image backfill (Gemini→OpenRouter prompts + manga) ${dryRun ? '(DRY RUN)' : ''}${force ? ' [FORCE]' : ''}`,
+  );
+  console.log(`   ${quizzes.length} quiz(es), max ${maxQuizzes}/run, delay ${delayMs}ms\n`);
 
   for (const quiz of quizzes) {
     if (quizzesTouched >= maxQuizzes) break;
+    if (force && forceDoneSet.has(quiz.id)) {
+      skipped++;
+      continue;
+    }
 
-    const resultsRs = await db.execute({
-      sql: 'SELECT * FROM results WHERE quiz_id = ? ORDER BY result_code ASC',
-      args: [quiz.id],
-    });
+    const [questionsRs, resultsRs] = await Promise.all([
+      db.execute({
+        sql: 'SELECT * FROM questions WHERE quiz_id = ? ORDER BY order_number ASC',
+        args: [quiz.id],
+      }),
+      db.execute({
+        sql: 'SELECT * FROM results WHERE quiz_id = ? ORDER BY result_code ASC',
+        args: [quiz.id],
+      }),
+    ]);
+    const questions = questionsRs.rows.map(rowToQuestion);
     const results = resultsRs.rows.map(rowToResult);
 
-    const coverNeeded = needsImage(quiz.image_url, force);
-    const resultsNeeded = results.filter((r) => needsImage(r.image_url, force));
+    const coverNeeded = !resultsOnly && needsImage(quiz.image_url, force);
+    const questionsNeeded = !resultsOnly && !coverOnly && !skipQuestions
+      ? questions.filter((q) => needsImage(q.image_url, force))
+      : [];
+    const resultsNeeded = !coverOnly
+      ? results.filter((r) => needsImage(r.image_url, force))
+      : [];
 
-    if (!coverNeeded && resultsNeeded.length === 0) {
+    if (!coverNeeded && questionsNeeded.length === 0 && resultsNeeded.length === 0) {
       skipped++;
       continue;
     }
 
     quizzesTouched++;
     console.log(`📦 [${quizzesTouched}/${maxQuizzes}] ${quiz.title?.slice(0, 50)} (${quiz.id.slice(0, 8)})`);
-    if (coverNeeded) console.log('   → cover needed');
-    if (resultsNeeded.length) console.log(`   → ${resultsNeeded.length} result(s) needed`);
+    if (coverNeeded) console.log('   → cover');
+    if (questionsNeeded.length) console.log(`   → ${questionsNeeded.length} question(s)`);
+    if (resultsNeeded.length) console.log(`   → ${resultsNeeded.length} result(s)`);
 
     if (dryRun) continue;
 
+    let prompts;
+    try {
+      const generated = await generateQuizImagePrompts({
+        geminiKey: process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY,
+        openrouterKey: process.env.OPENROUTER_API_KEY,
+        quiz: { ...quiz, questions, results },
+        skipQuestions,
+      });
+      prompts = {
+        cover: finalizeImagePrompt(generated.cover),
+        questions: skipQuestions ? [] : generated.questions.map(finalizeQuestionImagePrompt),
+        results: generated.results.map(finalizeResultImagePrompt),
+      };
+      const promptCount = 1 + prompts.questions.length + prompts.results.length;
+      const providerLabel = generated.provider === 'openrouter'
+        ? `OpenRouter (${getOpenRouterTextModel()})`
+        : 'Gemini';
+      console.log(`   🧠 ${providerLabel} wrote ${promptCount} unique prompts`);
+    } catch (e) {
+      console.error(`   ❌ Image prompts: ${e.message}`);
+      continue;
+    }
+
+    const prefix = `backfill_${quiz.id.slice(0, 8)}`;
+    const saveImage = (b64, name) => {
+      const filename = `${name}_${Date.now()}.png`;
+      const fp = path.join(PROJECT_ROOT, 'public', 'images', filename);
+      fs.writeFileSync(fp, Buffer.from(b64, 'base64'));
+      return `/images/${filename}`;
+    };
+
     if (coverNeeded && generated < imageLimit) {
       try {
-        const prompt = coverPrompt({
-          title: quiz.title,
-          description: quiz.description,
-          category: quiz.category,
-        });
-        const { b64, cost } = await generateOpenRouterImage(prompt);
-        const imageUrl = saveImage(b64, `backfill_cover_${quiz.id.slice(0, 8)}`);
-        await db.execute({
-          sql: 'UPDATE quizzes SET image_url = ? WHERE id = ?',
-          args: [imageUrl, quiz.id],
-        });
+        const { b64, cost } = await generateOpenRouterImage(prompts.cover);
+        const imageUrl = saveImage(b64, `${prefix}_cover`);
+        await db.execute({ sql: 'UPDATE quizzes SET image_url = ? WHERE id = ?', args: [imageUrl, quiz.id] });
         console.log(`   ✅ cover → ${imageUrl} ($${cost ?? '?'})`);
         generated++;
         await sleep(delayMs);
@@ -143,28 +217,42 @@ async function main() {
       }
     }
 
-    for (const r of resultsNeeded) {
+    for (const q of questionsNeeded) {
       if (generated >= imageLimit) break;
+      const idx = (q.order_number || 1) - 1;
+      if (idx < 0 || idx > 4) continue;
       try {
-        const title = r.type_name || r.title || `Result ${r.result_code}`;
-        const prompt = resultPrompt({ title, description: r.description });
-        const { b64, cost } = await generateOpenRouterImage(prompt);
-        const imageUrl = saveImage(b64, `backfill_r${r.result_code}_${quiz.id.slice(0, 8)}`);
-        await db.execute({
-          sql: 'UPDATE results SET image_url = ? WHERE id = ?',
-          args: [imageUrl, r.id],
-        });
-        console.log(`   ✅ result ${r.result_code} → ${imageUrl} ($${cost ?? '?'})`);
+        const { b64, cost } = await generateOpenRouterImage(prompts.questions[idx]);
+        const imageUrl = saveImage(b64, `${prefix}_q${idx + 1}`);
+        await db.execute({ sql: 'UPDATE questions SET image_url = ? WHERE id = ?', args: [imageUrl, q.id] });
+        console.log(`   ✅ Q${idx + 1} → ${imageUrl} ($${cost ?? '?'})`);
         generated++;
         await sleep(delayMs);
       } catch (e) {
-        console.error(`   ❌ result ${r.result_code}: ${e.message}`);
+        console.error(`   ❌ Q${idx + 1}: ${e.message}`);
       }
     }
+
+    for (const r of resultsNeeded) {
+      if (generated >= imageLimit) break;
+      const code = r.result_code ?? 0;
+      if (code < 0 || code > 7) continue;
+      try {
+        const { b64, cost } = await generateOpenRouterImage(prompts.results[code]);
+        const imageUrl = saveImage(b64, `${prefix}_r${code}`);
+        await db.execute({ sql: 'UPDATE results SET image_url = ? WHERE id = ?', args: [imageUrl, r.id] });
+        console.log(`   ✅ result ${code} → ${imageUrl} ($${cost ?? '?'})`);
+        generated++;
+        await sleep(delayMs);
+      } catch (e) {
+        console.error(`   ❌ result ${code}: ${e.message}`);
+      }
+    }
+
+    if (force) markForceDone(quiz.id, forceDoneSet);
   }
 
-  console.log(`\n📊 Done: ${generated} images, ${quizzesTouched} quiz(es) processed, ${skipped} already OK\n`);
-  if (dryRun) console.log('Re-run without --dry-run to apply.\n');
+  console.log(`\n📊 Done: ${generated} images, ${quizzesTouched} quiz(es), ${skipped} skipped\n`);
 }
 
 main().catch((e) => {

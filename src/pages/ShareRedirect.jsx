@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { fetchQuizBundle } from '../lib/quizApi';
 import { buildShareUrl, getOgDefaultImageUrl } from '../lib/siteUrl';
 import { getImageUrl } from '../lib/apiConfig';
+import './ShareRedirect.css';
 
 const ShareRedirect = () => {
     const { id: quizId, score } = useParams();
@@ -43,9 +44,9 @@ const ShareRedirect = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#fff9fc]">
+            <div className="share-redirect-page flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-[#FF2D85] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="loading-spinner mx-auto mb-4" />
                     <p className="font-black text-[#FF2D85]">Đang tải kết quả...</p>
                 </div>
             </div>
@@ -53,7 +54,7 @@ const ShareRedirect = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#fff9fc] p-4 flex flex-col items-center justify-center font-['Be_Vietnam_Pro']">
+        <div className="share-redirect-page">
             <Helmet>
                 <title>{`[${resultTitle}] — nambac.xyz`}</title>
                 <meta name="description" content={displayDescription || 'Trắc nghiệm tính cách AI nambac.xyz'} />
@@ -69,60 +70,54 @@ const ShareRedirect = () => {
                 <meta name="twitter:image" content={ogImage} />
             </Helmet>
 
-            <div className="w-full max-w-md bg-white border-2 border-black shadow-[8px_8px_0px_0px_#000000] rounded-[2rem] overflow-hidden">
-                <div className="bg-[#FF2D85] p-6 text-center border-b-2 border-black">
-                    <h1 className="text-white text-2xl font-black uppercase tracking-wider">
-                        KẾT QUẢ CỦA TÔI
-                    </h1>
+            <div className="share-redirect-card">
+                <div className="share-redirect-header">
+                    <h1 className="share-redirect-heading">KẾT QUẢ CỦA TÔI</h1>
                 </div>
 
                 {resultData && (
-                    <div className="p-4">
-                        <img 
-                            src={getImageUrl(resultData.image_url)} 
-                            alt={resultTitle}
-                            className="w-full rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_#000000]"
-                        />
+                    <div className="share-redirect-body">
+                        <div className="share-redirect-img-wrap">
+                            <img
+                                src={getImageUrl(resultData.image_url)}
+                                alt={resultTitle}
+                                className="share-redirect-img"
+                            />
+                        </div>
                     </div>
                 )}
 
-                <div className="p-6 text-center">
-                    <h2 className="text-2xl font-black mb-4 text-[#1a1a1a]">
-                        {resultTitle}
-                    </h2>
-                    <p className="text-gray-600 mb-6 leading-relaxed">
-                        {resultData?.description}
-                    </p>
+                <div className="share-redirect-footer">
+                    <h2 className="share-redirect-title">{resultTitle}</h2>
+                    <p className="share-redirect-desc">{resultData?.description}</p>
 
                     {resultData?.traits && (
-                        <div className="flex flex-wrap justify-center gap-2 mb-8">
+                        <div className="share-redirect-traits">
                             {resultData.traits.map((trait, i) => (
-                                <span key={i} className="bg-pink-50 text-[#FF2D85] px-3 py-1 rounded-full text-sm font-bold border border-[#FF2D85]">
-                                    #{trait}
-                                </span>
+                                <span key={i} className="share-redirect-trait-tag">#{trait}</span>
                             ))}
                         </div>
                     )}
 
                     {score !== undefined && (
-                        <button 
+                        <button
+                            type="button"
+                            className="share-redirect-btn match-btn"
                             onClick={() => navigate(`/quiz/${quizId}?matchFriendScore=${score}`)}
-                            className="w-full py-4 bg-[#FFD700] text-black font-black text-xl rounded-full border-2 border-black shadow-[4px_4px_0px_0px_#000000] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000000] active:translate-y-[2px] active:shadow-none transition-all uppercase mb-4"
                         >
                             So Kèo Hợp Nhau 🥤
                         </button>
                     )}
 
-                    <button 
+                    <button
+                        type="button"
+                        className="share-redirect-btn play-btn"
                         onClick={() => navigate(`/quiz/${quizId}`)}
-                        className="w-full py-4 bg-[#00C2FF] text-white font-black text-xl rounded-full border-2 border-black shadow-[4px_4px_0px_0px_#000000] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000000] active:translate-y-[2px] active:shadow-none transition-all uppercase"
                     >
                         Chơi thử Quiz này 🚀
                     </button>
-                    
-                    <p className="mt-4 text-xs text-gray-400">
-                        Chia sẻ qua nambac.xyz
-                    </p>
+
+                    <p className="share-redirect-note">Chia sẻ qua nambac.xyz</p>
                 </div>
             </div>
         </div>

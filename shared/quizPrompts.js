@@ -1,11 +1,11 @@
 /**
- * Quiz text generation — single source of truth (Gemini).
+ * Quiz text generation — single source of truth (Gemini → OpenRouter fallback).
  * MASTER prompt + scoring + DB formatting live here only.
  */
 import { normalizeCategory, QUIZ_CATEGORY_IDS } from './categories.js';
 import { QUIZ_EXPERT_PROMPTS, QUIZ_TOPIC_SEEDS } from './quizExpertPrompts.js';
-
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+import { MBTI_TYPES, MBTI_DIMENSIONS } from './personalityArchetypes.js';
+import { generateJsonViaLlm, parseJsonFromLlm } from './llmJson.js';
 
 /** Q1 B=+4, Q2 B=+2, Q3 B=+1, Q4/Q5 B=0 — 3-bit binary scoring */
 export const BINARY_5Q_SCORES = Object.freeze([
@@ -161,45 +161,22 @@ export function validateQuizPayload(payload) {
   return errors;
 }
 
-export async function generateQuizContent({ apiKey, categoryId, customTopic = '' }) {
-  if (!apiKey) throw new Error('GEMINI_API_KEY or VITE_GEMINI_API_KEY not configured');
-
+export async function generateQuizContent({ apiKey, openrouterKey, categoryId, customTopic = '' }) {
   const category = normalizeCategory(categoryId);
   const systemInstruction = buildQuizSystemInstruction(category);
   const userPrompt = buildQuizUserPrompt(category, customTopic);
 
-  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: `${systemInstruction}\n\n${userPrompt}` }] }],
-      generationConfig: {
-        temperature: 0.9,
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 8192,
-        responseMimeType: 'application/json',
-      },
-    }),
+  const { text } = await generateJsonViaLlm({
+    geminiKey: apiKey,
+    openrouterKey,
+    system: systemInstruction,
+    user: userPrompt,
+    temperature: 0.9,
+    maxOutputTokens: 8192,
+    label: 'quiz-content',
   });
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Gemini failed (${response.status})`);
-  }
-
-  const data = await response.json();
-  let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  const match = text.match(/\{[\s\S]*\}/);
-  if (match) text = match[0];
-
-  let parsed;
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    parsed = JSON.parse(text.replace(/,\s*([}\]])/g, '$1'));
-  }
-
+  const parsed = parseJsonFromLlm(text);
   parsed.category = category;
   return parsed;
 }
@@ -207,4 +184,138 @@ export async function generateQuizContent({ apiKey, categoryId, customTopic = ''
 export function pickDailyCategory() {
   const day = Math.floor(Date.now() / 86_400_000);
   return QUIZ_CATEGORY_IDS[day % QUIZ_CATEGORY_IDS.length];
+}
+
+const MBTI_12Q_EXTRA = `
+## MBTI 12Q mode (this request only)
+- Exactly **12** questions: 3 each for dimensions EI, SN, TF, JP (in that order).
+- Each question JSON must include "dimension": "EI" | "SN" | "TF" | "JP".
+- option_a = first letter (E/S/T/J), option_b = second letter (I/N/F/P).
+- score_a and score_b are always 0 (MBTI uses dimension voting, not binary weights).
+- Exactly **16** results — one per MBTI type. Each result needs "mbti_code": "ENFP" etc.
+- Result title MUST contain the 4-letter code (e.g. "INFP — Dreamer Thảo Điền").
+- Scores on results are NOT used; use result order matching mbti_code list.
+`;
+
+/**
+ * @param {import('./personalityArchetypes.js').PERSONALITY_ARCHETYPES[0]} archetype
+ */
+export function buildArchetypeUserPrompt(archetype) {
+  return `Create a viral Vietnamese quiz for nambac.xyz.
+
+GitHub topic reference: ${archetype.githubTopic}
+Archetype: ${archetype.label}
+Quiz type: ${archetype.quiz_type}
+Category JSON field MUST be exactly: "${archetype.category}"
+
+Topic direction:
+${archetype.topicPrompt}
+
+Result framework:
+${archetype.resultFramework}
+
+Make it King-bad + Ho Chi Minh localized (Grab, Zalo, Thao Dien, Quận 1, TikTok).`;
+}
+
+export function formatMbtiQuizForDb(geminiData, category) {
+  const rawQuestions = (geminiData.questions || []).slice(0, 12);
+  const questions = rawQuestions.map((q, i) => {
+    const dim = q.dimension || MBTI_DIMENSIONS[Math.floor(i / 3)] || 'EI';
+    return {
+      order_number: i + 1,
+      question_text: q.question_text?.trim() || '',
+      option_a: q.option_a?.trim() || '',
+      option_b: q.option_b?.trim() || '',
+      score_a: 0,
+      score_b: 0,
+      dimension: dim,
+    };
+  });
+
+  const results = MBTI_TYPES.map((code, i) => {
+    const found =
+      (geminiData.results || []).find(
+        (r) =>
+          r.mbti_code === code ||
+          r.title?.toUpperCase().includes(code) ||
+          r.type_name?.toUpperCase().includes(code),
+      ) || geminiData.results?.[i];
+    const baseTitle = found?.type_name || found?.title || code;
+    const title = baseTitle.toUpperCase().includes(code)
+      ? baseTitle
+      : `${code} — ${baseTitle}`;
+    return {
+      result_code: i,
+      title,
+      type_name: title,
+      description: found?.description || '',
+      traits: Array.isArray(found?.traits) ? found.traits : [],
+    };
+  });
+
+  return {
+    title: String(geminiData.title || '').trim() || 'Quiz MBTI mới',
+    description: String(geminiData.description || geminiData.title || '').trim(),
+    category: normalizeCategory(category),
+    quiz_type: 'mbti_12q',
+    questions,
+    results,
+  };
+}
+
+/**
+ * Generate quiz from GitHub-style archetype (Admin factory).
+ * @param {{ apiKey: string, archetype: object }} opts
+ */
+export async function generateArchetypeQuizContent({ apiKey, openrouterKey, archetype }) {
+  if (!archetype) throw new Error('archetype required');
+
+  const category = normalizeCategory(archetype.category);
+  let systemInstruction = buildQuizSystemInstruction(category);
+  if (archetype.quiz_type === 'mbti_12q') {
+    systemInstruction = systemInstruction.replace(
+      'Exactly 5 questions, exactly 8 results (scores 0-7).',
+      'Exactly 12 questions, exactly 16 results (MBTI types).',
+    );
+    systemInstruction += MBTI_12Q_EXTRA;
+  }
+
+  const userPrompt = buildArchetypeUserPrompt(archetype);
+
+  const { text } = await generateJsonViaLlm({
+    geminiKey: apiKey,
+    openrouterKey,
+    system: systemInstruction,
+    user: userPrompt,
+    temperature: 0.88,
+    maxOutputTokens: 8192,
+    label: 'archetype-quiz',
+  });
+
+  const parsed = parseJsonFromLlm(text);
+  parsed.category = category;
+
+  if (archetype.quiz_type === 'mbti_12q') {
+    return formatMbtiQuizForDb(parsed, category);
+  }
+
+  const formatted = formatQuizForDb(parsed);
+  formatted.quiz_type = 'binary_5q';
+  formatted.category = category;
+  return formatted;
+}
+
+export function validateArchetypePayload(payload, quizType = 'binary_5q') {
+  if (quizType === 'mbti_12q') {
+    const errors = [];
+    if (!payload.title?.trim()) errors.push('empty title');
+    if (payload.questions.length !== 12) errors.push(`expected 12 questions, got ${payload.questions.length}`);
+    if (payload.results.length !== 16) errors.push(`expected 16 results, got ${payload.results.length}`);
+    payload.questions.forEach((q, i) => {
+      if (!q.dimension) errors.push(`Q${i + 1}: missing dimension`);
+      if (!q.question_text?.trim()) errors.push(`Q${i + 1}: empty question`);
+    });
+    return errors;
+  }
+  return validateQuizPayload(payload);
 }

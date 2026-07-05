@@ -1,116 +1,92 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { QUIZ_CATEGORIES, getFilterTypes, getCategoryLabel, getPersonas, matchesCategory, normalizeCategory } from '../constants/categories';
-import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { QUIZ_CATEGORIES, getFilterTypes, getCategoryLabel, matchesCategory, normalizeCategory } from '../constants/categories';
+import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi } from '../lib/adminApi';
-
+import { getArchetypesByGroup } from '../../shared/personalityArchetypes.js';
 import QuizEditor from './QuizEditor';
+import './Admin.css';
+
+const getAdminCategoryLabel = (type) => {
+    if (!type || type === 'all') return '전체';
+    const cat = QUIZ_CATEGORIES.find((c) => c.id === normalizeCategory(type));
+    return cat?.labelKo || getCategoryLabel(type);
+};
 
 const Admin = () => {
-    const navigate = useNavigate();
-    // Admin access (no login screen — direct access)
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [isAuthenticated] = useState(true);
     const [adminKey] = useState(() => import.meta.env.VITE_ADMIN_API_KEY || '');
     const api = createAdminApi(adminKey);
 
-    // Authenticated fetch wrapper — adds X-Admin-Key header
-    const adminFetch = async (url, options = {}) => {
-        const res = await fetch(url, {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Admin-Key': adminKey,
-                ...options.headers,
-            },
-        });
-        if (res.status === 401) {
-            alert('🚫 Xác thực API thất bại. Kiểm tra VITE_ADMIN_API_KEY.');
-        }
-        return res;
-    };
-
-    // State Management
     const [quizzes, setQuizzes] = useState([]);
-    const [filteredQuizzes, setFilteredQuizzes] = useState([]);
     const [showEditor, setShowEditor] = useState(false);
     const [editingQuiz, setEditingQuiz] = useState(null);
     const [filterType, setFilterType] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(false);
-    const [availableAgents, setAvailableAgents] = useState([]);
+    const [factoryOpen, setFactoryOpen] = useState(false);
+    const [toast, setToast] = useState(null);
 
-    // B2B Brand Inquiries State
-    const [adminTab, setAdminTab] = useState('quizzes'); // 'quizzes' | 'b2b' | 'analytics'
+    const [adminTab, setAdminTab] = useState('quizzes');
     const [inquiries, setInquiries] = useState([]);
     const [inquiriesLoading, setInquiriesLoading] = useState(false);
     const [analytics, setAnalytics] = useState(null);
     const [analyticsLoading, setAnalyticsLoading] = useState(false);
+    const [generatingArchetypeId, setGeneratingArchetypeId] = useState(null);
+    const [archetypeStatus, setArchetypeStatus] = useState('');
 
+    const mbtiArchetypes = getArchetypesByGroup('mbti');
+    const personalityArchetypes = getArchetypesByGroup('personality');
+    const filterTypes = getFilterTypes();
 
+    const showToast = useCallback((message, type = 'info') => {
+        setToast({ message, type });
+        window.setTimeout(() => setToast(null), 3200);
+    }, []);
+
+    const displayedQuizzes = useMemo(() => {
+        let list = quizzes;
+        if (filterType !== 'all') {
+            list = list.filter((q) => matchesCategory(q.category, filterType));
+        }
+        if (statusFilter === 'on') {
+            list = list.filter((q) => q.is_active !== false && q.status !== 'hidden');
+        } else if (statusFilter === 'off') {
+            list = list.filter((q) => q.is_active === false || q.status === 'hidden');
+        }
+        const q = searchQuery.trim().toLowerCase();
+        if (q) {
+            list = list.filter((quiz) =>
+                quiz.title?.toLowerCase().includes(q)
+                || quiz.id?.toLowerCase().includes(q)
+                || getAdminCategoryLabel(quiz.category).toLowerCase().includes(q),
+            );
+        }
+        return list;
+    }, [quizzes, filterType, statusFilter, searchQuery]);
+
+    const quizStats = useMemo(() => ({
+        total: quizzes.length,
+        active: quizzes.filter((q) => q.is_active !== false && q.status !== 'hidden').length,
+        hidden: quizzes.filter((q) => q.is_active === false || q.status === 'hidden').length,
+    }), [quizzes]);
     // Edit Modal State
-    const [modalTab, setModalTab] = useState('info'); // 'info' | 'questions' | 'results'
+    const [modalTab, setModalTab] = useState('info');
     const [editTitle, setEditTitle] = useState('');
     const [editDescription, setEditDescription] = useState('');
     const [editCategory, setEditCategory] = useState('');
     const [editQuestions, setEditQuestions] = useState([]);
-    const [editResults, setEditResults] = useState([]); // 8 result types
-    const [editImage, setEditImage] = useState(null);
+    const [editResults, setEditResults] = useState([]);
     const [editImagePreview, setEditImagePreview] = useState('');
-    const [isDragging, setIsDragging] = useState(false);
 
-
-    // Constants (from shared categories)
-    const filterTypes = getFilterTypes();
-    const basePersonas = getPersonas();
-
-    // Dynamic Personas: Sync with available .md agents
-    const syncedPersonas = basePersonas.filter(p => {
-        return availableAgents.some(agent =>
-            agent.toLowerCase().includes(p.category.toLowerCase()) ||
-            p.category.toLowerCase().includes(agent.replace('Expert_', '').toLowerCase())
-        );
-    }).map(p => {
-        const matchingAgent = availableAgents.find(agent =>
-            agent.toLowerCase().includes(p.category.toLowerCase()) ||
-            p.category.toLowerCase().includes(agent.replace('Expert_', '').toLowerCase())
-        );
-        return { ...p, agent_name: matchingAgent };
-    });
-
-    const extraPersonas = availableAgents.filter(agent => {
-        return !basePersonas.some(p =>
-            agent.toLowerCase().includes(p.category.toLowerCase()) ||
-            p.category.toLowerCase().includes(agent.replace('Expert_', '').toLowerCase())
-        );
-    }).map(agent => ({
-        name: `${agent.replace('Expert_', '').replace('Quiz_', '').replace(/_/g, ' ')}`,
-        prompt: `Generate a viral quiz about this topic.`,
-        category: agent.replace('Expert_', '').replace('Quiz_', ''),
-        emoji: '🤖',
-        agent_name: agent
-    }));
-
-    const personas = [...syncedPersonas, ...extraPersonas];
-
-    // Handle filtering
-    useEffect(() => {
-        if (filterType === 'all') {
-            setFilteredQuizzes(quizzes);
-        } else {
-            setFilteredQuizzes(quizzes.filter(q =>
-                matchesCategory(q.category, filterType)
-            ));
-        }
-    }, [quizzes, filterType]);
-
-    // Fetch Quizzes
     const fetchQuizzes = async () => {
         setLoading(true);
         try {
             const combined = await api.fetchAllQuizzes();
             setQuizzes(combined);
-            setFilteredQuizzes(combined);
         } catch (error) {
             console.error("Error fetching data:", error);
+            showToast('퀴즈 목록을 불러오지 못했습니다.', 'error');
         } finally {
             setLoading(false);
         }
@@ -121,15 +97,6 @@ const Admin = () => {
             fetchQuizzes();
         }
     }, [isAuthenticated]);
-
-    // Filtering
-    useEffect(() => {
-        if (filterType === 'all') {
-            setFilteredQuizzes(quizzes);
-        } else {
-            setFilteredQuizzes(quizzes.filter(q => matchesCategory(q.category, filterType)));
-        }
-    }, [filterType, quizzes]);
 
     const fetchInquiries = async () => {
         setInquiriesLoading(true);
@@ -173,34 +140,30 @@ const Admin = () => {
             await api.updateInquiryStatus(id, newStatus);
         } catch (error) {
             console.error("Error updating inquiry status:", error);
-            alert(`Lỗi khi cập nhật trạng thái: ${error.message}`);
+            showToast(`문의 상태 변경 실패: ${error.message}`, 'error');
             fetchInquiries();
         }
     };
 
     const deleteInquiry = async (id) => {
-        if (!window.confirm("Bạn có chắc chắn muốn xóa yêu cầu này?")) return;
+        if (!window.confirm('이 문의를 삭제할까요?')) return;
         try {
             setInquiries(prev => prev.filter(inq => inq.id !== id));
             await api.deleteInquiry(id);
-            alert("✅ Đã xóa yêu cầu thành công!");
+            showToast('문의가 삭제되었습니다.', 'success');
         } catch (error) {
             console.error("Error deleting inquiry:", error);
-            alert(`Lỗi khi xóa yêu cầu: ${error.message}`);
+            showToast(`문의 삭제 실패: ${error.message}`, 'error');
             fetchInquiries();
         }
     };
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
-        return new Date(dateString).toLocaleDateString();
+        return new Date(dateString).toLocaleDateString('ko-KR');
     };
 
-    const getTypeLabel = (type) => getCategoryLabel(type) || type;
-
-    const handleGenerate = (persona) => {
-        navigate('/editor');
-    };
+    const handleGenerate = () => setShowEditor(true);
 
     const toggleStatus = async (id) => {
         try {
@@ -213,33 +176,56 @@ const Admin = () => {
             setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newIsActive } : q));
 
             await api.updateQuizStatus(id, newIsActive, newStatus);
+            showToast(newIsActive ? '퀴즈 공개됨' : '퀴즈 숨김 처리됨', 'success');
         } catch (error) {
             console.error("Error toggling status:", error);
-            alert(`Error toggling status: ${error.message}`);
+            showToast(`상태 변경 실패: ${error.message}`, 'error');
             fetchQuizzes();
         }
     };
 
     const deleteQuiz = async (quizId) => {
         const id = quizId;
-        if (!window.confirm(`Are you sure you want to delete this quiz?`)) return;
+        if (!window.confirm('이 퀴즈를 삭제할까요?')) return;
         
         try {
             await api.deleteQuiz(id);
             setQuizzes(prev => prev.filter(q => q.id !== id));
-            setFilteredQuizzes(prev => prev.filter(q => q.id !== id));
-            alert("✅ Quiz deleted successfully.");
+            if (editingQuiz?.id === id) closeEditModal();
+            showToast('퀴즈가 삭제되었습니다.', 'success');
         } catch (error) {
             console.error("Error deleting quiz:", error);
-            alert(`Error deleting quiz: ${error.message}`);
+            showToast(`삭제 실패: ${error.message}`, 'error');
         }
     };
 
     const copyQuizLink = (id) => {
         const url = `${window.location.origin}/quiz/${id}`;
         navigator.clipboard.writeText(url).then(() => {
-            alert("🔗 Link copied to clipboard!");
+            showToast('링크가 복사되었습니다.', 'success');
         });
+    };
+
+    const handleGenerateArchetype = async (archetype) => {
+        if (generatingArchetypeId) return;
+
+        setGeneratingArchetypeId(archetype.id);
+        setArchetypeStatus(`${archetype.emoji} ${archetype.labelKo || archetype.label} 생성 중… (1~3분)`);
+        setFactoryOpen(true);
+
+        try {
+            const result = await api.generateArchetypeQuiz(archetype.id, { generateImages: true });
+            setArchetypeStatus(`완료: ${result.title}`);
+            showToast(`퀴즈 생성 완료: ${result.title}`, 'success');
+            await fetchQuizzes();
+            window.open(`/quiz/${result.id}`, '_blank');
+        } catch (error) {
+            console.error('Archetype quiz error:', error);
+            setArchetypeStatus('');
+            showToast(`생성 실패: ${error.message}`, 'error');
+        } finally {
+            setGeneratingArchetypeId(null);
+        }
     };
 
     const openEditModal = async (quiz) => {
@@ -271,7 +257,7 @@ const Admin = () => {
             }
         } catch (error) {
             console.error("Error fetching quiz details:", error);
-            alert("Warning: Could not load questions.");
+            showToast('문항을 불러오지 못했습니다.', 'error');
         }
     };
 
@@ -299,7 +285,7 @@ const Admin = () => {
     };
 
     const handleClearResult = (index) => {
-        if (!window.confirm("Clear this result?")) return;
+        if (!window.confirm('이 결과 내용을 비울까요?')) return;
         const updatedResults = [...editResults];
         updatedResults[index] = {
             ...updatedResults[index],
@@ -315,7 +301,7 @@ const Admin = () => {
     const handleDeleteQuestion = async (idx) => {
         const question = editQuestions[idx];
         if (!question) return;
-        if (!window.confirm("Are you sure you want to delete this question?")) return;
+        if (!window.confirm('이 문항을 삭제할까요?')) return;
 
         try {
             if (question.id) {
@@ -324,7 +310,7 @@ const Admin = () => {
             setEditQuestions(prev => prev.filter((_, i) => i !== idx));
         } catch (error) {
             console.error("Error deleting question:", error);
-            alert(`Error deleting question: ${error.message}`);
+            showToast(`문항 삭제 실패: ${error.message}`, 'error');
         }
     };
 
@@ -348,26 +334,27 @@ const Admin = () => {
                     : q
             ));
             
-            alert(`✅ Quiz updated successfully!`);
+            showToast('퀴즈가 저장되었습니다.', 'success');
             closeEditModal();
         } catch (error) {
             console.error('Error updating quiz:', error);
-            alert(`Error updating quiz: ${error.message}`);
+            showToast(`저장 실패: ${error.message}`, 'error');
         }
     };
 
     return (
+        <div className="admin-shell">
         <>
             {editingQuiz && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
                     <div style={{ backgroundColor: '#FFFFFF' }} className="border-[3px] border-black rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col relative shadow-md overflow-hidden">
                         <div className="px-6 py-4 border-b-[1.5px] border-black flex justify-between items-center bg-white">
-                            <h3 className="text-lg font-bold text-black">Quiz Editor — {editTitle || 'Untitled'}</h3>
-                            <button onClick={closeEditModal} className="w-8 h-8 bg-white text-black rounded-sm border-[1.5px] border-black">✕</button>
+                            <h3 className="text-lg font-bold text-black">퀴즈 편집 — {editTitle || '제목 없음'}</h3>
+                            <button type="button" onClick={closeEditModal} className="w-8 h-8 bg-white text-black rounded-sm border-[1.5px] border-black" aria-label="닫기">✕</button>
                         </div>
                         <div className="flex gap-0 bg-white border-b-[1.5px] border-black">
-                            {[{ id: 'info', label: 'Basic Info' }, { id: 'questions', label: 'Questions' }, { id: 'results', label: 'Results' }].map(tab => (
-                                <button key={tab.id} onClick={() => setModalTab(tab.id)} className={`px-4 py-2 font-black text-sm ${modalTab === tab.id ? 'text-black border-b-[3px] border-black' : 'text-gray-500'}`}>{tab.label}</button>
+                            {[{ id: 'info', label: '기본 정보' }, { id: 'questions', label: 'Questions' }, { id: 'results', label: '결과' }].map(tab => (
+                                <button key={tab.id} type="button" onClick={() => setModalTab(tab.id)} className={`px-4 py-2 font-black text-sm ${modalTab === tab.id ? 'text-black border-b-[3px] border-black' : 'text-gray-500'}`}>{tab.label}</button>
                             ))}
                         </div>
                         <div className="p-6 overflow-y-auto flex-1 bg-white">
@@ -375,12 +362,18 @@ const Admin = () => {
                                 <div className="space-y-5 max-w-2xl">
                                     {editImagePreview && (
                                         <div className="flex items-center gap-4">
-                                            <img src={getImageUrl(editImagePreview)} alt="Cover" className="w-[300px] h-[300px] object-cover rounded-lg border-[1.5px] border-black shadow-sm" />
-                                            <span className="text-xs font-bold text-gray-400">Cover Thumbnail</span>
+                                            <img src={getImageUrl(editImagePreview)} alt="커버" className="w-[300px] h-[300px] object-cover rounded-lg border-[1.5px] border-black shadow-sm" />
+                                            <span className="text-xs font-bold text-gray-400">커버 썸네일</span>
                                         </div>
                                     )}
-                                    <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="Quiz title..." />
-                                    <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={4} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="Description..." />
+                                    <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="퀴즈 제목" />
+                                    <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={4} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm" placeholder="설명" />
+                                    <label className="block text-xs font-bold text-gray-500">카테고리</label>
+                                    <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)} className="w-full px-4 py-3 border-[1.5px] border-black rounded-sm bg-white">
+                                        {QUIZ_CATEGORIES.map((c) => (
+                                            <option key={c.id} value={c.id}>{c.labelKo || c.label}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             )}
                             {modalTab === 'questions' && (
@@ -402,174 +395,247 @@ const Admin = () => {
                                         <div key={idx} className="border-[1.5px] border-black p-4 rounded-lg flex flex-col">
                                             {result.image_url && (
                                                 <div className="mb-3 shrink-0 flex justify-center">
-                                                    <img src={getImageUrl(result.image_url)} alt="Result" className="w-[300px] h-[300px] object-cover rounded-md border border-gray-300" />
+                                                    <img src={getImageUrl(result.image_url)} alt="결과" className="w-[300px] h-[300px] object-cover rounded-md border border-gray-300" />
                                                 </div>
                                             )}
-                                            <input type="text" value={result.title || ''} onChange={(e) => handleResultChange(idx, 'title', e.target.value)} className="w-full px-3 py-2 mb-2 border-[1.5px] border-black" placeholder="Result title" />
-                                            <textarea value={result.description || ''} onChange={(e) => handleResultChange(idx, 'description', e.target.value)} rows={2} className="w-full px-3 py-2 border-[1.5px] border-black" placeholder="Description..." />
+                                            <input type="text" value={result.title || ''} onChange={(e) => handleResultChange(idx, 'title', e.target.value)} className="w-full px-3 py-2 mb-2 border-[1.5px] border-black" placeholder="결과 제목" />
+                                            <textarea value={result.description || ''} onChange={(e) => handleResultChange(idx, 'description', e.target.value)} rows={2} className="w-full px-3 py-2 border-[1.5px] border-black" placeholder="결과 설명" />
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
                         <div className="px-6 py-4 border-t-[1.5px] border-black bg-white flex justify-between">
-                            <button onClick={() => deleteQuiz(editingQuiz.id, editingQuiz.is_local)} className="text-red-600 font-semibold text-sm">Delete Quiz</button>
-                            <button onClick={saveQuiz} className="px-6 py-2.5 bg-black text-white font-semibold rounded-lg">Save Changes</button>
+                            <button type="button" onClick={() => deleteQuiz(editingQuiz.id)} className="text-red-600 font-semibold text-sm">퀴즈 삭제</button>
+                            <button type="button" onClick={saveQuiz} className="px-6 py-2.5 bg-black text-white font-semibold rounded-lg">저장</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div className="min-h-screen bg-[#fff9fc] p-8 pt-24 font-sans text-gray-800">
-                <div className="max-w-6xl mx-auto">
-                    <header className="mb-12 text-center">
-                        <h1 className="text-4xl font-black text-[#FF2D85] tracking-tight">Admin Dashboard</h1>
-                        <p className="text-gray-500 font-bold mt-2">Manage your interactive quizzes</p>
-                    </header>
-
-                    {/* Compact Header for Admin */}
+            <div className="admin-page">
+                <div className="admin-inner">
                     {!showEditor && (
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 px-4">
-                            <div>
-                                <h2 className="text-3xl font-black text-gray-900">🛠️ Admin Dashboard</h2>
-                                <div className="flex gap-2 mt-4">
-                                    <button 
-                                        onClick={() => setAdminTab('quizzes')} 
-                                        className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000000] active:translate-y-[1px] ${adminTab === 'quizzes' ? 'bg-[#FF2D85] text-white' : 'bg-white text-gray-700'}`}
-                                    >
-                                        Quizzes 🧩
-                                    </button>
-                                    <button 
-                                        onClick={() => setAdminTab('b2b')} 
-                                        className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000000] active:translate-y-[1px] ${adminTab === 'b2b' ? 'bg-[#FF2D85] text-white' : 'bg-white text-gray-700'}`}
-                                    >
-                                        Brand Inquiries 🎯
-                                    </button>
-                                    <button 
-                                        onClick={() => setAdminTab('analytics')} 
-                                        className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000000] active:translate-y-[1px] ${adminTab === 'analytics' ? 'bg-[#FF2D85] text-white' : 'bg-white text-gray-700'}`}
-                                    >
-                                        Analytics 📊
-                                    </button>
+                        <div className="admin-topbar">
+                            <div className="admin-topbar-row">
+                                <div className="admin-tabs">
+                                    {[
+                                        { id: 'quizzes', label: '퀴즈' },
+                                        { id: 'b2b', label: 'B2B 문의' },
+                                        { id: 'analytics', label: '통계' },
+                                    ].map((tab) => (
+                                        <button
+                                            key={tab.id}
+                                            type="button"
+                                            className={`admin-tab ${adminTab === tab.id ? 'active' : ''}`}
+                                            onClick={() => setAdminTab(tab.id)}
+                                        >
+                                            {tab.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="admin-actions">
+                                    {adminTab === 'quizzes' && (
+                                        <>
+                                            <button type="button" className="admin-btn admin-btn-secondary" onClick={fetchQuizzes} disabled={loading}>
+                                                {loading ? '…' : '↻ 새로고침'}
+                                            </button>
+                                            <button type="button" className="admin-btn admin-btn-primary" onClick={() => setShowEditor(true)}>
+                                                + 새 퀴즈
+                                            </button>
+                                        </>
+                                    )}
+                                    {adminTab === 'analytics' && (
+                                        <button type="button" className="admin-btn admin-btn-secondary" onClick={fetchAnalytics} disabled={analyticsLoading}>
+                                            ↻ 새로고침
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                             {adminTab === 'quizzes' && (
-                                <button 
-                                    onClick={() => setShowEditor(true)}
-                                    className="bg-[#FF2D85] text-white px-8 py-3 rounded-2xl font-black shadow-[4px_4px_0px_0px_#000000] border-2 border-black hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
-                                >
-                                    ✨ CREATE NEW QUIZ
-                                </button>
+                                <div className="admin-stats">
+                                    <span className="admin-stat">전체 {quizStats.total}</span>
+                                    <span className="admin-stat">공개 {quizStats.active}</span>
+                                    <span className="admin-stat">숨김 {quizStats.hidden}</span>
+                                    <span className="admin-stat">표시 {displayedQuizzes.length}</span>
+                                </div>
                             )}
                         </div>
                     )}
 
-                    <section className="bg-white rounded-xl shadow-lg overflow-hidden mb-12 min-h-[600px]">
+                    <section className="admin-panel">
                         {showEditor ? (
                             <div className="p-0 bg-gray-50 relative">
-                                <button 
+                                <button
+                                    type="button"
                                     onClick={() => setShowEditor(false)}
-                                    className="absolute top-4 right-4 z-10 bg-white px-4 py-2 rounded-lg font-bold text-sm text-gray-600 hover:bg-gray-100 shadow-sm"
+                                    className="absolute top-4 right-4 z-10 bg-white px-4 py-2 rounded-lg font-bold text-sm text-gray-600 hover:bg-gray-100 shadow-sm border border-gray-200"
                                 >
-                                    ✕ CLOSE EDITOR
+                                    ← 목록으로
                                 </button>
                                 <QuizEditor embedded={true} initialAuth={true} />
                             </div>
                         ) : (
                             <>
-                                <div className="bg-gradient-to-r from-[#FF2D85] to-pink-400 p-4 flex justify-between items-center">
-                                    <h2 className="text-2xl font-black text-white">
-                                        {adminTab === 'quizzes' ? '🎮 Quiz Management' :
-                                         adminTab === 'b2b' ? '🎯 Brand Inquiries' : '📊 Analytics Dashboard'}
-                                    </h2>
+                                <div className="admin-panel-head">
+                                    {adminTab === 'quizzes' ? '퀴즈 관리' :
+                                     adminTab === 'b2b' ? '브랜드 문의' : '통계'}
                                 </div>
-                                <div className="p-6">
+                                <div className="admin-panel-body">
                                     {adminTab === 'quizzes' ? (
                                         <>
-                                            {/* Filters */}
-                                            <div className="flex flex-wrap gap-2 mb-6">
+                                            <div className="admin-factory">
+                                                <button
+                                                    type="button"
+                                                    className="admin-factory-toggle"
+                                                    onClick={() => setFactoryOpen((v) => !v)}
+                                                    aria-expanded={factoryOpen}
+                                                >
+                                                    <div>
+                                                        <h3>AI 퀴즈 팩토리</h3>
+                                                        <p>MBTI · 성격 테스트 · Gemini 이미지 자동 생성 · {factoryOpen ? '접기' : '펼치기'}</p>
+                                                    </div>
+                                                    <span style={{ fontWeight: 900 }}>{factoryOpen ? '▲' : '▼'}</span>
+                                                </button>
+                                                {factoryOpen && (
+                                                    <div className="admin-factory-body">
+                                                        {archetypeStatus && (
+                                                            <p className="text-xs font-bold text-[#FF2D85] mb-2">{archetypeStatus}</p>
+                                                        )}
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-purple-600 mt-2">MBTI</p>
+                                                        <div className="admin-archetype-grid">
+                                                            {mbtiArchetypes.map((arch) => (
+                                                                <button
+                                                                    key={arch.id}
+                                                                    type="button"
+                                                                    disabled={!!generatingArchetypeId}
+                                                                    onClick={() => handleGenerateArchetype(arch)}
+                                                                    className={`admin-archetype-btn ${generatingArchetypeId === arch.id ? 'generating' : ''}`}
+                                                                >
+                                                                    <span className="text-xl">{arch.emoji}</span>
+                                                                    <span className="block text-[11px] font-black mt-1 leading-tight">{arch.labelKo || arch.label}</span>
+                                                                    <span className="block text-[9px] text-gray-400 font-bold">{arch.quiz_type === 'mbti_12q' ? '12Q→16' : '5Q→8'}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-pink-600 mt-4">성격 테스트</p>
+                                                        <div className="admin-archetype-grid">
+                                                            {personalityArchetypes.map((arch) => (
+                                                                <button
+                                                                    key={arch.id}
+                                                                    type="button"
+                                                                    disabled={!!generatingArchetypeId}
+                                                                    onClick={() => handleGenerateArchetype(arch)}
+                                                                    className={`admin-archetype-btn ${generatingArchetypeId === arch.id ? 'generating' : ''}`}
+                                                                >
+                                                                    <span className="text-xl">{arch.emoji}</span>
+                                                                    <span className="block text-[11px] font-black mt-1 leading-tight">{arch.labelKo || arch.label}</span>
+                                                                    <span className="block text-[9px] text-gray-400 font-bold">5Q→8</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="admin-toolbar">
+                                                <input
+                                                    type="search"
+                                                    className="admin-search"
+                                                    placeholder="제목, ID, 카테고리 검색…"
+                                                    value={searchQuery}
+                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                />
+                                                <div className="admin-filters">
+                                                    {['all', 'on', 'off'].map((s) => (
+                                                        <button
+                                                            key={s}
+                                                            type="button"
+                                                            className={`admin-filter-chip ${statusFilter === s ? 'active' : ''}`}
+                                                            onClick={() => setStatusFilter(s)}
+                                                        >
+                                                            {s === 'all' ? '전체' : s === 'on' ? '공개' : '숨김'}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="admin-filters mb-4">
                                                 {filterTypes.map((type) => (
                                                     <button
                                                         key={type}
+                                                        type="button"
                                                         onClick={() => setFilterType(type)}
-                                                        className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${filterType === type
-                                                            ? 'bg-[#FF2D85] text-white shadow-md'
-                                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                            }`}
+                                                        className={`admin-filter-chip ${filterType === type ? 'active' : ''}`}
                                                     >
-                                                        {type === 'all' ? 'All Content' : getTypeLabel(type)}
+                                                        {type === 'all' ? '전체' : getAdminCategoryLabel(type)}
                                                     </button>
                                                 ))}
                                             </div>
 
-                                            {/* Table */}
                                             {loading && !quizzes.length ? (
-                                                <div className="p-12 text-center">
-                                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
-                                                    <p className="text-gray-500">Loading quizzes...</p>
+                                                <div className="admin-loading">
+                                                    <div className="admin-spinner" />
+                                                    <p className="text-gray-500 mt-3">불러오는 중…</p>
                                                 </div>
                                             ) : (
                                                 <div className="overflow-x-auto">
-                                                    <table className="w-full">
-                                                        <thead className="bg-gray-50">
+                                                    <table className="admin-quiz-table">
+                                                        <thead>
                                                             <tr>
-                                                                <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
-                                                                <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Title</th>
-                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Created</th>
-                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                                                                <th>썸네일</th>
+                                                                <th>제목</th>
+                                                                <th className="hide-mobile">카테고리</th>
+                                                                <th className="hide-mobile">생성일</th>
+                                                                <th className="text-center">상태</th>
+                                                                <th className="text-center">작업</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody className="divide-y divide-gray-100">
-                                                            {filteredQuizzes.length === 0 ? (
+                                                        <tbody>
+                                                            {displayedQuizzes.length === 0 ? (
                                                                 <tr>
-                                                                    <td colSpan="6" className="p-8 text-center text-gray-400">
-                                                                        No quizzes found.
-                                                                    </td>
+                                                                    <td colSpan="6" className="admin-empty">퀴즈가 없습니다.</td>
                                                                 </tr>
                                                             ) : (
-                                                                filteredQuizzes.map((quiz) => (
-                                                                    <tr key={quiz.id} className="hover:bg-pink-50 transition-colors">
-                                                                        <td className="p-4 text-sm text-gray-600 font-mono">
-                                                                            {quiz.id?.toString().slice(0, 8)}...
+                                                                displayedQuizzes.map((quiz) => (
+                                                                    <tr key={quiz.id}>
+                                                                        <td>
+                                                                            <img
+                                                                                src={getImageUrl(quiz.image_url) || '/images/default_cover.png'}
+                                                                                alt=""
+                                                                                className="admin-quiz-thumb"
+                                                                                onError={(e) => { e.target.src = '/images/default_cover.png'; }}
+                                                                            />
                                                                         </td>
-                                                                        <td className="p-4">
-                                                                            <button
-                                                                                onClick={() => openEditModal(quiz)}
-                                                                                className="font-medium text-gray-900 hover:text-[#FF2D85] hover:underline text-left transition-colors"
-                                                                            >
+                                                                        <td>
+                                                                            <button type="button" className="admin-quiz-title-btn" onClick={() => openEditModal(quiz)}>
                                                                                 {quiz.title}
                                                                             </button>
+                                                                            <div className="text-[10px] text-gray-400 font-mono mt-0.5">{quiz.id?.slice(0, 8)}…</div>
                                                                         </td>
-                                                                        <td className="p-4 text-center">
-                                                                            <span className="inline-block px-3 py-1 bg-pink-100 text-[#FF2D85] rounded-full text-sm font-medium">
-                                                                                {getTypeLabel(quiz.category)}
+                                                                        <td className="hide-mobile">
+                                                                            <span className="admin-filter-chip active" style={{ cursor: 'default' }}>
+                                                                                {getAdminCategoryLabel(quiz.category)}
                                                                             </span>
                                                                         </td>
-                                                                        <td className="p-4 text-center text-sm text-gray-600">
-                                                                            {new Date(quiz.created_at).toLocaleDateString()}
+                                                                        <td className="hide-mobile text-sm text-gray-500">
+                                                                            {formatDate(quiz.created_at)}
                                                                         </td>
-                                                                        <td className="p-4 text-center">
+                                                                        <td className="text-center">
                                                                             <button
+                                                                                type="button"
                                                                                 onClick={() => toggleStatus(quiz.id)}
-                                                                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${quiz.is_active !== false && quiz.status !== 'hidden'
-                                                                                    ? 'bg-green-500 text-white hover:bg-green-600'
-                                                                                    : 'bg-red-500 text-white hover:bg-red-600'
-                                                                                    }`}
+                                                                                className={quiz.is_active !== false && quiz.status !== 'hidden' ? 'admin-status-on' : 'admin-status-off'}
                                                                             >
-                                                                                {quiz.is_active !== false && quiz.status !== 'hidden' ? 'ON' : 'OFF'}
+                                                                                {quiz.is_active !== false && quiz.status !== 'hidden' ? '공개' : '숨김'}
                                                                             </button>
                                                                         </td>
-                                                                        <td className="p-4 text-center">
-                                                                            <div className="flex items-center justify-center gap-2">
-                                                                                <button onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')} className="px-2 py-1.5 text-xs font-bold text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all" title="Preview">👁️</button>
-                                                                                <button
-                                                                                    onClick={() => deleteQuiz(quiz.id, quiz.is_local)}
-                                                                                    className="px-3 py-1.5 text-xs font-bold text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 hover:border-red-500 rounded-lg transition-all duration-200"
-                                                                                >
-                                                                                    🗑️ Delete
-                                                                                </button>
+                                                                        <td>
+                                                                            <div className="admin-row-actions">
+                                                                                <button type="button" className="admin-icon-btn" onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')}>미리보기</button>
+                                                                                <button type="button" className="admin-icon-btn" onClick={() => copyQuizLink(quiz.id)}>링크</button>
+                                                                                <button type="button" className="admin-icon-btn" onClick={() => openEditModal(quiz)}>편집</button>
+                                                                                <button type="button" className="admin-icon-btn danger" onClick={() => deleteQuiz(quiz.id)}>삭제</button>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -585,27 +651,27 @@ const Admin = () => {
                                             {inquiriesLoading ? (
                                                 <div className="p-12 text-center">
                                                     <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
-                                                    <p className="text-gray-500">Đang tải danh sách yêu cầu...</p>
+                                                    <p className="text-gray-500">문의 목록 불러오는 중…</p>
                                                 </div>
                                             ) : (
                                                 <div className="overflow-x-auto">
                                                     <table className="w-full text-left">
                                                         <thead className="bg-gray-50">
                                                             <tr>
-                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Doanh nghiệp / Đại diện</th>
-                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Thông tin liên hệ</th>
-                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Concept quiz</th>
-                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Ngân sách</th>
-                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Ngày gửi</th>
-                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Trạng thái</th>
-                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Hành động</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">기업 / 담당자</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">연락처</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">퀴즈 컨셉</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">예산</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">접수일</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">상태</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">작업</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody className="divide-y divide-gray-100">
                                                             {inquiries.length === 0 ? (
                                                                 <tr>
                                                                     <td colSpan="7" className="p-8 text-center text-gray-400">
-                                                                        Chưa có yêu cầu nào được gửi.
+                                                                        접수된 문의가 없습니다.
                                                                     </td>
                                                                 </tr>
                                                             ) : (
@@ -623,9 +689,9 @@ const Admin = () => {
                                                                             {inq.quiz_concept}
                                                                         </td>
                                                                         <td className="p-4 text-center font-bold text-pink-600 text-sm">
-                                                                            {inq.budget_tier === 'basic' ? 'Dưới $500' :
-                                                                             inq.budget_tier === 'standard' ? '$500 - $2,000' :
-                                                                             inq.budget_tier === 'enterprise' ? 'Trên $2,000' : inq.budget_tier || '-'}
+                                                                            {inq.budget_tier === 'basic' ? '$500 미만' :
+                                                                             inq.budget_tier === 'standard' ? '$500 – $2,000' :
+                                                                             inq.budget_tier === 'enterprise' ? '$2,000 이상' : inq.budget_tier || '-'}
                                                                         </td>
                                                                         <td className="p-4 text-center text-sm text-gray-600">
                                                                             {formatDate(inq.created_at)}
@@ -640,18 +706,19 @@ const Admin = () => {
                                                                                     inq.status === 'closed' ? 'bg-gray-100 text-gray-800' : 'bg-yellow-100 text-yellow-800'
                                                                                 }`}
                                                                             >
-                                                                                <option value="pending">Đang chờ</option>
-                                                                                <option value="reviewed">Đang duyệt</option>
-                                                                                <option value="contacted">Hoàn thành</option>
-                                                                                <option value="closed">Từ chối</option>
+                                                                                <option value="pending">대기</option>
+                                                                                <option value="reviewed">검토 중</option>
+                                                                                <option value="contacted">연락 완료</option>
+                                                                                <option value="closed">종료</option>
                                                                             </select>
                                                                         </td>
                                                                         <td className="p-4 text-center">
                                                                             <button
+                                                                                type="button"
                                                                                 onClick={() => deleteInquiry(inq.id)}
                                                                                 className="px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 border border-red-200 hover:border-red-500 rounded-lg transition-all duration-200"
                                                                             >
-                                                                                🗑️ Xóa
+                                                                                삭제
                                                                             </button>
                                                                         </td>
                                                                     </tr>
@@ -667,21 +734,21 @@ const Admin = () => {
                                             {analyticsLoading ? (
                                                 <div className="p-12 text-center">
                                                     <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
-                                                    <p className="text-gray-500">Loading analytics...</p>
+                                                    <p className="text-gray-500">통계 불러오는 중…</p>
                                                 </div>
                                             ) : analytics ? (
                                                 <>
                                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                                                         <div className="bg-pink-50 border-2 border-pink-100 rounded-2xl p-6 text-center">
-                                                            <p className="text-xs font-black text-gray-400 uppercase">Total Views</p>
+                                                            <p className="text-xs font-black text-gray-400 uppercase">총 조회수</p>
                                                             <p className="text-3xl font-black text-[#FF2D85]">{analytics.totals.views.toLocaleString()}</p>
                                                         </div>
                                                         <div className="bg-green-50 border-2 border-green-100 rounded-2xl p-6 text-center">
-                                                            <p className="text-xs font-black text-gray-400 uppercase">Participants</p>
+                                                            <p className="text-xs font-black text-gray-400 uppercase">참여자</p>
                                                             <p className="text-3xl font-black text-green-600">{analytics.totals.participants.toLocaleString()}</p>
                                                         </div>
                                                         <div className="bg-yellow-50 border-2 border-yellow-100 rounded-2xl p-6 text-center">
-                                                            <p className="text-xs font-black text-gray-400 uppercase">Shares</p>
+                                                            <p className="text-xs font-black text-gray-400 uppercase">공유</p>
                                                             <p className="text-3xl font-black text-yellow-600">{analytics.totals.shares.toLocaleString()}</p>
                                                         </div>
                                                     </div>
@@ -689,11 +756,11 @@ const Admin = () => {
                                                         <table className="w-full">
                                                             <thead className="bg-gray-50">
                                                                 <tr>
-                                                                    <th className="p-3 text-left text-xs font-bold text-gray-500 uppercase">Quiz</th>
-                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Views</th>
-                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Plays</th>
-                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Shares</th>
-                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Share %</th>
+                                                                    <th className="p-3 text-left text-xs font-bold text-gray-500 uppercase">퀴즈</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">조회</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">참여</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">공유</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">공유율</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody className="divide-y divide-gray-100">
@@ -713,7 +780,7 @@ const Admin = () => {
                                                     </div>
                                                 </>
                                             ) : (
-                                                <p className="text-center text-gray-400 p-12">No analytics data.</p>
+                                                <p className="text-center text-gray-400 p-12">통계 데이터가 없습니다.</p>
                                             )}
                                         </>
                                     )}
@@ -723,7 +790,14 @@ const Admin = () => {
                     </section>
                 </div>
             </div>
+
+            {toast && (
+                <div className={`admin-toast ${toast.type === 'success' ? 'success' : toast.type === 'error' ? 'error' : ''}`} role="status">
+                    {toast.message}
+                </div>
+            )}
         </>
+        </div>
     );
 };
 

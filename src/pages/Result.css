@@ -3,7 +3,7 @@
    ============================================ */
 
 /* ==== Google Fonts ==== */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Material Symbols only — body font from index.css */
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 
 /* ==== CSS Variables ==== */
@@ -27,7 +27,7 @@
     flex-direction: column;
     align-items: center;
     background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 50%, #f3e5f5 100%);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     color: var(--comic-charcoal);
     overflow-x: hidden;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -104,40 +104,41 @@
     gap: 1.5rem;
 }
 
-/* ==== New Unified Card (Image + Overlay Text) ==== */
+/* ==== New Unified Card (Image + Text Below) ==== */
 .result-unified-card {
     position: relative;
     width: 95%;
     max-width: 500px;
-    aspect-ratio: 3/4;
-    /* Poster ratio like quiz start */
     border-radius: 24px;
     border: 2px solid var(--comic-charcoal);
     box-shadow: 8px 8px 0px 0px var(--comic-charcoal);
     overflow: hidden;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+
+.result-image-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
 }
 
 .result-full-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center center;
+    display: block;
 }
 
-/* Right-side Overlay for Text */
-.result-overlay-right {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 45%;
-    /* Right portion */
-    height: 100%;
-    background: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.7) 30%, rgba(0, 0, 0, 0.85) 100%);
+.result-text-panel {
+    padding: 16px 18px 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 20px 16px;
-    gap: 12px;
+    gap: 10px;
+    background: linear-gradient(to bottom, #fff8fc, #f5f0ff);
 }
 
 .result-title-badge {
@@ -152,13 +153,12 @@
     box-shadow: 2px 2px 0px 0px var(--comic-charcoal);
 }
 
-.result-overlay-text {
-    color: white;
+.result-description-text {
+    color: var(--comic-charcoal);
     font-size: 15px;
     font-weight: 500;
-    line-height: 1.5;
+    line-height: 1.55;
     margin: 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* ==== Traits Hashtags ==== */
@@ -170,15 +170,13 @@
 }
 
 .trait-tag {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    color: #facc15;
+    background: rgba(255, 255, 255, 0.7);
+    color: #b45309;
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(30, 41, 59, 0.15);
     letter-spacing: 0.02em;
 }
 

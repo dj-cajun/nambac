@@ -1,11 +1,9 @@
 import { apiUrl } from './apiConfig';
-import { coverPrompt, resultPrompt } from '../../shared/imagePrompts.js';
 
 const ADMIN_KEY = import.meta.env.VITE_ADMIN_API_KEY || '';
 
-async function generateImage(prompt, { raw = true } = {}) {
-  console.log('🎨 OpenRouter generating:', prompt.slice(0, 120), '...');
-
+/** @deprecated Use api.generateQuizImages() — full Gemini + OpenRouter pipeline */
+async function generateImageViaApi(prompt, { raw = true } = {}) {
   const res = await fetch(apiUrl('/generate-image'), {
     method: 'POST',
     headers: {
@@ -14,27 +12,22 @@ async function generateImage(prompt, { raw = true } = {}) {
     },
     body: JSON.stringify({ prompt, raw }),
   });
-
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error || `Image generation failed (${res.status})`);
-  }
-
-  if (data.cost_usd != null) {
-    console.log(`💰 OpenRouter cost: $${data.cost_usd} (${data.model})`);
-  }
-
+  if (!res.ok) throw new Error(data.error || `Image generation failed (${res.status})`);
   return data.b64_json;
 }
 
 export async function generateCoverImage(quizTitle, category, description) {
-  const prompt = coverPrompt({ title: quizTitle, description, category });
-  return generateImage(prompt);
+  const { coverPrompt } = await import('../../shared/imagePrompts.js');
+  return generateImageViaApi(coverPrompt({ title: quizTitle, description, category }), { raw: true });
 }
 
-export async function generateResultImage(resultType, description) {
-  const prompt = resultPrompt({ title: resultType, description });
-  return generateImage(prompt);
+export async function generateResultImage(resultType, description, quizTitle, category) {
+  const { resultPrompt } = await import('../../shared/imagePrompts.js');
+  return generateImageViaApi(
+    resultPrompt({ title: resultType, description, quizTitle, category }),
+    { raw: true },
+  );
 }
 
 export function base64ToFile(base64Str, filename) {

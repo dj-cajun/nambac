@@ -7,14 +7,15 @@ cd "$ROOT"
 DELAY="${BACKFILL_DELAY:-4000}"
 PAUSE="${BACKFILL_PAUSE:-8000}"
 MAX="${BACKFILL_MAX:-25}"
-FORCE="${BACKFILL_FORCE:---force}"
+# Default: fill missing/placeholder only. Set BACKFILL_FORCE=--force to re-gen backfill_* once per quiz.
+FORCE="${BACKFILL_FORCE:-}"
 n=0
 while [ "$n" -lt "$MAX" ]; do
   echo ""
   echo "========== Batch $((n + 1)) / $MAX =========="
-  OUT=$(npm run images:backfill -- --max-quizzes=1 --delay="$DELAY" $FORCE 2>&1) || true
+  OUT=$(npm run images:backfill -- --max-quizzes=1 --delay="$DELAY" --skip-questions $FORCE 2>&1) || true
   echo "$OUT"
-  if echo "$OUT" | grep -q "0 images, 0 quiz"; then
+  if echo "$OUT" | grep -q "Done: 0 images, 0 quiz"; then
     echo "✅ All quizzes have images."
     break
   fi
@@ -22,7 +23,7 @@ while [ "$n" -lt "$MAX" ]; do
     echo "✅ Nothing left to backfill."
     break
   fi
-  if echo "$OUT" | grep -q "Done: 0 images" && echo "$OUT" | grep -q "already OK"; then
+  if echo "$OUT" | grep -q "Done: 0 images" && echo "$OUT" | grep -E -q "[0-9]+ already OK"; then
     echo "✅ Nothing left to backfill."
     break
   fi

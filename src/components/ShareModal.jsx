@@ -24,11 +24,11 @@ const ShareModal = ({ quizTitle, quizId, score, onClose }) => {
             <div className="bg-white rounded-t-3xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
                 <h3 className="text-center font-bold text-lg mb-4">Chia sẻ kết quả</h3>
                 <div className="grid grid-cols-4 gap-4 text-center">
-                    <button onClick={shareToFacebook} className="flex flex-col items-center gap-2">
+                    <button type="button" onClick={shareToFacebook} className="flex flex-col items-center gap-2">
                         <Facebook size={48} className="text-blue-600" />
                         <span>Facebook</span>
                     </button>
-                    <button onClick={handleCopy} className="flex flex-col items-center gap-2">
+                    <button type="button" onClick={handleCopy} className="flex flex-col items-center gap-2">
                         <Link size={48} />
                         <span>Sao chép</span>
                     </button>

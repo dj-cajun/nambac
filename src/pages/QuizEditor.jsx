@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi, uploadQuizImage } from '../lib/adminApi';
 import { generateQuizContent } from '../lib/gemini';
-import { generateCoverImage, generateResultImage, base64ToFile } from '../lib/imagen';
 import { QUIZ_CATEGORIES, DEFAULT_QUIZ_CATEGORY, normalizeCategory, getPersonas } from '../constants/categories';
 import { QUIZ_TEMPLATES } from '../../shared/quizTemplates.js';
 import './QuizEditor.css';
@@ -191,71 +190,58 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
             setResults(finalResults);
 
             // Notify user of progress (Do NOT go to step 2 yet)
-            console.log('✨ Text done! Generating images...');
+            setGenerateStatus('🎨 Gemini đang viết prompt + tạo ảnh manga (9 ảnh: cover + kết quả)...');
 
-            // Background Image Generation & Save
             try {
-                // Cover Image
-                let finalThumbnailUrl = null;
                 const quizTitleStr = data.title || '';
                 const quizCatStr = activeCategory;
                 const quizDescStr = data.description || '';
-                
-                let coverB64 = null;
-                try {
-                    coverB64 = await generateCoverImage(quizTitleStr, quizCatStr, quizDescStr);
-                } catch(e) { console.error("Cover image error:", e); }
 
-                let coverFile = null;
-                if (coverB64) {
-                    coverFile = base64ToFile(coverB64, 'cover.png');
-                    setThumbnail(coverFile);
-                    setThumbnailPreview(URL.createObjectURL(coverFile));
-                    // Upload cover to public/images via API
-                    const fileName = `quiz_${Date.now()}_cover.png`;
-                    if (coverFile) {
-                        finalThumbnailUrl = await saveImageFile(new File([coverFile], fileName, { type: coverFile.type }));
-                    }
+                const { images } = await api.generateQuizImages({
+                    title: quizTitleStr,
+                    description: quizDescStr,
+                    category: quizCatStr,
+                    questions: formattedQs,
+                    results: finalResults,
+                    idPrefix: `editor_${Date.now()}`,
+                    delayMs: 2500,
+                });
+
+                const finalThumbnailUrl = images.cover_url;
+                if (finalThumbnailUrl) {
+                    setThumbnailPreview(getImageUrl(finalThumbnailUrl));
                 }
 
-                // Result Images
-                let completedResults = [...finalResults];
-                
-                for (let i = 0; i < completedResults.length; i++) {
-                    const r = completedResults[i];
-                    try {
-                        const b64 = await generateResultImage(r.title || '', r.description || '');
-                        if (b64) {
-                            const file = base64ToFile(b64, `result_${i}.png`);
-                            const rFileName = `result_${Date.now()}_${i}.png`;
-                            r.image_url = await saveImageFile(new File([file], rFileName, { type: file.type }));
-                            setResults(prev => prev.map((res, idx) => idx === i ? { ...res, image_file: file, preview_url: URL.createObjectURL(file), image_url: r.image_url } : res));
-                        }
-                    } catch (e) {
-                        console.error(`Result ${i} image err:`, e);
-                    }
-                    // Short delay between requests to prevent 429 Too Many Requests
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                }
+                const qsWithImages = formattedQs.map((q, i) => ({
+                    ...q,
+                    image_url: images.questions.find((x) => x.order_number === i + 1)?.image_url || null,
+                }));
+                setQuestions(qsWithImages);
 
-                // Auto-save via Turso API
+                const completedResults = finalResults.map((r) => ({
+                    ...r,
+                    image_url: images.results.find((x) => x.result_code === r.result_code)?.image_url || r.image_url,
+                }));
+                setResults(completedResults);
+
                 setSaving(true);
                 try {
-                    const { id: newQuizId } = await api.createQuiz({
+                    await api.createQuiz({
                         title: quizTitleStr,
                         description: quizDescStr,
                         category: quizCatStr,
                         quiz_type: 'binary_5q',
                         image_url: finalThumbnailUrl,
-                        questions: formattedQs.map(q => ({
+                        questions: qsWithImages.map((q) => ({
                             order_number: q.order_number,
                             question_text: q.question_text,
                             option_a: q.option_a,
                             option_b: q.option_b,
                             score_a: q.score_a,
                             score_b: q.score_b,
+                            image_url: q.image_url,
                         })),
-                        results: completedResults.map(r => ({
+                        results: completedResults.map((r) => ({
                             result_code: r.result_code,
                             title: r.title || r.type_name || '',
                             description: r.description || '',
@@ -267,14 +253,14 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                     alert('🎉 Quiz AI đã tạo và lưu thành công!');
                     navigate('/admin');
                 } catch (saveErr) {
-                    console.error("Auto-save Error:", saveErr);
+                    console.error('Auto-save Error:', saveErr);
                     alert(`❌ Lưu thất bại: ${saveErr.message}\nNội dung vẫn còn trong editor.`);
                 } finally {
                     setSaving(false);
                 }
-
-            } catch (err) {
-                console.error("AI Image Trigger Error:", err);
+            } catch (imgErr) {
+                console.error('Image pipeline error:', imgErr);
+                alert(`❌ Tạo ảnh thất bại: ${imgErr.message}`);
             }
         } catch (err) {
             console.error("AI Gen Error:", err);

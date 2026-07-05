@@ -1,9 +1,8 @@
 .legal-page-container {
-    padding: 80px 20px;
-    /* Added top padding for navbar */
+    padding: 24px 20px 80px;
     max-width: 100%;
     min-height: 100vh;
-    font-family: 'Be Vietnam Pro', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     color: #4a148c;
     display: flex;
     align-items: center;
@@ -13,18 +12,12 @@
 
 .legal-content {
     background: rgba(255, 255, 255, 0.9);
-    /* Higher opacity for better readability */
     padding: 40px;
-    border-radius: 30px;
     text-align: left;
     max-width: 800px;
     width: 100%;
     max-height: 80vh;
-    /* Limit height to viewport */
     overflow-y: auto;
-    /* Scroll internal content */
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.6);
     position: relative;
 }
 
@@ -83,20 +76,16 @@
     display: block;
     width: 100%;
     padding: 15px;
-    background: #fce4ec;
     color: #880e4f;
     text-align: center;
-    border: none;
-    border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
     margin-top: 20px;
-    transition: all 0.2s;
+    transition: transform 0.15s ease;
 }
 
 .legal-back-btn:hover {
-    background: #f8bbd0;
-    transform: translateY(-2px);
+    transform: scale(1.01);
 }
 
 /* Mobile Responsiveness */

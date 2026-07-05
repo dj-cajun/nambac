@@ -7,7 +7,7 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 40px 20px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     background: #fff9fc;
 }
 

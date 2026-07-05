@@ -64,6 +64,24 @@ export function createAdminApi(adminKey = '') {
       }));
     },
 
+    /** Gemini manga prompts + OpenRouter images (cover + 5Q + 8R) */
+    async generateQuizImages(payload) {
+      return parseJson(await fetch(apiUrl('/admin/generate-quiz-images'), {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify(payload),
+      }));
+    },
+
+    /** GitHub-style MBTI / personality one-click factory */
+    async generateArchetypeQuiz(archetypeId, { generateImages = true } = {}) {
+      return parseJson(await fetch(apiUrl('/admin/generate-archetype-quiz'), {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ archetypeId, generateImages }),
+      }));
+    },
+
     async fetchInquiries() {
       const data = await parseJson(await fetch(apiUrl('/admin/brand-inquiries'), { headers: headers() }));
       return data.inquiries || [];

@@ -7,7 +7,7 @@
 | Layer | Technology |
 |---|---|
 | **Frontend** | React 19 + Vite 7 + Tailwind CSS 4 |
-| **API** | Vercel Serverless (`api/`) + Express dev proxy (`server/dev-api.mjs`) |
+| **API** | Vercel Serverless (`api/`) — local dev mounts same router in Vite (`server/viteApiPlugin.mjs`) |
 | **Database** | Turso (LibSQL) |
 | **AI Text** | Google Gemini 2.5 Flash |
 | **AI Images** | OpenRouter (FLUX Klein) |
@@ -33,14 +33,13 @@ npm run db:init
 npm run db:migrate      # if migrating from legacy JSON
 ```
 
-### 3. Local development (two terminals)
+### 3. Local development
 
 ```bash
-npm run dev:api         # Turso API → http://localhost:8787
-npm run dev             # Vite → http://localhost:5173
+npm run dev             # UI + API → http://localhost:5173
 ```
 
-Vite proxies `/api/*` to port 8787.
+`/api/*` runs in the same Vite process (same `router.js` as Vercel). Optional standalone API: `npm run dev:api` (port 8787).
 
 ## 📁 Project Structure
 

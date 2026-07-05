@@ -9,7 +9,7 @@ import { PROJECT_ROOT } from '../_root.mjs';
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 
-const API = process.env.TEST_API_URL || 'http://localhost:8787/api';
+const API = process.env.TEST_API_URL || 'http://localhost:5173/api';
 const adminKey = process.env.ADMIN_API_KEY || process.env.VITE_ADMIN_API_KEY || '';
 const geminiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const model = process.env.OPENROUTER_IMAGE_MODEL || 'black-forest-labs/flux.2-klein-4b';

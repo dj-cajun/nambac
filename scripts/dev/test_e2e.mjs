@@ -10,7 +10,7 @@ import { PROJECT_ROOT } from '../_root.mjs';
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 
-const API = 'http://localhost:8787/api';
+const API = process.env.TEST_API_URL || 'http://localhost:5173/api';
 const VITE = 'http://localhost:5173';
 const adminKey = process.env.ADMIN_API_KEY || process.env.VITE_ADMIN_API_KEY || '';
 const geminiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
@@ -43,19 +43,17 @@ async function testServers() {
   try {
     const api = await fetch(`${API}/quizzes`);
     if (!api.ok) throw new Error(`API ${api.status}`);
-    pass('Dev API (8787)', `${(await api.json()).quizzes?.length ?? 0} quizzes`);
+    pass('Dev server /api', `${(await api.json()).quizzes?.length ?? 0} quizzes`);
   } catch (e) {
-    fail('Dev API (8787)', e.message);
+    fail('Dev server /api', e.message);
   }
 
   try {
-    const vite = await fetch(`${VITE}/api/quizzes`);
-    if (!vite.ok) throw new Error(`proxy ${vite.status}`);
-    const ct = vite.headers.get('content-type') || '';
-    if (!ct.includes('json')) throw new Error('proxy returned non-JSON');
-    pass('Vite proxy (/api → 8787)');
+    const vite = await fetch(`${VITE}/`);
+    if (!vite.ok) throw new Error(`Vite ${vite.status}`);
+    pass('Vite UI (5173)');
   } catch (e) {
-    fail('Vite proxy (/api → 8787)', e.message);
+    fail('Vite UI (5173)', e.message);
   }
 }
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculateMBTI } from '../logic/mbtiScoring';
 import { getImageUrl } from '../lib/apiConfig';
+import QuizImage from '../components/QuizImage';
 import AdPlaceholder from '../components/AdPlaceholder';
 import './QuizPage.css';
 
@@ -117,6 +118,15 @@ export default function MBTIQuiz({ quizInfo, questions, results }) {
                 >
                     {/* Question Card */}
                     <div className="question-glass-panel">
+                        {currentQuestion.image_url && (
+                            <div className="question-scene-img-wrap">
+                                <QuizImage
+                                    src={currentQuestion.image_url}
+                                    alt=""
+                                    className="question-scene-img"
+                                />
+                            </div>
+                        )}
                         <h2 className="question-text">{currentQuestion.question_text}</h2>
                     </div>
 

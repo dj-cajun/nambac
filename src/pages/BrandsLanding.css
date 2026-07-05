@@ -7,12 +7,41 @@
     width: 100%;
     background: #09090b; /* Solid Dark Slate-Black */
     color: #f4f4f5;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     position: relative;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-bottom: 48px;
+}
+
+.brands-top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(9, 9, 11, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+.brands-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.brands-back-btn:active {
+    transform: scale(0.97);
 }
 
 /* ==== Glowing Background Blobs ==== */
@@ -65,19 +94,15 @@
 }
 
 .brands-category-badge {
-    background: rgba(255, 215, 0, 0.1);
     color: #FFD700;
     font-size: 11px;
     font-weight: 800;
     padding: 6px 16px;
-    border-radius: 50px;
-    border: 1.5px solid #FFD700;
     letter-spacing: 0.05em;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
 }
 
 .brands-hero-title {
-    font-family: 'Jua', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 32px;
     line-height: 1.25;
     color: white;
@@ -97,25 +122,20 @@
 }
 
 .btn-b2b-primary {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
     color: #09090b;
     padding: 14px 28px;
-    border-radius: 999px;
     font-weight: 900;
     font-size: 14px;
-    border: none;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-    transition: all 0.2s;
+    transition: transform 0.15s ease;
     text-decoration: none;
 }
 
 .btn-b2b-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(255, 215, 0, 0.45);
+    transform: scale(1.02);
 }
 
 /* ==== Stats Grid ==== */
@@ -127,18 +147,14 @@
 }
 
 .b2b-stat-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-radius: 16px;
     padding: 16px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 8px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
 
 .stat-icon {
@@ -150,7 +166,7 @@
 .stat-icon.blue { color: #00C2FF; }
 
 .stat-number {
-    font-family: 'Jua', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 24px;
     color: white;
     margin: 0;
@@ -172,7 +188,7 @@
 }
 
 .section-b2b-title {
-    font-family: 'Jua', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 24px;
     text-align: center;
     color: white;
@@ -182,14 +198,11 @@
 .value-item-row {
     display: flex;
     gap: 16px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
     padding: 20px;
 }
 
 .value-num {
-    font-family: 'Jua', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 28px;
     color: #FF2D85;
     text-shadow: 0 0 10px rgba(255, 45, 133, 0.3);
@@ -218,13 +231,9 @@
 .brands-form-section {
     position: relative;
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 28px;
     padding: 32px 24px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
 }
 
@@ -240,7 +249,7 @@
 }
 
 .form-heading {
-    font-family: 'Jua', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 26px;
     color: white;
     text-align: center;
@@ -281,24 +290,19 @@
 .form-textarea-b2b,
 .form-select-b2b {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
     padding: 12px 16px;
     color: white;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 12px;
     box-sizing: border-box;
-    transition: all 0.2s;
+    transition: transform 0.15s ease;
 }
 
 .form-input-b2b:focus,
 .form-textarea-b2b:focus,
 .form-select-b2b:focus {
     outline: none;
-    border-color: #FFD700;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.25);
-    background: rgba(255, 255, 255, 0.05);
+    --pencil-stroke: #c9a030;
 }
 
 .form-select-b2b option {
@@ -309,10 +313,7 @@
 .btn-b2b-submit {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #FF2D85 0%, #FF6B8B 100%);
     color: white;
-    border: none;
-    border-radius: 12px;
     font-weight: 900;
     font-size: 13px;
     cursor: pointer;
@@ -320,14 +321,12 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 4px 15px rgba(255, 45, 133, 0.3);
-    transition: all 0.2s;
+    transition: transform 0.15s ease;
     margin-top: 10px;
 }
 
 .btn-b2b-submit:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(255, 45, 133, 0.45);
+    transform: scale(1.01);
 }
 
 .btn-b2b-submit:disabled {
@@ -357,7 +356,7 @@
 }
 
 .success-title {
-    font-family: 'Jua', sans-serif;
+    font-family: var(--font-primary, 'Patrick Hand'), cursive;
     font-size: 22px;
     color: white;
     margin: 0;
@@ -371,19 +370,16 @@
 }
 
 .btn-b2b-secondary {
-    background: transparent;
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
     color: white;
     padding: 10px 20px;
-    border-radius: 8px;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: transform 0.15s ease;
 }
 
 .btn-b2b-secondary:hover {
-    background: rgba(255, 255, 255, 0.05);
+    transform: scale(1.01);
 }
 
 /* ==== Footer Section ==== */

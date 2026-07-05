@@ -5,7 +5,6 @@ import { User, Send } from 'lucide-react';
 import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import QuizImage from '../components/QuizImage';
-import BottomNav from '../components/BottomNav';
 
 export default function LeaderboardPage() {
   const navigate = useNavigate();
@@ -63,12 +62,11 @@ export default function LeaderboardPage() {
             >
               <div className="flex items-center gap-3 w-full">
                 <span
-                  className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-black flex items-center justify-center font-black text-sm"
-                  style={{ background: index < 3 ? '#FFD700' : '#f3f4f6' }}
+                  className={`leaderboard-rank-badge flex-shrink-0 font-black text-sm${index < 3 ? ' top-rank' : ''}`}
                 >
                   {index + 1}
                 </span>
-                <div className="w-14 h-14 rounded-xl border-2 border-black overflow-hidden flex-shrink-0">
+                <div className="leaderboard-quiz-thumb">
                   <QuizImage src={quiz.image_url} alt="" seed={quiz.id} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -84,7 +82,7 @@ export default function LeaderboardPage() {
         )}
       </div>
 
-      <BottomNav />
+      <div style={{ marginBottom: '100px' }} />
     </div>
   );
 }
