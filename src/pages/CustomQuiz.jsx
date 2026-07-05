@@ -84,6 +84,12 @@ export default function CustomQuiz({ quizInfo, questions, results }) {
                         {design.sponsor_logo && (
                             <img src={getImageUrl(design.sponsor_logo)} className="sponsor-logo-overlay" alt="sponsor" />
                         )}
+                        <div className="intro-text-overlay">
+                            <h1 className="intro-overlay-title">{quizInfo.title}</h1>
+                            {quizInfo.description && (
+                                <p className="intro-overlay-desc">{quizInfo.description}</p>
+                            )}
+                        </div>
                     </div>
 
                     <motion.div

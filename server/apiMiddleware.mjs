@@ -59,6 +59,16 @@ function enhanceResponse(res) {
     return res;
   };
 
+  res.send = (body) => {
+    if (!res.headersSent) res.statusCode = statusCode;
+    if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
+      originalEnd(body);
+    } else {
+      originalEnd(String(body));
+    }
+    return res;
+  };
+
   return res;
 }
 

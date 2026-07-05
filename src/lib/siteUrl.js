@@ -17,3 +17,12 @@ export function buildShareUrl(path) {
 export function getOgDefaultImageUrl() {
   return `${getSiteOrigin()}/og-default.png`;
 }
+
+/** Composed OG card (image + quiz title + answer + #tags) */
+export function buildOgImageUrl(quizId, score = null) {
+  const base = `${getSiteOrigin()}/api/og-image?quizId=${encodeURIComponent(quizId)}`;
+  if (score !== null && score !== undefined && score !== '') {
+    return `${base}&score=${encodeURIComponent(score)}`;
+  }
+  return base;
+}

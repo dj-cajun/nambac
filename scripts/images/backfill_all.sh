@@ -8,12 +8,14 @@ DELAY="${BACKFILL_DELAY:-4000}"
 PAUSE="${BACKFILL_PAUSE:-8000}"
 MAX="${BACKFILL_MAX:-25}"
 # Default: fill missing/placeholder only. Set BACKFILL_FORCE=--force to re-gen backfill_* once per quiz.
+# Set BACKFILL_RESULTS_ONLY=--results-only to regenerate answer images only (works with --force).
 FORCE="${BACKFILL_FORCE:-}"
+RESULTS_ONLY="${BACKFILL_RESULTS_ONLY:-}"
 n=0
 while [ "$n" -lt "$MAX" ]; do
   echo ""
   echo "========== Batch $((n + 1)) / $MAX =========="
-  OUT=$(npm run images:backfill -- --max-quizzes=1 --delay="$DELAY" --skip-questions $FORCE 2>&1) || true
+  OUT=$(npm run images:backfill -- --max-quizzes=1 --delay="$DELAY" --skip-questions $FORCE $RESULTS_ONLY 2>&1) || true
   echo "$OUT"
   if echo "$OUT" | grep -q "Done: 0 images, 0 quiz"; then
     echo "✅ All quizzes have images."

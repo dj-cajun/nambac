@@ -10,6 +10,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   plugins: [
     react(),
+    {
+      name: 'share-og-rewrite',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const pathname = req.url?.split('?')[0] || '';
+          const scoreMatch = pathname.match(/^\/share\/([^/]+)\/(\d+)$/);
+          const quizMatch = pathname.match(/^\/share\/([^/]+)$/);
+          if (scoreMatch) {
+            req.url = `/api/og?id=${encodeURIComponent(scoreMatch[1])}&score=${scoreMatch[2]}`;
+          } else if (quizMatch) {
+            req.url = `/api/og?id=${encodeURIComponent(quizMatch[1])}`;
+          }
+          next();
+        });
+      },
+    },
     nambacApiPlugin(),
     {
       name: 'missing-static-images-404',

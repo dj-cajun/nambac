@@ -15,14 +15,17 @@ Japanese manga / anime illustration, clean ink linework, screentone shading, exp
 
 ## Content rules
 - Read the Vietnamese quiz content and translate **meaning** into a concrete visual scene (props, place, action, mood).
-- **Cover**: establishing shot that captures the whole quiz theme.
-{{QUESTION_RULES}}- **Result i** (answer/share image):
-  - One character expressing this personality **within the quiz theme** — a single natural manga scene.
-  - **Full-bleed unified illustration** — seamless background, NO vertical split, NO divider line, NO empty white/colored half, NO panel border down the middle.
+- **Cover**: scroll-stopping mobile thumbnail — vibrant color pop, dramatic lighting, mysterious hook, premium feed aesthetic people want to tap and share.
+{{QUESTION_RULES}}- **Result i** (answer/share image — MUST match cover thumbnail quality):
+  - **Cover-formula poster shot**: centered character + ONE oversized hero prop from the quiz theme glowing with neon aura and sparkle particles, cinematic golden-hour alley or trendy cafe, wet reflective ground — identical premium energy to the cover, NOT a generic portrait.
+  - **Comedy roast panel** — exaggerated expression, dramatic pose, ironic prop gag tied to result i personality.
+  - **Share-card energy** — bold saturated colors, rim light, lens flare, high contrast; screenshot-worthy on Zalo/Facebook.
+  - One unified manga scene — NO vertical split, NO empty half, NO dark dusty indoor room, NO muted slice-of-life without a glowing prop.
   - **ZERO text in image**: no captions, signs, subtitles, speech bubbles, letters, numbers, logos, or writing in ANY language — especially NO Chinese hanzi (中文), Japanese kanji, Korean hangul, Vietnamese, or English.
+  - **NO bottom caption strip** — Flux often adds hanzi/footer text at the lower edge; the frame must end with clean illustration only (sky, floor, scenery), never a text band.
   - Saigon street scenes must use **blank shop facades** — never neon signs, market banners, or readable menus.
   - Quiz result **title/description are mood references only** — never instruct the image model to draw those words as signage, phone UI, or labels.
-  - Unique setting per result — never reuse the same background.
+  - **Each result 0–7 must look wildly different** — unique setting, pose, prop gag, and color mood per result; never reuse the same alley, sunset, or cafe.
 - Global: no watermarks.
 
 ## Output
@@ -32,7 +35,9 @@ Return ONLY valid JSON (no markdown):
 const QUESTION_RULES = `- **Question i** (question scene image):
   - The viewer must instantly understand **what situation is being asked** — show the dilemma, place, action, and mood from the question_text field through characters and environment alone.
   - Make the question **visually obvious** (like a manga story panel before the punchline).
-  - Do NOT render the question sentence, options, or any captions as typography in the image — the app displays question text separately below the image.
+  - **ZERO text in image**: no question sentence, no option labels, no captions, subtitles, speech bubbles, letters, numbers, logos, or writing in ANY language — especially NO Chinese hanzi (中文), Japanese kanji, Korean hangul, Vietnamese, or English.
+  - **NO bottom caption strip** — never a text band at the lower edge; end with clean illustration only.
+  - Do NOT render the question sentence, options, or any captions as typography in the image — the app displays question text in a box below the image.
   - You MAY show visual storytelling (gestures, props, setting) that answers "what is this question about?"
 `;
 
@@ -112,12 +117,28 @@ export async function generateQuizImagePrompts({
 }) {
   const userPayload = buildImagePromptUserPayload(quiz, skipQuestions);
   const system = buildImagePromptSystem(skipQuestions);
+  const questionStrict = skipQuestions
+    ? ''
+    : `
+STRICT for every "questions" prompt you write:
+- English prompt text only; describe visuals, never quote Vietnamese/Chinese strings for the image model to paint as text.
+- Never mention shop signs, neon text, menus, phone screens with UI, speech bubbles, question text, option labels, or readable writing.
+- NO bottom caption strip — Flux often paints hanzi/footer text on the lower edge.
+- Ho Chi Minh settings: generic cafes/streets with NO readable signage.`;
   const user = `Quiz data (Vietnamese — translate to unique visual scenes):
 ${JSON.stringify(userPayload, null, 2)}
+${questionStrict}
+STRICT for "cover" prompt:
+- Scroll-stopping mobile thumbnail — vibrant, dramatic lighting, tap-worthy, share-worthy; not generic or flat.
 
 STRICT for every "results" prompt you write:
 - English prompt text only; describe visuals, never quote Vietnamese/Chinese strings for the image model to paint as text.
+- MUST use cover-formula: centered character + glowing neon hero prop from quiz theme + golden-hour/neon alley + sparkle + wet reflective ground.
+- Comedy roast + share-card energy — exaggerated face, dynamic pose; never bland portrait or dark muted indoor scene.
+- Center-weighted unified scene — NOT split panel, NOT empty half-frame.
 - Never mention shop signs, neon text, menus, phone screens with UI, speech bubbles, or readable writing.
+- NO bottom caption strip — end with clean floor/sky only.
+- Each result 0–7: different hero prop pose, glow color accent, and setting.
 - Ho Chi Minh settings: generic cafes/streets with NO readable signage.`;
 
   const { text, provider } = await generateJsonViaLlm({

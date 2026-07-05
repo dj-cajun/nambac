@@ -1,21 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getImageUrl } from '../lib/apiConfig';
 
-const DEFAULT_COVER = '/images/default_cover.png';
+/** Legacy placeholder — avoid showing on thumbnail error. */
+const LEGACY_PLACEHOLDER = '/images/default_cover.png';
 
 export default function QuizImage({
   src,
   alt = '',
-  fallback = DEFAULT_COVER,
+  fallback = LEGACY_PLACEHOLDER,
   seed,
   className,
   ...props
 }) {
-  const dicebear = seed
-    ? `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(seed)}`
-    : fallback;
-  const initial = getImageUrl(src) || dicebear;
-  const [url, setUrl] = useState(initial);
+  const dicebear = useMemo(
+    () =>
+      seed
+        ? `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(seed)}`
+        : null,
+    [seed],
+  );
+
+  const resolvedSrc = getImageUrl(src) || dicebear || fallback;
+
+  const [url, setUrl] = useState(resolvedSrc);
+
+  useEffect(() => {
+    setUrl(getImageUrl(src) || dicebear || fallback);
+  }, [src, dicebear, fallback]);
 
   return (
     <img
@@ -24,8 +35,13 @@ export default function QuizImage({
       alt={alt}
       className={className}
       onError={() => {
-        if (url === dicebear) return;
-        setUrl(url === fallback ? dicebear : fallback);
+        if (dicebear && url !== dicebear) {
+          setUrl(dicebear);
+          return;
+        }
+        if (url !== fallback && fallback !== LEGACY_PLACEHOLDER) {
+          setUrl(fallback);
+        }
       }}
     />
   );

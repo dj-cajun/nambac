@@ -35,7 +35,7 @@ const clearForceProgress = args.includes('--clear-force-progress');
 
 const PROGRESS_FILE = path.join(PROJECT_ROOT, '.backfill-force-progress.json');
 
-const PLACEHOLDER_PATTERNS = ['default_cover', 'grandma_roast', 'placeholder', 'img_1770'];
+const PLACEHOLDER_PATTERNS = ['default_cover', 'grandma_roast', 'placeholder', 'img_177'];
 
 function isPlaceholder(url) {
   if (!url) return true;

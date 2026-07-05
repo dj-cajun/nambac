@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Download, Share2, Home } from 'lucide-react';
+import { Download, Share2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 import html2canvas from 'html2canvas';
-import ShareModal from '../components/ShareModal';
 import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizComplete, trackShare } from '../lib/analytics';
 import './Result.css';
 import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizResults, fetchQuizzes as loadQuizzes, incrementQuizStat } from '../lib/quizApi';
-import { buildShareUrl } from '../lib/siteUrl';
+import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
+import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
+import CopyToast from '../components/CopyToast';
+import { useCopyToast } from '../hooks/useCopyToast';
 
 const Result = () => {
     const navigate = useNavigate();
@@ -22,10 +25,9 @@ const Result = () => {
 
     // passed props are gone, so we need local state
     const [results, setResults] = useState([]);
-    const [showShareModal, setShowShareModal] = useState(false);
-
     const [finalResult, setFinalResult] = useState({ title: "Đang tải...", description: "", image_url: "" });
     const [recommendedQuizzes, setRecommendedQuizzes] = useState([]);
+    const { toast, showToast } = useCopyToast();
 
     // Fetch Results if not present
     useEffect(() => {
@@ -67,48 +69,14 @@ const Result = () => {
 
     // Share URL for SSR OG tags (crawlers hit this, users get redirected to quiz start)
     const shareUrl = buildShareUrl(`/share/${quizIdParam}/${score}`);
+    const resultHashtags = finalResult.traits?.map((t) => `#${t}`).join(' ') || '';
+    const ogDescription = resultHashtags
+        ? `${finalResult.description}\n\n${resultHashtags}`
+        : finalResult.description;
+    const ogImageUrl = buildOgImageUrl(quizIdParam, score);
 
     const renderDescription = (text = "") => {
         return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;
-    };
-
-    const handleDownloadStory = async () => {
-        if (!cardRef.current) return;
-        try {
-            const source = await html2canvas(cardRef.current, {
-                useCORS: true,
-                scale: 2,
-                backgroundColor: '#fff9fc',
-            });
-            const storyW = 1080;
-            const storyH = 1920;
-            const canvas = document.createElement('canvas');
-            canvas.width = storyW;
-            canvas.height = storyH;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#fff9fc';
-            ctx.fillRect(0, 0, storyW, storyH);
-
-            const scale = Math.min(storyW / source.width, (storyH * 0.85) / source.height);
-            const drawW = source.width * scale;
-            const drawH = source.height * scale;
-            const x = (storyW - drawW) / 2;
-            const y = (storyH - drawH) / 2 - 40;
-            ctx.drawImage(source, x, y, drawW, drawH);
-
-            ctx.fillStyle = '#FF2D85';
-            ctx.font = 'bold 28px "Caveat", "Patrick Hand", cursive';
-            ctx.textAlign = 'center';
-            ctx.fillText('nambac — Trắc nghiệm AI', storyW / 2, storyH - 80);
-
-            const link = document.createElement('a');
-            link.download = `nambac-story-${quizIdParam}-${score}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        } catch (err) {
-            console.error('Story download failed', err);
-            alert('Có lỗi khi tạo ảnh Story! Thử tải ảnh vuông nhé.');
-        }
     };
 
     const handleDownloadImage = async () => {
@@ -130,6 +98,16 @@ const Result = () => {
         }
     };
 
+    const handleShareLink = async () => {
+        const ok = await copyShareLinkWithFeedback(shareUrl, showToast);
+        if (!ok) return;
+        trackShare('copy', quizIdParam, score);
+        if (!window.__sharedQuiz?.[quizIdParam]) {
+            incrementQuizStat(quizIdParam, 'share').catch(console.error);
+            window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
+        }
+    };
+
     return (
         <div className="result-page-container">
             <Helmet>
@@ -138,15 +116,18 @@ const Result = () => {
 
                 {/* Open Graph / Facebook */}
                 <meta property="og:type" content="website" />
-                <meta property="og:title" content={`Kết quả của tôi là [${finalResult.type_name || finalResult.title}]!`} />
-                <meta property="og:description" content={finalResult.description} />
-                <meta property="og:image" content={getImageUrl(finalResult.image_url)} />
+                <meta property="og:title" content={`[${finalResult.type_name || finalResult.title}] — nambac.xyz`} />
+                <meta property="og:description" content={ogDescription} />
+                <meta property="og:image" content={ogImageUrl} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:url" content={shareUrl} />
 
                 {/* Twitter */}
                 <meta property="twitter:card" content="summary_large_image" />
                 <meta property="twitter:title" content={finalResult.type_name || finalResult.title} />
-                <meta property="twitter:description" content={finalResult.description} />
-                <meta property="twitter:image" content={getImageUrl(finalResult.image_url)} />
+                <meta property="twitter:description" content={ogDescription} />
+                <meta property="twitter:image" content={ogImageUrl} />
             </Helmet>
 
             {/* Header removed as per request */}
@@ -159,7 +140,7 @@ const Result = () => {
                     <div className="result-image-wrap">
                         <img
                             src={getImageUrl(finalResult.image_url)}
-                            onError={(e) => { e.target.src = "/images/grandma_roast_standing.png" }}
+                            onError={(e) => { e.target.src = "/images/default_cover.png" }}
                             alt="Result Character"
                             className="result-full-img"
                         />
@@ -213,8 +194,13 @@ const Result = () => {
                 )}
             </main>
 
-            {/* Bottom Modal Bar (Like Quiz Start Screen) */}
-            <div className="result-bottom-bar">
+            {/* Bottom Modal Bar — slides up on mount */}
+            <motion.div
+                className="result-bottom-bar"
+                initial={{ y: '150%' }}
+                animate={{ y: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
                 <div className="bar-actions">
                     <button className="restart-btn" onClick={() => navigate(`/quiz/${quizIdParam}`)}>
                         <span className="btn-label">CHƠI LẠI</span>
@@ -226,84 +212,14 @@ const Result = () => {
                         <span className="btn-label">TẢI ẢNH</span>
                     </button>
 
-                    <button className="download-action-btn" onClick={handleDownloadStory} title="Story 9:16">
-                        <Download size={20} />
-                        <span className="btn-label">STORY</span>
-                    </button>
-
-                    <button className="share-btn" onClick={() => {
-                        setShowShareModal(true);
-                        // Increment share_count (fire and forget, once per session)
-                        if (!window.__sharedQuiz?.[quizIdParam]) {
-                            incrementQuizStat(quizIdParam, 'share').catch(console.error);
-                            window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
-                        }
-                    }}>
-                        <Share2 size={24} />
-                    </button>
-                </div>
-            </div>
-
-            {/* Share Modal Popup */}
-            {showShareModal && (
-                <div className="share-modal-overlay" onClick={() => setShowShareModal(false)}>
-                    <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h3 className="share-modal-title">Chia sẻ kết quả quiz</h3>
-
-                        <div className="share-options">
-                            <button className="share-option zalo" onClick={() => {
-                                trackShare('zalo', quizIdParam, score);
-                                window.open(`https://zalo.me/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
-                            }}>
-                                <span className="share-icon">💬</span>
-                                <span>Zalo</span>
-                            </button>
-
-                            <button className="share-option instagram" onClick={() => {
-                                navigator.clipboard.writeText(shareUrl);
-                                alert('Đã sao chép link! Hãy dán vào Instagram.');
-                            }}>
-                                <span className="share-icon">📷</span>
-                                <span>Instagram</span>
-                            </button>
-
-                            <button className="share-option facebook" onClick={() => {
-                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-                            }}>
-                                <span className="share-icon">📘</span>
-                                <span>Facebook</span>
-                            </button>
-
-                            {navigator.share ? (
-                                <button className="share-option system-share" onClick={async () => {
-                                    try {
-                                        await navigator.share({
-                                            title: `Kết quả của tôi là [${finalResult.type_name || finalResult.title}]!`,
-                                            text: `Trắc nghiệm tính cách AI nambac.xyz — Bạn thử đi! 🔥`,
-                                            url: shareUrl,
-                                        });
-                                    } catch (err) {
-                                        console.log("Web Share API failed, fallback to copy:", err);
-                                        navigator.clipboard.writeText(shareUrl);
-                                        alert('Đã sao chép link!');
-                                    }
-                                }}>
-                                    <span className="share-icon">📤</span>
-                                    <span>Gửi khác</span>
-                                </button>
-                            ) : (
-                                <button className="share-option copy-link" onClick={() => {
-                                    navigator.clipboard.writeText(shareUrl);
-                                    alert('Đã sao chép link!');
-                                }}>
-                                    <span className="share-icon">🔗</span>
-                                    <span>Sao chép</span>
-                                </button>
-                            )}
-                        </div>
+                    <div className="share-btn-wrap">
+                        <CopyToast toast={toast} anchored />
+                        <button type="button" className="share-btn" onClick={handleShareLink} aria-label="Sao chép link chia sẻ">
+                            <Share2 size={24} />
+                        </button>
                     </div>
                 </div>
-            )}
+            </motion.div>
         </div>
     );
 };

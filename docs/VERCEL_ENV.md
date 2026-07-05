@@ -35,12 +35,23 @@
 
 | Key | |
 |-----|--|
-| `VITE_SITE_URL` | `https://nambac.vercel.app` |
+| `VITE_SITE_URL` | `https://nambac.xyz` (도메인 해제 후) 또는 `https://nambac.vercel.app` |
 
 ## Hobby 제한
 
 - **Serverless Functions**: API는 `api/[...path].js` **1개**로 통합됨
 - **일일 배포 100회**: 한도 초과 시 다음 날 자동 배포 또는 수동 1회만
+- 한도 중에는 **로컬 검증**으로 대체: `npm run dev` → `npm run verify:api` → `npm run smoke:og`
+
+## 배포 전 로컬 smoke test
+
+```bash
+npm run dev          # 터미널 1
+npm run verify:api   # API 200 확인
+npm run smoke:og     # OG HTML + 합성 이미지 1200×630
+npm run build        # 프론트 빌드
+npm run audit:quizzes
+```
 
 ## 배포 후 smoke test
 

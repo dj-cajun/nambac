@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Share2, Copy, Check } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { calculateScore } from '../logic/scoring';
 import MBTIQuiz from './MBTIQuiz';
@@ -15,7 +15,10 @@ import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizStart, trackShare } from '../lib/analytics';
 import QuizImage from '../components/QuizImage';
-import { buildShareUrl } from '../lib/siteUrl';
+import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
+import CopyToast from '../components/CopyToast';
+import { useCopyToast } from '../hooks/useCopyToast';
+import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
 
 export default function QuizPage({ quizIdProp }) {
     const { id } = useParams();
@@ -31,8 +34,7 @@ export default function QuizPage({ quizIdProp }) {
     const [showResult, setShowResult] = useState(false);
     const [started, setStarted] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [copied, setCopied] = useState(false);
-    const [showShareModal, setShowShareModal] = useState(false);
+    const { toast, showToast } = useCopyToast();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -91,10 +93,15 @@ export default function QuizPage({ quizIdProp }) {
         setStarted(false);
     };
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const handleShareLink = async () => {
+        const shareUrl = buildShareUrl(`/share/${quizId}`);
+        const ok = await copyShareLinkWithFeedback(shareUrl, showToast);
+        if (!ok) return;
+        trackShare('copy', quizId);
+        if (!window.__sharedQuiz?.[quizId]) {
+            incrementQuizStat(quizId, 'share').catch(console.error);
+            window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizId]: true };
+        }
     };
 
     if (loading) {
@@ -162,7 +169,9 @@ export default function QuizPage({ quizIdProp }) {
                     <meta name="description" content={quizInfo.description || quizInfo.title} />
                     <meta property="og:title" content={quizInfo.title} />
                     <meta property="og:description" content={quizInfo.description || quizInfo.title} />
-                    <meta property="og:image" content={getImageUrl(quizInfo.image_url) || "/images/default_cover.png"} />
+                    <meta property="og:image" content={buildOgImageUrl(quizId)} />
+                    <meta property="og:image:width" content="1200" />
+                    <meta property="og:image:height" content="630" />
                     <meta property="og:url" content={shareUrl} />
                     <meta property="twitter:card" content="summary_large_image" />
                 </Helmet>
@@ -181,8 +190,13 @@ export default function QuizPage({ quizIdProp }) {
                         {/* Category Tag (Top Left) */}
                         <div className="category-tag top-safe-area">{getCategoryLabel(quizInfo.category)}</div>
 
-                        {/* Title (On Image, above bottom sheet) */}
-                        {/* Title Removed as per request */}
+                        {/* Quiz title + description on cover bottom */}
+                        <div className="intro-text-overlay">
+                            <h1 className="intro-overlay-title">{quizInfo.title}</h1>
+                            {quizInfo.description && (
+                                <p className="intro-overlay-desc">{quizInfo.description}</p>
+                            )}
+                        </div>
                     </div>
 
                     {/* Bottom Sheet (Navi Style) */}
@@ -197,67 +211,20 @@ export default function QuizPage({ quizIdProp }) {
                                 <span className="btn-label">BẮT ĐẦU</span>
                             </button>
 
-                            <button className="share-sheet-btn" onClick={() => {
-                                setShowShareModal(true);
-                                // Increment share_count
-                                if (!window.__sharedQuiz?.[quizId]) {
-                                    incrementQuizStat(quizId, 'share').catch(console.error);
-                                    window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizId]: true };
-                                }
-                            }}>
-                                <span className="btn-label">CHIA SẺ</span>
-                            </button>
+                            <div className="share-btn-wrap">
+                                <CopyToast toast={toast} anchored />
+                                <button
+                                    type="button"
+                                    className="share-btn"
+                                    onClick={handleShareLink}
+                                    aria-label="Sao chép link chia sẻ"
+                                >
+                                    <Share2 size={24} />
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 </div>
-
-                {/* Share Modal Popup */}
-                {showShareModal && (
-                    <div className="share-modal-overlay" onClick={() => setShowShareModal(false)}>
-                        <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
-                            <h3 className="share-modal-title">Chia sẻ bài quiz</h3>
-                            
-                            {/* Derive dynamic share URL for Quiz */}
-                            {(() => {
-                                const shareUrl = buildShareUrl(`/share/${quizId}`);
-                                return (
-                                    <div className="share-options">
-                                        <button className="share-option zalo" onClick={() => {
-                                            trackShare('zalo', quizId);
-                                            window.open(`https://zalo.me/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
-                                        }}>
-                                    <span className="share-icon">💬</span>
-                                    <span>Zalo</span>
-                                </button>
-
-                                <button className="share-option instagram" onClick={() => {
-                                    navigator.clipboard.writeText(shareUrl);
-                                    alert('Đã sao chép link! Hãy dán vào Instagram.');
-                                }}>
-                                    <span className="share-icon">📷</span>
-                                    <span>Instagram</span>
-                                </button>
-
-                                <button className="share-option facebook" onClick={() => {
-                                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-                                }}>
-                                    <span className="share-icon">📘</span>
-                                    <span>Facebook</span>
-                                </button>
-
-                                <button className="share-option copy-link" onClick={() => {
-                                    navigator.clipboard.writeText(shareUrl);
-                                    alert('Đã sao chép link!');
-                                }}>
-                                    <span className="share-icon">🔗</span>
-                                    <span>Sao chép</span>
-                                </button>
-                                    </div>
-                                );
-                            })()}
-                        </div>
-                    </div>
-                )}
             </>
         );
     }
@@ -289,10 +256,10 @@ export default function QuizPage({ quizIdProp }) {
                     exit={{ x: -50, opacity: 0 }}
                     className="question-anim-wrapper"
                 >
-                    {/* Question Card — image shows situation; text shown in app UI */}
-                    <div className="question-glass-panel">
+                    {/* Question Card — image + text box below */}
+                    <div className="question-unified-card question-text-below">
                         {currentQuestion.image_url && (
-                            <div className="question-scene-img-wrap">
+                            <div className="question-image-wrap">
                                 <QuizImage
                                     src={currentQuestion.image_url}
                                     alt=""
@@ -300,7 +267,9 @@ export default function QuizPage({ quizIdProp }) {
                                 />
                             </div>
                         )}
-                        <h2 className="question-text">{currentQuestion.question_text}</h2>
+                        <div className="question-text-panel">
+                            <h2 className="question-text">{currentQuestion.question_text}</h2>
+                        </div>
                     </div>
 
                     {/* Answers Grid */}

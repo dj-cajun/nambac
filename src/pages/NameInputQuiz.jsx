@@ -36,6 +36,12 @@ export default function NameInputQuiz({ quizInfo, results }) {
                         />
                         <div className="image-overlay-gradient-strong"></div>
                         <div className="category-tag top-safe-area">{quizInfo.category}</div>
+                        <div className="intro-text-overlay">
+                            <h1 className="intro-overlay-title">{quizInfo.title}</h1>
+                            {quizInfo.description && (
+                                <p className="intro-overlay-desc">{quizInfo.description}</p>
+                            )}
+                        </div>
                     </div>
 
                     <motion.div

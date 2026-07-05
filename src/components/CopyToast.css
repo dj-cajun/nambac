@@ -1,0 +1,120 @@
+.share-btn-wrap {
+  position: relative;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.copy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + 70px + 12px);
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 88%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 2px solid #1e293b;
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 #1e293b;
+  font-family: var(--font-primary, 'Patrick Hand'), cursive;
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+  pointer-events: none;
+  animation: copyToastIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.copy-toast--anchored {
+  position: absolute;
+  left: auto;
+  right: 0;
+  bottom: calc(100% + 8px);
+  transform: none;
+  width: max-content;
+  max-width: 168px;
+  padding: 6px 10px;
+  gap: 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 #1e293b;
+  animation: copyToastInAnchored 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 30;
+}
+
+.copy-toast--success {
+  box-shadow: 4px 4px 0 #ff2d85;
+}
+
+.copy-toast--anchored.copy-toast--success {
+  box-shadow: 2px 2px 0 #ff2d85;
+}
+
+.copy-toast--error {
+  box-shadow: 4px 4px 0 #ef4444;
+}
+
+.copy-toast--anchored.copy-toast--error {
+  box-shadow: 2px 2px 0 #ef4444;
+  white-space: normal;
+  max-width: 150px;
+}
+
+.copy-toast-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 2px solid #1e293b;
+  background: #ff2d85;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.copy-toast--anchored .copy-toast-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  font-size: 10px;
+}
+
+.copy-toast--error .copy-toast-icon {
+  background: #ef4444;
+}
+
+.copy-toast-text {
+  flex: 1;
+  line-height: 1.2;
+}
+
+@keyframes copyToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes copyToastInAnchored {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

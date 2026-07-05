@@ -56,6 +56,12 @@ export default function MBTIQuiz({ quizInfo, questions, results }) {
                         />
                         <div className="image-overlay-gradient-strong"></div>
                         <div className="category-tag top-safe-area">MBTI</div>
+                        <div className="intro-text-overlay">
+                            <h1 className="intro-overlay-title">{quizInfo.title}</h1>
+                            {quizInfo.description && (
+                                <p className="intro-overlay-desc">{quizInfo.description}</p>
+                            )}
+                        </div>
                     </div>
 
                     <motion.div
@@ -116,10 +122,10 @@ export default function MBTIQuiz({ quizInfo, questions, results }) {
                     exit={{ x: -50, opacity: 0 }}
                     className="question-anim-wrapper"
                 >
-                    {/* Question Card */}
-                    <div className="question-glass-panel">
+                    {/* Question Card — text overlaid on image bottom */}
+                    <div className="question-unified-card question-text-below">
                         {currentQuestion.image_url && (
-                            <div className="question-scene-img-wrap">
+                            <div className="question-image-wrap">
                                 <QuizImage
                                     src={currentQuestion.image_url}
                                     alt=""
@@ -127,7 +133,9 @@ export default function MBTIQuiz({ quizInfo, questions, results }) {
                                 />
                             </div>
                         )}
-                        <h2 className="question-text">{currentQuestion.question_text}</h2>
+                        <div className="question-text-panel">
+                            <h2 className="question-text">{currentQuestion.question_text}</h2>
+                        </div>
                     </div>
 
                     {/* Answers Grid */}

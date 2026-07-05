@@ -1,0 +1,924 @@
+/**
+ * Hand-drawn colored pencil box UI — site-wide
+ * Stroke: ::after pseudo + SVG feTurbulence/feDisplacementMap (#pencil-wobble)
+ * NO regular border / box-shadow on the box itself.
+ */
+
+:root {
+  --pencil-radius-a: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --pencil-radius-b: 15px 255px 15px 225px / 225px 15px 255px 15px;
+  --pencil-radius-c: 22px 18px 24px 20px / 20px 22px 18px 24px;
+  --pencil-radius-pill: 255px 20px 255px 20px / 20px 255px 20px 255px;
+
+  --pencil-stroke-default: #9b7ec8;
+  --pencil-stroke-pink: #c97aaa;
+  --pencil-stroke-lavender: #9b8ec4;
+  --pencil-stroke-sky: #7aadd4;
+  --pencil-stroke-mint: #7ec4a8;
+  --pencil-stroke-peach: #d4a878;
+  --pencil-stroke-lemon: #c9b060;
+
+  --pencil-fill-default: linear-gradient(135deg, #fff0f6 0%, #f0f7ff 42%, #f3fff5 100%);
+  --pencil-fill-pink: linear-gradient(145deg, #fff8fc, #ffe8f2);
+  --pencil-fill-lavender: linear-gradient(145deg, #f5f0ff, #ede6ff);
+  --pencil-fill-sky: linear-gradient(145deg, #f5f0ff, #dceeff);
+  --pencil-fill-mint: linear-gradient(145deg, #e5faf0, #edfff5);
+  --pencil-fill-peach: linear-gradient(145deg, #fff6cc, #ffecd9);
+  --pencil-fill-white: linear-gradient(145deg, #fff8fc, #faf5ff);
+  --pencil-fill-carousel: #fff8fc;
+}
+
+/* ── All pencil boxes (shared base) ── */
+.pencil-box,
+.home-intro-box,
+.hero-carousel-wrapper,
+.glass-tab,
+.sort-tab,
+.glass-card,
+.mini-card,
+.speech-bubble,
+.trending-badge,
+.hero-desc,
+.hero-btn,
+.dot,
+.home-intro-btn,
+.home-intro-panel,
+.home-intro-faq-item,
+.connecting-box,
+.glass-card-thumb,
+.glass-card-thumb-large,
+.mini-card-thumb,
+.recommended-thumb-wrap,
+.leaderboard-rank-badge,
+.leaderboard-quiz-thumb,
+.mini-play-btn,
+.inline-icon,
+.share-redirect-card,
+.share-redirect-header,
+.share-redirect-img-wrap,
+.share-redirect-btn,
+.share-redirect-trait-tag,
+.thumbnail-upload,
+.question-glass-panel,
+.question-unified-card,
+.pastel-quiz-box,
+.pastel-answer-btn,
+.glass-answer-btn,
+.glass-progress-track,
+.question-scene-img-wrap,
+.option-letter-circle,
+.question-image-box,
+.quiz-intro-card,
+.intro-image-container.full-screen-bg,
+.category-tag,
+.intro-bottom-sheet,
+.start-sheet-btn,
+.share-btn,
+.glass-btn,
+.share-modal-content,
+.share-option,
+.intro-icon-btn-overlay,
+.start-main-btn,
+.start-overlay-btn,
+.name-input-card,
+.name-submit-btn,
+.result-unified-card,
+.result-title-badge,
+.result-glass-card,
+.recommended-card,
+.result-bottom-bar,
+.restart-btn,
+.download-action-btn,
+.share-btn,
+.banner-title-box,
+.analysis-section,
+.result-image-section,
+.trait-badge,
+.trait-tag,
+.btn-primary,
+.btn-secondary,
+.progress-bar-track,
+.rarity-badge,
+.rarity-bar-track,
+.share-modal-close,
+.legal-content,
+.legal-back-btn,
+.install-banner-container,
+.install-guide-steps,
+.install-android-btn,
+.push-prompt,
+.push-prompt-btn,
+.compat-badge,
+.compat-score-circle,
+.compat-chemical,
+.compat-person-card,
+.card-avatar,
+.compat-vs,
+.compat-roast-box,
+.brands-back-btn,
+.brands-category-badge,
+.btn-b2b-primary,
+.b2b-stat-card,
+.value-item-row,
+.brands-form-section,
+.form-input-b2b,
+.form-textarea-b2b,
+.form-select-b2b,
+.btn-b2b-submit,
+.btn-b2b-secondary,
+.back-home-btn-b2b,
+.intro-icon-btn,
+.name-input-field,
+.mbti-dimension-tag,
+.sponsor-logo-overlay,
+.sponsor-banner,
+.jelly-card,
+.sticker-tile,
+.bottom-nav-bar,
+.home-container .pastel-box {
+  position: relative;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+  overflow: visible;
+  box-sizing: border-box;
+  border-radius: var(--pencil-radius-a);
+  background: var(--pencil-fill, var(--pencil-fill-default));
+  --pencil-stroke: var(--pencil-stroke-default);
+}
+
+.pencil-box::after,
+.home-intro-box::after,
+.hero-carousel-wrapper::after,
+.glass-tab::after,
+.sort-tab::after,
+.glass-card::after,
+.mini-card::after,
+.speech-bubble::after,
+.trending-badge::after,
+.hero-desc::after,
+.hero-btn::after,
+.dot::after,
+.home-intro-btn::after,
+.home-intro-panel::after,
+.home-intro-faq-item::after,
+.connecting-box::after,
+.glass-card-thumb::after,
+.glass-card-thumb-large::after,
+.mini-card-thumb::after,
+.recommended-thumb-wrap::after,
+.leaderboard-rank-badge::after,
+.leaderboard-quiz-thumb::after,
+.mini-play-btn::after,
+.inline-icon::after,
+.share-redirect-card::after,
+.share-redirect-header::after,
+.share-redirect-img-wrap::after,
+.share-redirect-btn::after,
+.share-redirect-trait-tag::after,
+.thumbnail-upload::after,
+.question-glass-panel::after,
+.question-unified-card::after,
+.pastel-quiz-box::after,
+.pastel-answer-btn::after,
+.glass-answer-btn::after,
+.glass-progress-track::after,
+.question-scene-img-wrap::after,
+.option-letter-circle::after,
+.question-image-box::after,
+.quiz-intro-card::after,
+.intro-image-container.full-screen-bg::after,
+.category-tag::after,
+.intro-bottom-sheet::after,
+.start-sheet-btn::after,
+.share-btn::after,
+.glass-btn::after,
+.share-modal-content::after,
+.share-option::after,
+.intro-icon-btn-overlay::after,
+.start-main-btn::after,
+.start-overlay-btn::after,
+.name-input-card::after,
+.name-submit-btn::after,
+.result-unified-card::after,
+.result-title-badge::after,
+.result-glass-card::after,
+.recommended-card::after,
+.result-bottom-bar::after,
+.restart-btn::after,
+.download-action-btn::after,
+.share-btn::after,
+.banner-title-box::after,
+.analysis-section::after,
+.result-image-section::after,
+.trait-badge::after,
+.trait-tag::after,
+.btn-primary::after,
+.btn-secondary::after,
+.progress-bar-track::after,
+.rarity-badge::after,
+.rarity-bar-track::after,
+.share-modal-close::after,
+.legal-content::after,
+.legal-back-btn::after,
+.install-banner-container::after,
+.install-guide-steps::after,
+.install-android-btn::after,
+.push-prompt::after,
+.push-prompt-btn::after,
+.compat-badge::after,
+.compat-score-circle::after,
+.compat-chemical::after,
+.compat-person-card::after,
+.card-avatar::after,
+.compat-vs::after,
+.compat-roast-box::after,
+.brands-back-btn::after,
+.brands-category-badge::after,
+.btn-b2b-primary::after,
+.b2b-stat-card::after,
+.value-item-row::after,
+.brands-form-section::after,
+.form-input-b2b::after,
+.form-textarea-b2b::after,
+.form-select-b2b::after,
+.btn-b2b-submit::after,
+.btn-b2b-secondary::after,
+.back-home-btn-b2b::after,
+.intro-icon-btn::after,
+.name-input-field::after,
+.mbti-dimension-tag::after,
+.sponsor-logo-overlay::after,
+.sponsor-banner::after,
+.jelly-card::after,
+.sticker-tile::after,
+.bottom-nav-bar::after,
+.home-container .pastel-box::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 2.5px solid var(--pencil-stroke, var(--pencil-stroke-default));
+  background: transparent;
+  filter: url(#pencil-wobble);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Transparent wrappers — no visible stroke */
+.quiz-intro-card.full-screen-mode,
+.quiz-intro-card.full-screen-mode::after {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.quiz-intro-card.full-screen-mode::after {
+  display: none;
+}
+
+/* ── Shape variants ── */
+.pencil-box--b,
+.pencil-box-alt,
+.pastel-answer-b,
+.sort-tab,
+.mini-card:nth-child(even),
+.recommended-card:nth-child(even) {
+  border-radius: var(--pencil-radius-b);
+}
+
+.pencil-box--c,
+.home-intro-panel,
+.glass-card,
+.share-modal-content,
+.legal-content,
+.compat-person-card,
+.compat-roast-box {
+  border-radius: var(--pencil-radius-c);
+}
+
+.pencil-box--pill,
+.glass-progress-track,
+.trending-badge,
+.compat-badge,
+.compat-chemical,
+.dot.active,
+.push-prompt-btn,
+.brands-back-btn,
+.brands-category-badge {
+  border-radius: var(--pencil-radius-pill);
+}
+
+/* ── Fill + stroke variants ── */
+.pencil-box--pink,
+.pastel-answer-a,
+.home-intro-btn:nth-child(odd),
+.category-tag,
+.share-btn,
+.start-main-btn,
+.start-overlay-btn,
+.btn-primary.btn-save,
+.install-android-btn,
+.push-prompt-btn,
+.compat-score-circle {
+  --pencil-fill: var(--pencil-fill-pink);
+  --pencil-stroke: var(--pencil-stroke-pink);
+}
+
+.pencil-box--sky,
+.pastel-answer-b {
+  --pencil-fill: var(--pencil-fill-sky);
+  --pencil-stroke: var(--pencil-stroke-sky);
+}
+
+.pencil-box--lavender,
+.glass-tab,
+.glass-btn,
+.intro-bottom-sheet,
+.result-bottom-bar,
+.share-modal-content {
+  --pencil-fill: var(--pencil-fill-lavender);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.pencil-box--peach,
+.home-intro-btn-wide,
+.hero-btn,
+.speech-bubble {
+  --pencil-fill: var(--pencil-fill-peach);
+  --pencil-stroke: var(--pencil-stroke-peach);
+}
+
+.pencil-box--white,
+.sort-tab,
+.start-sheet-btn,
+.restart-btn,
+.recommended-card,
+.connecting-box,
+.legal-content,
+.compat-person-card,
+.compat-roast-box,
+.install-banner-container {
+  --pencil-fill: var(--pencil-fill-white);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.pencil-box--mint,
+.download-action-btn,
+.btn-primary.btn-share {
+  --pencil-fill: var(--pencil-fill-mint);
+  --pencil-stroke: var(--pencil-stroke-mint);
+}
+
+.share-btn {
+  --pencil-fill: linear-gradient(135deg, #ffb8d9, #ff9ec0);
+  --pencil-stroke: var(--pencil-stroke-pink);
+}
+
+.hero-carousel-wrapper {
+  --pencil-fill: var(--pencil-fill-carousel);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: var(--pencil-radius-c);
+}
+
+.glass-progress-track {
+  --pencil-fill: linear-gradient(145deg, #fff8fc, #f5f0ff);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  padding: 3px;
+  overflow: hidden;
+}
+
+.glass-progress-track::after {
+  z-index: 2;
+}
+
+.hero-desc {
+  --pencil-fill: rgba(255, 248, 252, 0.92);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: 12px 10px 14px 8px / 10px 14px 8px 12px;
+}
+
+.dot {
+  --pencil-fill: #e8dff5;
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: 50%;
+}
+
+.dot.active {
+  --pencil-fill: linear-gradient(90deg, #ffb8d9, #ffc8a8);
+  --pencil-stroke: var(--pencil-stroke-pink);
+}
+
+.glass-card-thumb,
+.glass-card-thumb-large,
+.mini-card-thumb,
+.question-scene-img-wrap,
+.question-image-box,
+.recommended-thumb-wrap,
+.leaderboard-quiz-thumb,
+.share-redirect-img-wrap,
+.thumbnail-upload {
+  --pencil-fill: var(--pastel-pink, #ffe8f2);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: 14px 12px 16px 10px / 12px 16px 10px 14px;
+  overflow: hidden;
+}
+
+.glass-card-thumb::after,
+.glass-card-thumb-large::after,
+.mini-card-thumb::after,
+.question-scene-img-wrap::after,
+.question-image-box::after,
+.recommended-thumb-wrap::after,
+.leaderboard-quiz-thumb::after,
+.share-redirect-img-wrap::after,
+.thumbnail-upload::after {
+  inset: -2px;
+  border-width: 2.5px;
+  z-index: 3;
+}
+
+.glass-card.square-card {
+  overflow: visible;
+  padding: 8px;
+  gap: 0;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.glass-card.square-card .glass-card-thumb-large {
+  width: 100%;
+  height: 65%;
+  flex: 0 0 65%;
+}
+
+.recommended-card {
+  overflow: visible;
+  padding: 10px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+.recommended-card .recommended-thumb-wrap {
+  width: 100%;
+  height: 65%;
+  flex: 0 0 65%;
+}
+
+.recommended-card .recommended-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.recommended-card .recommended-card-title {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  margin: 0;
+}
+
+.question-scene-img-wrap {
+  margin: 0 2px 14px;
+  overflow: visible;
+}
+
+.question-glass-panel,
+.pastel-quiz-box {
+  --pencil-fill: linear-gradient(145deg, #fff8fc 0%, #f5f0ff 48%, #f0fff6 100%);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.leaderboard-rank-badge {
+  --pencil-fill: #f3f4f6;
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leaderboard-rank-badge.top-rank {
+  --pencil-fill: linear-gradient(145deg, #fff6cc, #ffe8a8);
+  --pencil-stroke: var(--pencil-stroke-lemon);
+}
+
+.leaderboard-quiz-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.mini-play-btn {
+  --pencil-fill: #b8ecff;
+  --pencil-stroke: var(--pencil-stroke-sky);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inline-icon {
+  --pencil-fill: #fff;
+  --pencil-stroke: #c5d0dc;
+  border-radius: 6px 8px 5px 7px / 7px 5px 8px 6px;
+  padding: 3px;
+}
+
+.share-redirect-card {
+  --pencil-fill: var(--pencil-fill-white);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: var(--pencil-radius-c);
+  width: 100%;
+  max-width: 28rem;
+  overflow: hidden;
+}
+
+.share-redirect-header {
+  --pencil-fill: linear-gradient(135deg, #ffb8d9, #ff9ec0);
+  --pencil-stroke: var(--pencil-stroke-pink);
+  border-radius: 0;
+}
+
+.share-redirect-header::after {
+  inset: -2px -3px 0 -3px;
+  border-bottom: none;
+}
+
+.share-redirect-img-wrap {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.share-redirect-btn {
+  width: 100%;
+  padding: 14px 16px;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  text-transform: uppercase;
+}
+
+.share-redirect-btn.match-btn {
+  --pencil-fill: linear-gradient(145deg, #fff6cc, #ffe8a8);
+  --pencil-stroke: var(--pencil-stroke-lemon);
+  color: #5c4d40;
+}
+
+.share-redirect-btn.play-btn {
+  --pencil-fill: var(--pencil-fill-sky);
+  --pencil-stroke: var(--pencil-stroke-sky);
+  color: #3d5a72;
+}
+
+.share-redirect-trait-tag {
+  --pencil-fill: #ffe8f2;
+  --pencil-stroke: var(--pencil-stroke-pink);
+  color: #c02060;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.thumbnail-upload {
+  min-height: 120px;
+  cursor: pointer;
+}
+
+.share-option.system-share {
+  --pencil-fill: #f0f7ff;
+  --pencil-stroke: var(--pencil-stroke-sky);
+}
+
+.result-unified-card,
+.intro-image-container.full-screen-bg {
+  overflow: visible;
+}
+
+.result-unified-card .result-image-wrap,
+.share-redirect-img-wrap {
+  overflow: hidden;
+  contain: paint;
+}
+
+.option-letter-circle {
+  --pencil-fill: var(--pencil-fill-peach);
+  --pencil-stroke: var(--pencil-stroke-peach);
+  border-radius: 50% 46% 52% 44% / 44% 52% 46% 50%;
+}
+
+.option-letter-circle::after {
+  inset: -2px;
+  border-width: 2px;
+}
+
+.glass-card.square-card::after {
+  z-index: 10;
+}
+
+.result-unified-card::after,
+.intro-image-container.full-screen-bg::after {
+  z-index: 4;
+}
+
+.glass-card.square-card .glass-card-info-bottom {
+  position: relative;
+  z-index: 1;
+}
+
+.result-title-badge {
+  --pencil-fill: linear-gradient(135deg, #ffb8d9, #ff9ec0);
+  --pencil-stroke: var(--pencil-stroke-pink);
+}
+
+.banner-title-box {
+  --pencil-fill: linear-gradient(135deg, #ffb8d9, #ff9ec0);
+  --pencil-stroke: var(--pencil-stroke-pink);
+}
+
+.result-glass-card {
+  --pencil-fill: rgba(255, 255, 255, 0.55);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.compat-chemical {
+  --pencil-fill: var(--pencil-fill-white);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.trait-tag {
+  --pencil-fill: rgba(255, 255, 255, 0.22);
+  --pencil-stroke: rgba(255, 255, 255, 0.45);
+}
+
+.trait-badge {
+  --pencil-fill: #e9d5ff;
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.legal-back-btn {
+  --pencil-fill: #fce4ec;
+  --pencil-stroke: var(--pencil-stroke-pink);
+}
+
+.install-guide-steps {
+  --pencil-fill: #f8fafc;
+  --pencil-stroke: #b8c5d4;
+  border-radius: 12px 10px 14px 8px / 10px 14px 8px 12px;
+}
+
+.install-guide-steps::after {
+  border-style: dashed;
+  border-width: 2px;
+}
+
+.push-prompt {
+  --pencil-fill: rgba(30, 24, 40, 0.92);
+  --pencil-stroke: var(--pencil-stroke-pink);
+  border-radius: 16px 20px 14px 18px / 18px 14px 20px 16px;
+}
+
+.share-option.zalo { --pencil-fill: #e8f5e9; --pencil-stroke: var(--pencil-stroke-mint); }
+.share-option.instagram { --pencil-fill: #fce4ec; --pencil-stroke: var(--pencil-stroke-pink); }
+.share-option.facebook { --pencil-fill: #e3f2fd; --pencil-stroke: var(--pencil-stroke-sky); }
+.share-option.copy-link { --pencil-fill: #fff3e0; --pencil-stroke: var(--pencil-stroke-peach); }
+
+.compat-vs {
+  --pencil-fill: #b8ecff;
+  --pencil-stroke: var(--pencil-stroke-sky);
+  border-radius: 50%;
+}
+
+.compat-badge {
+  --pencil-fill: #5c4d72;
+  --pencil-stroke: #4a3d5c;
+  color: white;
+}
+
+.card-avatar {
+  --pencil-fill: var(--pencil-fill-sky);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: 50%;
+}
+
+.card-avatar.me {
+  --pencil-fill: var(--pencil-fill-pink);
+}
+
+/* B2B dark page — gold pencil strokes */
+.brands-back-btn,
+.brands-category-badge {
+  --pencil-fill: rgba(255, 215, 0, 0.12);
+  --pencil-stroke: #c9a030;
+}
+
+.b2b-stat-card,
+.value-item-row,
+.brands-form-section {
+  --pencil-fill: rgba(255, 255, 255, 0.06);
+  --pencil-stroke: rgba(255, 215, 0, 0.45);
+  border-radius: var(--pencil-radius-c);
+}
+
+.btn-b2b-primary {
+  --pencil-fill: linear-gradient(135deg, #ffd700, #ffb800);
+  --pencil-stroke: #a07800;
+}
+
+.btn-b2b-submit {
+  --pencil-fill: linear-gradient(135deg, #ff2d85, #ff5c9d);
+  --pencil-stroke: #c02060;
+}
+
+.btn-b2b-secondary,
+.back-home-btn-b2b {
+  --pencil-fill: rgba(255, 255, 255, 0.08);
+  --pencil-stroke: rgba(255, 255, 255, 0.35);
+}
+
+.form-input-b2b,
+.form-textarea-b2b,
+.form-select-b2b {
+  --pencil-fill: rgba(255, 255, 255, 0.05);
+  --pencil-stroke: rgba(255, 255, 255, 0.2);
+  border-radius: 12px 10px 14px 8px / 10px 14px 8px 12px;
+}
+
+.intro-icon-btn,
+.name-input-field {
+  --pencil-fill: var(--pencil-fill-white);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.name-input-field {
+  background: white;
+}
+
+.name-submit-btn {
+  --pencil-fill: linear-gradient(135deg, #ffb8d9, #ff9ec0);
+  --pencil-stroke: var(--pencil-stroke-pink);
+}
+
+.mbti-dimension-tag {
+  --pencil-fill: #e9d5ff;
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: 8px 10px 6px 12px / 10px 6px 12px 8px;
+}
+
+.sponsor-logo-overlay,
+.sponsor-banner {
+  --pencil-fill: var(--pencil-fill-white);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.name-input-card {
+  --pencil-fill: rgba(255, 255, 255, 0.72);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+.share-modal-close {
+  --pencil-fill: #5c4d72;
+  --pencil-stroke: #4a3d5c;
+  color: white;
+}
+
+.rarity-badge {
+  --pencil-fill: var(--pastel-lemon, #fff6cc);
+  --pencil-stroke: var(--pencil-stroke-lemon);
+}
+
+.rarity-bar-track {
+  --pencil-fill: rgba(255, 255, 255, 0.35);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: var(--pencil-radius-pill);
+  overflow: hidden;
+}
+
+.rarity-bar-track::after {
+  z-index: 2;
+}
+
+.intro-icon-btn-overlay {
+  --pencil-fill: rgba(255, 255, 255, 0.92);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+}
+
+/* Active / selected */
+.glass-tab.active,
+.sort-tab.active,
+.home-intro-btn.active {
+  --pencil-fill: linear-gradient(135deg, #ffd6ea, #d4f0ff, #e0ffe8);
+  --pencil-stroke: #8a6cb8;
+}
+
+.home-intro-btn.active::after,
+.glass-tab.active::after {
+  border-width: 3px;
+}
+
+/* Press feedback — no comic offset shadows */
+.start-sheet-btn:active,
+.share-btn:active,
+.recommended-card:active,
+.restart-btn:active,
+.download-action-btn:active,
+.share-btn:active,
+.glass-btn:active,
+.btn-primary:active,
+.btn-secondary:active,
+.intro-icon-btn-overlay:active,
+.start-main-btn:active,
+.start-overlay-btn:active,
+.install-android-btn:active,
+.share-option:active {
+  transform: scale(0.98);
+}
+
+.share-redirect-btn:active,
+.share-redirect-trait-tag:active,
+.recommended-card:active {
+  transform: scale(0.98);
+}
+
+/* Decorative pencil tick (not the stroke) */
+.home-intro-box::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 32px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ffb8d9;
+  opacity: 0.55;
+  transform: rotate(-12deg);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.pastel-quiz-box::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 26px;
+  height: 4px;
+  border-radius: 999px;
+  background: #ffb8d9;
+  opacity: 0.5;
+  transform: rotate(-11deg);
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Inner content above wobble stroke where needed */
+.pastel-quiz-box > *,
+.home-intro-box > *,
+.glass-card > *,
+.pencil-box > *,
+.share-modal-content > *,
+.legal-content > *,
+.result-unified-card > .result-overlay-right {
+  position: absolute;
+  z-index: 6;
+}
+
+.result-unified-card > *:not(.result-overlay-right),
+.question-unified-card > *:not(.result-overlay-right),
+.intro-image-container > *,
+.glass-card-thumb-large img,
+.mini-card-thumb img,
+.leaderboard-quiz-thumb img,
+.recommended-thumb-wrap img,
+.question-scene-img,
+.share-redirect-img,
+.thumbnail-upload img {
+  position: relative;
+  z-index: 1;
+}
+
+.bottom-nav-bar {
+  --pencil-fill: linear-gradient(to top, #fff5fb, #f8f4ff);
+  --pencil-stroke: var(--pencil-stroke-lavender);
+  border-radius: 22px 22px 0 0 / 18px 18px 0 0;
+}
+
+.bottom-nav-bar::after {
+  inset: -2px -3px 0 -3px;
+  border-bottom: none;
+  border-radius: inherit;
+}

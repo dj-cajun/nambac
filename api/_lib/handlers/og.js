@@ -1,4 +1,5 @@
 import { getQuizById, getResultsByQuizId } from '../quizDb.js';
+import { buildOgImageApiUrl, parseTraits } from '../composeOgImage.js';
 
 const BOT_AGENTS = [
   'facebookexternalhit', 'facebot',
@@ -7,6 +8,7 @@ const BOT_AGENTS = [
   'googlebot', 'slackbot',
   'discordbot', 'whatsapp',
   'telegrambot', 'viber',
+  'kakaotalk', 'kakaostory',
 ];
 
 function isBot(ua) {
@@ -15,16 +17,22 @@ function isBot(ua) {
   return BOT_AGENTS.some(bot => lower.includes(bot));
 }
 
-function getOgImageUrl(path, host) {
-  if (!path) return `${host.includes('localhost') ? 'http' : 'https'}://${host}/og-default.png`;
-  if (path.startsWith('http')) return path;
-  const protocol = host.includes('localhost') ? 'http' : 'https';
-  const filename = path.split('/').pop();
-  return `${protocol}://${host}/images/${filename}`;
+function stripHtml(text) {
+  return String(text || '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function buildResultDescription(result) {
+  const traits = parseTraits(result.traits);
+  const tags = traits.map((t) => `#${String(t).replace(/^#/, '')}`).join(' ');
+  const body = stripHtml(result.description);
+  return tags ? `${body}\n\n${tags}` : body;
 }
 
 function ogHtml({ title, description, image, url, redirectUrl }) {
-  // Escape HTML special chars
   const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return `<!DOCTYPE html>
 <html><head>
@@ -54,13 +62,12 @@ export default async function handler(req, res) {
     const ua = req.headers['user-agent'] || '';
     const url = req.url || '';
 
-    // Parse path using Vercel injected query params first, or fallback to regex
     let quizId = req.query?.id || null;
     let scoreCode = req.query?.score ? parseInt(req.query.score) : null;
 
     if (!quizId) {
       const shareMatch = url.match(/\/share\/([^/]+)\/(\d+)/);
-      const shareQuizMatch = url.match(/\/share\/([^/?]+)/); // removed $ to allow query params
+      const shareQuizMatch = url.match(/\/share\/([^/?]+)/);
 
       if (shareMatch) {
         quizId = shareMatch[1];
@@ -76,31 +83,30 @@ export default async function handler(req, res) {
       return res.redirect(302, `${protocol}://${host}/`);
     }
 
-    // Detect host to keep protocol/domain consistent (important for og:url)
     const host = req.headers.host || 'nambac.xyz';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const currentBase = `${protocol}://${host}`;
 
-    // Non-bot → redirect to share-view page so they can see their friend's result!
     if (!isBot(ua)) {
-      const redirectPath = scoreCode !== null 
+      const redirectPath = scoreCode !== null
         ? `/share-view/${quizId}/${scoreCode}`
         : `/share-view/${quizId}`;
       return res.redirect(302, `${currentBase}${redirectPath}`);
     }
 
-    // Bot → serve OG HTML
-    // Try result share first
-    if (scoreCode !== null) {
+    const quiz = await getQuizById(quizId);
+
+    if (scoreCode !== null && !Number.isNaN(scoreCode)) {
       const results = await getResultsByQuizId(quizId);
       const r = results.find((row) => parseInt(row.result_code) === scoreCode);
 
-      if (r) {
+      if (r && quiz) {
+        const resultTitle = r.title || r.type_name || 'Kết quả';
         const fullShareUrl = `${currentBase}/share/${quizId}/${scoreCode}`;
         const html = ogHtml({
-          title: `Kết quả: ${r.title} — Bạn thử đi! 🔥`,
-          description: r.description || 'Trắc nghiệm tính cách AI',
-          image: getOgImageUrl(r.image_url, host),
+          title: `[${resultTitle}] — ${quiz.title}`,
+          description: buildResultDescription(r),
+          image: buildOgImageApiUrl(host, quizId, scoreCode),
           url: fullShareUrl,
           redirectUrl: `${currentBase}/quiz/${quizId}`,
         });
@@ -110,15 +116,12 @@ export default async function handler(req, res) {
       }
     }
 
-    // Quiz share (or result not found fallback)
-    const q = await getQuizById(quizId);
-
-    if (q) {
+    if (quiz) {
       const fullShareUrl = `${currentBase}/share/${quizId}`;
       const html = ogHtml({
-        title: `${q.title} | nambac.xyz`,
-        description: q.description || 'Trắc nghiệm tính cách AI — Bạn là kiểu người nào?',
-        image: getOgImageUrl(q.image_url, host),
+        title: `${quiz.title} | nambac.xyz`,
+        description: stripHtml(quiz.description) || 'Trắc nghiệm tính cách AI — Bạn là kiểu người nào?',
+        image: buildOgImageApiUrl(host, quizId),
         url: fullShareUrl,
         redirectUrl: `${currentBase}/quiz/${quizId}`,
       });
@@ -129,10 +132,7 @@ export default async function handler(req, res) {
 
     const fallbackHost = req.headers.host || 'nambac.vercel.app';
     const fallbackProtocol = fallbackHost.includes('localhost') ? 'http' : 'https';
-    const fallbackBase = `${fallbackProtocol}://${fallbackHost}`;
-
-    // Fallback
-    return res.redirect(302, `${fallbackBase}/`);
+    return res.redirect(302, `${fallbackProtocol}://${fallbackHost}/`);
   } catch (err) {
     console.error('OG Error:', err);
     const errHost = req.headers.host || 'nambac.vercel.app';

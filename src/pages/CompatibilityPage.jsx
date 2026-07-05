@@ -183,7 +183,7 @@ const CompatibilityPage = () => {
                         <div className="card-avatar friend">
                             <img 
                                 src={getImageUrl(friendResult?.image_url)} 
-                                onError={(e) => { e.target.src = "/images/grandma_roast_standing.png" }}
+                                onError={(e) => { e.target.src = "/images/default_cover.png" }}
                                 alt="Friend Result" 
                             />
                         </div>
@@ -199,7 +199,7 @@ const CompatibilityPage = () => {
                         <div className="card-avatar me">
                             <img 
                                 src={getImageUrl(myResult?.image_url)} 
-                                onError={(e) => { e.target.src = "/images/grandma_roast_standing.png" }}
+                                onError={(e) => { e.target.src = "/images/default_cover.png" }}
                                 alt="My Result" 
                             />
                         </div>

@@ -1,0 +1,11 @@
+.nambac-logo {
+  display: block;
+  height: 32px;
+  width: auto;
+}
+
+@media (max-width: 400px) {
+  .nambac-logo {
+    height: 28px;
+  }
+}
