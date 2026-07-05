@@ -1,8 +1,8 @@
-import { requireCron } from '../_lib/cronAuth.js';
-import { createFullQuiz } from '../_lib/quizDb.js';
-import { generateQuizContent, formatQuizForDb, pickDailyCategory } from '../_lib/geminiQuiz.js';
-import { sendPushToAll } from '../_lib/pushService.js';
-import { buildSiteUrl } from '../_lib/siteUrl.js';
+import { requireCron } from '../cronAuth.js';
+import { createFullQuiz } from '../quizDb.js';
+import { generateQuizContent, formatQuizForDb, pickDailyCategory } from '../geminiQuiz.js';
+import { sendPushToAll } from '../pushService.js';
+import { buildSiteUrl } from '../siteUrl.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -49,7 +49,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message || 'Daily quiz failed' });
   }
 }
-
-export const config = {
-  maxDuration: 60,
-};

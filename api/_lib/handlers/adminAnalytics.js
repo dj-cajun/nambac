@@ -1,22 +1,20 @@
-import { getQuizBundle } from '../_lib/quizDb.js';
+import { requireAdmin } from '../adminAuth.js';
+import { getAnalyticsSummary } from '../quizDb.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Key');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-
-  const { id } = req.query;
-  if (!id) return res.status(400).json({ error: 'Missing quiz id' });
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const bundle = await getQuizBundle(id);
-    if (!bundle) return res.status(404).json({ error: 'Quiz not found' });
-    return res.status(200).json(bundle);
+    const summary = await getAnalyticsSummary();
+    return res.status(200).json(summary);
   } catch (err) {
-    console.error(`GET /api/quizzes/${id}`, err);
+    console.error('GET /api/admin/analytics', err);
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 }

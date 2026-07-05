@@ -1,5 +1,5 @@
-import { requireAdmin } from './_lib/adminAuth.js';
-import { generateOpenRouterImage, getOpenRouterImageModel } from './_lib/openrouterImage.js';
+import { requireAdmin } from '../adminAuth.js';
+import { generateOpenRouterImage, getOpenRouterImageModel } from '../openrouterImage.js';
 
 const STYLE_PREFIX = 'Korean webtoon manhwa style, clean digital line art, vibrant colors, masterpiece, best quality, highly detailed, cinematic lighting. ';
 

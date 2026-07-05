@@ -1,4 +1,4 @@
-import { getBrandReport } from '../_lib/quizDb.js';
+import { getQuizBundle } from '../quizDb.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -8,15 +8,15 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { quizId, token } = req.query || {};
-  if (!quizId || !token) return res.status(400).json({ error: 'quizId and token required' });
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ error: 'Missing quiz id' });
 
   try {
-    const report = await getBrandReport(quizId, token);
-    if (!report) return res.status(404).json({ error: 'Report not found' });
-    return res.status(200).json(report);
+    const bundle = await getQuizBundle(id);
+    if (!bundle) return res.status(404).json({ error: 'Quiz not found' });
+    return res.status(200).json(bundle);
   } catch (err) {
-    console.error('GET /api/brand/stats', err);
+    console.error(`GET /api/quizzes/${id}`, err);
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 }

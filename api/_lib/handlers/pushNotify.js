@@ -1,5 +1,5 @@
-import { requireAdmin } from '../_lib/adminAuth.js';
-import { sendPushToAll } from '../_lib/pushService.js';
+import { requireAdmin } from '../adminAuth.js';
+import { sendPushToAll } from '../pushService.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

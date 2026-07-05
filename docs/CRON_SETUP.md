@@ -1,17 +1,21 @@
 # Vercel Cron — 일일 퀴즈 자동 생성
 
+> API는 Hobby 12함수 제한 대응으로 **`api/[[...path]].js` 단일 라우터**에 통합되어 있습니다.
+
 n8n 없이 **Vercel Cron**이 매일 Gemini → Turso → Push까지 처리합니다.
 
 ## 1. Vercel 환경 변수
 
 | Key | 필수 | 설명 |
 |-----|------|------|
-| `CRON_SECRET` | ✅ | Cron 인증 (임의의 긴 문자열) |
-| `VITE_GEMINI_API_KEY` 또는 `GEMINI_API_KEY` | ✅ | 퀴즈 텍스트 생성 |
+| `CRON_SECRET` | ✅ | Cron 인증 — **직접 만든 랜덤 문자열** (Vercel이 제공하는 값 아님) |
+| `VITE_GEMINI_API_KEY` | ✅ | 퀴즈 텍스트 (이미 있으면 OK) |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Push용 | `npm run vapid:generate` 후 Vercel에 3개 등록 |
 | `TURSO_*` | ✅ | DB |
-| `VAPID_*` | 선택 | 생성 후 Push 알림 |
 
-Vercel Dashboard → Settings → Environment Variables → **Redeploy**
+**Vercel 입력 예:** Name=`CRON_SECRET`, Value=`nambac-cron-2026-xxxxxxxx` (본인만 아는 문자열)
+
+저장 후 **Redeploy** 필수.
 
 ## 2. 스케줄
 

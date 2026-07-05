@@ -21,7 +21,10 @@ if (!secret) {
 }
 
 const categoryArg = process.argv.find((a) => a.startsWith('--category='))?.split('=')[1];
-const base = process.env.VITE_SITE_URL || `http://localhost:${process.env.TURSO_API_PORT || 8787}`;
+const base = process.env.DAILY_QUIZ_URL
+  || (process.env.VITE_SITE_URL && !process.env.VITE_SITE_URL.includes('localhost')
+    ? process.env.VITE_SITE_URL
+    : `http://localhost:${process.env.TURSO_API_PORT || 8787}`);
 
 const url = new URL('/api/cron/daily-quiz', base.replace(/\/$/, ''));
 if (categoryArg) url.searchParams.set('category', categoryArg);

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { requireAdmin } from '../_lib/adminAuth.js';
+import { requireAdmin } from '../adminAuth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const imagesDir = path.join(__dirname, '../../public/images');

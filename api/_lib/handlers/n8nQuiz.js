@@ -1,7 +1,7 @@
-import { requireWebhook } from '../_lib/webhookAuth.js';
-import { createFullQuiz } from '../_lib/quizDb.js';
-import { sendPushToAll } from '../_lib/pushService.js';
-import { buildSiteUrl } from '../_lib/siteUrl.js';
+import { requireWebhook } from '../webhookAuth.js';
+import { createFullQuiz } from '../quizDb.js';
+import { sendPushToAll } from '../pushService.js';
+import { buildSiteUrl } from '../siteUrl.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

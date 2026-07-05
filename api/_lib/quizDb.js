@@ -276,6 +276,11 @@ function buildQuizConfig(payload) {
   return Object.keys(config).length ? JSON.stringify(config) : null;
 }
 
+function sqlArg(value) {
+  if (value === undefined) return null;
+  return value;
+}
+
 export async function createQuiz(payload) {
   const db = getTurso();
   const id = randomUUID();
@@ -287,13 +292,13 @@ export async function createQuiz(payload) {
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 'active')`,
     args: [
       id,
-      payload.title,
-      payload.description || null,
-      normalizeCategory(payload.category),
-      payload.quiz_type || 'binary_5q',
-      payload.image_url || null,
-      configJson,
-      designJson,
+      sqlArg(payload.title),
+      sqlArg(payload.description ?? null),
+      sqlArg(normalizeCategory(payload.category)),
+      sqlArg(payload.quiz_type || 'binary_5q'),
+      sqlArg(payload.image_url ?? null),
+      sqlArg(configJson),
+      sqlArg(designJson),
     ],
   });
   return {

@@ -1,4 +1,4 @@
-import { requireAdmin } from '../../_lib/adminAuth.js';
+import { requireAdmin } from '../adminAuth.js';
 import {
   getQuizBundle,
   updateQuiz,
@@ -7,7 +7,7 @@ import {
   upsertQuestions,
   upsertResults,
   deleteQuestion,
-} from '../../_lib/quizDb.js';
+} from '../quizDb.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

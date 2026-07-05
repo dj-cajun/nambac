@@ -1,9 +1,9 @@
-import { requireAdmin } from '../_lib/adminAuth.js';
+import { requireAdmin } from '../adminAuth.js';
 import {
   listBrandInquiries,
   updateBrandInquiryStatus,
   deleteBrandInquiry,
-} from '../_lib/quizDb.js';
+} from '../quizDb.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

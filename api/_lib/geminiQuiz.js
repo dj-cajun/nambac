@@ -90,8 +90,8 @@ export function formatQuizForDb(geminiData) {
   });
 
   return {
-    title: geminiData.title,
-    description: geminiData.description || geminiData.title,
+    title: String(geminiData.title || 'Quiz mới nambac'),
+    description: String(geminiData.description || geminiData.title || ''),
     category: normalizeCategory(geminiData.category),
     quiz_type: 'binary_5q',
     questions: (geminiData.questions || []).slice(0, 5).map((q, i) => ({

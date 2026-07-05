@@ -1,4 +1,4 @@
-import { getQuizById, getResultsByQuizId } from './_lib/quizDb.js';
+import { getQuizById, getResultsByQuizId } from '../quizDb.js';
 
 const BOT_AGENTS = [
   'facebookexternalhit', 'facebot',
