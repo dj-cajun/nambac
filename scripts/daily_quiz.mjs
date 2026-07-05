@@ -21,8 +21,9 @@ if (!secret) {
 }
 
 const categoryArg = process.argv.find((a) => a.startsWith('--category='))?.split('=')[1];
+const useProd = process.argv.includes('--prod');
 const base = process.env.DAILY_QUIZ_URL
-  || (process.env.VITE_SITE_URL && !process.env.VITE_SITE_URL.includes('localhost')
+  || (useProd && process.env.VITE_SITE_URL
     ? process.env.VITE_SITE_URL
     : `http://localhost:${process.env.TURSO_API_PORT || 8787}`);
 
