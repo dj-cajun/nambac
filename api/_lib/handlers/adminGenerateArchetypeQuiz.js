@@ -83,13 +83,8 @@ export default async function handler(req, res) {
             );
           }
           const { b64 } = await generateOpenRouterImage(coverPromptText);
-          const fs = await import('fs');
-          const path = await import('path');
-          const { fileURLToPath } = await import('url');
-          const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-          const filename = `arch_${archetypeId.slice(0, 8)}_cover_${Date.now()}.png`;
-          fs.writeFileSync(path.join(root, 'public', 'images', filename), Buffer.from(b64, 'base64'));
-          coverUrl = `/images/${filename}`;
+          const { saveImageB64AsWebp } = await import('../saveQuizImage.js');
+          coverUrl = await saveImageB64AsWebp(b64, `arch_${archetypeId.slice(0, 8)}_cover`);
         } else {
           const images = await generateAllQuizImages({
             quiz: {

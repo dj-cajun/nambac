@@ -106,6 +106,7 @@ async function main() {
   const { getOpenRouterTextModel } = await import('../../shared/openrouterText.js');
   const { finalizeImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt } = await import('../../shared/imagePrompts.js');
   const { generateOpenRouterImage } = await import('../../api/_lib/openrouterImage.js');
+  const { saveImageB64AsWebp } = await import('../../api/_lib/saveQuizImage.js');
 
   const db = getTurso();
   let sql = `SELECT * FROM quizzes WHERE is_active = 1 ORDER BY datetime(created_at) DESC`;
@@ -134,7 +135,7 @@ async function main() {
 
   for (const quiz of quizzes) {
     if (quizzesTouched >= maxQuizzes) break;
-    if (force && forceDoneSet.has(quiz.id)) {
+    if (force && !resultsOnly && forceDoneSet.has(quiz.id)) {
       skipped++;
       continue;
     }
@@ -184,7 +185,13 @@ async function main() {
       prompts = {
         cover: finalizeImagePrompt(generated.cover),
         questions: skipQuestions ? [] : generated.questions.map(finalizeQuestionImagePrompt),
-        results: generated.results.map(finalizeResultImagePrompt),
+        results: generated.results.map((p, i) =>
+          finalizeResultImagePrompt(p, {
+            resultCode: i,
+            quizTitle: quiz.title,
+            category: quiz.category,
+          }),
+        ),
       };
       const promptCount = 1 + prompts.questions.length + prompts.results.length;
       const providerLabel = generated.provider === 'openrouter'
@@ -197,17 +204,12 @@ async function main() {
     }
 
     const prefix = `backfill_${quiz.id.slice(0, 8)}`;
-    const saveImage = (b64, name) => {
-      const filename = `${name}_${Date.now()}.png`;
-      const fp = path.join(PROJECT_ROOT, 'public', 'images', filename);
-      fs.writeFileSync(fp, Buffer.from(b64, 'base64'));
-      return `/images/${filename}`;
-    };
+    const saveImage = (b64, name) => saveImageB64AsWebp(b64, name);
 
     if (coverNeeded && generated < imageLimit) {
       try {
         const { b64, cost } = await generateOpenRouterImage(prompts.cover);
-        const imageUrl = saveImage(b64, `${prefix}_cover`);
+        const imageUrl = await saveImage(b64, `${prefix}_cover`);
         await db.execute({ sql: 'UPDATE quizzes SET image_url = ? WHERE id = ?', args: [imageUrl, quiz.id] });
         console.log(`   ✅ cover → ${imageUrl} ($${cost ?? '?'})`);
         generated++;
@@ -223,7 +225,7 @@ async function main() {
       if (idx < 0 || idx > 4) continue;
       try {
         const { b64, cost } = await generateOpenRouterImage(prompts.questions[idx]);
-        const imageUrl = saveImage(b64, `${prefix}_q${idx + 1}`);
+        const imageUrl = await saveImage(b64, `${prefix}_q${idx + 1}`);
         await db.execute({ sql: 'UPDATE questions SET image_url = ? WHERE id = ?', args: [imageUrl, q.id] });
         console.log(`   ✅ Q${idx + 1} → ${imageUrl} ($${cost ?? '?'})`);
         generated++;
@@ -239,7 +241,7 @@ async function main() {
       if (code < 0 || code > 7) continue;
       try {
         const { b64, cost } = await generateOpenRouterImage(prompts.results[code]);
-        const imageUrl = saveImage(b64, `${prefix}_r${code}`);
+        const imageUrl = await saveImage(b64, `${prefix}_r${code}`);
         await db.execute({ sql: 'UPDATE results SET image_url = ? WHERE id = ?', args: [imageUrl, r.id] });
         console.log(`   ✅ result ${code} → ${imageUrl} ($${cost ?? '?'})`);
         generated++;
@@ -249,7 +251,7 @@ async function main() {
       }
     }
 
-    if (force) markForceDone(quiz.id, forceDoneSet);
+    if (force && !resultsOnly) markForceDone(quiz.id, forceDoneSet);
   }
 
   console.log(`\n📊 Done: ${generated} images, ${quizzesTouched} quiz(es), ${skipped} skipped\n`);

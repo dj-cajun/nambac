@@ -13,6 +13,7 @@
     "images:placeholders": "node scripts/images/ensure_image_placeholders.js",
     "images:backfill": "node scripts/images/backfill_images.mjs",
     "images:backfill:all": "bash scripts/images/backfill_all.sh",
+    "images:webp": "node scripts/images/convert_to_webp.mjs",
     "fix:quizzes": "node scripts/ops/fix_broken_quizzes.mjs",
     "audit:quizzes": "node scripts/ops/audit_quizzes.mjs",
     "audit:quizzes:detail": "node scripts/ops/audit_quizzes_detail.mjs",
@@ -37,6 +38,7 @@
     "react-dom": "^19.2.0",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^7.13.0",
+    "sharp": "^0.35.3",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
