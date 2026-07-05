@@ -20,7 +20,7 @@ export default function NameInputQuiz({ quizInfo, results }) {
         if (!name.trim()) return;
         const resultIndex = calculateNameScore(name.trim(), results.length);
         const score = results[resultIndex]?.result_code ?? resultIndex;
-        navigate(`/quiz/${quizInfo.id}/analysis`, { state: { score, results } });
+        navigate(`/quiz/${quizInfo.id}/result?score=${score}`);
     };
 
     if (!started) {

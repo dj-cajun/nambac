@@ -37,7 +37,7 @@ export default function MBTIQuiz({ quizInfo, questions, results }) {
                 r.title?.includes(mbtiType) || r.result_code?.toString() === mbtiType
             );
             const score = matchedResult?.result_code ?? 0;
-            navigate(`/quiz/${quizInfo.id}/analysis`, { state: { score, results, mbtiType } });
+            navigate(`/quiz/${quizInfo.id}/result?score=${score}`);
         }
     };
 

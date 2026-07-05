@@ -20,9 +20,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 8px 0 24px;
-  /* Adjusted padding */
   box-shadow: 0 8px 20px rgba(255, 45, 133, 0.08);
-  /* Softer pink shadow */
 }
 
 /* Left: Logo */

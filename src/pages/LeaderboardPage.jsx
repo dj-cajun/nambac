@@ -1,0 +1,90 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { User, Send } from 'lucide-react';
+import './Home.css';
+import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
+import QuizImage from '../components/QuizImage';
+import BottomNav from '../components/BottomNav';
+
+export default function LeaderboardPage() {
+  const navigate = useNavigate();
+  const [quizzes, setQuizzes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchQuizzes()
+      .then(setQuizzes)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const ranked = useMemo(
+    () => [...quizzes].sort((a, b) => (b.view_count || 0) - (a.view_count || 0)),
+    [quizzes],
+  );
+
+  const handleQuizClick = (quizId) => {
+    incrementQuizStat(quizId, 'view').catch(console.error);
+    navigate(`/quiz/${quizId}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="home-container flex items-center justify-center">
+        <div className="text-2xl font-black text-[#1E293B] animate-pulse">Đang tải... ⚡</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="home-container">
+      <Helmet>
+        <title>BXH — nambac.xyz</title>
+        <meta name="description" content="Bảng xếp hạng quiz hot nhất trên nambac.xyz" />
+      </Helmet>
+
+      <div className="mt-4 px-5">
+        <h1 className="glass-section-title mb-1">🏆 BXH Hot</h1>
+        <p className="text-sm text-gray-500 font-bold mb-4">Top quiz được chơi nhiều nhất</p>
+      </div>
+
+      <div className="px-5 flex flex-col gap-3" style={{ marginBottom: '100px' }}>
+        {ranked.length === 0 ? (
+          <div className="text-center p-8 text-gray-500 font-bold">Chưa có quiz nào hết trơn á! 🕸️</div>
+        ) : (
+          ranked.map((quiz, index) => (
+            <button
+              key={quiz.id}
+              type="button"
+              onClick={() => handleQuizClick(quiz.id)}
+              className="glass-card w-full text-left"
+              style={{ padding: '10px' }}
+            >
+              <div className="flex items-center gap-3 w-full">
+                <span
+                  className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-black flex items-center justify-center font-black text-sm"
+                  style={{ background: index < 3 ? '#FFD700' : '#f3f4f6' }}
+                >
+                  {index + 1}
+                </span>
+                <div className="w-14 h-14 rounded-xl border-2 border-black overflow-hidden flex-shrink-0">
+                  <QuizImage src={quiz.image_url} alt="" seed={quiz.id} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="info-title-sm line-clamp-2">{quiz.title}</h4>
+                  <div className="flex gap-3 text-[10px] font-bold text-gray-400 mt-1">
+                    <span className="flex items-center gap-1"><User size={10} /> {(quiz.view_count || 0).toLocaleString()}</span>
+                    <span className="flex items-center gap-1"><Send size={10} /> {(quiz.share_count || 0).toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+
+      <BottomNav />
+    </div>
+  );
+}

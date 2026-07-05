@@ -1,120 +1,84 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Bell, User, Heart, MessageCircle, Send, Plus,
-  Home as HomeIcon, Compass, BarChart2, Settings, Play, ChevronLeft, ChevronRight
-} from 'lucide-react';
+import { User, Send } from 'lucide-react';
 import './Home.css';
-import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS } from '../constants/categories';
-import { getImageUrl } from '../lib/apiConfig';
-import { supabase } from '../lib/supabase';
+import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
+import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import AdSenseUnit from '../components/AdSenseUnit';
+import QuizImage from '../components/QuizImage';
+import BottomNav from '../components/BottomNav';
+import { AD_SLOTS } from '../lib/adsConfig';
+
+const SORT_OPTIONS = [
+  { id: 'trending', label: '🔥 Hot', sortFn: (a, b) => (b.view_count || 0) - (a.view_count || 0) },
+  { id: 'viral', label: '📤 Viral', sortFn: (a, b) => (b.share_count || 0) - (a.share_count || 0) },
+  { id: 'new', label: '✨ Mới', sortFn: (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0) },
+];
+
+const SECTION_TITLES = {
+  trending: '🔥 Top Thịnh Hành',
+  viral: '📤 Viral tuần này',
+  new: '✨ Mới hôm nay',
+};
 
 export default function Home() {
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [sortMode, setSortMode] = useState('trending');
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef(null);
 
-  // Categories: Special tabs first, then quiz categories
   const categories = [
     ...HOME_SPECIAL_TABS,
     ...QUIZ_CATEGORIES.map(c => ({ id: c.id, label: c.label, color: c.color })),
   ];
 
-
-  const [magazineArticles, setMagazineArticles] = useState([]);
-  const [isConnecting, setIsConnecting] = useState(false);
-
-  // Fetch Quizzes from Supabase and Local Backend
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // 1. Supabase에서 퀴즈 가져오기
-        const { data: cloudData, error: cloudError } = await supabase
-          .from('quizzes')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (cloudError) console.error("Supabase fetch error:", cloudError);
-        
-        // Only show active quizzes
-        const activeQuizzes = (cloudData || []).filter(q => q.is_active !== false && q.status !== 'hidden');
-        
-        // 최신순 정렬
-        activeQuizzes.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        
-        setQuizzes(activeQuizzes);
-
-
-        setMagazineArticles([]);
-        
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchQuizzes()
+      .then(setQuizzes)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
-  const getRandomCount = () => Math.floor(Math.random() * (500 - 50 + 1)) + 50;
+  const sortFn = SORT_OPTIONS.find((s) => s.id === sortMode)?.sortFn || SORT_OPTIONS[0].sortFn;
 
-  // Legacy category mapping for backward compatibility with existing DB records
-  const legacyCategoryMap = {
-    'MBTI': ['MBTI', 'Tính Cách (MBTI)'],
-    'Personality': ['Personality', 'Tính Cách', 'Lifestyle'],
-    'Fortune': ['Fortune', 'Bói Toán (Tarot)'],
-    'PastLife': ['PastLife', 'Kiếp Trước'],
-    'Survival': ['Survival', 'Sinh Tồn', 'HCMC_Guide'],
-    'Trendy': ['Trendy', 'Xu Hướng', 'Trend_Hunter'],
-    'Delivery': ['Delivery', 'Giao Hàng', 'Delivery_King'],
-    'Lookalike': ['Lookalike', 'Ai Giống?', 'Linker_Lookalike'],
-  };
+  const sortedQuizzes = useMemo(
+    () => [...quizzes].sort(sortFn),
+    [quizzes, sortFn],
+  );
 
-  // Derived state for Main List
   const filteredQuizzes = useMemo(() => {
-    let result = quizzes;
-    if (activeTab !== 'all') {
-      const allowedCategories = legacyCategoryMap[activeTab] || [activeTab];
-      result = result.filter(q => allowedCategories.includes(q.category));
-    }
-    return result;
-  }, [quizzes, activeTab]);
+    if (activeTab === 'all') return sortedQuizzes;
+    return sortedQuizzes.filter((q) => matchesCategory(q.category, activeTab));
+  }, [sortedQuizzes, activeTab]);
 
-  // Get top 3 quizzes for carousel
-  const heroQuizzes = quizzes.slice(0, 3);
+  const heroQuizzes = sortedQuizzes.slice(0, 3);
 
-  // Carousel Navigation
   const goToSlide = (index) => {
     setCurrentSlide(index);
     if (carouselRef.current) {
       carouselRef.current.scrollTo({
         left: index * carouselRef.current.offsetWidth,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
 
-  // Mouse Drag State
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftState, setScrollLeftState] = useState(0);
 
-  // Auto-slide effect (5 seconds)
   useEffect(() => {
-    if (isDragging) return; // Pause auto-slide while dragging
-
+    if (isDragging || heroQuizzes.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => {
         const nextSlide = (prev + 1) % heroQuizzes.length;
         if (carouselRef.current) {
           carouselRef.current.scrollTo({
             left: nextSlide * carouselRef.current.offsetWidth,
-            behavior: 'smooth'
+            behavior: 'smooth',
           });
         }
         return nextSlide;
@@ -123,7 +87,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [heroQuizzes.length, isDragging]);
 
-  // Handle scroll to update dots (User Interaction)
   const handleScroll = () => {
     if (carouselRef.current && !isDragging) {
       const scrollLeft = carouselRef.current.scrollLeft;
@@ -135,13 +98,11 @@ export default function Home() {
     }
   };
 
-  // Mouse Drag Handlers
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.pageX - carouselRef.current.offsetLeft);
     setScrollLeftState(carouselRef.current.scrollLeft);
     if (carouselRef.current) {
-      // Temporarily disable snap for smooth dragging
       carouselRef.current.style.scrollSnapType = 'none';
       carouselRef.current.style.cursor = 'grabbing';
     }
@@ -162,7 +123,6 @@ export default function Home() {
     if (carouselRef.current) {
       carouselRef.current.style.scrollSnapType = 'x mandatory';
       carouselRef.current.style.cursor = 'grab';
-      // Optional: manually snap to nearest here if needed, but CSS snap usually takes over once user stops
     }
   };
 
@@ -170,98 +130,71 @@ export default function Home() {
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - carouselRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Scroll-fast
+    const walk = (x - startX) * 2;
     carouselRef.current.scrollLeft = scrollLeftState - walk;
   };
 
-
   const handleQuizClick = async (quizId) => {
-    // 1. Fire and forget view increment
-    try {
-      const quizToUpdate = quizzes.find(q => q.id === quizId);
-      if (quizToUpdate) {
-        supabase.from('quizzes')
-          .update({ view_count: (quizToUpdate.view_count || 0) + 1 })
-          .eq('id', quizId)
-          .then();
-      }
-    } catch (e) {
-      console.error("View increment failed", e);
-    }
-    // 2. Navigate
+    incrementQuizStat(quizId, 'view').catch(console.error);
     navigate(`/quiz/${quizId}`);
   };
 
   if (loading) {
     return (
       <div className="home-container flex items-center justify-center">
-        <div className="text-2xl font-black text-[#1E293B] animate-pulse">
-          Đang tải... ⚡
-        </div>
+        <div className="text-2xl font-black text-[#1E293B] animate-pulse">Đang tải... ⚡</div>
       </div>
     );
   }
 
   return (
     <div className="home-container">
-      {/* 2. Hero Carousel (3 Slides) */}
-      <div className="hero-carousel-wrapper">
-        <div
-          className="hero-carousel"
-          ref={carouselRef}
-          onScroll={handleScroll}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-        >
-          {heroQuizzes.map((quiz, index) => (
-            <div
-              key={quiz.id}
-              className="hero-slide"
-              onClick={() => handleQuizClick(quiz.id)}
-            >
-              <div className="simple-tape"></div>
-              <div className="hero-image-bg">
-                <img src={getImageUrl(quiz.image_url) || `https://images.unsplash.com/photo-161800518238${index}-a83a8bd57fbe`} alt="Hero" />
-              </div>
-              <div className="hero-overlay-gradient"></div>
-
-              <div className="hero-content">
-                <div className="speech-bubble">
-                  💬 {(quiz.view_count || 0).toLocaleString()} Đang chơi
+      {heroQuizzes.length > 0 && (
+        <div className="hero-carousel-wrapper">
+          <div
+            className="hero-carousel"
+            ref={carouselRef}
+            onScroll={handleScroll}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+          >
+            {heroQuizzes.map((quiz, index) => (
+              <div key={quiz.id} className="hero-slide" onClick={() => handleQuizClick(quiz.id)}>
+                <div className="hero-image-bg">
+                  <QuizImage src={quiz.image_url} alt="Hero" seed={quiz.id} />
                 </div>
-                <div className="mb-2">
-                  <span className="trending-badge">
-                    {index === 0 ? 'Top Thịnh Hành 🔥' : index === 1 ? 'HOT 🔥' : 'Mới ✨'}
-                  </span>
+                <div className="hero-overlay-gradient" />
+                <div className="hero-content">
+                  <div className="speech-bubble">
+                    💬 {(quiz.view_count || 0).toLocaleString()} Đang chơi
+                  </div>
+                  <div className="mb-2">
+                    <span className="trending-badge">
+                      {index === 0 ? 'Top Thịnh Hành 🔥' : index === 1 ? 'HOT 🔥' : 'Mới ✨'}
+                    </span>
+                  </div>
+                  <h2 className="hero-title">{quiz.title}</h2>
+                  <p className="hero-desc">{quiz.description}</p>
+                  <button className="hero-btn">Bắt đầu ngay</button>
                 </div>
-                <h2 className="hero-title" style={{ display: 'none' }}>{quiz.title}</h2>
-                <p className="hero-desc" style={{ display: 'none' }}>
-                  {quiz.description}
-                </p>
-                <button className="hero-btn" style={{ display: 'none' }}>
-                  Bắt đầu ngay
-                </button>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="carousel-dots">
+            {heroQuizzes.map((_, index) => (
+              <button
+                key={index}
+                className={`dot ${currentSlide === index ? 'active' : ''}`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
+      )}
 
-        {/* Pagination Dots */}
-        <div className="carousel-dots">
-          {heroQuizzes.map((_, index) => (
-            <button
-              key={index}
-              className={`dot ${currentSlide === index ? 'active' : ''}`}
-              onClick={() => goToSlide(index)}
-              aria-label={`Slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* 3. Category Tabs (Horizontal Scroll with Pastel Colors) */}
       <div className="category-tabs">
         {categories.map((cat) => (
           <button
@@ -274,18 +207,29 @@ export default function Home() {
         ))}
       </div>
 
-      {/* 4. Content List (Quiz or Magazine) */}
+      <div className="sort-tabs">
+        {SORT_OPTIONS.map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            className={`sort-tab ${sortMode === opt.id ? 'active' : ''}`}
+            onClick={() => setSortMode(opt.id)}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-6">
-        <h3 className="glass-section-title">🔥 Top Thịnh Hành</h3>
+        <h3 className="glass-section-title">{SECTION_TITLES[sortMode]}</h3>
         <div className="glass-list grid-cols-2">
           {filteredQuizzes.length === 0 ? (
             <div className="text-center p-8 text-gray-500 font-bold col-span-2">Chưa có quiz nào hết trơn á! 🕸️</div>
           ) : (
             filteredQuizzes.map((quiz) => (
               <div key={quiz.id} className="glass-card square-card" onClick={() => handleQuizClick(quiz.id)}>
-                <div className="card-tape"></div>
                 <div className="glass-card-thumb-large">
-                  <img src={getImageUrl(quiz.image_url) || "https://api.dicebear.com/7.x/shapes/svg?seed=" + quiz.id} alt="thumb" />
+                  <QuizImage src={quiz.image_url} alt="thumb" seed={quiz.id} />
                 </div>
                 <div className="glass-card-info-bottom">
                   <h4 className="info-title-sm line-clamp-2">{quiz.title}</h4>
@@ -303,10 +247,9 @@ export default function Home() {
           )}
         </div>
       </div>
-      {/* AdSense Slot (Between Quiz List and About Section) */}
-      <AdSenseUnit adSlot="1234567890" location="home-middle" />
 
-      {/* About Section — Rich text content for AdSense compliance */}
+      <AdSenseUnit adSlot={AD_SLOTS.home} location="home-middle" />
+
       <div style={{
         marginTop: '32px',
         marginBottom: '100px',
@@ -319,10 +262,7 @@ export default function Home() {
           🎯 nambac.xyz — Trắc nghiệm tính cách AI
         </h3>
         <p style={{ fontSize: '13px', color: '#555', lineHeight: '1.8', marginBottom: '12px' }}>
-          nambac.xyz là nền tảng trắc nghiệm tính cách trực tuyến sử dụng trí tuệ nhân tạo (AI) tiên tiến. Chúng tôi kết hợp Google Gemini AI với tâm lý học hiện đại để tạo ra những bài trắc nghiệm thú vị giúp bạn khám phá tính cách và sở thích cá nhân. Mỗi bài chỉ gồm 5 câu hỏi — nhanh, vui và đầy bất ngờ!
-        </p>
-        <p style={{ fontSize: '13px', color: '#555', lineHeight: '1.8', marginBottom: '12px' }}>
-          Khám phá các chủ đề đa dạng: MBTI & tính cách, tình yêu & mối quan hệ, ẩm thực & lối sống, nghề nghiệp & tài chính, và nhiều hơn nữa. Tất cả hoàn toàn miễn phí!
+          nambac.xyz là nền tảng trắc nghiệm tính cách trực tuyến sử dụng trí tuệ nhân tạo (AI) tiên tiến. Mỗi bài chỉ gồm 5 câu hỏi — nhanh, vui và đầy bất ngờ!
         </p>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
           <a href="/about" style={{ fontSize: '12px', color: '#FF2D85', fontWeight: '700', textDecoration: 'underline' }}>Giới thiệu</a>
@@ -335,26 +275,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 6. Bottom Nav */}
-      <div className="fixed bottom-0 left-[50%] translate-x-[-50%] w-full max-w-[480px] h-[80px] bg-white border-t-2 border-black flex items-center justify-around z-50">
-        <div className="nav-item-col active">
-          <HomeIcon size={24} strokeWidth={2.5} color="#FF2D85" />
-          <span className="text-[10px] font-bold text-[#FF2D85]">Trang chủ</span>
-        </div>
-        <div className="nav-item-col" onClick={() => alert('🔜 Khám phá — Sắp ra mắt!')}>
-          <Compass size={24} color="#94A3B8" />
-          <span className="text-[10px] font-bold text-gray-400">Khám phá</span>
-        </div>
-        <div className="w-12"></div>
-        <div className="nav-item-col" onClick={() => alert('🔜 BXH — Sắp ra mắt!')}>
-          <BarChart2 size={24} color="#94A3B8" />
-          <span className="text-[10px] font-bold text-gray-400">BXH</span>
-        </div>
-        <div className="nav-item-col" onClick={() => navigate('/admin')}>
-          <Settings size={24} color="#94A3B8" />
-          <span className="text-[10px] font-bold text-gray-400">ADMIN</span>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 }

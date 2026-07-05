@@ -1,28 +1,24 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../lib/apiConfig';
-import { supabase } from '../lib/supabase';
+import { createAdminApi, uploadQuizImage } from '../lib/adminApi';
 import { generateQuizContent } from '../lib/gemini';
 import { generateCoverImage, generateResultImage, base64ToFile } from '../lib/imagen';
-import { QUIZ_CATEGORIES } from '../constants/categories';
+import { QUIZ_CATEGORIES, DEFAULT_QUIZ_CATEGORY, normalizeCategory, getPersonas } from '../constants/categories';
 import './QuizEditor.css';
 
 const QUIZ_TYPES = [
-    { value: 'binary_5q', label: '🎯 Binary 5Q', desc: '5문항 A/B (현재 기본)', qCount: 5, rCount: 8 },
-    { value: 'name_input', label: '✍️ 이름 입력형', desc: '이름 → 랜덤 결과', qCount: 0, rCount: 10 },
-    { value: 'mbti_12q', label: '🧠 MBTI 12Q', desc: '12문항 → 16유형', qCount: 12, rCount: 16 },
-    { value: 'sponsor', label: '💎 스폰서', desc: '커스텀 디자인+영상', qCount: 5, rCount: 4 },
-    { value: 'full_custom', label: '⚙️ 풀 커스텀', desc: '모든 것 수정 가능', qCount: 5, rCount: 4 },
+    { value: 'binary_5q', label: '🎯 Binary 5Q', desc: '5 câu A/B (mặc định)', qCount: 5, rCount: 8 },
+    { value: 'name_input', label: '✍️ Nhập tên', desc: 'Tên → kết quả ngẫu nhiên', qCount: 0, rCount: 10 },
+    { value: 'mbti_12q', label: '🧠 MBTI 12Q', desc: '12 câu → 16 kiểu', qCount: 12, rCount: 16 },
+    { value: 'sponsor', label: '💎 Nhà tài trợ', desc: 'Thiết kế + video tùy chỉnh', qCount: 5, rCount: 4 },
+    { value: 'full_custom', label: '⚙️ Full custom', desc: 'Chỉnh sửa mọi thứ', qCount: 5, rCount: 4 },
 ];
 
-const CATEGORIES = [
-    { value: 'personality', label: '🧬 personality' },
-    { value: 'mbti', label: '🧠 mbti' },
-    { value: 'fortune', label: '🔮 fortune' },
-    { value: 'fun', label: '🎉 fun' },
-    { value: 'sponsor', label: '💎 sponsor' },
-    { value: 'trend', label: '📈 trend' },
-];
+const EDITOR_CATEGORIES = QUIZ_CATEGORIES.map((c) => ({
+  value: c.id,
+  label: c.label,
+}));
 
 const MBTI_DIMENSIONS = ['EI', 'SN', 'TF', 'JP'];
 
@@ -58,18 +54,26 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const zipInputRef = useRef(null);
+    const adminKey = import.meta.env.VITE_ADMIN_API_KEY || '';
+    const api = createAdminApi(adminKey);
 
-    // Auth
-    const [isAuth, setIsAuth] = useState(initialAuth);
-    const [password, setPassword] = useState('');
-    const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '0922';
+    const saveImageFile = async (file) => {
+        try {
+            return await uploadQuizImage(file, adminKey);
+        } catch (err) {
+            console.warn('Image upload failed:', err.message);
+            return `/images/${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+        }
+    };
+
+    const [isAuth, setIsAuth] = useState(true);
 
     // Editor state
     const [step, setStep] = useState(1); // 1=type, 2=info, 3=questions, 4=results, 5=preview
     const [quizType, setQuizType] = useState('binary_5q');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [category, setCategory] = useState('fun');
+    const [category, setCategory] = useState(DEFAULT_QUIZ_CATEGORY);
     const [thumbnail, setThumbnail] = useState(null);
     const [thumbnailPreview, setThumbnailPreview] = useState('');
     const [questions, setQuestions] = useState([]);
@@ -81,17 +85,6 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
     const [isAiGenerating, setIsAiGenerating] = useState(false);
     const [showAiInput, setShowAiInput] = useState(false);
     const [generateStatus, setGenerateStatus] = useState('');
-
-    // Auth handler
-    const handleAuth = (e) => {
-        e.preventDefault();
-        if (password === ADMIN_PASSWORD) {
-            setIsAuth(true);
-        } else {
-            alert('❌ 비밀번호 틀림!');
-            setPassword('');
-        }
-    };
 
     // Initialize questions/results when type is selected
     const selectQuizType = (type) => {
@@ -127,33 +120,26 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
 
     // AI Generation handler
     // AI Generation handler — Category-based Expert Agents
-    const [selectedPersona, setSelectedPersona] = useState({ name: 'MBTI', emoji: '🧠', prompt: 'MBTI' });
-    const personas = [
-        { name: 'MBTI', emoji: '🧠', prompt: 'MBTI' },
-        { name: 'Personality', emoji: '🎭', prompt: 'Personality' },
-        { name: 'PastLife', emoji: '🧞', prompt: 'PastLife' },
-        { name: 'Fortune', emoji: '🔮', prompt: 'Fortune' },
-        { name: 'Survival', emoji: '🏋️', prompt: 'Survival' },
-        { name: 'Trendy', emoji: '🔥', prompt: 'Trendy' },
-        { name: 'Delivery', emoji: '🛵', prompt: 'Delivery' },
-        { name: 'Lookalike', emoji: '🔗', prompt: 'Lookalike' },
-    ];
+    const personas = getPersonas();
+    const [selectedPersona, setSelectedPersona] = useState(personas[0]);
 
     const handleAiGenerate = async (e) => {
         e.preventDefault();
         setIsAiGenerating(true);
-        setGenerateStatus('🤖 AI 에이전트가 퀴즈를 기획하는 중...');
+        setGenerateStatus('🤖 AI đang lên kịch bản quiz...');
         
         try {
             // Direct Gemini API call (works on both local and production)
-            const topic = selectedPersona?.prompt || category;
-            const data = await generateQuizContent(topic, category);
+            const activeCategory = normalizeCategory(selectedPersona?.category || category);
+            setGenerateStatus(`🤖 Agent ${activeCategory} đang tạo quiz...`);
+
+            const data = await generateQuizContent(activeCategory);
             console.log("AI Generation Successful:", data);
 
             // Populate state from Gemini response
             setTitle(data.title || '');
             setDescription(data.description || '');
-            if (data.category) setCategory(data.category);
+            setCategory(activeCategory);
             
             // Format Questions
             const formattedQs = (data.questions || []).map((q, i) => ({
@@ -182,14 +168,14 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
             setResults(finalResults);
 
             // Notify user of progress (Do NOT go to step 2 yet)
-            console.log('✨ 텍스트 완성! 백그라운드 이미지 생성 시작...');
+            console.log('✨ Text done! Generating images...');
 
             // Background Image Generation & Save
             try {
                 // Cover Image
                 let finalThumbnailUrl = null;
                 const quizTitleStr = data.title || '';
-                const quizCatStr = data.category || 'fun';
+                const quizCatStr = activeCategory;
                 const quizDescStr = data.description || '';
                 
                 let coverB64 = null;
@@ -202,10 +188,11 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                     coverFile = base64ToFile(coverB64, 'cover.png');
                     setThumbnail(coverFile);
                     setThumbnailPreview(URL.createObjectURL(coverFile));
-                    // Upload cover directly to Supabase
+                    // Upload cover to public/images via API
                     const fileName = `quiz_${Date.now()}_cover.png`;
-                    const { error: uploadError } = await supabase.storage.from('quiz-images').upload(fileName, coverFile);
-                    if (!uploadError) finalThumbnailUrl = `/${fileName}`;
+                    if (coverFile) {
+                        finalThumbnailUrl = await saveImageFile(new File([coverFile], fileName, { type: coverFile.type }));
+                    }
                 }
 
                 // Result Images
@@ -217,12 +204,8 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                         const b64 = await generateResultImage(r.title || '', r.description || '');
                         if (b64) {
                             const file = base64ToFile(b64, `result_${i}.png`);
-                            // Upload result image to Supabase
                             const rFileName = `result_${Date.now()}_${i}.png`;
-                            const { error: rUploadError } = await supabase.storage.from('quiz-images').upload(rFileName, file);
-                            if (!rUploadError) {
-                                r.image_url = `/${rFileName}`;
-                            }
+                            r.image_url = await saveImageFile(new File([file], rFileName, { type: file.type }));
                             setResults(prev => prev.map((res, idx) => idx === i ? { ...res, image_file: file, preview_url: URL.createObjectURL(file), image_url: r.image_url } : res));
                         }
                     } catch (e) {
@@ -232,56 +215,37 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                     await new Promise(resolve => setTimeout(resolve, 2000));
                 }
 
-                // 🚀 AUTO-SAVE: Direct Supabase Save 🚀
+                // Auto-save via Turso API
                 setSaving(true);
                 try {
-                    // 1. Save quiz metadata
-                    const { data: quizData, error: quizError } = await supabase
-                        .from('quizzes')
-                        .insert({
-                            title: quizTitleStr,
-                            description: quizDescStr,
-                            category: quizCatStr,
-                            quiz_type: 'binary_5q',
-                            image_url: finalThumbnailUrl,
-                            is_active: true,
-                        })
-                        .select()
-                        .single();
+                    const { id: newQuizId } = await api.createQuiz({
+                        title: quizTitleStr,
+                        description: quizDescStr,
+                        category: quizCatStr,
+                        quiz_type: 'binary_5q',
+                        image_url: finalThumbnailUrl,
+                        questions: formattedQs.map(q => ({
+                            order_number: q.order_number,
+                            question_text: q.question_text,
+                            option_a: q.option_a,
+                            option_b: q.option_b,
+                            score_a: q.score_a,
+                            score_b: q.score_b,
+                        })),
+                        results: completedResults.map(r => ({
+                            result_code: r.result_code,
+                            title: r.title || r.type_name || '',
+                            description: r.description || '',
+                            traits: r.traits || [],
+                            image_url: r.image_url || null,
+                        })),
+                    });
 
-                    if (quizError) throw new Error(`퀴즈 저장 실패: ${quizError.message}`);
-                    const newQuizId = quizData.id;
-
-                    // 2. Save questions
-                    const questionRows = formattedQs.map(q => ({
-                        quiz_id: newQuizId,
-                        order_number: q.order_number,
-                        question_text: q.question_text,
-                        option_a: q.option_a,
-                        option_b: q.option_b,
-                        score_a: q.score_a,
-                        score_b: q.score_b,
-                    }));
-                    const { error: qError } = await supabase.from('questions').insert(questionRows);
-                    if (qError) console.error('질문 저장 에러:', qError);
-
-                    // 3. Save results
-                    const resultRows = completedResults.map(r => ({
-                        quiz_id: newQuizId,
-                        result_code: r.result_code,
-                        title: r.title || r.type_name || '',
-                        description: r.description || '',
-                        traits: r.traits || [],
-                        image_url: r.image_url || null,
-                    }));
-                    const { error: rError } = await supabase.from('results').insert(resultRows);
-                    if (rError) console.error('결과 저장 에러:', rError);
-
-                    alert('🎉 AI 퀴즈가 성공적으로 생성되고 저장되었습니다!');
+                    alert('🎉 Quiz AI đã tạo và lưu thành công!');
                     navigate('/admin');
                 } catch (saveErr) {
                     console.error("Auto-save Error:", saveErr);
-                    alert(`❌ 저장 실패: ${saveErr.message}\n하지만 텍스트와 이미지는 에디터에 남겨두었습니다.`);
+                    alert(`❌ Lưu thất bại: ${saveErr.message}\nNội dung vẫn còn trong editor.`);
                 } finally {
                     setSaving(false);
                 }
@@ -291,7 +255,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
             }
         } catch (err) {
             console.error("AI Gen Error:", err);
-            alert(`❌ AI 생성 실패: ${err.message}`);
+            alert(`❌ AI thất bại: ${err.message}`);
         } finally {
             setIsAiGenerating(false);
         }
@@ -342,57 +306,43 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
         alert("ZIP upload is disabled in serverless mode. Please create quizzes from scratch.");
     };
 
-    // Save quiz (Supabase direct upload)
+    // Save quiz via Turso API
     const handleSave = async () => {
-        if (!title.trim()) return alert('제목을 입력하세요');
+        if (!title.trim()) return alert('Nhập tiêu đề quiz');
         if (quizType !== 'name_input' && questions.some(q => !q.question_text.trim())) {
-            return alert('모든 질문을 작성하세요');
+            return alert('Hoàn thiện tất cả câu hỏi');
         }
         if (results.some(r => !r.title.trim())) {
-            return alert('모든 결과 유형의 제목을 입력하세요');
+            return alert('Hoàn thiện tiêu đề tất cả kết quả');
         }
 
         setSaving(true);
         try {
             let finalThumbnailUrl = null;
             if (thumbnail) {
-                const fileName = `quiz_${Date.now()}_${thumbnail.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                const { error: uploadError } = await supabase.storage.from('quiz-images').upload(fileName, thumbnail);
-                if (uploadError) throw uploadError;
-                finalThumbnailUrl = `/${fileName}`; // getImageUrl automatically appends supabase URL based on filename
+                finalThumbnailUrl = await saveImageFile(thumbnail);
             }
 
-            // Insert Quiz
-            const { data: qData, error: qError } = await supabase.from('quizzes').insert({
-                title, description, category, quiz_type: quizType, image_url: finalThumbnailUrl
-            }).select().single();
-            
-            if (qError) throw qError;
-            const newQuizId = qData.id;
+            const resultPayload = await Promise.all(results.map(async r => {
+                let finalResUrl = r.image_url;
+                if (r.image_file) {
+                    finalResUrl = await saveImageFile(r.image_file);
+                }
+                const { image_file, preview_url, ...dbPayload } = r;
+                return { ...dbPayload, image_url: finalResUrl };
+            }));
 
-            // Insert Questions
-            if (quizType !== 'name_input' && questions.length > 0) {
-                const qPayload = questions.map((q, i) => ({ ...q, quiz_id: newQuizId, order_number: i + 1 }));
-                const { error: errQ } = await supabase.from('questions').insert(qPayload);
-                if (errQ) throw errQ;
-            }
-
-            // Insert Results
-            if (results.length > 0) {
-                const rPayload = await Promise.all(results.map(async r => {
-                    let finalResUrl = r.image_url;
-                    if (r.image_file) {
-                        const rFileName = `result_${Date.now()}_${r.result_code}_${r.image_file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                        const { error: rUploadError } = await supabase.storage.from('quiz-images').upload(rFileName, r.image_file);
-                        if (rUploadError) throw rUploadError;
-                        finalResUrl = `/${rFileName}`;
-                    }
-                    const { image_file, preview_url, ...dbPayload } = r;
-                    return { ...dbPayload, image_url: finalResUrl, quiz_id: newQuizId };
-                }));
-                const { error: errR } = await supabase.from('results').insert(rPayload);
-                if (errR) throw errR;
-            }
+            await api.createQuiz({
+                title,
+                description,
+                category: normalizeCategory(category),
+                quiz_type: quizType,
+                image_url: finalThumbnailUrl,
+                questions: quizType !== 'name_input'
+                    ? questions.map((q, i) => ({ ...q, order_number: i + 1 }))
+                    : [],
+                results: resultPayload,
+            });
 
             setSaveResult({ success: true, data: { title, quiz_type: quizType, question_count: questions.length, result_count: results.length } });
             setStep(5);
@@ -403,35 +353,6 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
             setSaving(false);
         }
     };
-
-    // Auth Screen
-    if (!isAuth) {
-        return (
-            <div className="editor-container flex items-center justify-center p-6">
-                <div className="editor-auth-card w-full max-w-md">
-                    <div className="text-center mb-10">
-                        <div className="text-5xl mb-6">⚙️</div>
-                        <h1 className="text-3xl font-black text-[#FF2D85] tracking-tight m-0">Quiz Editor</h1>
-                        <p className="text-gray-500 font-bold mt-2 uppercase tracking-widest text-xs">NamBac Dashboard</p>
-                    </div>
-                    
-                    <form onSubmit={handleAuth} className="flex flex-col gap-4">
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Admin Password"
-                            className="editor-input text-center"
-                            autoFocus
-                        />
-                        <button type="submit" className="editor-btn primary w-full text-lg py-4">
-                            접속하기
-                        </button>
-                    </form>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className={`editor-container ${embedded ? 'embedded' : ''}`}>
@@ -445,7 +366,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                 </div>
             )}
                 <div className="editor-steps">
-                    {['타입', '정보', '질문', '결과', '완료'].map((label, i) => (
+                    {['Loại', 'Thông tin', 'Câu hỏi', 'Kết quả', 'Xong'].map((label, i) => (
                         <div
                             key={i}
                             className={`step-dot ${step === i + 1 ? 'active' : ''} ${step > i + 1 ? 'done' : ''}`}
@@ -460,7 +381,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
             {/* Step 1: Quiz Type Selection */}
             {step === 1 && (
                 <div className="editor-section">
-                    <h2 className="section-title">퀴즈 타입 선택</h2>
+                    <h2 className="section-title">Chọn loại quiz</h2>
                     <div className="type-grid">
                         {QUIZ_TYPES.map(t => (
                             <button
@@ -475,7 +396,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                         ))}
                     </div>
 
-                    <div className="divider-or">또는</div>
+                    <div className="divider-or">hoặc</div>
                     
                     <div className="ai-gen-wrapper">
                         {!showAiInput ? (
@@ -485,7 +406,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                                 disabled={isAiGenerating}
                             >
                                 <span className="text-2xl">✨</span>
-                                <span>AI로 10초 만에 퀴즈 만들기</span>
+                                <span>Tạo quiz bằng AI trong 10 giây</span>
                             </button>
                         ) : (
                             <form onSubmit={handleAiGenerate} className="ai-input-form">
@@ -495,13 +416,16 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                                         <button
                                             key={p.name}
                                             type="button"
-                                            onClick={() => setSelectedPersona(p)}
+                                            onClick={() => {
+                                                setSelectedPersona(p);
+                                                setCategory(p.category);
+                                            }}
                                             className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1 transition-all ${selectedPersona.name === p.name 
                                                 ? 'bg-black text-white border-black scale-110 z-10' 
                                                 : 'bg-white text-gray-400 border-gray-100 opacity-60 hover:opacity-100'}`}
                                         >
                                             <span className="text-xl">{p.emoji}</span>
-                                            <span className="text-[8px] font-black">{p.name}</span>
+                                            <span className="text-[8px] font-black">{p.labelKo || p.name}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -512,24 +436,24 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                                     disabled={isAiGenerating}
                                 >
                                     {isAiGenerating ? (
-                                        <>생성 중... <span className="animate-spin text-lg">⏳</span></>
+                                        <>Đang tạo... <span className="animate-spin text-lg">⏳</span></>
                                     ) : (
-                                        <>이 카테고리로 AI 퀴즈 자동 생성하기 🚀</>
+                                        <>Tạo quiz AI theo danh mục này 🚀</>
                                     )}
                                 </button>
-                                <button type="button" className="text-gray-400 font-bold text-[10px] mt-4 underline block w-full text-center" onClick={() => setShowAiInput(false)}>취소</button>
+                                <button type="button" className="text-gray-400 font-bold text-[10px] mt-4 underline block w-full text-center" onClick={() => setShowAiInput(false)}>Hủy</button>
                             </form>
                         )}
                     </div>
 
-                    <div className="divider-or">또는</div>
+                    <div className="divider-or">hoặc</div>
 
                     <button
                         className="editor-btn secondary zip-btn"
                         onClick={() => zipInputRef.current?.click()}
                         disabled={saving}
                     >
-                        📦 ZIP 파일 업로드
+                        📦 Tải lên ZIP
                     </button>
                     <input
                         ref={zipInputRef}
@@ -551,7 +475,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                             className="editor-input"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="예: Bạn là loại cà phê nào?"
+                            placeholder="VD: Bạn là loại cà phê nào?"
                             maxLength={100}
                         />
                     </div>
@@ -561,14 +485,14 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                             className="editor-textarea"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="퀴즈 설명을 입력하세요..."
+                            placeholder="Mô tả quiz..."
                             rows={3}
                         />
                     </div>
                     <div className="form-group">
                         <label>Category</label>
                         <div className="category-chips">
-                            {CATEGORIES.map(c => (
+                            {EDITOR_CATEGORIES.map(c => (
                                 <button
                                     key={c.value}
                                     className={`chip ${category === c.value ? 'active' : ''}`}
@@ -593,9 +517,9 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                                 )}
                             </div>
                             <div className="text-xs text-gray-400 font-bold leading-relaxed">
-                                <p>• 추천 사이즈: 1080x1080</p>
-                                <p>• JPG, PNG, WEBP 지원</p>
-                                <p>• 5MB 이하 권장</p>
+                                <p>• Kích thước: 1080×1080</p>
+                                <p>• JPG, PNG, WEBP</p>
+                                <p>• Tối đa 5MB</p>
                             </div>
                         </div>
                         <input

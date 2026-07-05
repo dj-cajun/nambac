@@ -1,29 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { QUIZ_CATEGORIES, SERVICE_CATEGORIES, getFilterTypes, getCategoryLabel, getPersonas } from '../constants/categories';
+import { QUIZ_CATEGORIES, getFilterTypes, getCategoryLabel, getPersonas, matchesCategory, normalizeCategory } from '../constants/categories';
 import { API_BASE_URL, getImageUrl } from '../lib/apiConfig';
-import { supabase } from '../lib/supabase';
+import { createAdminApi } from '../lib/adminApi';
 
 import QuizEditor from './QuizEditor';
 
 const Admin = () => {
     const navigate = useNavigate();
-    // Password Protection
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [password, setPassword] = useState('');
-    const [passwordError, setPasswordError] = useState(false);
-    const [adminKey, setAdminKey] = useState('');
-    const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '0922';
-    const ADMIN_API_KEY = import.meta.env.VITE_ADMIN_API_KEY || password;
-
-    const passwordInputRef = useRef(null);
-
-    // Focus password input on mount
-    useEffect(() => {
-        if (!isAuthenticated && passwordInputRef.current) {
-            passwordInputRef.current.focus();
-        }
-    }, [isAuthenticated]);
+    // Admin access (no login screen — direct access)
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [adminKey] = useState(() => import.meta.env.VITE_ADMIN_API_KEY || '');
+    const api = createAdminApi(adminKey);
 
     // Authenticated fetch wrapper — adds X-Admin-Key header
     const adminFetch = async (url, options = {}) => {
@@ -36,26 +24,9 @@ const Admin = () => {
             },
         });
         if (res.status === 401) {
-            alert('🚫 인증 만료. 다시 로그인해주세요.');
-            setIsAuthenticated(false);
-            setAdminKey('');
-            setPassword('');
+            alert('🚫 Xác thực API thất bại. Kiểm tra VITE_ADMIN_API_KEY.');
         }
         return res;
-    };
-
-    const handlePasswordSubmit = async (e) => {
-        e.preventDefault();
-        if (password === ADMIN_PASSWORD) {
-            // Use the password as the admin API key for backend auth
-            const key = import.meta.env.VITE_ADMIN_API_KEY || password;
-            setAdminKey(key);
-            setIsAuthenticated(true);
-            setPasswordError(false);
-        } else {
-            setPasswordError(true);
-            setPassword('');
-        }
     };
 
     // State Management
@@ -66,6 +37,11 @@ const Admin = () => {
     const [filterType, setFilterType] = useState('all');
     const [loading, setLoading] = useState(false);
     const [availableAgents, setAvailableAgents] = useState([]);
+
+    // B2B Brand Inquiries State
+    const [adminTab, setAdminTab] = useState('quizzes'); // 'quizzes' | 'b2b'
+    const [inquiries, setInquiries] = useState([]);
+    const [inquiriesLoading, setInquiriesLoading] = useState(false);
 
 
     // Edit Modal State
@@ -118,8 +94,8 @@ const Admin = () => {
         if (filterType === 'all') {
             setFilteredQuizzes(quizzes);
         } else {
-            setFilteredQuizzes(quizzes.filter(q => 
-                q.quiz_type === filterType || q.category === filterType
+            setFilteredQuizzes(quizzes.filter(q =>
+                matchesCategory(q.category, filterType)
             ));
         }
     }, [quizzes, filterType]);
@@ -128,13 +104,7 @@ const Admin = () => {
     const fetchQuizzes = async () => {
         setLoading(true);
         try {
-            const { data: cloudData } = await supabase
-                .from('quizzes')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            const combined = (cloudData || []);
-
+            const combined = await api.fetchAllQuizzes();
             setQuizzes(combined);
             setFilteredQuizzes(combined);
         } catch (error) {
@@ -155,9 +125,51 @@ const Admin = () => {
         if (filterType === 'all') {
             setFilteredQuizzes(quizzes);
         } else {
-            setFilteredQuizzes(quizzes.filter(q => q.category === filterType));
+            setFilteredQuizzes(quizzes.filter(q => matchesCategory(q.category, filterType)));
         }
     }, [filterType, quizzes]);
+
+    const fetchInquiries = async () => {
+        setInquiriesLoading(true);
+        try {
+            const data = await api.fetchInquiries();
+            setInquiries(data);
+        } catch (error) {
+            console.error("Error fetching inquiries:", error);
+        } finally {
+            setInquiriesLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isAuthenticated && adminTab === 'b2b') {
+            fetchInquiries();
+        }
+    }, [isAuthenticated, adminTab]);
+
+    const updateInquiryStatus = async (id, newStatus) => {
+        try {
+            setInquiries(prev => prev.map(inq => inq.id === id ? { ...inq, status: newStatus } : inq));
+            await api.updateInquiryStatus(id, newStatus);
+        } catch (error) {
+            console.error("Error updating inquiry status:", error);
+            alert(`Lỗi khi cập nhật trạng thái: ${error.message}`);
+            fetchInquiries();
+        }
+    };
+
+    const deleteInquiry = async (id) => {
+        if (!window.confirm("Bạn có chắc chắn muốn xóa yêu cầu này?")) return;
+        try {
+            setInquiries(prev => prev.filter(inq => inq.id !== id));
+            await api.deleteInquiry(id);
+            alert("✅ Đã xóa yêu cầu thành công!");
+        } catch (error) {
+            console.error("Error deleting inquiry:", error);
+            alert(`Lỗi khi xóa yêu cầu: ${error.message}`);
+            fetchInquiries();
+        }
+    };
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -180,11 +192,7 @@ const Admin = () => {
 
             setQuizzes(prev => prev.map(q => q.id === id ? { ...q, status: newStatus, is_active: newIsActive } : q));
 
-            const { error } = await supabase
-                .from('quizzes')
-                .update({ is_active: newIsActive, status: newStatus })
-                .eq('id', id);
-            if (error) throw error;
+            await api.updateQuizStatus(id, newIsActive, newStatus);
         } catch (error) {
             console.error("Error toggling status:", error);
             alert(`Error toggling status: ${error.message}`);
@@ -197,15 +205,10 @@ const Admin = () => {
         if (!window.confirm(`Are you sure you want to delete this quiz?`)) return;
         
         try {
-            const { error: cloudError } = await supabase.from('quizzes').delete().eq('id', id);
-            
-            if (!cloudError) {
-                setQuizzes(prev => prev.filter(q => q.id !== id));
-                setFilteredQuizzes(prev => prev.filter(q => q.id !== id));
-                alert("✅ Quiz deleted successfully.");
-            } else {
-                throw new Error(cloudError.message || "Could not delete quiz from database.");
-            }
+            await api.deleteQuiz(id);
+            setQuizzes(prev => prev.filter(q => q.id !== id));
+            setFilteredQuizzes(prev => prev.filter(q => q.id !== id));
+            alert("✅ Quiz deleted successfully.");
         } catch (error) {
             console.error("Error deleting quiz:", error);
             alert(`Error deleting quiz: ${error.message}`);
@@ -224,7 +227,7 @@ const Admin = () => {
         setModalTab('info');
         setEditTitle(quiz.title || '');
         setEditDescription(quiz.description || '');
-        setEditCategory(quiz.category || '');
+        setEditCategory(normalizeCategory(quiz.category || ''));
         setEditImagePreview(quiz.image_url || '');
         setEditQuestions([]);
 
@@ -236,13 +239,12 @@ const Admin = () => {
         setEditResults(defaultResults);
 
         try {
-            const { data: qData } = await supabase.from('questions').select('*').eq('quiz_id', quiz.id).order('order_number', { ascending: true });
-            if (qData) setEditQuestions(qData);
+            const bundle = await api.fetchQuizBundle(quiz.id);
+            if (bundle.questions) setEditQuestions(bundle.questions);
 
-            const { data: rData } = await supabase.from('results').select('*').eq('quiz_id', quiz.id);
-            if (rData && rData.length > 0) {
+            if (bundle.results?.length > 0) {
                 const mergedResults = defaultResults.map(dr => {
-                    const found = rData.find(r => r.result_code === dr.result_code);
+                    const found = bundle.results.find(r => r.result_code === dr.result_code);
                     return found || dr;
                 });
                 setEditResults(mergedResults);
@@ -297,8 +299,7 @@ const Admin = () => {
 
         try {
             if (question.id) {
-                const { error } = await supabase.from('questions').delete().eq('id', question.id);
-                if (error) throw error;
+                await api.deleteQuestion(editingQuiz.id, question.id);
             }
             setEditQuestions(prev => prev.filter((_, i) => i !== idx));
         } catch (error) {
@@ -311,40 +312,16 @@ const Admin = () => {
         if (!editingQuiz) return;
 
         try {
-            const { error: qError } = await supabase
-                    .from('quizzes')
-                    .update({
-                        title: editTitle,
-                        description: editDescription,
-                        category: editCategory,
-                        image_url: editImagePreview
-                    })
-                    .eq('id', editingQuiz.id);
-                if (qError) throw qError;
-
-                if (editQuestions.length > 0) {
-                    const questionsToUpsert = editQuestions.map((q, idx) => {
-                        const { id, quiz_id, order_number, question_text, option_a, option_b, score_a, score_b, image_url, dimension, options } = q;
-                        const cleanQ = { quiz_id: quiz_id || editingQuiz.id, order_number: idx + 1, question_text, option_a, option_b, score_a, score_b, image_url, dimension, options };
-                        if (id && id.length > 20) cleanQ.id = id;
-                        return cleanQ;
-                    });
-                    const { error: errQ } = await supabase.from('questions').upsert(questionsToUpsert, { onConflict: 'id' });
-                    if (errQ) throw errQ;
-                }
-
-                if (editResults.length > 0) {
-                    const resultsToUpsert = editResults.filter(r => r.title || r.description).map((r, idx) => {
-                        const { id, quiz_id, result_code, title, description, traits, image_url } = r;
-                        const cleanR = { quiz_id: quiz_id || editingQuiz.id, result_code: r.result_code ?? idx, title, description, traits, image_url };
-                        if (id && id.length > 20) cleanR.id = id;
-                        return cleanR;
-                    });
-                    if (resultsToUpsert.length > 0) {
-                        const { error: errR } = await supabase.from('results').upsert(resultsToUpsert, { onConflict: 'id' });
-                        if (errR) throw errR;
-                    }
-                }
+            await api.saveQuiz(editingQuiz.id, {
+                quiz: {
+                    title: editTitle,
+                    description: editDescription,
+                    category: normalizeCategory(editCategory),
+                    image_url: editImagePreview,
+                },
+                questions: editQuestions.length > 0 ? editQuestions : undefined,
+                results: editResults.filter(r => r.title || r.description),
+            });
             setQuizzes(prev => prev.map(q =>
                 q.id === editingQuiz.id
                     ? { ...q, title: editTitle, description: editDescription, category: editCategory, image_url: editImagePreview }
@@ -358,30 +335,6 @@ const Admin = () => {
             alert(`Error updating quiz: ${error.message}`);
         }
     };
-
-    if (!isAuthenticated) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-[#fff9fc] p-6">
-                <div className="jelly-card p-10 w-full max-w-md bg-white">
-                    <div className="text-center mb-8">
-                        <div className="text-4xl mb-4">🔐</div>
-                        <h2 className="text-3xl font-black text-[#FF2D85] tracking-tight">Admin Access</h2>
-                    </div>
-                    <form onSubmit={handlePasswordSubmit} className="space-y-6">
-                        <input
-                            ref={passwordInputRef}
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter Admin Password"
-                            className="w-full px-5 py-4 bg-white border-2 border-black rounded-2xl focus:outline-none"
-                        />
-                        <button type="submit" className="w-full jelly-btn bg-[#FF2D85] text-white font-black py-4 text-lg">Unlock Dashboard</button>
-                    </form>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <>
@@ -456,17 +409,32 @@ const Admin = () => {
 
                     {/* Compact Header for Admin */}
                     {!showEditor && (
-                        <div className="flex justify-between items-center mb-8 px-4">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 px-4">
                             <div>
-                                <h2 className="text-3xl font-black text-gray-900">🧩 Quiz Inventory</h2>
-                                <p className="text-gray-400 text-sm font-bold mt-1">Manage your interactive content</p>
+                                <h2 className="text-3xl font-black text-gray-900">🛠️ Admin Dashboard</h2>
+                                <div className="flex gap-2 mt-4">
+                                    <button 
+                                        onClick={() => setAdminTab('quizzes')} 
+                                        className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000000] active:translate-y-[1px] ${adminTab === 'quizzes' ? 'bg-[#FF2D85] text-white' : 'bg-white text-gray-700'}`}
+                                    >
+                                        Quizzes 🧩
+                                    </button>
+                                    <button 
+                                        onClick={() => setAdminTab('b2b')} 
+                                        className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000000] active:translate-y-[1px] ${adminTab === 'b2b' ? 'bg-[#FF2D85] text-white' : 'bg-white text-gray-700'}`}
+                                    >
+                                        Brand Inquiries 🎯
+                                    </button>
+                                </div>
                             </div>
-                            <button 
-                                onClick={() => setShowEditor(true)}
-                                className="bg-[#FF2D85] text-white px-8 py-3 rounded-2xl font-black shadow-[4px_4px_0px_0px_#000000] border-2 border-black hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
-                            >
-                                ✨ CREATE NEW QUIZ
-                            </button>
+                            {adminTab === 'quizzes' && (
+                                <button 
+                                    onClick={() => setShowEditor(true)}
+                                    className="bg-[#FF2D85] text-white px-8 py-3 rounded-2xl font-black shadow-[4px_4px_0px_0px_#000000] border-2 border-black hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
+                                >
+                                    ✨ CREATE NEW QUIZ
+                                </button>
+                            )}
                         </div>
                     )}
 
@@ -485,102 +453,189 @@ const Admin = () => {
                             <>
                                 <div className="bg-gradient-to-r from-[#FF2D85] to-pink-400 p-4 flex justify-between items-center">
                                     <h2 className="text-2xl font-black text-white">
-                                        🎮 Quiz Management
+                                        {adminTab === 'quizzes' ? '🎮 Quiz Management' : '🎯 Brand Inquiries'}
                                     </h2>
                                 </div>
                                 <div className="p-6">
-                                    {/* Filters */}
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {filterTypes.map((type) => (
-                                            <button
-                                                key={type}
-                                                onClick={() => setFilterType(type)}
-                                                className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${filterType === type
-                                                    ? 'bg-[#FF2D85] text-white shadow-md'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                    }`}
-                                            >
-                                                {type === 'all' ? 'All Content' : getTypeLabel(type)}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    {adminTab === 'quizzes' ? (
+                                        <>
+                                            {/* Filters */}
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                {filterTypes.map((type) => (
+                                                    <button
+                                                        key={type}
+                                                        onClick={() => setFilterType(type)}
+                                                        className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${filterType === type
+                                                            ? 'bg-[#FF2D85] text-white shadow-md'
+                                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                            }`}
+                                                    >
+                                                        {type === 'all' ? 'All Content' : getTypeLabel(type)}
+                                                    </button>
+                                                ))}
+                                            </div>
 
-                                    {/* Table */}
-                                    {loading && !quizzes.length ? (
-                                        <div className="p-12 text-center">
-                                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
-                                            <p className="text-gray-500">Loading quizzes...</p>
-                                        </div>
-                                    ) : (
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full">
-                                                <thead className="bg-gray-50">
-                                                    <tr>
-                                                        <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
-                                                        <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Title</th>
-                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Created</th>
-                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                                        <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-gray-100">
-                                                    {filteredQuizzes.length === 0 ? (
-                                                        <tr>
-                                                            <td colSpan="6" className="p-8 text-center text-gray-400">
-                                                                No quizzes found.
-                                                            </td>
-                                                        </tr>
-                                                    ) : (
-                                                        filteredQuizzes.map((quiz) => (
-                                                            <tr key={quiz.id} className="hover:bg-pink-50 transition-colors">
-                                                                <td className="p-4 text-sm text-gray-600 font-mono">
-                                                                    {quiz.id?.toString().slice(0, 8)}...
-                                                                </td>
-                                                                <td className="p-4">
-                                                                    <button
-                                                                        onClick={() => openEditModal(quiz)}
-                                                                        className="font-medium text-gray-900 hover:text-[#FF2D85] hover:underline text-left transition-colors"
-                                                                    >
-                                                                        {quiz.title}
-                                                                    </button>
-                                                                </td>
-                                                                <td className="p-4 text-center">
-                                                                    <span className="inline-block px-3 py-1 bg-pink-100 text-[#FF2D85] rounded-full text-sm font-medium">
-                                                                        {getTypeLabel(quiz.category)}
-                                                                    </span>
-                                                                </td>
-                                                                <td className="p-4 text-center text-sm text-gray-600">
-                                                                    {new Date(quiz.created_at).toLocaleDateString()}
-                                                                </td>
-                                                                <td className="p-4 text-center">
-                                                                    <button
-                                                                        onClick={() => toggleStatus(quiz.id)}
-                                                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${quiz.is_active !== false && quiz.status !== 'hidden'
-                                                                            ? 'bg-green-500 text-white hover:bg-green-600'
-                                                                            : 'bg-red-500 text-white hover:bg-red-600'
-                                                                            }`}
-                                                                    >
-                                                                        {quiz.is_active !== false && quiz.status !== 'hidden' ? 'ON' : 'OFF'}
-                                                                    </button>
-                                                                </td>
-                                                                <td className="p-4 text-center">
-                                                                    <div className="flex items-center justify-center gap-2">
-                                                                        <button onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')} className="px-2 py-1.5 text-xs font-bold text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all" title="Preview">👁️</button>
-                                                                        <button
-                                                                            onClick={() => deleteQuiz(quiz.id, quiz.is_local)}
-                                                                            className="px-3 py-1.5 text-xs font-bold text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 hover:border-red-500 rounded-lg transition-all duration-200"
-                                                                        >
-                                                                            🗑️ Delete
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
+                                            {/* Table */}
+                                            {loading && !quizzes.length ? (
+                                                <div className="p-12 text-center">
+                                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
+                                                    <p className="text-gray-500">Loading quizzes...</p>
+                                                </div>
+                                            ) : (
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full">
+                                                        <thead className="bg-gray-50">
+                                                            <tr>
+                                                                <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
+                                                                <th className="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Title</th>
+                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Created</th>
+                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                                                <th className="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                                                             </tr>
-                                                        ))
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-gray-100">
+                                                            {filteredQuizzes.length === 0 ? (
+                                                                <tr>
+                                                                    <td colSpan="6" className="p-8 text-center text-gray-400">
+                                                                        No quizzes found.
+                                                                    </td>
+                                                                </tr>
+                                                            ) : (
+                                                                filteredQuizzes.map((quiz) => (
+                                                                    <tr key={quiz.id} className="hover:bg-pink-50 transition-colors">
+                                                                        <td className="p-4 text-sm text-gray-600 font-mono">
+                                                                            {quiz.id?.toString().slice(0, 8)}...
+                                                                        </td>
+                                                                        <td className="p-4">
+                                                                            <button
+                                                                                onClick={() => openEditModal(quiz)}
+                                                                                className="font-medium text-gray-900 hover:text-[#FF2D85] hover:underline text-left transition-colors"
+                                                                            >
+                                                                                {quiz.title}
+                                                                            </button>
+                                                                        </td>
+                                                                        <td className="p-4 text-center">
+                                                                            <span className="inline-block px-3 py-1 bg-pink-100 text-[#FF2D85] rounded-full text-sm font-medium">
+                                                                                {getTypeLabel(quiz.category)}
+                                                                            </span>
+                                                                        </td>
+                                                                        <td className="p-4 text-center text-sm text-gray-600">
+                                                                            {new Date(quiz.created_at).toLocaleDateString()}
+                                                                        </td>
+                                                                        <td className="p-4 text-center">
+                                                                            <button
+                                                                                onClick={() => toggleStatus(quiz.id)}
+                                                                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${quiz.is_active !== false && quiz.status !== 'hidden'
+                                                                                    ? 'bg-green-500 text-white hover:bg-green-600'
+                                                                                    : 'bg-red-500 text-white hover:bg-red-600'
+                                                                                    }`}
+                                                                            >
+                                                                                {quiz.is_active !== false && quiz.status !== 'hidden' ? 'ON' : 'OFF'}
+                                                                            </button>
+                                                                        </td>
+                                                                        <td className="p-4 text-center">
+                                                                            <div className="flex items-center justify-center gap-2">
+                                                                                <button onClick={() => window.open(`/quiz/${quiz.id}`, '_blank')} className="px-2 py-1.5 text-xs font-bold text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all" title="Preview">👁️</button>
+                                                                                <button
+                                                                                    onClick={() => deleteQuiz(quiz.id, quiz.is_local)}
+                                                                                    className="px-3 py-1.5 text-xs font-bold text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 hover:border-red-500 rounded-lg transition-all duration-200"
+                                                                                >
+                                                                                    🗑️ Delete
+                                                                                </button>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* B2B Inquiries */}
+                                            {inquiriesLoading ? (
+                                                <div className="p-12 text-center">
+                                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
+                                                    <p className="text-gray-500">Đang tải danh sách yêu cầu...</p>
+                                                </div>
+                                            ) : (
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-left">
+                                                        <thead className="bg-gray-50">
+                                                            <tr>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Doanh nghiệp / Đại diện</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Thông tin liên hệ</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Concept quiz</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Ngân sách</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Ngày gửi</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Trạng thái</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Hành động</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-gray-100">
+                                                            {inquiries.length === 0 ? (
+                                                                <tr>
+                                                                    <td colSpan="7" className="p-8 text-center text-gray-400">
+                                                                        Chưa có yêu cầu nào được gửi.
+                                                                    </td>
+                                                                </tr>
+                                                            ) : (
+                                                                inquiries.map((inq) => (
+                                                                    <tr key={inq.id} className="hover:bg-pink-50 transition-colors">
+                                                                        <td className="p-4">
+                                                                            <div className="font-bold text-gray-900">{inq.company_name}</div>
+                                                                            <div className="text-xs text-gray-500 mt-0.5">{inq.contact_person}</div>
+                                                                        </td>
+                                                                        <td className="p-4 text-sm text-gray-600">
+                                                                            <div>📧 {inq.email}</div>
+                                                                            <div className="mt-1">📞 {inq.phone || '-'}</div>
+                                                                        </td>
+                                                                        <td className="p-4 text-sm text-gray-700 max-w-[300px] truncate" title={inq.quiz_concept}>
+                                                                            {inq.quiz_concept}
+                                                                        </td>
+                                                                        <td className="p-4 text-center font-bold text-pink-600 text-sm">
+                                                                            {inq.budget_tier === 'basic' ? 'Dưới $500' :
+                                                                             inq.budget_tier === 'standard' ? '$500 - $2,000' :
+                                                                             inq.budget_tier === 'enterprise' ? 'Trên $2,000' : inq.budget_tier || '-'}
+                                                                        </td>
+                                                                        <td className="p-4 text-center text-sm text-gray-600">
+                                                                            {formatDate(inq.created_at)}
+                                                                        </td>
+                                                                        <td className="p-4 text-center">
+                                                                            <select
+                                                                                value={inq.status || 'pending'}
+                                                                                onChange={(e) => updateInquiryStatus(inq.id, e.target.value)}
+                                                                                className={`px-3 py-1.5 rounded-full text-xs font-bold border border-gray-300 focus:outline-none transition-all ${
+                                                                                    inq.status === 'reviewed' ? 'bg-blue-100 text-blue-800' :
+                                                                                    inq.status === 'contacted' ? 'bg-green-100 text-green-800' :
+                                                                                    inq.status === 'closed' ? 'bg-gray-100 text-gray-800' : 'bg-yellow-100 text-yellow-800'
+                                                                                }`}
+                                                                            >
+                                                                                <option value="pending">Đang chờ</option>
+                                                                                <option value="reviewed">Đang duyệt</option>
+                                                                                <option value="contacted">Hoàn thành</option>
+                                                                                <option value="closed">Từ chối</option>
+                                                                            </select>
+                                                                        </td>
+                                                                        <td className="p-4 text-center">
+                                                                            <button
+                                                                                onClick={() => deleteInquiry(inq.id)}
+                                                                                className="px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 border border-red-200 hover:border-red-500 rounded-lg transition-all duration-200"
+                                                                            >
+                                                                                🗑️ Xóa
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </>

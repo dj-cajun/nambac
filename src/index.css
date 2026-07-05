@@ -8,6 +8,8 @@
   --jelly-border: 2px solid #000000;
   --jelly-shadow: 4px 4px 0px 0px #000000;
   --jelly-radius: 2rem;
+  --comic-charcoal: #1e293b;
+  --primary-pink: #ff85a1;
 }
 
 html,
@@ -20,6 +22,12 @@ body {
   background: linear-gradient(to bottom right, #fff9fc, #ffffff, #eef2ff);
   overflow-x: hidden;
   color: #1a1a1a;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
 /* Global 'Jelly' CSS Utilities (Plain CSS, no @apply) */

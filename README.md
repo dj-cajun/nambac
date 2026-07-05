@@ -1,89 +1,97 @@
-# 🎯 Nambac — 호치민 MZ세대 퀴즈 플랫폼
+# 🎯 Nambac — Trắc nghiệm tính cách AI (Gen Z Sài Gòn)
 
-> **nambac.xyz** — AI 에이전트가 만드는 성향 분석 퀴즈 플랫폼
+> **nambac.xyz** — AI quiz platform for Vietnamese Gen Z
 
-## 🏗️ 기술 스택
+## 🏗️ Tech Stack
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 19 + Vite 7 |
-| **Styling** | Tailwind CSS 4 |
-| **Backend** | FastAPI (Python 3.11) |
-| **AI Engine** | Google Gemini + OpenRouter (3인 에이전트 협업) |
-| **Data** | Local JSON Storage |
-| **Deployment** | Docker + Nginx + Supervisor |
+| **Frontend** | React 19 + Vite 7 + Tailwind CSS 4 |
+| **API** | Vercel Serverless (`api/`) + Express dev proxy (`server/dev-api.mjs`) |
+| **Database** | Turso (LibSQL) |
+| **AI Text** | Google Gemini 2.5 Flash |
+| **AI Images** | OpenRouter (FLUX Klein) |
+| **Analytics** | Google Tag Manager → GA4 events |
+| **Deploy** | Vercel (frontend + API routes) |
 
 ## 🚀 Quick Start
 
-### 1. 환경 설정
+### 1. Environment
 
 ```bash
 git clone <repo-url>
 cd nambac
-cp .env.example .env
-# .env 파일에 실제 API 키 입력
+cp .env.example .env.local
+# Fill in Turso, Gemini, OpenRouter, Admin keys
 ```
 
-### 2. Frontend 개발 서버
+### 2. Database init (first time)
 
 ```bash
 npm install
-npm run dev
+npm run db:init
+npm run db:migrate      # if migrating from legacy JSON
 ```
 
-### 3. Backend 개발 서버
+### 3. Local development (two terminals)
 
 ```bash
-cd backend
-pip install -r requirements.txt
-python3 -m uvicorn main:app --reload --port 8000
+npm run dev:api         # Turso API → http://localhost:8787
+npm run dev             # Vite → http://localhost:5173
 ```
 
-### 4. 프로덕션 배포 (Docker)
+Vite proxies `/api/*` to port 8787.
 
-```bash
-./deploy.sh
-```
-
-## 📁 프로젝트 구조
+## 📁 Project Structure
 
 ```
 nambac/
-├── src/                    # React Frontend
-│   ├── pages/              # 페이지 컴포넌트 (Home, QuizPage, Result, Admin)
-│   ├── components/         # 공통 컴포넌트 (Navbar, Footer, Header)
-│   ├── lib/                # API 클라이언트 (apiConfig.js, localDataClient.js)
-│   └── logic/              # 비즈니스 로직 (scoring.js — 3-bit binary scoring)
-├── backend/
-│   ├── main.py             # FastAPI 서버 (CRUD + AI 엔드포인트)
-│   ├── logic/              # AI Factory, JSONManager, ImageGenerator
-│   ├── agents_nambac/      # AI 에이전트 프롬프트
-│   └── data/               # JSON 데이터 저장소
-├── nginx/                  # Nginx 설정 (리버스 프록시 + Rate Limiting)
-├── Dockerfile              # 멀티스테이지 빌드
-├── docker-compose.yml      # 컨테이너 오케스트레이션
-└── deploy.sh               # 원클릭 배포 스크립트
+├── api/                  # Vercel serverless routes
+│   ├── _lib/             # Turso client, quiz DB, categories
+│   ├── quizzes/          # Public + admin quiz CRUD
+│   ├── generate-image.js # OpenRouter image proxy
+│   └── og.js             # SSR Open Graph for bots
+├── shared/               # Shared modules (categories — NOT under /api)
+├── server/dev-api.mjs    # Local API dev server
+├── src/
+│   ├── pages/            # Home, Quiz, Result, Admin, Editor, Brands…
+│   ├── lib/              # quizApi, gemini, analytics, adsConfig
+│   └── constants/        # QUIZ_CATEGORIES (8 Expert agents)
+├── public/               # Static assets, manifest, og-default.png
+└── scripts/              # db init, migrate, e2e tests
 ```
 
-## 🔐 환경 변수
+## 🎮 Core Features
 
-| 변수 | 설명 | 필수 |
-|---|---|---|
-| `GEMINI_API_KEY` | Google Gemini API | ✅ |
-| `OPENROUTER_API_KEY` | OpenRouter AI 모델 | ✅ |
-| `ADMIN_API_KEY` | Backend Admin 인증 키 | ✅ |
-| `VITE_ADMIN_API_KEY` | Frontend → Backend 인증 | ✅ |
-| `VITE_ADMIN_PASSWORD` | Admin 페이지 접근 비밀번호 | ✅ |
-| `VITE_API_URL` | Backend API URL | ✅ |
-| `VITE_GA_MEASUREMENT_ID` | Google Analytics ID | ❌ |
+- **8 category Expert agents** — MBTI, Personality, PastLife, Fortune, Survival, Trendy, Delivery, Lookalike
+- **5-question binary quiz** → 8 results (3-bit scoring)
+- **AI quiz generation** — Gemini text + OpenRouter cover/result images
+- **So Kèo compatibility** — friend result matching
+- **B2B brand inquiries** — `/brands` landing + Admin CRM tab
+- **Explore / BXH** — viral share ranking & view leaderboard
 
-## 🎮 핵심 기능
+## 📊 Analytics Events (GTM dataLayer)
 
-- **3-Bit Binary Scoring**: 5문항 → 8가지 결과 (0~7점)
-- **AI 퀴즈 생성**: Director → Visual Architect → Report Analyst 3인 에이전트 협업
-- **소셜 공유**: 서버사이드 OG 태그 렌더링 (Facebook, Zalo, Twitter)
-- **Admin Dashboard**: 퀴즈 CRUD, AI 생성, 서비스 관리
+| Event | Trigger |
+|---|---|
+| `quiz_start` | User starts a quiz |
+| `quiz_complete` | Result page loads |
+| `share_zalo` | Zalo / compat share |
+| `compat_start` | Compatibility page loads |
 
-## 📜 License
+## 🧪 Testing
 
-Private — All Rights Reserved
+```bash
+npm run test:e2e        # Requires dev servers running
+npm run build           # Production build
+```
+
+## 🌐 Production Deploy
+
+Deploy to Vercel with env vars from `.env.example`.  
+Turso credentials are server-side only (`TURSO_*`, no `VITE_` prefix).
+
+## 📜 Legacy
+
+`backend/main.py` (FastAPI) is legacy — production uses `api/` + Turso.  
+Do not import from `api/_lib/` in frontend; use `shared/categories.js` instead (Vite `/api` proxy conflict).

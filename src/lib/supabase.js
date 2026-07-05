@@ -1,10 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase URL or Anon Key is missing. Check your .env setup.');
-}
-
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+/** @deprecated Use quizApi.js — Supabase removed in favor of Turso */
+export {
+  fetchQuizzes,
+  fetchQuizBundle,
+  fetchQuizResults,
+  incrementQuizStat,
+  submitBrandInquiry,
+  checkTursoConnection as checkSupabaseConnection,
+} from './quizApi.js';

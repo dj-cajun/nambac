@@ -54,7 +54,7 @@ export default function CustomQuiz({ quizInfo, questions, results }) {
         } else {
             // Score: sum up tag scores or use simple index-based scoring
             const score = calculateCustomScore(newAnswers, questions, results);
-            navigate(`/quiz/${quizInfo.id}/analysis`, { state: { score, results } });
+            navigate(`/quiz/${quizInfo.id}/result?score=${score}`);
         }
     };
 

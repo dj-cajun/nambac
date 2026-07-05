@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Share2, Copy, Check } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { calculateScore } from '../logic/scoring';
 import MBTIQuiz from './MBTIQuiz';
 import CustomQuiz from './CustomQuiz';
+import NameInputQuiz from './NameInputQuiz';
 import './QuizPage.css';
 import { getImageUrl } from '../lib/apiConfig';
-import { supabase } from '../lib/supabase';
+import { getCategoryLabel } from '../constants/categories';
+import { fetchQuizBundle, incrementQuizStat } from '../lib/quizApi';
 import AdSenseUnit from '../components/AdSenseUnit';
+import { AD_SLOTS } from '../lib/adsConfig';
+import { trackQuizStart, trackShare } from '../lib/analytics';
 
 export default function QuizPage({ quizIdProp }) {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const quizId = id || quizIdProp;
 
     const [quizInfo, setQuizInfo] = useState(null);
@@ -34,46 +39,10 @@ export default function QuizPage({ quizIdProp }) {
             try {
                 setLoading(true);
                 
-                // 1. Try fetching from Supabase FIRST (Cloud)
-                let quizData = null;
-                let questionsData = [];
-                let resultsData = [];
-                let isLocalResult = false;
-
-                try {
-                    const { data: qz, error: qzErr } = await supabase.from('quizzes').select('*').eq('id', quizId).single();
-                    if (!qzErr && qz) {
-                        quizData = qz;
-                        const { data: qs } = await supabase.from('questions').select('*').eq('quiz_id', quizId).order('order_number', { ascending: true });
-                        const { data: rs } = await supabase.from('results').select('*').eq('quiz_id', quizId);
-                        questionsData = qs || [];
-                        resultsData = rs || [];
-                    }
-                } catch (err) {
-                    console.log("Supabase fetch skip or fail, trying local...");
-                }
-
-                // 2. Try fetching from Local Backend if Cloud failed (or ID not found)
-                if (!quizData) {
-                    try {
-                        const response = await fetch(`http://localhost:8000/api/quizzes/${quizId}`);
-                        if (response.ok) {
-                            const json = await response.json();
-                            quizData = { ...json.quiz, is_local: true };
-                            questionsData = json.questions || [];
-                            resultsData = json.results || [];
-                            isLocalResult = true;
-                        }
-                    } catch (err) {
-                        console.warn("Local backend fetch failed:", err);
-                    }
-                }
-
-                if (!quizData) throw new Error('Failed to fetch quiz from any source');
-
-                setQuizInfo(quizData);
-                setQuestions(questionsData);
-                setResults(resultsData);
+                const bundle = await fetchQuizBundle(quizId);
+                setQuizInfo(bundle.quiz);
+                setQuestions(bundle.questions || []);
+                setResults(bundle.results || []);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching quiz data:', err);
@@ -85,13 +54,7 @@ export default function QuizPage({ quizIdProp }) {
         
         // Track view_count when quiz page loads (if not already tracked by Home)
         if (quizId && !window.__viewedQuiz?.[quizId]) {
-            const trackView = async () => {
-                const { data } = await supabase.from('quizzes').select('view_count').eq('id', quizId).single();
-                if (data) {
-                    supabase.from('quizzes').update({ view_count: (data.view_count || 0) + 1 }).eq('id', quizId).then();
-                }
-            };
-            trackView();
+            incrementQuizStat(quizId, 'view').catch(console.error);
             window.__viewedQuiz = { ...(window.__viewedQuiz || {}), [quizId]: true };
         }
     }, [quizId]);
@@ -99,15 +62,10 @@ export default function QuizPage({ quizIdProp }) {
     const handleStart = () => {
         setStarted(true);
         window.scrollTo(0, 0);
-        
-        // Track participant_count
+        trackQuizStart(quizId, quizInfo?.category);
+
         if (quizId && !window.__participatedQuiz?.[quizId]) {
-            supabase.from('quizzes').select('participant_count').eq('id', quizId).single()
-                .then(({ data }) => {
-                    if (data) {
-                        supabase.from('quizzes').update({ participant_count: (data.participant_count || 0) + 1 }).eq('id', quizId).then();
-                    }
-                });
+            incrementQuizStat(quizId, 'participate').catch(console.error);
             window.__participatedQuiz = { ...(window.__participatedQuiz || {}), [quizId]: true };
         }
     };
@@ -180,9 +138,13 @@ export default function QuizPage({ quizIdProp }) {
     }
 
     if (showResult) {
-        // Calculate score and navigate to Analysis Page
         const score = calculateScore(answers, questions);
-        navigate(`/quiz/${quizId}/analysis`, { state: { score, results } }); // Pass data
+        const matchFriendScore = searchParams.get('matchFriendScore');
+        if (matchFriendScore !== null) {
+            navigate(`/compatibility/${quizId}/${matchFriendScore}/${score}`);
+        } else {
+            navigate(`/quiz/${quizId}/result?score=${score}`);
+        }
         return null; // Don't render anything while redirecting
     }
 
@@ -215,7 +177,7 @@ export default function QuizPage({ quizIdProp }) {
                         <div className="image-overlay-gradient-strong"></div>
 
                         {/* Category Tag (Top Left) */}
-                        <div className="category-tag top-safe-area">{quizInfo.category}</div>
+                        <div className="category-tag top-safe-area">{getCategoryLabel(quizInfo.category)}</div>
 
                         {/* Title (On Image, above bottom sheet) */}
                         {/* Title Removed as per request */}
@@ -237,12 +199,7 @@ export default function QuizPage({ quizIdProp }) {
                                 setShowShareModal(true);
                                 // Increment share_count
                                 if (!window.__sharedQuiz?.[quizId]) {
-                                    supabase.from('quizzes').select('share_count').eq('id', quizId).single()
-                                        .then(({ data }) => {
-                                            if (data) {
-                                                supabase.from('quizzes').update({ share_count: (data.share_count || 0) + 1 }).eq('id', quizId).then();
-                                            }
-                                        });
+                                    incrementQuizStat(quizId, 'share').catch(console.error);
                                     window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizId]: true };
                                 }
                             }}>
@@ -264,6 +221,7 @@ export default function QuizPage({ quizIdProp }) {
                                 return (
                                     <div className="share-options">
                                         <button className="share-option zalo" onClick={() => {
+                                            trackShare('zalo', quizId);
                                             window.open(`https://zalo.me/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
                                         }}>
                                     <span className="share-icon">💬</span>
@@ -355,7 +313,7 @@ export default function QuizPage({ quizIdProp }) {
             </AnimatePresence>
 
             {/* AdSense Slot (Bottom of Quiz Page) */}
-            <AdSenseUnit adSlot="1234567890" location="quiz-bottom" />
+            <AdSenseUnit adSlot={AD_SLOTS.quiz} location="quiz-bottom" />
         </div>
     );
 }

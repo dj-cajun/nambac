@@ -1,21 +1,23 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import QuizPage from './pages/QuizPage';
 import Admin from './pages/Admin';
 import QuizEditor from './pages/QuizEditor';
-
-import './App.css'; // [FIX]: Added missing style import
-
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
-
-import AnalysisPage from './pages/AnalysisPage';
 import About from './pages/About';
 import Result from './pages/Result';
 import ShareRedirect from './pages/ShareRedirect';
 import FAQ from './pages/FAQ';
+import CompatibilityPage from './pages/CompatibilityPage';
+import InstallBanner from './components/InstallBanner';
+import BrandsLanding from './pages/BrandsLanding';
+import ExplorePage from './pages/ExplorePage';
+import LeaderboardPage from './pages/LeaderboardPage';
+
+import './App.css';
 
 function App() {
   return (
@@ -28,10 +30,10 @@ function App() {
 function AppContent() {
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin' || location.pathname === '/editor';
+  const hideFooter = ['/', '/explore', '/leaderboard'].includes(location.pathname);
 
   return (
     <div className={`app-layout ${isAdminPage ? 'wide-layout' : ''}`} style={{ position: 'relative', minHeight: '100vh' }}>
-      {/* Blurry Blobs Background */}
       <div className="blob-bg blob-1"></div>
       <div className="blob-bg blob-2"></div>
       <div className="blob-bg blob-3"></div>
@@ -39,22 +41,40 @@ function AppContent() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* 어떤 퀴즈 번호로 들어오든 처리하는 동적 라우팅 */}
         <Route path="/quiz/:id" element={<QuizPage />} />
-        <Route path="/quiz/:id/analysis" element={<AnalysisPage />} />
-         <Route path="/quiz/:id/result" element={<Result />} />
+        <Route path="/quiz/:id/result" element={<Result />} />
+        <Route path="/quiz/:id/analysis" element={<AnalysisRedirect />} />
         <Route path="/share/:id/:score" element={<ShareRedirect />} />
         <Route path="/share/:id" element={<ShareRedirect />} />
+        <Route path="/share-view/:id/:score" element={<ShareRedirect />} />
+        <Route path="/share-view/:id" element={<ShareRedirect />} />
+        <Route path="/compatibility/:id/:friendScore/:myScore" element={<CompatibilityPage />} />
+        <Route path="/brands" element={<BrandsLanding />} />
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/editor" element={<QuizEditor />} />
-
         <Route path="/about" element={<About />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>
-      <Footer />
+      {!hideFooter && <Footer />}
+      <InstallBanner />
     </div>
   );
 }
+
+function AnalysisRedirect() {
+  const { id: quizId } = useParams();
+  const location = useLocation();
+  const score = location.state?.score;
+
+  if (quizId && score !== undefined && score !== null) {
+    return <Navigate to={`/quiz/${quizId}/result?score=${score}`} replace />;
+  }
+
+  return <Navigate to="/" replace />;
+}
+
 export default App;

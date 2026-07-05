@@ -72,7 +72,7 @@ const About = () => {
                         nambac.xyz được phát triển bởi một nhóm kỹ sư và nhà sáng tạo nội dung đặt trụ sở tại <strong>Thành phố Hồ Chí Minh, Việt Nam</strong>. Chúng tôi hiểu sâu sắc văn hóa và sở thích của giới trẻ Việt Nam, từ đó tạo ra những nội dung phù hợp và gần gũi nhất.
                     </p>
                     <p>
-                        Nền tảng này được xây dựng với công nghệ hiện đại nhất bao gồm React, Supabase, và Google Gemini AI để đảm bảo trải nghiệm người dùng mượt mà và nội dung chất lượng cao.
+                        Nền tảng này được xây dựng với công nghệ hiện đại nhất bao gồm React, Turso (LibSQL), Google Gemini AI và OpenRouter để đảm bảo trải nghiệm người dùng mượt mà và nội dung chất lượng cao.
                     </p>
                 </section>
 

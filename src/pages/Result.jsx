@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Download, Share2, Home } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import html2canvas from 'html2canvas';
 import ShareModal from '../components/ShareModal';
 import AdSenseUnit from '../components/AdSenseUnit';
+import { AD_SLOTS } from '../lib/adsConfig';
+import { trackQuizComplete, trackShare } from '../lib/analytics';
 import './Result.css';
 import { getImageUrl } from '../lib/apiConfig';
-import { supabase } from '../lib/supabase';
+import { fetchQuizResults, fetchQuizzes as loadQuizzes, incrementQuizStat } from '../lib/quizApi';
 
 const Result = () => {
     const navigate = useNavigate();
     const { id: quizIdParam } = useParams();
     const [searchParams] = useSearchParams(); // Needs import
     const score = parseInt(searchParams.get('score'));
+
+    const cardRef = useRef(null);
 
     // passed props are gone, so we need local state
     const [results, setResults] = useState([]);
@@ -25,25 +30,8 @@ const Result = () => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
-                // 1. Try Supabase
-                const { data, error } = await supabase
-                    .from('results')
-                    .select('*')
-                    .eq('quiz_id', quizIdParam);
-                
-                if (!error && data && data.length > 0) {
-                    setResults(data);
-                    return;
-                }
-
-                // 2. Try Local Backend
-                const response = await fetch(`http://localhost:8000/api/quizzes/${quizIdParam}`);
-                if (response.ok) {
-                    const json = await response.json();
-                    if (json.results) {
-                        setResults(json.results);
-                    }
-                }
+                const data = await fetchQuizResults(quizIdParam);
+                if (data?.length) setResults(data);
             } catch (err) {
                 console.error("Failed to fetch results", err);
             }
@@ -54,34 +42,21 @@ const Result = () => {
     useEffect(() => {
         if (results && results.length > 0) {
             const match = results.find(r => parseInt(r.result_code) === score) || results[0];
-            if (match) setFinalResult(match);
+            if (match) {
+                setFinalResult(match);
+                if (quizIdParam && !Number.isNaN(score)) {
+                    trackQuizComplete(quizIdParam, score);
+                }
+            }
         }
-    }, [score, results]);
+    }, [score, results, quizIdParam]);
 
     // Fetch recommended quizzes
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                // 1. Fetch Cloud
-                const { data: cloudData } = await supabase
-                    .from('quizzes')
-                    .select('*')
-                    .eq('is_active', true)
-                    .neq('id', quizIdParam)
-                    .order('created_at', { ascending: false });
-                
-                // 2. Fetch Local
-                let localData = [];
-                try {
-                    const resp = await fetch('http://localhost:8000/api/quizzes');
-                    if (resp.ok) {
-                        const json = await resp.json();
-                        localData = (json.quizzes || []).filter(q => q.id !== quizIdParam && (q.is_active !== false && q.status !== 'hidden'));
-                    }
-                } catch (e) {}
-
-                const combined = [...localData, ...(cloudData || [])];
-                setRecommendedQuizzes(combined.slice(0, 8));
+                const all = await loadQuizzes();
+                setRecommendedQuizzes(all.filter(q => q.id !== quizIdParam).slice(0, 8));
             } catch (err) {
                 console.error('Failed to fetch recommended quizzes:', err);
             }
@@ -94,6 +69,25 @@ const Result = () => {
 
     const renderDescription = (text = "") => {
         return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;
+    };
+
+    const handleDownloadImage = async () => {
+        if (!cardRef.current) return;
+        try {
+            const canvas = await html2canvas(cardRef.current, {
+                useCORS: true,
+                scale: 2, // High resolution
+                backgroundColor: '#ffffff'
+            });
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `nambac-result-${quizIdParam}-${score}.png`;
+            link.href = dataUrl;
+            link.click();
+        } catch (err) {
+            console.error("Failed to download image", err);
+            alert("Có lỗi xảy ra khi tải ảnh! Bạn hãy chụp màn hình kết quả nhé.");
+        }
     };
 
     return (
@@ -121,7 +115,7 @@ const Result = () => {
             <main className="result-main">
 
                 {/* Result Card - Unified Image Style */}
-                <div className="result-unified-card">
+                <div className="result-unified-card" ref={cardRef}>
                     {/* Full Result Image */}
                     <img
                         src={getImageUrl(finalResult.image_url)}
@@ -154,10 +148,8 @@ const Result = () => {
                 </div>
 
                 {/* AdSense Slot (Below Result Image) */}
-                <AdSenseUnit adSlot="1234567890" location="result-bottom-1" />
-
-                {/* AdSense Slot (Below Result Image) */}
-                <AdSenseUnit adSlot="0987654321" location="result-bottom-2" />
+                <AdSenseUnit adSlot={AD_SLOTS.result1} location="result-bottom-1" />
+                <AdSenseUnit adSlot={AD_SLOTS.result2} location="result-bottom-2" />
 
                 {/* Recommended Quizzes Section */}
                 {recommendedQuizzes.length > 0 && (
@@ -174,7 +166,7 @@ const Result = () => {
                                         src={getImageUrl(quiz.thumbnail_url || quiz.image_url)}
                                         alt={quiz.title}
                                         className="recommended-thumbnail"
-                                        onError={(e) => { e.target.src = "/images/default_quiz.png" }}
+                                        onError={(e) => { e.target.src = "/images/default_cover.png" }}
                                     />
                                     <span className="recommended-card-title">{quiz.title}</span>
                                 </div>
@@ -189,27 +181,19 @@ const Result = () => {
                 <div className="bar-actions">
                     <button className="restart-btn" onClick={() => navigate(`/quiz/${quizIdParam}`)}>
                         <span className="btn-label">CHƠI LẠI</span>
-                        <div className="btn-icon-circle">
-                            <span className="material-symbols-outlined">refresh</span>
-                        </div>
+                    </button>
+
+                    {/* Download Image Button */}
+                    <button className="download-action-btn" onClick={handleDownloadImage}>
+                        <Download size={20} />
+                        <span className="btn-label">TẢI ẢNH</span>
                     </button>
 
                     <button className="share-btn" onClick={() => {
                         setShowShareModal(true);
                         // Increment share_count (fire and forget, once per session)
                         if (!window.__sharedQuiz?.[quizIdParam]) {
-                            supabase.from('quizzes')
-                                .select('share_count')
-                                .eq('id', quizIdParam)
-                                .single()
-                                .then(({ data }) => {
-                                    if (data) {
-                                        supabase.from('quizzes')
-                                            .update({ share_count: (data.share_count || 0) + 1 })
-                                            .eq('id', quizIdParam)
-                                            .then();
-                                    }
-                                });
+                            incrementQuizStat(quizIdParam, 'share').catch(console.error);
                             window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
                         }
                     }}>
@@ -226,6 +210,7 @@ const Result = () => {
 
                         <div className="share-options">
                             <button className="share-option zalo" onClick={() => {
+                                trackShare('zalo', quizIdParam, score);
                                 window.open(`https://zalo.me/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
                             }}>
                                 <span className="share-icon">💬</span>
@@ -247,13 +232,32 @@ const Result = () => {
                                 <span>Facebook</span>
                             </button>
 
-                            <button className="share-option copy-link" onClick={() => {
-                                navigator.clipboard.writeText(shareUrl);
-                                alert('Đã sao chép link!');
-                            }}>
-                                <span className="share-icon">🔗</span>
-                                <span>Sao chép</span>
-                            </button>
+                            {navigator.share ? (
+                                <button className="share-option system-share" onClick={async () => {
+                                    try {
+                                        await navigator.share({
+                                            title: `Kết quả của tôi là [${finalResult.type_name || finalResult.title}]!`,
+                                            text: `Trắc nghiệm tính cách AI nambac.xyz — Bạn thử đi! 🔥`,
+                                            url: shareUrl,
+                                        });
+                                    } catch (err) {
+                                        console.log("Web Share API failed, fallback to copy:", err);
+                                        navigator.clipboard.writeText(shareUrl);
+                                        alert('Đã sao chép link!');
+                                    }
+                                }}>
+                                    <span className="share-icon">📤</span>
+                                    <span>Gửi khác</span>
+                                </button>
+                            ) : (
+                                <button className="share-option copy-link" onClick={() => {
+                                    navigator.clipboard.writeText(shareUrl);
+                                    alert('Đã sao chép link!');
+                                }}>
+                                    <span className="share-icon">🔗</span>
+                                    <span>Sao chép</span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

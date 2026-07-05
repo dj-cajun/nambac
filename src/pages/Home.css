@@ -29,6 +29,7 @@
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     gap: 16px;
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     scrollbar-width: none;
     /* Hide scrollbar Firefox */
     -ms-overflow-style: none;
@@ -193,19 +194,6 @@
     box-shadow: none;
 }
 
-/* Tape Deco */
-.simple-tape {
-    position: absolute;
-    top: -10px;
-    right: 24px;
-    width: 50px;
-    height: 18px;
-    background: #FFDEE9;
-    border: 2px solid #000;
-    transform: rotate(45deg);
-    z-index: 20;
-}
-
 /* 4. Category Tabs (Horizontal Scroll + Pastel) */
 .category-tabs {
     display: flex;
@@ -247,6 +235,28 @@
     box-shadow: 4px 4px 0px 0px #000;
 }
 
+.sort-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 8px;
+}
+
+.sort-tab {
+    padding: 6px 14px;
+    border-radius: 50px;
+    border: 2px solid #000;
+    font-family: 'Jua', sans-serif;
+    font-size: 12px;
+    background: #fff;
+    box-shadow: 2px 2px 0px 0px #000;
+    transition: all 0.1s;
+}
+
+.sort-tab.active {
+    background: #FF2D85;
+    color: #fff;
+}
+
 /* 5. List Style */
 .glass-section-title {
     padding: 0 20px;
@@ -271,7 +281,7 @@
 
 @media (max-width: 440px) {
     .glass-list.grid-cols-2 {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 12px;
     }
 }
@@ -372,25 +382,13 @@
     text-transform: uppercase;
 }
 
-/* Card Tape */
-.card-tape {
-    position: absolute;
-    top: -6px;
-    right: 16px;
-    width: 32px;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid #000;
-    transform: rotate(3deg);
-    z-index: 5;
-}
-
 /* 6. Horizontal Quiz List (New) */
 .horizontal-scroll-list {
     display: flex;
     overflow-x: auto;
     gap: 16px;
     padding: 10px 20px;
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
