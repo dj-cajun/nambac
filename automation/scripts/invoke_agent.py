@@ -6,7 +6,7 @@ import argparse
 from typing import Optional, Dict, Any
 
 # Add backend directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../backend"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../legacy/backend"))
 from logic.factory import NambacFactory
 
 async def execute_agent(agent_name: str, context: str) -> Dict[str, Any]:

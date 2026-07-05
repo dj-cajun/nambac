@@ -6,7 +6,7 @@ import {
   LEGACY_CATEGORY_ALIASES,
   normalizeCategory,
 } from '../../shared/categories.js';
-import { QUIZ_EXPERT_PROMPTS, QUIZ_TOPIC_SEEDS } from '../lib/quizExpertPrompts.js';
+import { QUIZ_EXPERT_PROMPTS, QUIZ_TOPIC_SEEDS } from '../../shared/quizExpertPrompts.js';
 
 export { QUIZ_CATEGORY_IDS, LEGACY_CATEGORY_ALIASES, normalizeCategory };
 

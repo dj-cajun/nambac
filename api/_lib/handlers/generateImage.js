@@ -1,7 +1,6 @@
 import { requireAdmin } from '../adminAuth.js';
 import { generateOpenRouterImage, getOpenRouterImageModel } from '../openrouterImage.js';
-
-const STYLE_PREFIX = 'Korean webtoon manhwa style, clean digital line art, vibrant colors, masterpiece, best quality, highly detailed, cinematic lighting. ';
+import { applyImageStyle } from '../../../shared/imagePrompts.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,20 +13,15 @@ export default async function handler(req, res) {
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const { prompt, type } = body;
+    const { prompt, type, raw } = body;
 
     if (!prompt?.trim()) {
       return res.status(400).json({ error: 'prompt is required' });
     }
 
-    let fullPrompt = prompt.trim();
-    if (type === 'cover') {
-      fullPrompt = `${STYLE_PREFIX}Quiz cover image. ${fullPrompt} Professional webtoon cover, no text, no letters.`;
-    } else if (type === 'result') {
-      fullPrompt = `${STYLE_PREFIX}Character portrait on the LEFT side of frame. ${fullPrompt} No text, no letters, no numbers.`;
-    } else {
-      fullPrompt = `${STYLE_PREFIX}${fullPrompt}`;
-    }
+    const fullPrompt = raw
+      ? prompt.trim()
+      : applyImageStyle(type || 'generic', prompt);
 
     const result = await generateOpenRouterImage(fullPrompt);
 

@@ -5,7 +5,7 @@ import { createAdminApi, uploadQuizImage } from '../lib/adminApi';
 import { generateQuizContent } from '../lib/gemini';
 import { generateCoverImage, generateResultImage, base64ToFile } from '../lib/imagen';
 import { QUIZ_CATEGORIES, DEFAULT_QUIZ_CATEGORY, normalizeCategory, getPersonas } from '../constants/categories';
-import { QUIZ_TEMPLATES } from '../lib/quizTemplates';
+import { QUIZ_TEMPLATES } from '../../shared/quizTemplates.js';
 import './QuizEditor.css';
 
 const QUIZ_TYPES = [

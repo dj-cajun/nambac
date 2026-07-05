@@ -1,3 +1,5 @@
+> **Canonical source (2026-07)**: `shared/quizPrompts.js` — do not edit this copy for production behavior.
+
 # 🎮 MASTER Quiz Generation Prompt (v4.0 - King-Bad Upgrade)
 
 ## 🎯 Core Philosophy: "KING-BAD (킹받음) + Hyper-Localization"
