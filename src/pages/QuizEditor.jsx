@@ -5,6 +5,7 @@ import { createAdminApi, uploadQuizImage } from '../lib/adminApi';
 import { generateQuizContent } from '../lib/gemini';
 import { generateCoverImage, generateResultImage, base64ToFile } from '../lib/imagen';
 import { QUIZ_CATEGORIES, DEFAULT_QUIZ_CATEGORY, normalizeCategory, getPersonas } from '../constants/categories';
+import { QUIZ_TEMPLATES } from '../lib/quizTemplates';
 import './QuizEditor.css';
 
 const QUIZ_TYPES = [
@@ -80,6 +81,8 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
     const [results, setResults] = useState([]);
     const [saving, setSaving] = useState(false);
     const [saveResult, setSaveResult] = useState(null);
+    const [design, setDesign] = useState({});
+    const [quizConfig, setQuizConfig] = useState({});
 
     // AI Generation state
     const [isAiGenerating, setIsAiGenerating] = useState(false);
@@ -116,6 +119,26 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
         const rCount = typeConfig?.rCount || 8;
         setResults(Array.from({ length: rCount }, (_, i) => emptyResult(i)));
         setStep(2);
+    };
+
+    const applyTemplate = (template) => {
+        selectQuizType(template.quiz_type);
+        setTitle(template.title);
+        setDescription(template.description);
+        setCategory(normalizeCategory(template.category));
+        setDesign(template.design || {});
+        setQuizConfig(template.config || {});
+        if (template.questions?.length) {
+            setQuestions(template.questions.map((q, i) => ({ ...emptyQuestion(template.quiz_type, i + 1), ...q, order_number: i + 1 })));
+        }
+        if (template.results?.length) {
+            setResults(template.results.map((r, i) => ({ ...emptyResult(i), ...r })));
+        }
+        setStep(2);
+    };
+
+    const updateDesign = (field, value) => {
+        setDesign((prev) => ({ ...prev, [field]: value }));
     };
 
     // AI Generation handler
@@ -332,19 +355,31 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                 return { ...dbPayload, image_url: finalResUrl };
             }));
 
-            await api.createQuiz({
+            const created = await api.createQuiz({
                 title,
                 description,
                 category: normalizeCategory(category),
                 quiz_type: quizType,
                 image_url: finalThumbnailUrl,
+                design: Object.keys(design).length ? design : undefined,
+                config: Object.keys(quizConfig).length ? quizConfig : undefined,
                 questions: quizType !== 'name_input'
                     ? questions.map((q, i) => ({ ...q, order_number: i + 1 }))
                     : [],
                 results: resultPayload,
             });
 
-            setSaveResult({ success: true, data: { title, quiz_type: quizType, question_count: questions.length, result_count: results.length } });
+            setSaveResult({
+                success: true,
+                data: {
+                    title,
+                    quiz_type: quizType,
+                    question_count: questions.length,
+                    result_count: results.length,
+                    id: created.id,
+                    brand_report_token: created.brand_report_token,
+                },
+            });
             setStep(5);
         } catch (err) {
             console.error("Save Error:", err);
@@ -392,6 +427,22 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                                 <span className="type-label">{t.label}</span>
                                 <span className="type-desc">{t.desc}</span>
                                 <span className="type-meta">Q: {t.qCount} / R: {t.rCount}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="divider-or">hoặc dùng template B2B</div>
+
+                    <div className="template-grid">
+                        {QUIZ_TEMPLATES.map((tpl) => (
+                            <button
+                                key={tpl.id}
+                                type="button"
+                                className="type-card template-card"
+                                onClick={() => applyTemplate(tpl)}
+                            >
+                                <span className="type-label">{tpl.label}</span>
+                                <span className="type-desc">{tpl.title}</span>
                             </button>
                         ))}
                     </div>
@@ -530,6 +581,35 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                             style={{ display: 'none' }}
                         />
                     </div>
+                    {(quizType === 'sponsor' || quizType === 'full_custom') && (
+                        <div className="form-group sponsor-design-block">
+                            <label>💎 Thiết kế thương hiệu</label>
+                            <input
+                                className="editor-input mb-2"
+                                placeholder="Tên thương hiệu (VD: Grab Vietnam)"
+                                value={design.brand_name || ''}
+                                onChange={(e) => updateDesign('brand_name', e.target.value)}
+                            />
+                            <input
+                                className="editor-input mb-2"
+                                placeholder="Logo URL (/images/sponsor-logo.png)"
+                                value={design.sponsor_logo || ''}
+                                onChange={(e) => updateDesign('sponsor_logo', e.target.value)}
+                            />
+                            <input
+                                className="editor-input mb-2"
+                                placeholder="Banner URL (/images/sponsor-banner.png)"
+                                value={design.sponsor_banner || ''}
+                                onChange={(e) => updateDesign('sponsor_banner', e.target.value)}
+                            />
+                            <input
+                                className="editor-input"
+                                placeholder="Màu chủ đạo (#FF2D85)"
+                                value={design.primary_color || ''}
+                                onChange={(e) => updateDesign('primary_color', e.target.value)}
+                            />
+                        </div>
+                    )}
                     <div className="form-row mt-10">
                         <button className="editor-btn secondary px-10" onClick={() => setStep(1)}>Back</button>
                         <button
@@ -724,6 +804,15 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
                                 </div>
                             </div>
                         </div>
+
+                        {saveResult.data.brand_report_token && saveResult.data.id && (
+                            <div className="brand-report-link-box mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-left">
+                                <p className="text-xs font-black text-yellow-800 uppercase mb-2">📊 Brand Report Link</p>
+                                <code className="text-[11px] break-all text-gray-700">
+                                    /brands/report/{saveResult.data.id}/{saveResult.data.brand_report_token}
+                                </code>
+                            </div>
+                        )}
 
                         <div className="flex flex-col gap-4">
                             <button className="editor-btn primary w-full text-lg py-5" onClick={() => navigate('/admin')}>

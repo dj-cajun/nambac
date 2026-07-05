@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
+import { isAdFree } from '../lib/premium';
 
-const AdSenseUnit = ({ 
+const AdSenseUnit = ({
     adSlot, 
     adFormat = "auto", 
     fullWidthResponsive = "true",
@@ -9,17 +10,18 @@ const AdSenseUnit = ({
     location = "auto"
 }) => {
     const pubId = import.meta.env.VITE_ADSENSE_PUB_ID || "ca-pub-7386903584540643";
+    const adFree = isAdFree();
 
     useEffect(() => {
-        // Only run if pubId and adSlot exist
-        if (pubId && adSlot) {
+        if (adFree || !pubId || !adSlot) return;
             try {
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
             } catch (e) {
                 console.error("AdSense push failed", e);
             }
-        }
-    }, [pubId, adSlot]);
+    }, [pubId, adSlot, adFree]);
+
+    if (adFree) return null;
 
     // If no Publisher ID or Slot ID is provided, show a placeholder in development
     if (!pubId || !adSlot) {

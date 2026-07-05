@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getImageUrl } from '../lib/apiConfig';
+import { trackQuizStart } from '../lib/analytics';
+import { incrementQuizStat } from '../lib/quizApi';
 import AdPlaceholder from '../components/AdPlaceholder';
 import './QuizPage.css';
 
@@ -41,6 +43,11 @@ export default function CustomQuiz({ quizInfo, questions, results }) {
     const handleStart = () => {
         setStarted(true);
         window.scrollTo(0, 0);
+        trackQuizStart(quizInfo.id, quizInfo.category);
+        if (quizInfo.id && !window.__participatedQuiz?.[quizInfo.id]) {
+            incrementQuizStat(quizInfo.id, 'participate').catch(console.error);
+            window.__participatedQuiz = { ...(window.__participatedQuiz || {}), [quizInfo.id]: true };
+        }
     };
 
     const handleAnswer = (optionIndex) => {

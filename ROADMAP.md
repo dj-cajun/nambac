@@ -3,36 +3,35 @@
 ## Phase 0 — Launch Ready ✅ (2026-07)
 
 - [x] Turso DB + Vercel API
-- [x] 8 Expert categories unified (Home / Editor / Gemini)
-- [x] `shared/categories.js` (Vite proxy fix)
-- [x] index.html OG/meta 100% Vietnamese
-- [x] `public/og-default.png`
-- [x] ShareRedirect + Compatibility OG tags
-- [x] GA4 events via GTM dataLayer (`quiz_start`, `quiz_complete`, `share_zalo`, `compat_start`)
-- [x] AdSense env-based slots (no placeholder IDs in prod)
-- [x] Explore (`/explore`) + BXH (`/leaderboard`) MVP
-- [x] Home sort tabs (Hot / Viral / Mới)
-- [x] Footer + Editor + Admin Vietnamese UI
-- [x] README + `.env.example` updated
+- [x] 8 Expert categories unified
+- [x] OG/meta Vietnamese + Explore/BXH + GA4 dataLayer
 
-## Phase 1 — Growth (in progress)
+## Phase 1 — Growth ✅
 
-- [ ] Real AdSense slot IDs in production env
-- [ ] GTM triggers for 4 custom events (dashboard)
-- [x] Batch image backfill script (`npm run images:backfill`)
-- [x] GTM setup guide (`docs/GTM_SETUP.md`)
-- [x] Share URLs dynamic (`vercel.app` until domain restored)
+- [x] Share URLs dynamic (`siteUrl.js`)
 - [x] Result 9:16 Story download
-- [x] Android PWA install prompt (`beforeinstallprompt`)
+- [x] Android PWA install prompt
+- [x] Image backfill script + GTM guide
+- [ ] Real AdSense slot IDs — Vercel env에 슬롯 ID 입력 (코드 준비됨)
+- [ ] GTM triggers — `docs/GTM_SETUP.md` 대시보드 설정 (코드 준비됨)
 
-## Phase 2 — Viral
+## Phase 2 — Viral ✅ (code)
 
-- [ ] Web push notifications
-- [ ] Daily quiz automation (n8n → Turso)
-- [ ] Influencer / brand quiz templates
+- [x] Web push (`sw.js`, `/api/push/*`, PushPrompt)
+- [x] Daily quiz automation — n8n → `/api/webhooks/n8n-quiz` (`docs/N8N_SETUP.md`)
+- [x] Influencer / brand quiz templates (`shared/quizTemplates.js`)
 
-## Phase 3 — Monetization
+## Phase 3 — Monetization ✅ (code)
 
-- [ ] Sponsored quiz type full flow
-- [ ] Brand dashboard analytics
-- [ ] Premium ad-free tier (optional)
+- [x] Sponsored quiz flow (design/config DB + CustomQuiz + Editor)
+- [x] Brand dashboard — `/brands/report/:quizId/:token` + Admin Analytics tab
+- [x] Premium ad-free tier — `?premium=CODE` + `src/lib/premium.js`
+
+## Ops checklist
+
+1. `npm run vapid:generate` → Vercel env
+2. `npm run db:migrate-phase2` on Turso
+3. `N8N_WEBHOOK_SECRET` on Vercel + n8n workflow import
+4. GTM 4 events publish
+5. AdSense slot IDs in Vercel env
+6. `nambac.xyz` domain restore (Onamae clientHold)

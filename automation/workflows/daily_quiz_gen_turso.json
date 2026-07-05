@@ -1,0 +1,67 @@
+{
+  "name": "Daily HCMC Buzz Quiz (Turso)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hours": 10 }] }
+      },
+      "name": "Schedule 10AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "command": "python3 automation/scripts/invoke_agent.py Expert_Trend_Hunter"
+      },
+      "name": "Trend Hunter",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const result = JSON.parse(items[0].json.stdout);\nreturn [{ json: result }];"
+      },
+      "name": "Parse Trend",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "command": "=python3 automation/scripts/invoke_agent.py {{ $json.target_agent }} --context \"{{ $json.pushed_brief }}\""
+      },
+      "name": "Generate Quiz",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://nambac.vercel.app/api/webhooks/n8n-quiz",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-Webhook-Secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.parse($json.stdout) }}"
+      },
+      "name": "Deploy to Turso",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Schedule 10AM": { "main": [[{ "node": "Trend Hunter", "type": "main", "index": 0 }]] },
+    "Trend Hunter": { "main": [[{ "node": "Parse Trend", "type": "main", "index": 0 }]] },
+    "Parse Trend": { "main": [[{ "node": "Generate Quiz", "type": "main", "index": 0 }]] },
+    "Generate Quiz": { "main": [[{ "node": "Deploy to Turso", "type": "main", "index": 0 }]] }
+  }
+}

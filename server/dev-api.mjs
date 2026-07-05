@@ -58,6 +58,19 @@ app.post('/api/admin/upload', wrap(adminUploadHandler));
 const generateImageHandler = await loadHandler('../api/generate-image.js');
 app.post('/api/generate-image', wrap(generateImageHandler));
 
+const n8nWebhookHandler = await loadHandler('../api/webhooks/n8n-quiz.js');
+const pushSubscribeHandler = await loadHandler('../api/push/subscribe.js');
+const pushNotifyHandler = await loadHandler('../api/push/notify.js');
+const brandStatsHandler = await loadHandler('../api/brand/stats.js');
+const adminAnalyticsHandler = await loadHandler('../api/admin/analytics.js');
+
+app.post('/api/webhooks/n8n-quiz', wrap(n8nWebhookHandler));
+app.get('/api/push/subscribe', wrap(pushSubscribeHandler));
+app.post('/api/push/subscribe', wrap(pushSubscribeHandler));
+app.post('/api/push/notify', wrap(pushNotifyHandler));
+app.get('/api/brand/stats', wrap(brandStatsHandler));
+app.get('/api/admin/analytics', wrap(adminAnalyticsHandler));
+
 const port = process.env.TURSO_API_PORT || 8787;
 app.listen(port, () => {
   console.log(`Turso API dev server → http://localhost:${port}/api/quizzes`);

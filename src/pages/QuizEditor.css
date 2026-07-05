@@ -146,6 +146,17 @@
     margin-bottom: 30px;
 }
 
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.template-card {
+    background: linear-gradient(135deg, #fff9fc, #ffe4ec);
+}
+
 .type-card {
     background: white;
     border: 2px solid black;

@@ -13,7 +13,9 @@ import ShareRedirect from './pages/ShareRedirect';
 import FAQ from './pages/FAQ';
 import CompatibilityPage from './pages/CompatibilityPage';
 import InstallBanner from './components/InstallBanner';
+import PushPrompt from './components/PushPrompt';
 import BrandsLanding from './pages/BrandsLanding';
+import BrandReport from './pages/BrandReport';
 import ExplorePage from './pages/ExplorePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 
@@ -50,6 +52,7 @@ function AppContent() {
         <Route path="/share-view/:id" element={<ShareRedirect />} />
         <Route path="/compatibility/:id/:friendScore/:myScore" element={<CompatibilityPage />} />
         <Route path="/brands" element={<BrandsLanding />} />
+        <Route path="/brands/report/:quizId/:token" element={<BrandReport />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/admin" element={<Admin />} />
@@ -61,6 +64,7 @@ function AppContent() {
       </Routes>
       {!hideFooter && <Footer />}
       <InstallBanner />
+      <PushPrompt />
     </div>
   );
 }

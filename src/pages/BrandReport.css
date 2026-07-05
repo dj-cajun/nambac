@@ -1,0 +1,146 @@
+.brand-report-page {
+  min-height: 100vh;
+  background: #0a0a12;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-report-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.brand-report-glow.b1 {
+  width: 300px;
+  height: 300px;
+  background: #FF2D85;
+  top: -80px;
+  right: -60px;
+}
+
+.brand-report-glow.b2 {
+  width: 250px;
+  height: 250px;
+  background: #FFD700;
+  bottom: 10%;
+  left: -80px;
+}
+
+.brand-report-main {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 100px 24px 60px;
+  text-align: center;
+}
+
+.brand-report-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 45, 133, 0.5);
+  border-radius: 999px;
+  color: #FF2D85;
+  margin-bottom: 20px;
+}
+
+.brand-report-main h1 {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.brand-name {
+  color: #FFD700;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+.brand-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.brand-stat-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-stat-card.highlight {
+  border-color: #FFD700;
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.stat-num {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #FF2D85;
+}
+
+.brand-stat-card.highlight .stat-num {
+  color: #FFD700;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.brand-report-meta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 32px;
+}
+
+.brand-report-meta code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.brand-report-cta {
+  display: inline-block;
+  background: #FF2D85;
+  color: #fff;
+  font-weight: 800;
+  padding: 14px 28px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.brand-report-loading,
+.brand-report-error {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+}
+
+.brand-report-error a {
+  color: #FF2D85;
+}
+
+@media (min-width: 640px) {
+  .brand-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

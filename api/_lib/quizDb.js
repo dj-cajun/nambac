@@ -124,10 +124,91 @@ export async function updateQuizStatus(quizId, { is_active, status }) {
 
 export async function updateQuiz(quizId, fields) {
   const db = getTurso();
+  const sets = ['title = ?', 'description = ?', 'category = ?', 'image_url = ?'];
+  const args = [fields.title, fields.description, normalizeCategory(fields.category), fields.image_url];
+
+  if (fields.quiz_type !== undefined) {
+    sets.push('quiz_type = ?');
+    args.push(fields.quiz_type);
+  }
+  if (fields.config !== undefined) {
+    sets.push('config = ?');
+    args.push(fields.config ? JSON.stringify(fields.config) : null);
+  }
+  if (fields.design !== undefined) {
+    sets.push('design = ?');
+    args.push(fields.design ? JSON.stringify(fields.design) : null);
+  }
+
+  args.push(quizId);
   await db.execute({
-    sql: `UPDATE quizzes SET title = ?, description = ?, category = ?, image_url = ? WHERE id = ?`,
-    args: [fields.title, fields.description, normalizeCategory(fields.category), fields.image_url, quizId],
+    sql: `UPDATE quizzes SET ${sets.join(', ')} WHERE id = ?`,
+    args,
   });
+}
+
+export async function getAnalyticsSummary() {
+  const db = getTurso();
+  const rs = await db.execute({
+    sql: `SELECT id, title, category, quiz_type, view_count, share_count, participant_count,
+                 is_active, status, created_at
+          FROM quizzes ORDER BY datetime(created_at) DESC`,
+  });
+
+  const rows = rs.rows.map((row) => ({
+    ...row,
+    is_active: row.is_active === 1,
+    view_count: row.view_count || 0,
+    share_count: row.share_count || 0,
+    participant_count: row.participant_count || 0,
+  }));
+
+  const totals = rows.reduce(
+    (acc, q) => ({
+      views: acc.views + q.view_count,
+      shares: acc.shares + q.share_count,
+      participants: acc.participants + q.participant_count,
+    }),
+    { views: 0, shares: 0, participants: 0 },
+  );
+
+  return { totals, quizzes: rows };
+}
+
+export async function getBrandReport(quizId, token) {
+  const quiz = await getQuizById(quizId);
+  if (!quiz) return null;
+
+  const reportToken = quiz.config?.brand_report_token;
+  if (!reportToken || reportToken !== token) return null;
+
+  const shareRate = quiz.participant_count
+    ? Math.round(((quiz.share_count || 0) / quiz.participant_count) * 100)
+    : 0;
+
+  return {
+    quiz: {
+      id: quiz.id,
+      title: quiz.title,
+      category: quiz.category,
+      quiz_type: quiz.quiz_type,
+      brand_name: quiz.design?.brand_name || quiz.config?.brand_name || null,
+      created_at: quiz.created_at,
+    },
+    stats: {
+      views: quiz.view_count || 0,
+      shares: quiz.share_count || 0,
+      participants: quiz.participant_count || 0,
+      share_rate_pct: shareRate,
+    },
+  };
+}
+
+export async function createFullQuiz(payload) {
+  const quiz = await createQuiz(payload);
+  if (payload.questions?.length) await insertQuestions(quiz.id, payload.questions);
+  if (payload.results?.length) await insertResults(quiz.id, payload.results);
+  return quiz;
 }
 
 export async function deleteQuestion(questionId) {
@@ -184,12 +265,26 @@ export async function upsertResults(quizId, results) {
   }
 }
 
+function buildQuizConfig(payload) {
+  const config = { ...(payload.config || {}) };
+  if (payload.quiz_type === 'sponsor' && !config.brand_report_token) {
+    config.brand_report_token = randomUUID().replace(/-/g, '').slice(0, 24);
+  }
+  if (payload.quiz_type === 'sponsor') {
+    config.sponsored = true;
+  }
+  return Object.keys(config).length ? JSON.stringify(config) : null;
+}
+
 export async function createQuiz(payload) {
   const db = getTurso();
   const id = randomUUID();
+  const configJson = buildQuizConfig(payload);
+  const designJson = payload.design ? JSON.stringify(payload.design) : null;
+
   await db.execute({
-    sql: `INSERT INTO quizzes (id, title, description, category, quiz_type, image_url, is_active, status)
-          VALUES (?, ?, ?, ?, ?, ?, 1, 'active')`,
+    sql: `INSERT INTO quizzes (id, title, description, category, quiz_type, image_url, config, design, is_active, status)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 'active')`,
     args: [
       id,
       payload.title,
@@ -197,9 +292,14 @@ export async function createQuiz(payload) {
       normalizeCategory(payload.category),
       payload.quiz_type || 'binary_5q',
       payload.image_url || null,
+      configJson,
+      designJson,
     ],
   });
-  return { id };
+  return {
+    id,
+    brand_report_token: configJson ? JSON.parse(configJson).brand_report_token : null,
+  };
 }
 
 export async function insertQuestions(quizId, questions) {

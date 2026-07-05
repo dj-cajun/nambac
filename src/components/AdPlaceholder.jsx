@@ -1,8 +1,21 @@
 import React from 'react';
+import { isAdFree } from '../lib/premium';
+import AdSenseUnit from './AdSenseUnit';
+import { AD_SLOTS } from '../lib/adsConfig';
 
 const AdPlaceholder = ({ location = "auto" }) => {
-    // In development or until AdSense is active, show placeholder
-    // Once active, this component can be replaced with actual <ins> tag
+    if (isAdFree()) return null;
+
+    const slotMap = {
+        'quiz-bottom': AD_SLOTS.quiz,
+        'result-bottom': AD_SLOTS.result1,
+        home: AD_SLOTS.home,
+    };
+    const slot = slotMap[location];
+
+    if (slot) {
+        return <AdSenseUnit adSlot={slot} location={location} />;
+    }
 
     return (
         <div style={{

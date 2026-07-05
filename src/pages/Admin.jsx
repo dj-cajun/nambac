@@ -39,9 +39,11 @@ const Admin = () => {
     const [availableAgents, setAvailableAgents] = useState([]);
 
     // B2B Brand Inquiries State
-    const [adminTab, setAdminTab] = useState('quizzes'); // 'quizzes' | 'b2b'
+    const [adminTab, setAdminTab] = useState('quizzes'); // 'quizzes' | 'b2b' | 'analytics'
     const [inquiries, setInquiries] = useState([]);
     const [inquiriesLoading, setInquiriesLoading] = useState(false);
+    const [analytics, setAnalytics] = useState(null);
+    const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
 
     // Edit Modal State
@@ -144,6 +146,24 @@ const Admin = () => {
     useEffect(() => {
         if (isAuthenticated && adminTab === 'b2b') {
             fetchInquiries();
+        }
+    }, [isAuthenticated, adminTab]);
+
+    const fetchAnalytics = async () => {
+        setAnalyticsLoading(true);
+        try {
+            const data = await api.fetchAnalytics();
+            setAnalytics(data);
+        } catch (error) {
+            console.error('Error fetching analytics:', error);
+        } finally {
+            setAnalyticsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isAuthenticated && adminTab === 'analytics') {
+            fetchAnalytics();
         }
     }, [isAuthenticated, adminTab]);
 
@@ -425,6 +445,12 @@ const Admin = () => {
                                     >
                                         Brand Inquiries 🎯
                                     </button>
+                                    <button 
+                                        onClick={() => setAdminTab('analytics')} 
+                                        className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000000] active:translate-y-[1px] ${adminTab === 'analytics' ? 'bg-[#FF2D85] text-white' : 'bg-white text-gray-700'}`}
+                                    >
+                                        Analytics 📊
+                                    </button>
                                 </div>
                             </div>
                             {adminTab === 'quizzes' && (
@@ -453,7 +479,8 @@ const Admin = () => {
                             <>
                                 <div className="bg-gradient-to-r from-[#FF2D85] to-pink-400 p-4 flex justify-between items-center">
                                     <h2 className="text-2xl font-black text-white">
-                                        {adminTab === 'quizzes' ? '🎮 Quiz Management' : '🎯 Brand Inquiries'}
+                                        {adminTab === 'quizzes' ? '🎮 Quiz Management' :
+                                         adminTab === 'b2b' ? '🎯 Brand Inquiries' : '📊 Analytics Dashboard'}
                                     </h2>
                                 </div>
                                 <div className="p-6">
@@ -553,9 +580,8 @@ const Admin = () => {
                                                 </div>
                                             )}
                                         </>
-                                    ) : (
+                                    ) : adminTab === 'b2b' ? (
                                         <>
-                                            {/* B2B Inquiries */}
                                             {inquiriesLoading ? (
                                                 <div className="p-12 text-center">
                                                     <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
@@ -634,6 +660,60 @@ const Admin = () => {
                                                         </tbody>
                                                     </table>
                                                 </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {analyticsLoading ? (
+                                                <div className="p-12 text-center">
+                                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
+                                                    <p className="text-gray-500">Loading analytics...</p>
+                                                </div>
+                                            ) : analytics ? (
+                                                <>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                                                        <div className="bg-pink-50 border-2 border-pink-100 rounded-2xl p-6 text-center">
+                                                            <p className="text-xs font-black text-gray-400 uppercase">Total Views</p>
+                                                            <p className="text-3xl font-black text-[#FF2D85]">{analytics.totals.views.toLocaleString()}</p>
+                                                        </div>
+                                                        <div className="bg-green-50 border-2 border-green-100 rounded-2xl p-6 text-center">
+                                                            <p className="text-xs font-black text-gray-400 uppercase">Participants</p>
+                                                            <p className="text-3xl font-black text-green-600">{analytics.totals.participants.toLocaleString()}</p>
+                                                        </div>
+                                                        <div className="bg-yellow-50 border-2 border-yellow-100 rounded-2xl p-6 text-center">
+                                                            <p className="text-xs font-black text-gray-400 uppercase">Shares</p>
+                                                            <p className="text-3xl font-black text-yellow-600">{analytics.totals.shares.toLocaleString()}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="overflow-x-auto">
+                                                        <table className="w-full">
+                                                            <thead className="bg-gray-50">
+                                                                <tr>
+                                                                    <th className="p-3 text-left text-xs font-bold text-gray-500 uppercase">Quiz</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Views</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Plays</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Shares</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">Share %</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody className="divide-y divide-gray-100">
+                                                                {analytics.quizzes.map((q) => (
+                                                                    <tr key={q.id} className="hover:bg-pink-50">
+                                                                        <td className="p-3 font-medium">{q.title}</td>
+                                                                        <td className="p-3 text-center">{q.view_count}</td>
+                                                                        <td className="p-3 text-center">{q.participant_count}</td>
+                                                                        <td className="p-3 text-center">{q.share_count}</td>
+                                                                        <td className="p-3 text-center font-bold text-[#FF2D85]">
+                                                                            {q.participant_count ? Math.round((q.share_count / q.participant_count) * 100) : 0}%
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <p className="text-center text-gray-400 p-12">No analytics data.</p>
                                             )}
                                         </>
                                     )}

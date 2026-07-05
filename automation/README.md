@@ -17,10 +17,13 @@ It connects **n8n** (Automation) with **OpenCode Agents** (Intelligence) to prod
   1. **Trend Hunting**: Scrapes keywords.
   2. **Agent Assembly**: Calls `@PastLife` or `@MBTI` based on topic.
   3. **Inspector J Bad**: Verifies humor quality.
-  4. **Deployment**: Uploads to Supabase.
+  4. **Deployment**: Uploads to Turso via `/api/webhooks/n8n-quiz` (see `daily_quiz_gen_turso.json`).
 
 ## Setup
 
-1. Ensure `OPENAI_API_KEY` or `GEMINI_API_KEY` is set in your `.env`.
-2. Install python dependencies: `pip install requests supabase`.
-3. Run n8n: `npx n8n start`.
+1. Ensure `GEMINI_API_KEY` or agent keys are set in your `.env`.
+2. Set `N8N_WEBHOOK_SECRET` on Vercel and n8n.
+3. Run `npm run db:migrate-phase2` for push subscriptions table.
+4. Run n8n: `npx n8n start` and import `workflows/daily_quiz_gen_turso.json`.
+
+See `docs/N8N_SETUP.md` and `docs/PUSH_SETUP.md`.

@@ -84,6 +84,10 @@ export function createAdminApi(adminKey = '') {
         body: JSON.stringify({ id }),
       }));
     },
+
+    async fetchAnalytics() {
+      return parseJson(await fetch(apiUrl('/admin/analytics'), { headers: headers() }));
+    },
   };
 }
 
