@@ -1,7 +1,7 @@
 /**
  * Backfill missing quiz cover + result images via OpenRouter
  * Run: npm run images:backfill
- * Options: --dry-run  --limit=5  --quiz-id=xxx
+ * Options: --dry-run  --limit=50  --max-quizzes=1  --quiz-id=xxx  --delay=3500
  */
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -17,9 +17,13 @@ dotenv.config({ path: path.join(root, '.env.local'), override: true });
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const limitArg = args.find((a) => a.startsWith('--limit='));
+const maxQuizzesArg = args.find((a) => a.startsWith('--max-quizzes='));
 const quizIdArg = args.find((a) => a.startsWith('--quiz-id='));
-const limit = limitArg ? parseInt(limitArg.split('=')[1], 10) : 999;
+const delayArg = args.find((a) => a.startsWith('--delay='));
+const imageLimit = limitArg ? parseInt(limitArg.split('=')[1], 10) : 9999;
+const maxQuizzes = maxQuizzesArg ? parseInt(maxQuizzesArg.split('=')[1], 10) : 999;
 const filterQuizId = quizIdArg ? quizIdArg.split('=')[1] : null;
+const delayMs = delayArg ? parseInt(delayArg.split('=')[1], 10) : 3500;
 
 const PLACEHOLDER_PATTERNS = [
   'default_cover',
@@ -87,11 +91,12 @@ async function main() {
 
   let generated = 0;
   let skipped = 0;
+  let quizzesTouched = 0;
 
-  console.log(`\n🖼️  Image backfill ${dryRun ? '(DRY RUN)' : ''} — ${quizzes.length} quiz(es)\n`);
+  console.log(`\n🖼️  Image backfill ${dryRun ? '(DRY RUN)' : ''} — ${quizzes.length} quiz(es), max ${maxQuizzes} quiz/run, delay ${delayMs}ms\n`);
 
   for (const quiz of quizzes) {
-    if (generated >= limit) break;
+    if (quizzesTouched >= maxQuizzes) break;
 
     const resultsRs = await db.execute({
       sql: 'SELECT * FROM results WHERE quiz_id = ? ORDER BY result_code ASC',
@@ -107,13 +112,14 @@ async function main() {
       continue;
     }
 
-    console.log(`📦 ${quiz.title?.slice(0, 40)}… (${quiz.id.slice(0, 8)})`);
+    quizzesTouched++;
+    console.log(`📦 [${quizzesTouched}/${maxQuizzes}] ${quiz.title?.slice(0, 50)} (${quiz.id.slice(0, 8)})`);
     if (coverNeeded) console.log('   → cover needed');
     if (resultsNeeded.length) console.log(`   → ${resultsNeeded.length} result(s) needed`);
 
     if (dryRun) continue;
 
-    if (coverNeeded && generated < limit) {
+    if (coverNeeded && generated < imageLimit) {
       try {
         const prompt = `Quiz cover. Title: ${quiz.title}. Theme: ${quiz.description || quiz.category}. Korean webtoon style, no text.`;
         const { b64, cost } = await generateOpenRouterImage(
@@ -126,14 +132,14 @@ async function main() {
         });
         console.log(`   ✅ cover → ${imageUrl} ($${cost ?? '?'})`);
         generated++;
-        await sleep(2500);
+        await sleep(delayMs);
       } catch (e) {
         console.error(`   ❌ cover: ${e.message}`);
       }
     }
 
     for (const r of resultsNeeded) {
-      if (generated >= limit) break;
+      if (generated >= imageLimit) break;
       try {
         const title = r.type_name || r.title || `Result ${r.result_code}`;
         const prompt = `Character portrait left side. ${title}. ${r.description || ''}. Korean webtoon, no text.`;
@@ -147,14 +153,14 @@ async function main() {
         });
         console.log(`   ✅ result ${r.result_code} → ${imageUrl} ($${cost ?? '?'})`);
         generated++;
-        await sleep(2500);
+        await sleep(delayMs);
       } catch (e) {
         console.error(`   ❌ result ${r.result_code}: ${e.message}`);
       }
     }
   }
 
-  console.log(`\n📊 Done: ${generated} generated, ${skipped} already OK\n`);
+  console.log(`\n📊 Done: ${generated} images, ${quizzesTouched} quiz(es) processed, ${skipped} already OK\n`);
   if (dryRun) console.log('Re-run without --dry-run to apply.\n');
 }
 
