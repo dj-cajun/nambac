@@ -1,12 +1,10 @@
 import React from 'react';
-import { Facebook, Link, X, Send } from 'lucide-react';
+import { Facebook, Link } from 'lucide-react';
+import { buildShareUrl } from '../lib/siteUrl';
 
 const ShareModal = ({ quizTitle, quizId, score, onClose }) => {
-    // Backend OG Endpoint (Always use Production URL for Social Sharing)
-    const shareUrl = `https://nambac.xyz/api/share/${quizId}/${score}`;
-
-    // Zalo/FB Quote
-    const quote = `[${quizTitle}] 결과 확인하기! #Nambac #XemTuong`;
+    const shareUrl = buildShareUrl(`/share/${quizId}/${score}`);
+    const quote = `[${quizTitle}] Kết quả của tôi! #Nambac #XemTuong`;
 
     const shareToFacebook = () => {
         const appId = import.meta.env.VITE_FB_APP_ID;
@@ -17,14 +15,14 @@ const ShareModal = ({ quizTitle, quizId, score, onClose }) => {
 
     const handleCopy = () => {
         navigator.clipboard.writeText(shareUrl);
-        alert('Link copied!');
+        alert('Đã sao chép link!');
         onClose();
     };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end z-50" onClick={onClose}>
             <div className="bg-white rounded-t-3xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
-                <h3 className="text-center font-bold text-lg mb-4">Share Your Result</h3>
+                <h3 className="text-center font-bold text-lg mb-4">Chia sẻ kết quả</h3>
                 <div className="grid grid-cols-4 gap-4 text-center">
                     <button onClick={shareToFacebook} className="flex flex-col items-center gap-2">
                         <Facebook size={48} className="text-blue-600" />
@@ -32,9 +30,8 @@ const ShareModal = ({ quizTitle, quizId, score, onClose }) => {
                     </button>
                     <button onClick={handleCopy} className="flex flex-col items-center gap-2">
                         <Link size={48} />
-                        <span>Copy Link</span>
+                        <span>Sao chép</span>
                     </button>
-                    {/* Add other share options if needed */}
                 </div>
             </div>
         </div>

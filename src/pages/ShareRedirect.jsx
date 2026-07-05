@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { fetchQuizBundle } from '../lib/quizApi';
+import { buildShareUrl, getOgDefaultImageUrl } from '../lib/siteUrl';
 import { getImageUrl } from '../lib/apiConfig';
 
 const ShareRedirect = () => {
@@ -38,7 +39,7 @@ const ShareRedirect = () => {
     const hashtags = resultData?.traits ? resultData.traits.map(t => `#${t}`).join(' ') : "";
     const displayDescription = resultData ? `${resultData.description}\n\n${hashtags}` : "";
     const resultTitle = resultData?.type_name || resultData?.title || 'Kết quả quiz';
-    const ogImage = resultData ? getImageUrl(resultData.image_url) : 'https://nambac.xyz/og-default.png';
+    const ogImage = resultData ? getImageUrl(resultData.image_url) : getOgDefaultImageUrl();
 
     if (loading) {
         return (
@@ -59,7 +60,7 @@ const ShareRedirect = () => {
                 <meta property="og:title" content={`Kết quả của tôi: [${resultTitle}]!`} />
                 <meta property="og:description" content={displayDescription || 'Thử quiz này trên nambac.xyz!'} />
                 <meta property="og:image" content={ogImage} />
-                <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : `https://nambac.xyz/share/${quizId}/${score}`} />
+                <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : buildShareUrl(`/share/${quizId}/${score}`)} />
                 <meta property="og:type" content="website" />
                 <meta property="og:locale" content="vi_VN" />
                 <meta name="twitter:card" content="summary_large_image" />

@@ -10,6 +10,7 @@ import { trackQuizComplete, trackShare } from '../lib/analytics';
 import './Result.css';
 import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizResults, fetchQuizzes as loadQuizzes, incrementQuizStat } from '../lib/quizApi';
+import { buildShareUrl } from '../lib/siteUrl';
 
 const Result = () => {
     const navigate = useNavigate();
@@ -65,10 +66,49 @@ const Result = () => {
     }, [quizIdParam]);
 
     // Share URL for SSR OG tags (crawlers hit this, users get redirected to quiz start)
-    const shareUrl = `https://nambac.xyz/share/${quizIdParam}/${score}`;
+    const shareUrl = buildShareUrl(`/share/${quizIdParam}/${score}`);
 
     const renderDescription = (text = "") => {
         return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;
+    };
+
+    const handleDownloadStory = async () => {
+        if (!cardRef.current) return;
+        try {
+            const source = await html2canvas(cardRef.current, {
+                useCORS: true,
+                scale: 2,
+                backgroundColor: '#fff9fc',
+            });
+            const storyW = 1080;
+            const storyH = 1920;
+            const canvas = document.createElement('canvas');
+            canvas.width = storyW;
+            canvas.height = storyH;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff9fc';
+            ctx.fillRect(0, 0, storyW, storyH);
+
+            const scale = Math.min(storyW / source.width, (storyH * 0.85) / source.height);
+            const drawW = source.width * scale;
+            const drawH = source.height * scale;
+            const x = (storyW - drawW) / 2;
+            const y = (storyH - drawH) / 2 - 40;
+            ctx.drawImage(source, x, y, drawW, drawH);
+
+            ctx.fillStyle = '#FF2D85';
+            ctx.font = 'bold 28px "Be Vietnam Pro", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('nambac — Trắc nghiệm AI', storyW / 2, storyH - 80);
+
+            const link = document.createElement('a');
+            link.download = `nambac-story-${quizIdParam}-${score}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (err) {
+            console.error('Story download failed', err);
+            alert('Có lỗi khi tạo ảnh Story! Thử tải ảnh vuông nhé.');
+        }
     };
 
     const handleDownloadImage = async () => {
@@ -187,6 +227,11 @@ const Result = () => {
                     <button className="download-action-btn" onClick={handleDownloadImage}>
                         <Download size={20} />
                         <span className="btn-label">TẢI ẢNH</span>
+                    </button>
+
+                    <button className="download-action-btn" onClick={handleDownloadStory} title="Story 9:16">
+                        <Download size={20} />
+                        <span className="btn-label">STORY</span>
                     </button>
 
                     <button className="share-btn" onClick={() => {

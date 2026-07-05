@@ -112,3 +112,20 @@
     padding: 3px;
     box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
 }
+
+.install-android-btn {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--comic-charcoal, #1e293b);
+    border-radius: 12px;
+    background: #FF2D85;
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 0 var(--comic-charcoal, #1e293b);
+}

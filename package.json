@@ -13,6 +13,7 @@
     "test:e2e": "node scripts/test_e2e.mjs",
     "test:openrouter": "node scripts/test_openrouter_image.mjs",
     "demo:ai-quiz": "node scripts/create_ai_quiz_demo.mjs",
+    "images:backfill": "node scripts/backfill_images.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

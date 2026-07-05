@@ -15,13 +15,15 @@
 - [x] Footer + Editor + Admin Vietnamese UI
 - [x] README + `.env.example` updated
 
-## Phase 1 — Growth
+## Phase 1 — Growth (in progress)
 
 - [ ] Real AdSense slot IDs in production env
-- [ ] GTM triggers for 4 custom events
-- [ ] Batch image backfill script (OpenRouter)
-- [ ] Result 9:16 Story download
-- [ ] Android PWA install prompt
+- [ ] GTM triggers for 4 custom events (dashboard)
+- [x] Batch image backfill script (`npm run images:backfill`)
+- [x] GTM setup guide (`docs/GTM_SETUP.md`)
+- [x] Share URLs dynamic (`vercel.app` until domain restored)
+- [x] Result 9:16 Story download
+- [x] Android PWA install prompt (`beforeinstallprompt`)
 
 ## Phase 2 — Viral
 

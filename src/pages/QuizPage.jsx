@@ -14,6 +14,7 @@ import { fetchQuizBundle, incrementQuizStat } from '../lib/quizApi';
 import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizStart, trackShare } from '../lib/analytics';
+import { buildShareUrl } from '../lib/siteUrl';
 
 export default function QuizPage({ quizIdProp }) {
     const { id } = useParams();
@@ -151,7 +152,7 @@ export default function QuizPage({ quizIdProp }) {
     // --- Intro View ---
     if (!started) {
         // Derive dynamic share URL for Quiz OG Tags (Route through /share/ for SSR OG api wrapper)
-        const shareUrl = `https://nambac.xyz/share/${quizId}`;
+        const shareUrl = buildShareUrl(`/share/${quizId}`);
         
         return (
             <>
@@ -217,7 +218,7 @@ export default function QuizPage({ quizIdProp }) {
                             
                             {/* Derive dynamic share URL for Quiz */}
                             {(() => {
-                                const shareUrl = `${window.location.origin}/quiz/${quizId}`;
+                                const shareUrl = buildShareUrl(`/share/${quizId}`);
                                 return (
                                     <div className="share-options">
                                         <button className="share-option zalo" onClick={() => {

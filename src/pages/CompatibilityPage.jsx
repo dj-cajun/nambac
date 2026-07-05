@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizBundle } from '../lib/quizApi';
 import { trackCompatStart, trackShare } from '../lib/analytics';
+import { getOgDefaultImageUrl } from '../lib/siteUrl';
 import './CompatibilityPage.css';
 
 const CompatibilityPage = () => {
@@ -151,7 +152,7 @@ const CompatibilityPage = () => {
                 <meta name="description" content={`${matchTitle} — ${matchRoast}`} />
                 <meta property="og:title" content={`Độ hợp nhau ${matchScore}%! ${matchTitle}`} />
                 <meta property="og:description" content={matchRoast} />
-                <meta property="og:image" content={getImageUrl(myResult?.image_url) || 'https://nambac.xyz/og-default.png'} />
+                <meta property="og:image" content={getImageUrl(myResult?.image_url) || getOgDefaultImageUrl()} />
                 <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
                 <meta property="og:type" content="website" />
                 <meta property="og:locale" content="vi_VN" />

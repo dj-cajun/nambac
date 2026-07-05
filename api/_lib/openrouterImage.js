@@ -24,7 +24,7 @@ export async function generateOpenRouterImage(prompt, options = {}) {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'https://nambac.xyz',
+      'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'https://nambac.vercel.app',
       'X-Title': process.env.OPENROUTER_APP_NAME || 'nambac',
     },
     body: JSON.stringify(payload),
