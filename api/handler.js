@@ -15,11 +15,13 @@ function parseSegments(req) {
   const idx = pathname.indexOf(marker);
   if (idx !== -1) {
     const fromUrl = pathname.slice(idx + marker.length).split('/').filter(Boolean);
+    if (fromUrl[0] === 'handler') fromUrl.shift();
     if (fromUrl.length > 0) return fromUrl;
   }
 
   if (pathname.startsWith('/')) {
     const stripped = pathname.replace(/^\//, '').split('/').filter(Boolean);
+    if (stripped[0] === 'handler') stripped.shift();
     if (stripped.length > 0) return stripped;
   }
 
