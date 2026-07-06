@@ -1,4 +1,11 @@
 {
+  "functions": {
+    "api/handler.js": {
+      "maxDuration": 300,
+      "memory": 1024,
+      "excludeFiles": "{public/images/**,legacy/**,scripts/**,backend/**,data/**,src/**,dist/**,docs/**,node_modules/@img/sharp-*darwin*,node_modules/@img/sharp-*win32*,node_modules/@img/sharp-libvips-*darwin*,node_modules/@img/sharp-libvips-*win32*}"
+    }
+  },
   "crons": [
     {
       "path": "/api/handler?path=cron/daily-quiz",

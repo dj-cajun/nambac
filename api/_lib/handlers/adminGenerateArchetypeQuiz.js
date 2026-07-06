@@ -52,10 +52,10 @@ export default async function handler(req, res) {
       image_url: '/images/default_cover.png',
     }));
 
-    if (generateImages && process.env.OPENROUTER_API_KEY) {
+    if (generateImages && (process.env.OPENROUTER_API_KEY || apiKey)) {
       try {
         if (archetype.quiz_type === 'mbti_12q') {
-          const { generateOpenRouterImage } = await import('../openrouterImage.js');
+          const { generateQuizImage } = await import('../generateQuizImage.js');
           const { finalizeImagePrompt, coverPrompt } = await import('../../../shared/imagePrompts.js');
           const { generateQuizImagePrompts } = await import('../../../shared/imagePromptEngine.js');
           let coverPromptText;
@@ -82,7 +82,7 @@ export default async function handler(req, res) {
               }),
             );
           }
-          const { b64 } = await generateOpenRouterImage(coverPromptText);
+          const { b64 } = await generateQuizImage(coverPromptText);
           const { saveImageB64AsWebp } = await import('../saveQuizImage.js');
           coverUrl = await saveImageB64AsWebp(b64, `arch_${archetypeId.slice(0, 8)}_cover`);
         } else {

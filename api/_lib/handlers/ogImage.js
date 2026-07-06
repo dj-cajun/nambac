@@ -6,11 +6,10 @@ import {
   buildOgImageApiUrl,
   composeOgImage,
   parseTraits,
-  resolveImagePath,
 } from '../composeOgImage.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const FALLBACK_OG = path.join(__dirname, '../../../public/og-default.png');
+const FALLBACK_OG = path.join(__dirname, '../og-default.png');
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,13 +29,15 @@ export default async function handler(req, res) {
 
     let buffer;
 
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+
     if (scoreCode !== null && !Number.isNaN(scoreCode)) {
       const results = await getResultsByQuizId(quizId);
       const result = results.find((row) => parseInt(row.result_code, 10) === scoreCode);
       if (!result) return res.status(404).json({ error: 'Result not found' });
 
-      const imagePath = resolveImagePath(result.image_url) || resolveImagePath(quiz.image_url);
-      if (!imagePath) {
+      const imageUrl = result.image_url || quiz.image_url;
+      if (!imageUrl) {
         const fb = fs.readFileSync(FALLBACK_OG);
         res.setHeader('Content-Type', 'image/png');
         res.setHeader('Cache-Control', 'public, s-maxage=86400');
@@ -44,7 +45,8 @@ export default async function handler(req, res) {
       }
 
       buffer = await composeOgImage({
-        imagePath,
+        imageUrl,
+        host,
         quizTitle: quiz.title,
         headline: result.title || result.type_name || 'Kết quả',
         description: result.description,
@@ -52,13 +54,13 @@ export default async function handler(req, res) {
         mode: 'result',
       });
     } else {
-      const imagePath = resolveImagePath(quiz.image_url);
-      if (!imagePath) {
+      if (!quiz.image_url) {
         return res.status(404).json({ error: 'Cover not found' });
       }
 
       buffer = await composeOgImage({
-        imagePath,
+        imageUrl: quiz.image_url,
+        host,
         quizTitle: quiz.title,
         headline: quiz.title,
         description: quiz.description,

@@ -1,14 +1,13 @@
 /**
- * Gemini first → OpenRouter text model fallback (quota / outage).
+ * Gemini first (multi-key rotate) → OpenRouter text model fallback (quota / outage).
  */
 import { generateOpenRouterText, getOpenRouterTextModel } from './openrouterText.js';
+import { getGeminiKey, getGeminiKeys, isRetryableGeminiError } from './geminiKeys.js';
 
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-export function getGeminiKey() {
-  return process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
-}
+export { getGeminiKey, getGeminiKeys };
 
 export function getOpenRouterKey() {
   return process.env.OPENROUTER_API_KEY || '';
@@ -41,7 +40,10 @@ async function callGeminiText({ apiKey, prompt, temperature, maxOutputTokens }) 
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Gemini failed (${response.status})`);
+    const message = err.error?.message || `Gemini failed (${response.status})`;
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
   const data = await response.json();
@@ -64,26 +66,32 @@ export async function generateJsonViaLlm({
   maxOutputTokens = 8192,
   label = 'json',
 } = {}) {
-  const gKey = geminiKey ?? getGeminiKey();
-  const orKey = openrouterKey ?? getOpenRouterKey();
   const combined = prompt ?? (system ? `${system}\n\n${user}` : user);
-
   if (!combined?.trim()) {
     throw new Error(`${label}: empty prompt`);
   }
 
-  if (gKey) {
+  const keys = geminiKey ? [geminiKey] : getGeminiKeys();
+  const orKey = openrouterKey ?? getOpenRouterKey();
+
+  for (let i = 0; i < keys.length; i += 1) {
     try {
       const text = await callGeminiText({
-        apiKey: gKey,
+        apiKey: keys[i],
         prompt: combined,
         temperature,
         maxOutputTokens,
       });
       return { text, provider: 'gemini' };
     } catch (err) {
+      const hasNextKey = i < keys.length - 1 && isRetryableGeminiError(err);
+      if (hasNextKey) {
+        console.warn(`[${label}] Gemini key #${i + 1} failed → key #${i + 2} (${err.message})`);
+        continue;
+      }
       if (!orKey) throw err;
       console.warn(`[${label}] Gemini failed → OpenRouter ${getOpenRouterTextModel()} (${err.message})`);
+      break;
     }
   }
 

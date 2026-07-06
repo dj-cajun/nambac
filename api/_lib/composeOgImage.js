@@ -22,6 +22,29 @@ export function resolveImagePath(imageUrl) {
   return fs.existsSync(fp) ? fp : null;
 }
 
+export function imageUrlToAbsolute(imageUrl, host) {
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith('http')) return imageUrl;
+  const protocol = host?.includes('localhost') ? 'http' : 'https';
+  const base = host
+    ? `${protocol}://${host}`
+    : (process.env.VITE_SITE_URL || 'https://nambac.vercel.app');
+  return `${base}${imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`}`;
+}
+
+/** Load quiz cover/result image from disk (dev) or static CDN (Vercel). */
+export async function loadImageBuffer(imageUrl, host) {
+  const localPath = resolveImagePath(imageUrl);
+  if (localPath) {
+    return fs.readFileSync(localPath);
+  }
+  const url = imageUrlToAbsolute(imageUrl, host);
+  if (!url) throw new Error(`Invalid image URL: ${imageUrl}`);
+  const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
+  if (!res.ok) throw new Error(`Failed to fetch image ${url}: ${res.status}`);
+  return Buffer.from(await res.arrayBuffer());
+}
+
 function escapeXml(value) {
   return String(value || '')
     .replace(/&/g, '&amp;')
@@ -120,9 +143,9 @@ function buildPanelSvg({ quizTitle, headline, description, hashtags, mode }) {
 </svg>`);
 }
 
-async function loadTopImage(imagePath, { cropBottom = false } = {}) {
-  const meta = await sharp(imagePath).metadata();
-  let pipeline = sharp(imagePath);
+async function loadTopImage(imageBuffer, { cropBottom = false } = {}) {
+  const meta = await sharp(imageBuffer).metadata();
+  let pipeline = sharp(imageBuffer);
   if (cropBottom && meta.height) {
     const keepH = Math.max(1, Math.round(meta.height * (1 - RESULT_BOTTOM_CROP)));
     pipeline = pipeline.extract({
@@ -142,6 +165,8 @@ async function loadTopImage(imagePath, { cropBottom = false } = {}) {
  * @param {'intro'|'result'} mode
  */
 export async function composeOgImage({
+  imageUrl,
+  host,
   imagePath,
   quizTitle,
   headline,
@@ -149,11 +174,16 @@ export async function composeOgImage({
   hashtags = [],
   mode = 'result',
 }) {
-  if (!imagePath || !fs.existsSync(imagePath)) {
-    throw new Error(`Image not found: ${imagePath}`);
+  let imageBuffer;
+  if (imageUrl) {
+    imageBuffer = await loadImageBuffer(imageUrl, host);
+  } else if (imagePath && fs.existsSync(imagePath)) {
+    imageBuffer = fs.readFileSync(imagePath);
+  } else {
+    throw new Error(`Image not found: ${imageUrl || imagePath}`);
   }
 
-  const topImage = await loadTopImage(imagePath, { cropBottom: mode === 'result' });
+  const topImage = await loadTopImage(imageBuffer, { cropBottom: mode === 'result' });
   const panelSvg = buildPanelSvg({
     quizTitle,
     headline,

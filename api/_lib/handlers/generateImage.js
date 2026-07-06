@@ -1,5 +1,6 @@
 import { requireAdmin } from '../adminAuth.js';
-import { generateOpenRouterImage, getOpenRouterImageModel } from '../openrouterImage.js';
+import { generateQuizImage } from '../generateQuizImage.js';
+import { getOpenRouterImageModel } from '../openrouterImage.js';
 import { applyImageStyle } from '../../../shared/imagePrompts.js';
 
 export default async function handler(req, res) {
@@ -23,11 +24,12 @@ export default async function handler(req, res) {
       ? prompt.trim()
       : applyImageStyle(type || 'generic', prompt);
 
-    const result = await generateOpenRouterImage(fullPrompt);
+    const result = await generateQuizImage(fullPrompt);
 
     return res.status(200).json({
       b64_json: result.b64,
       model: result.model,
+      provider: result.provider,
       cost_usd: result.cost,
     });
   } catch (err) {

@@ -1,5 +1,5 @@
 /**
- * Backfill quiz images: LLM prompts (Gemini → OpenRouter) + OpenRouter render.
+ * Backfill quiz images: Gemini prompts + Imagen (multi-key) → Flux fallback → WebP.
  * Cover + 8 results = 9 images per quiz (question images off by default).
  *
  * Run: npm run images:backfill
@@ -87,13 +87,10 @@ async function sleep(ms) {
 }
 
 async function main() {
-  if (!process.env.OPENROUTER_API_KEY) {
-    console.error('❌ OPENROUTER_API_KEY required (.env.local)');
-    process.exit(1);
-  }
-  const hasGemini = !!(process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY);
-  if (!hasGemini && !process.env.OPENROUTER_API_KEY) {
-    console.error('❌ GEMINI_API_KEY or OPENROUTER_API_KEY required for image prompts');
+  const { getGeminiKeys } = await import('../../shared/geminiKeys.js');
+
+  if (!process.env.OPENROUTER_API_KEY && getGeminiKeys().length === 0) {
+    console.error('❌ OPENROUTER_API_KEY or GEMINI_API_KEY required for image generation');
     process.exit(1);
   }
   if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
@@ -105,7 +102,7 @@ async function main() {
   const { generateQuizImagePrompts } = await import('../../shared/imagePromptEngine.js');
   const { getOpenRouterTextModel } = await import('../../shared/openrouterText.js');
   const { finalizeImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt } = await import('../../shared/imagePrompts.js');
-  const { generateOpenRouterImage } = await import('../../api/_lib/openrouterImage.js');
+  const { generateQuizImage } = await import('../../api/_lib/generateQuizImage.js');
   const { saveImageB64AsWebp } = await import('../../api/_lib/saveQuizImage.js');
 
   const db = getTurso();
@@ -177,7 +174,7 @@ async function main() {
     let prompts;
     try {
       const generated = await generateQuizImagePrompts({
-        geminiKey: process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY,
+        geminiKey: getGeminiKeys()[0],
         openrouterKey: process.env.OPENROUTER_API_KEY,
         quiz: { ...quiz, questions, results },
         skipQuestions,
@@ -208,10 +205,10 @@ async function main() {
 
     if (coverNeeded && generated < imageLimit) {
       try {
-        const { b64, cost } = await generateOpenRouterImage(prompts.cover);
+        const { b64, cost, provider } = await generateQuizImage(prompts.cover);
         const imageUrl = await saveImage(b64, `${prefix}_cover`);
         await db.execute({ sql: 'UPDATE quizzes SET image_url = ? WHERE id = ?', args: [imageUrl, quiz.id] });
-        console.log(`   ✅ cover → ${imageUrl} ($${cost ?? '?'})`);
+        console.log(`   ✅ cover → ${imageUrl} (${provider}${cost != null ? ` $${cost}` : ''})`);
         generated++;
         await sleep(delayMs);
       } catch (e) {
@@ -224,10 +221,10 @@ async function main() {
       const idx = (q.order_number || 1) - 1;
       if (idx < 0 || idx > 4) continue;
       try {
-        const { b64, cost } = await generateOpenRouterImage(prompts.questions[idx]);
+        const { b64, cost, provider } = await generateQuizImage(prompts.questions[idx]);
         const imageUrl = await saveImage(b64, `${prefix}_q${idx + 1}`);
         await db.execute({ sql: 'UPDATE questions SET image_url = ? WHERE id = ?', args: [imageUrl, q.id] });
-        console.log(`   ✅ Q${idx + 1} → ${imageUrl} ($${cost ?? '?'})`);
+        console.log(`   ✅ Q${idx + 1} → ${imageUrl} (${provider}${cost != null ? ` $${cost}` : ''})`);
         generated++;
         await sleep(delayMs);
       } catch (e) {
@@ -240,10 +237,10 @@ async function main() {
       const code = r.result_code ?? 0;
       if (code < 0 || code > 7) continue;
       try {
-        const { b64, cost } = await generateOpenRouterImage(prompts.results[code]);
+        const { b64, cost, provider } = await generateQuizImage(prompts.results[code]);
         const imageUrl = await saveImage(b64, `${prefix}_r${code}`);
         await db.execute({ sql: 'UPDATE results SET image_url = ? WHERE id = ?', args: [imageUrl, r.id] });
-        console.log(`   ✅ result ${code} → ${imageUrl} ($${cost ?? '?'})`);
+        console.log(`   ✅ result ${code} → ${imageUrl} (${provider}${cost != null ? ` $${cost}` : ''})`);
         generated++;
         await sleep(delayMs);
       } catch (e) {
