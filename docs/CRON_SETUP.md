@@ -62,10 +62,15 @@ Vercel이 Cron 호출 시 `Authorization: Bearer ${CRON_SECRET}` 헤더를 자�
 |--|-------------|-----|
 | 설치 | 없음 | 별도 |
 | 일 1퀴즈 | ✅ 기본 | 가능 |
-| 이미지 9장 | ❌ (수동/backfill) | 파이프라인 확장 가능 |
+| 이미지 9장 | ✅ 커버+결과 8장 자동 (`OPENROUTER_API_KEY` 또는 Gemini 키 필요) | 파이프라인 확장 가능 |
 | SNS/Slack | 코드 추가 필요 | GUI |
 
-이미지가 필요하면 생성 후 `npm run images:backfill -- --quiz-id=...` 실행.
+이미지 생성 실패 시 퀴즈 텍스트는 저장되며, 수동 복구: `npm run images:backfill -- --quiz-id=...`
+
+옵션 (POST body):
+
+- `skipImages: true` — 텍스트만 생성
+- `withQuestions: true` — 문항 이미지 5장 추가 (기본은 커버+결과 9장)
 
 ## 6. Hobby 제한
 

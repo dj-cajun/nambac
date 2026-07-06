@@ -1,53 +1,19 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { generateAllQuizImages } from './quizImages.js';
-import { getResultsByQuizId, updateQuizImageUrl, updateResultImageUrl } from './quizDb.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const IMAGES_DIR = path.join(__dirname, '../../public/images');
-
-function assertOnDisk(imageUrl) {
-  const filename = imageUrl?.split('/').pop();
-  const fp = path.join(IMAGES_DIR, filename);
-  if (!filename || !fs.existsSync(fp)) {
-    throw new Error(`Image file missing after save: ${imageUrl}`);
-  }
-  return imageUrl;
-}
-
-function idPrefixForQuiz(quizId) {
-  return `backfill_${quizId.replace(/-/g, '').slice(0, 8)}`;
-}
+import { enrichQuizImages, idPrefixForQuiz } from './enrichQuizImages.js';
+import { updateQuizImageUrl } from './quizDb.js';
 
 /**
- * Generate cover + result images after quiz text is already saved.
- * Updates Turso after each file is verified on disk.
+ * Generate cover (+ result images for binary quizzes) after archetype text is saved.
  */
 export async function enrichArchetypeQuizImages({ quizId, archetype, payload, apiKey }) {
   const openrouterKey = process.env.OPENROUTER_API_KEY || '';
-  const prefix = idPrefixForQuiz(quizId);
-  const dbResults = await getResultsByQuizId(quizId);
-
-  const onCover = async (url) => {
-    const ok = assertOnDisk(url);
-    await updateQuizImageUrl(quizId, ok);
-    console.log(`[archetype-images] cover → ${ok}`);
-  };
-
-  const onResult = async (code, url) => {
-    const ok = assertOnDisk(url);
-    const row = dbResults.find((r) => parseInt(r.result_code, 10) === code);
-    if (row) {
-      await updateResultImageUrl(row.id, ok);
-      console.log(`[archetype-images] result ${code} → ${ok}`);
-    }
-  };
+  const prefix = idPrefixForQuiz(quizId, 'backfill');
 
   if (archetype.quiz_type === 'mbti_12q') {
     const { generateQuizImage } = await import('./generateQuizImage.js');
     const { finalizeCoverImagePrompt, coverPrompt } = await import('../../shared/imagePrompts.js');
     const { generateQuizImagePrompts } = await import('../../shared/imagePromptEngine.js');
+    const { saveImageB64AsWebp } = await import('./saveQuizImage.js');
+
     let coverPromptText;
     try {
       const generated = await generateQuizImagePrompts({
@@ -70,26 +36,21 @@ export async function enrichArchetypeQuizImages({ quizId, archetype, payload, ap
         category: payload.category,
       });
     }
+
     const { b64 } = await generateQuizImage(coverPromptText);
-    const { saveImageB64AsWebp } = await import('./saveQuizImage.js');
     const coverUrl = await saveImageB64AsWebp(b64, `${prefix}_cover`);
-    await onCover(coverUrl);
-  } else {
-    await generateAllQuizImages({
-      quiz: {
-        title: payload.title,
-        description: payload.description,
-        category: payload.category,
-        questions: payload.questions,
-        results: payload.results,
-      },
-      idPrefix: prefix,
-      delayMs: 1500,
-      skipQuestions: true,
-      onCoverSaved: onCover,
-      onResultSaved: onResult,
-    });
+    await updateQuizImageUrl(quizId, coverUrl);
+    console.log(`[archetype-images] cover → ${coverUrl}`);
+    console.log(`[archetype-images] done quiz=${quizId}`);
+    return { cover_url: coverUrl, results: [], questions: [] };
   }
 
-  console.log(`[archetype-images] done quiz=${quizId}`);
+  return enrichQuizImages({
+    quizId,
+    payload,
+    idLabel: 'backfill',
+    delayMs: 1500,
+    skipQuestions: true,
+    logPrefix: '[archetype-images]',
+  });
 }

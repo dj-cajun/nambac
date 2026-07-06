@@ -3,6 +3,12 @@ import { createFullQuiz } from '../quizDb.js';
 import { generateQuizContent, formatQuizForDb, pickDailyCategory, validateQuizPayload } from '../geminiQuiz.js';
 import { sendPushToAll } from '../pushService.js';
 import { buildSiteUrl } from '../siteUrl.js';
+import { enrichQuizImages, hasImageGenerationKeys } from '../enrichQuizImages.js';
+
+function shouldGenerateImages(body) {
+  if (body.skipImages === true || body.generateImages === false) return false;
+  return hasImageGenerationKeys();
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,6 +23,7 @@ export default async function handler(req, res) {
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
   const category = body.category || req.query?.category || pickDailyCategory();
+  const generateImages = shouldGenerateImages(body);
 
   try {
     const generated = await generateQuizContent(category, body.topic || '');
@@ -26,6 +33,23 @@ export default async function handler(req, res) {
       throw new Error(`Invalid quiz from Gemini: ${validationErrors.join('; ')}`);
     }
     const quiz = await createFullQuiz(payload);
+
+    let images = null;
+    if (generateImages) {
+      try {
+        images = await enrichQuizImages({
+          quizId: quiz.id,
+          payload,
+          idLabel: 'cron',
+          delayMs: body.imageDelayMs ?? 1500,
+          skipQuestions: body.withQuestions !== true,
+          logPrefix: '[daily-quiz-images]',
+        });
+      } catch (err) {
+        console.error('[daily-quiz] image generation failed:', err);
+        images = { error: err.message || 'Image generation failed' };
+      }
+    }
 
     let push = null;
     if (body.notify !== false) {
@@ -46,6 +70,8 @@ export default async function handler(req, res) {
       ok: true,
       category,
       quiz: { id: quiz.id, title: payload.title },
+      imagesGenerated: generateImages && !images?.error,
+      images,
       push,
     });
   } catch (err) {
