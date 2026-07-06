@@ -8,11 +8,15 @@
   "rewrites": [
     {
       "source": "/share/:id/:score",
-      "destination": "/api/og?id=:id&score=:score"
+      "destination": "/api?path=og&id=:id&score=:score"
     },
     {
       "source": "/share/:id",
-      "destination": "/api/og?id=:id"
+      "destination": "/api?path=og&id=:id"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api?path=$1"
     },
     {
       "source": "/((?!api/).*)",

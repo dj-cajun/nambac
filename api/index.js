@@ -1,5 +1,6 @@
 import { dispatch } from './_lib/router.js';
 
+/** Parse /api/* segments from Vercel rewrite (?path=...) or dev middleware. */
 function parseSegments(req) {
   const raw = req.query?.path;
   if (raw !== undefined && raw !== null) {
@@ -17,7 +18,6 @@ function parseSegments(req) {
     if (fromUrl.length > 0) return fromUrl;
   }
 
-  // Vercel catch-all sometimes omits query.path — use pathname after leading slash
   if (pathname.startsWith('/')) {
     const stripped = pathname.replace(/^\//, '').split('/').filter(Boolean);
     if (stripped.length > 0) return stripped;
