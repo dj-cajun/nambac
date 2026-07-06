@@ -2,7 +2,7 @@ import { dispatch } from './_lib/router.js';
 
 /** Parse /api/* segments from Vercel rewrite (?path=...) or dev middleware. */
 function parseSegments(req) {
-  const raw = req.query?.path;
+  const raw = req.query?.route ?? req.query?.path;
   if (raw !== undefined && raw !== null) {
     const fromQuery = Array.isArray(raw)
       ? raw.filter(Boolean)

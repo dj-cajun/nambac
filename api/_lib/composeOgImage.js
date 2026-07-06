@@ -182,8 +182,12 @@ export async function composeOgImage({
 
 export function buildOgImageApiUrl(host, quizId, scoreCode = null) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
-  const base = `${protocol}://${host}/api/og-image?quizId=${encodeURIComponent(quizId)}`;
-  return scoreCode !== null && scoreCode !== undefined && !Number.isNaN(scoreCode)
-    ? `${base}&score=${scoreCode}`
-    : base;
+  const params = new URLSearchParams({ route: 'og-image', quizId });
+  if (scoreCode !== null && scoreCode !== undefined && !Number.isNaN(scoreCode)) {
+    params.set('score', String(scoreCode));
+  }
+  const path = host.includes('localhost')
+    ? `/api/og-image?${new URLSearchParams({ quizId, ...(scoreCode != null && !Number.isNaN(scoreCode) ? { score: String(scoreCode) } : {}) })}`
+    : `/api/handler?${params}`;
+  return `${protocol}://${host}${path}`;
 }

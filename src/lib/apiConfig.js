@@ -7,6 +7,11 @@ export const IS_PRODUCTION = import.meta.env.VITE_ENV === 'production' || import
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
+function handlerApiUrl(apiPath, extraQuery = '') {
+  const base = `/api/handler?route=${encodeURIComponent(apiPath)}`;
+  return extraQuery ? `${base}&${extraQuery}` : base;
+}
+
 export const getImageUrl = (path) => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
@@ -18,8 +23,16 @@ export const getImageUrl = (path) => {
 };
 
 export const apiUrl = (endpoint) => {
-  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  return `${API_BASE_URL}${path}`;
+  const raw = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+  const [pathPart, query = ''] = raw.split('?');
+  const apiPath = pathPart.startsWith('api/') ? pathPart.slice(4) : pathPart;
+
+  if (import.meta.env.PROD) {
+    return handlerApiUrl(apiPath, query);
+  }
+
+  const path = apiPath.startsWith('/') ? apiPath : `/${apiPath}`;
+  return `${API_BASE_URL}${path}${query ? `?${query}` : ''}`;
 };
 
 export default API_BASE_URL;

@@ -20,9 +20,9 @@ export function getOgDefaultImageUrl() {
 
 /** Composed OG card (image + quiz title + answer + #tags) */
 export function buildOgImageUrl(quizId, score = null) {
-  const base = `${getSiteOrigin()}/api/og-image?quizId=${encodeURIComponent(quizId)}`;
+  const params = new URLSearchParams({ route: 'og-image', quizId });
   if (score !== null && score !== undefined && score !== '') {
-    return `${base}&score=${encodeURIComponent(score)}`;
+    params.set('score', String(score));
   }
-  return base;
+  return `${getSiteOrigin()}/api/handler?${params}`;
 }
