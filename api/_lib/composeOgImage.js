@@ -1,17 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Resvg } from '@resvg/resvg-js';
+import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import sharp from 'sharp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMAGES_DIR = path.join(__dirname, '../../public/images');
 const FONT_REGULAR = path.join(__dirname, 'fonts/NotoSans-Regular.ttf');
 const FONT_BOLD = path.join(__dirname, 'fonts/NotoSans-Bold.ttf');
+const RESVG_WASM = path.join(__dirname, '../../node_modules/@resvg/resvg-wasm/index_bg.wasm');
 
 // librsvg on Vercel cannot load file:// fonts — embed as data URLs once at startup.
 const FONT_REGULAR_B64 = fs.readFileSync(FONT_REGULAR).toString('base64');
 const FONT_BOLD_B64 = fs.readFileSync(FONT_BOLD).toString('base64');
+const resvgReady = initWasm(fs.readFileSync(RESVG_WASM));
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
@@ -146,7 +148,8 @@ function buildPanelSvg({ quizTitle, headline, description, hashtags, mode }) {
 </svg>`);
 }
 
-function renderPanelPng(svgBuffer) {
+async function renderPanelPng(svgBuffer) {
+  await resvgReady;
   const resvg = new Resvg(svgBuffer.toString('utf8'), {
     fitTo: { mode: 'width', value: OG_WIDTH },
     font: {
@@ -206,7 +209,7 @@ export async function composeOgImage({
     mode,
   });
 
-  const panelBuffer = renderPanelPng(panelSvg);
+  const panelBuffer = await renderPanelPng(panelSvg);
 
   return sharp({
     create: {
