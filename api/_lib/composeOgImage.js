@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { Resvg } from '@resvg/resvg-js';
 import sharp from 'sharp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -14,9 +15,9 @@ const FONT_BOLD_B64 = fs.readFileSync(FONT_BOLD).toString('base64');
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
-const IMAGE_HEIGHT = 400;
+const IMAGE_HEIGHT = 420;
 const PANEL_HEIGHT = OG_HEIGHT - IMAGE_HEIGHT;
-const RESULT_BOTTOM_CROP = 0.22;
+const RESULT_BOTTOM_CROP = 0.12;
 
 export function resolveImagePath(imageUrl) {
   if (!imageUrl) return null;
@@ -145,6 +146,17 @@ function buildPanelSvg({ quizTitle, headline, description, hashtags, mode }) {
 </svg>`);
 }
 
+function renderPanelPng(svgBuffer) {
+  const resvg = new Resvg(svgBuffer.toString('utf8'), {
+    fitTo: { mode: 'width', value: OG_WIDTH },
+    font: {
+      loadSystemFonts: false,
+      defaultFontFamily: 'OgSans',
+    },
+  });
+  return Buffer.from(resvg.render().asPng());
+}
+
 async function loadTopImage(imageBuffer, { cropBottom = false } = {}) {
   const meta = await sharp(imageBuffer).metadata();
   let pipeline = sharp(imageBuffer);
@@ -158,7 +170,7 @@ async function loadTopImage(imageBuffer, { cropBottom = false } = {}) {
     });
   }
   return pipeline
-    .resize(OG_WIDTH, IMAGE_HEIGHT, { fit: 'cover', position: 'top' })
+    .resize(OG_WIDTH, IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
     .toBuffer();
 }
 
@@ -194,7 +206,7 @@ export async function composeOgImage({
     mode,
   });
 
-  const panelBuffer = await sharp(panelSvg).png().toBuffer();
+  const panelBuffer = renderPanelPng(panelSvg);
 
   return sharp({
     create: {
