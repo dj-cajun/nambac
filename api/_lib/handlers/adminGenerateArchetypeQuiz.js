@@ -1,6 +1,7 @@
 import { requireAdmin } from '../adminAuth.js';
 import { createQuiz, insertQuestions, insertResults } from '../quizDb.js';
 import { enrichArchetypeQuizImages } from '../enrichArchetypeImages.js';
+import { canPersistQuizImages } from '../imagePersistence.js';
 import { getArchetypeById } from '../../../shared/personalityArchetypes.js';
 import {
   generateArchetypeQuizContent,
@@ -72,7 +73,12 @@ export default async function handler(req, res) {
       imagesPending: false,
     };
 
-    const canGenerateImages = generateImages && (openrouterKey || apiKey);
+    const persistImages = canPersistQuizImages();
+    const canGenerateImages = generateImages && (openrouterKey || apiKey) && persistImages;
+    if (generateImages && !persistImages) {
+      response.imagesSkippedReason =
+        'Images must be generated locally: npm run images:backfill -- --quiz-id=' + quiz.id;
+    }
     if (canGenerateImages) {
       response.imagesPending = true;
       res.status(201).json(response);

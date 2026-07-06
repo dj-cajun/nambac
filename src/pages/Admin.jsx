@@ -229,9 +229,12 @@ const Admin = () => {
             const result = await api.generateArchetypeQuiz(archetype.id, {
                 generateImages: factoryWithImages,
             });
-            if (result.imagesPending) {
+            if (result.imagesSkippedReason) {
+                setArchetypeStatus(`완료: ${result.title} (이미지는 로컬 backfill 필요)`);
+                showToast(result.imagesSkippedReason, 'error');
+            } else if (result.imagesPending) {
                 setArchetypeStatus(`완료: ${result.title} (이미지 백그라운드 생성 중 — 5~8분)`);
-                showToast('퀴즈 저장 완료! 이미지는 백그라운드에서 생성됩니다.', 'success');
+                showToast('퀴즈 저장 완료! 이미지는 백그라운드에서 생성됩니다. 완료 후 git commit 필요.', 'success');
             } else {
                 setArchetypeStatus(`완료: ${result.title}`);
                 showToast(`퀴즈 생성 완료: ${result.title}`, 'success');

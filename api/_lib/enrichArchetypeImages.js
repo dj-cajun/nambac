@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { generateAllQuizImages } from './quizImages.js';
+import { canPersistQuizImages } from './imagePersistence.js';
 import { getResultsByQuizId, updateQuizImageUrl, updateResultImageUrl } from './quizDb.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,6 +26,9 @@ function idPrefixForQuiz(quizId) {
  * Updates Turso after each file is verified on disk.
  */
 export async function enrichArchetypeQuizImages({ quizId, archetype, payload, apiKey }) {
+  if (!canPersistQuizImages()) {
+    throw new Error('Cannot persist quiz images on Vercel — run images:backfill locally');
+  }
   const openrouterKey = process.env.OPENROUTER_API_KEY || '';
   const prefix = idPrefixForQuiz(quizId);
   const dbResults = await getResultsByQuizId(quizId);
