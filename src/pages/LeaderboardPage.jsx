@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { User, Send } from 'lucide-react';
 import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
+import { sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import QuizImage from '../components/QuizImage';
 
 export default function LeaderboardPage() {
@@ -18,13 +19,12 @@ export default function LeaderboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const ranked = useMemo(
-    () => [...quizzes].sort((a, b) => (b.view_count || 0) - (a.view_count || 0)),
-    [quizzes],
-  );
+  const ranked = useMemo(() => sortByViralScore(quizzes), [quizzes]);
 
   const handleQuizClick = (quizId) => {
-    incrementQuizStat(quizId, 'view').catch(console.error);
+    if (trackQuizViewOnce(quizId)) {
+      incrementQuizStat(quizId, 'view').catch(console.error);
+    }
     navigate(`/quiz/${quizId}`);
   };
 
@@ -45,7 +45,7 @@ export default function LeaderboardPage() {
 
       <div className="mt-4 px-5">
         <h1 className="glass-section-title mb-1">🏆 BXH Hot</h1>
-        <p className="text-sm text-gray-500 font-bold mb-4">Top quiz được chơi nhiều nhất</p>
+        <p className="text-sm text-gray-500 font-bold mb-4">Top quiz hay chơi &amp; hay share nhất</p>
       </div>
 
       <div className="px-5 flex flex-col gap-3" style={{ marginBottom: '100px' }}>

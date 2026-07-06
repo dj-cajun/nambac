@@ -11,6 +11,7 @@ import './QuizPage.css';
 import { getImageUrl } from '../lib/apiConfig';
 import { getCategoryLabel } from '../constants/categories';
 import { fetchQuizBundle, incrementQuizStat } from '../lib/quizApi';
+import { trackQuizViewOnce } from '../lib/quizRanking';
 import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizStart, trackShare } from '../lib/analytics';
@@ -57,9 +58,8 @@ export default function QuizPage({ quizIdProp }) {
         fetchData();
         
         // Track view_count when quiz page loads (if not already tracked by Home)
-        if (quizId && !window.__viewedQuiz?.[quizId]) {
+        if (quizId && trackQuizViewOnce(quizId)) {
             incrementQuizStat(quizId, 'view').catch(console.error);
-            window.__viewedQuiz = { ...(window.__viewedQuiz || {}), [quizId]: true };
         }
     }, [quizId]);
 

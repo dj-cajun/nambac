@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { User, Send } from 'lucide-react';
 import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
+import { sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import QuizImage from '../components/QuizImage';
 
 export default function ExplorePage() {
@@ -18,13 +19,12 @@ export default function ExplorePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const sorted = useMemo(
-    () => [...quizzes].sort((a, b) => (b.share_count || 0) - (a.share_count || 0)),
-    [quizzes],
-  );
+  const sorted = useMemo(() => sortByViralScore(quizzes), [quizzes]);
 
   const handleQuizClick = (quizId) => {
-    incrementQuizStat(quizId, 'view').catch(console.error);
+    if (trackQuizViewOnce(quizId)) {
+      incrementQuizStat(quizId, 'view').catch(console.error);
+    }
     navigate(`/quiz/${quizId}`);
   };
 

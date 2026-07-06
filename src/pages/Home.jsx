@@ -5,13 +5,14 @@ import { Helmet } from 'react-helmet-async';
 import './Home.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
+import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import AdSenseUnit from '../components/AdSenseUnit';
 import QuizImage from '../components/QuizImage';
 import { AD_SLOTS } from '../lib/adsConfig';
 
 const SORT_OPTIONS = [
   { id: 'trending', label: '🔥 Hot', sortFn: (a, b) => (b.view_count || 0) - (a.view_count || 0) },
-  { id: 'viral', label: '📤 Viral', sortFn: (a, b) => (b.share_count || 0) - (a.share_count || 0) },
+  { id: 'viral', label: '📤 Viral', sortFn: (a, b) => getViralScore(b) - getViralScore(a) },
   { id: 'new', label: '✨ Mới', sortFn: (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0) },
 ];
 
@@ -175,7 +176,10 @@ export default function Home() {
     return sortedQuizzes.filter((q) => matchesCategory(q.category, activeTab));
   }, [sortedQuizzes, activeTab]);
 
-  const heroQuizzes = sortedQuizzes.slice(0, 3);
+  const heroQuizzes = useMemo(
+    () => sortByViralScore(quizzes).slice(0, 3),
+    [quizzes],
+  );
 
   const getCarouselStep = () => {
     const el = carouselRef.current;
@@ -264,7 +268,9 @@ export default function Home() {
   };
 
   const handleQuizClick = async (quizId) => {
-    incrementQuizStat(quizId, 'view').catch(console.error);
+    if (trackQuizViewOnce(quizId)) {
+      incrementQuizStat(quizId, 'view').catch(console.error);
+    }
     navigate(`/quiz/${quizId}`);
   };
 
