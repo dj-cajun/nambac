@@ -8,7 +8,7 @@
   },
   "crons": [
     {
-      "path": "/api/handler?path=cron/daily-quiz",
+      "path": "/api/cron/daily-quiz",
       "schedule": "0 3 * * *"
     }
   ],
@@ -22,7 +22,7 @@
       "destination": "/api/handler?path=og&id=:id"
     },
     {
-      "source": "/api/(?!handler$)(.*)",
+      "source": "/api/((?!handler$).*)",
       "destination": "/api/handler?path=$1"
     },
     {
