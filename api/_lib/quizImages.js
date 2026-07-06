@@ -1,5 +1,5 @@
 import { generateQuizImagePrompts } from '../../shared/imagePromptEngine.js';
-import { finalizeImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt, coverPrompt, resultPrompt, questionPrompt } from '../../shared/imagePrompts.js';
+import { finalizeCoverImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt, coverPrompt, resultPrompt, questionPrompt } from '../../shared/imagePrompts.js';
 import { generateQuizImage } from './generateQuizImage.js';
 import { getGeminiKey, getOpenRouterKey } from '../../shared/llmJson.js';
 import { getOpenRouterTextModel } from '../../shared/openrouterText.js';
@@ -47,6 +47,8 @@ export async function generateAllQuizImages({
   delayMs = 3500,
   skipQuestions = true,
   onProgress,
+  onCoverSaved,
+  onResultSaved,
 }) {
   const prefix = idPrefix.slice(0, 8);
   let prompts;
@@ -62,7 +64,7 @@ export async function generateAllQuizImages({
       console.warn(`Image prompts via OpenRouter fallback (${getOpenRouterTextModel()})`);
     }
     prompts = {
-      cover: finalizeImagePrompt(generated.cover),
+      cover: finalizeCoverImagePrompt(generated.cover),
       questions: skipQuestions ? [] : generated.questions.map(finalizeQuestionImagePrompt),
       results: generated.results.map((p, i) =>
         finalizeResultImagePrompt(p, {
@@ -85,6 +87,7 @@ export async function generateAllQuizImages({
   const coverRes = await generateQuizImage(prompts.cover);
   out.cover_url = await saveImageB64AsWebp(coverRes.b64, `${prefix}_cover`);
   out.costs.push(coverRes.cost);
+  if (onCoverSaved) await onCoverSaved(out.cover_url);
   await sleep(delayMs);
 
   // Questions (5)
@@ -101,10 +104,12 @@ export async function generateAllQuizImages({
   // Results (8) — share/OG images
   for (let i = 0; i < 8; i++) {
     report(`result ${i}`);
-    const { b64, cost } = await generateQuizImage(prompts.results[i]);
-    out.results.push({ result_code: i, image_url: await saveImageB64AsWebp(b64, `${prefix}_r${i}`) });
-    out.costs.push(cost);
-    await sleep(delayMs);
+      const { b64, cost } = await generateQuizImage(prompts.results[i]);
+      const image_url = await saveImageB64AsWebp(b64, `${prefix}_r${i}`);
+      out.results.push({ result_code: i, image_url });
+      out.costs.push(cost);
+      if (onResultSaved) await onResultSaved(i, image_url);
+      await sleep(delayMs);
   }
 
   return out;

@@ -37,6 +37,14 @@ export const RESULT_GLOW_ACCENTS = [
 export const COVER_SHARE_RULES =
   'Scroll-stopping mobile quiz cover: vibrant color pop, dramatic lighting, mysterious hook composition, premium feed thumbnail — makes people tap immediately. Flashy and share-worthy, not generic stock art.';
 
+/** Stricter no-text for quiz cover/intro thumbnails */
+export const COVER_NO_TEXT_RULES =
+  'CRITICAL — quiz cover must be 100% text-free: zero glyphs anywhere. Forbidden: quiz title, captions, subtitles, bottom caption strip, footer text band, shop signs, neon lettering, street signs, market banners, phone or tablet screens with UI or documents, books/menus with readable content, posters with slogans, speech bubbles, Latin alphabet, Vietnamese diacritics, Korean hangul, Japanese kana/kanji, Chinese hanzi (中文), numbers, emoji text, watermarks. Use sign-free streets, blank shop facades, turned-away phones, abstract wall art with NO readable symbols. Pure illustration only — the app shows quiz title separately.';
+
+/** Extra guard appended to every cover prompt for Flux/Imagen */
+export const FLUX_COVER_TEXT_GUARD =
+  'Negative: text, typography, letters, numbers, Vietnamese words, Chinese characters, hanzi 中文, kanji, hangul, captions, bottom caption strip, subtitle bar, footer text band, signage, neon text, shop names, speech bubbles, tablet screen UI, spreadsheet, watermark.';
+
 /** Stricter no-text for answer/result images (text is rendered by the app UI) */
 export const RESULT_NO_TEXT_RULES =
   'CRITICAL — answer/result image must be 100% text-free: zero glyphs anywhere. Forbidden: captions, subtitles, bottom caption strip, footer text band, lower-edge hanzi watermark, shop signs, neon lettering, street signs, market banners, phone or laptop screens showing UI, books/newspapers/menus with readable content, posters, t-shirts with slogans, license plates, speech bubbles, Latin alphabet, Vietnamese diacritics, Korean hangul, Japanese kana/kanji, Chinese hanzi (中文), numbers, emoji text, watermarks. Frame must end with clean scenery (sky, floor, pavement) — never a text bar at the bottom. Use sign-free streets, blank shop facades, turned-away phones, closed books, abstract wall art with NO readable symbols. Illustration only — the app adds answer text below.';
@@ -81,6 +89,18 @@ export function finalizeImagePrompt(geminiPrompt) {
   return `${core} ${NO_TEXT_RULES}`;
 }
 
+/** Quiz cover/intro — strict zero typography in art */
+export function finalizeCoverImagePrompt(geminiPrompt) {
+  const core = sanitizeResultScenePrompt(geminiPrompt);
+  if (!core) throw new Error('Empty cover image prompt');
+  let base = core;
+  if (!/scroll-stopping|tap-worthy|feed thumbnail/i.test(base)) base = `${base} ${COVER_SHARE_RULES}`;
+  if (!/glowing hero prop|neon.*glow|center-framed character|premium poster/i.test(base)) {
+    base = `${base} ${RESULT_HERO_RULES}`;
+  }
+  return `${base} ${COVER_NO_TEXT_RULES} ${FLUX_COVER_TEXT_GUARD}`;
+}
+
 /** Question images — show the situation, never bake question text into the art */
 export function finalizeQuestionImagePrompt(geminiPrompt) {
   const core = sanitizeResultScenePrompt(geminiPrompt);
@@ -119,8 +139,8 @@ export const RESULT_STYLE_BASE =
 
 export function coverPrompt({ title, description, category }) {
   const theme = [title, description, category].filter(Boolean).join('. ');
-  return finalizeImagePrompt(
-    `${RESULT_STYLE_BASE} ${COVER_SHARE_RULES} Quiz cover establishing shot: ${theme}. Unique environment and props matching this exact topic — dramatic, colorful, tap-worthy thumbnail.`,
+  return finalizeCoverImagePrompt(
+    `${RESULT_STYLE_BASE} Quiz cover establishing shot: ${theme}. Unique environment and props matching this exact topic — dramatic, colorful, tap-worthy thumbnail. Sign-free blank storefronts, no readable screens or documents.`,
   );
 }
 

@@ -13,7 +13,16 @@ const RESVG_WASM = path.join(__dirname, '../../node_modules/@resvg/resvg-wasm/in
 // librsvg on Vercel cannot load file:// fonts — embed as data URLs once at startup.
 const FONT_REGULAR_B64 = fs.readFileSync(FONT_REGULAR).toString('base64');
 const FONT_BOLD_B64 = fs.readFileSync(FONT_BOLD).toString('base64');
-const resvgReady = initWasm(fs.readFileSync(RESVG_WASM));
+
+async function ensureResvgReady() {
+  if (globalThis.__nambacResvgInit) return;
+  try {
+    await initWasm(fs.readFileSync(RESVG_WASM));
+  } catch (err) {
+    if (!String(err.message).includes('Already initialized')) throw err;
+  }
+  globalThis.__nambacResvgInit = true;
+}
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
@@ -149,7 +158,7 @@ function buildPanelSvg({ quizTitle, headline, description, hashtags, mode }) {
 }
 
 async function renderPanelPng(svgBuffer) {
-  await resvgReady;
+  await ensureResvgReady();
   const resvg = new Resvg(svgBuffer.toString('utf8'), {
     fitTo: { mode: 'width', value: OG_WIDTH },
     font: {

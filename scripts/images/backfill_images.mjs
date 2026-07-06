@@ -101,7 +101,7 @@ async function main() {
   const { getTurso, rowToQuiz, rowToQuestion, rowToResult } = await import('../../api/_lib/turso.js');
   const { generateQuizImagePrompts } = await import('../../shared/imagePromptEngine.js');
   const { getOpenRouterTextModel } = await import('../../shared/openrouterText.js');
-  const { finalizeImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt } = await import('../../shared/imagePrompts.js');
+  const { finalizeCoverImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt } = await import('../../shared/imagePrompts.js');
   const { generateQuizImage } = await import('../../api/_lib/generateQuizImage.js');
   const { saveImageB64AsWebp } = await import('../../api/_lib/saveQuizImage.js');
 
@@ -180,7 +180,7 @@ async function main() {
         skipQuestions,
       });
       prompts = {
-        cover: finalizeImagePrompt(generated.cover),
+        cover: finalizeCoverImagePrompt(generated.cover),
         questions: skipQuestions ? [] : generated.questions.map(finalizeQuestionImagePrompt),
         results: generated.results.map((p, i) =>
           finalizeResultImagePrompt(p, {

@@ -34,6 +34,7 @@ const Admin = () => {
     const [analyticsLoading, setAnalyticsLoading] = useState(false);
     const [generatingArchetypeId, setGeneratingArchetypeId] = useState(null);
     const [archetypeStatus, setArchetypeStatus] = useState('');
+    const [factoryWithImages, setFactoryWithImages] = useState(true);
 
     const mbtiArchetypes = getArchetypesByGroup('mbti');
     const personalityArchetypes = getArchetypesByGroup('personality');
@@ -78,6 +79,8 @@ const Admin = () => {
     const [editQuestions, setEditQuestions] = useState([]);
     const [editResults, setEditResults] = useState([]);
     const [editImagePreview, setEditImagePreview] = useState('');
+    const [bundleLoading, setBundleLoading] = useState(false);
+    const [bundleError, setBundleError] = useState('');
 
     const fetchQuizzes = async () => {
         setLoading(true);
@@ -210,13 +213,29 @@ const Admin = () => {
         if (generatingArchetypeId) return;
 
         setGeneratingArchetypeId(archetype.id);
-        setArchetypeStatus(`${archetype.emoji} ${archetype.labelKo || archetype.label} 생성 중… (1~3분)`);
+        const started = Date.now();
+        const tick = () => {
+            const sec = Math.floor((Date.now() - started) / 1000);
+            const phase = factoryWithImages
+                ? '텍스트 저장 중 (이미지는 완료 후 백그라운드)'
+                : '텍스트만 생성 중';
+            setArchetypeStatus(`${archetype.emoji} ${archetype.labelKo || archetype.label} — ${phase}… ${sec}초`);
+        };
+        tick();
+        const timer = window.setInterval(tick, 1000);
         setFactoryOpen(true);
 
         try {
-            const result = await api.generateArchetypeQuiz(archetype.id, { generateImages: true });
-            setArchetypeStatus(`완료: ${result.title}`);
-            showToast(`퀴즈 생성 완료: ${result.title}`, 'success');
+            const result = await api.generateArchetypeQuiz(archetype.id, {
+                generateImages: factoryWithImages,
+            });
+            if (result.imagesPending) {
+                setArchetypeStatus(`완료: ${result.title} (이미지 백그라운드 생성 중 — 5~8분)`);
+                showToast('퀴즈 저장 완료! 이미지는 백그라운드에서 생성됩니다.', 'success');
+            } else {
+                setArchetypeStatus(`완료: ${result.title}`);
+                showToast(`퀴즈 생성 완료: ${result.title}`, 'success');
+            }
             await fetchQuizzes();
             window.open(`/quiz/${result.id}`, '_blank');
         } catch (error) {
@@ -224,8 +243,27 @@ const Admin = () => {
             setArchetypeStatus('');
             showToast(`생성 실패: ${error.message}`, 'error');
         } finally {
+            window.clearInterval(timer);
             setGeneratingArchetypeId(null);
         }
+    };
+
+    const buildResultSlots = (bundleResults = [], quizType = '') => {
+        const parsed = (bundleResults || []).map((r) => ({
+            ...r,
+            result_code: parseInt(r.result_code, 10),
+            title: r.title || r.type_name || '',
+            description: r.description || '',
+        })).filter((r) => !Number.isNaN(r.result_code));
+
+        const slotCount = quizType === 'mbti_12q'
+            ? 16
+            : Math.max(8, ...(parsed.length ? parsed.map((r) => r.result_code + 1) : [8]));
+
+        return Array.from({ length: slotCount }, (_, i) => {
+            const found = parsed.find((r) => r.result_code === i);
+            return found || { result_code: i, title: '', description: '' };
+        });
     };
 
     const openEditModal = async (quiz) => {
@@ -236,28 +274,22 @@ const Admin = () => {
         setEditCategory(normalizeCategory(quiz.category || ''));
         setEditImagePreview(quiz.image_url || '');
         setEditQuestions([]);
-
-        const defaultResults = Array.from({ length: 8 }, (_, i) => ({
-            result_code: i,
-            title: '',
-            description: '',
-        }));
-        setEditResults(defaultResults);
+        setEditResults(buildResultSlots([], quiz.quiz_type));
+        setBundleError('');
+        setBundleLoading(true);
 
         try {
             const bundle = await api.fetchQuizBundle(quiz.id);
-            if (bundle.questions) setEditQuestions(bundle.questions);
-
-            if (bundle.results?.length > 0) {
-                const mergedResults = defaultResults.map(dr => {
-                    const found = bundle.results.find(r => r.result_code === dr.result_code);
-                    return found || dr;
-                });
-                setEditResults(mergedResults);
+            if (bundle.questions?.length) {
+                setEditQuestions(bundle.questions);
             }
+            setEditResults(buildResultSlots(bundle.results, bundle.quiz?.quiz_type || quiz.quiz_type));
         } catch (error) {
             console.error("Error fetching quiz details:", error);
+            setBundleError(error.message || '문항을 불러오지 못했습니다.');
             showToast('문항을 불러오지 못했습니다.', 'error');
+        } finally {
+            setBundleLoading(false);
         }
     };
 
@@ -270,6 +302,8 @@ const Admin = () => {
         setEditQuestions([]);
         setEditResults([]);
         setEditImagePreview('');
+        setBundleLoading(false);
+        setBundleError('');
     };
 
     const handleQuestionChange = (index, field, value) => {
@@ -358,6 +392,12 @@ const Admin = () => {
                             ))}
                         </div>
                         <div className="p-6 overflow-y-auto flex-1 bg-white">
+                            {bundleLoading && (
+                                <p className="text-sm font-bold text-[#FF2D85] mb-4">문항·결과 불러오는 중…</p>
+                            )}
+                            {bundleError && !bundleLoading && (
+                                <p className="text-sm font-bold text-red-600 mb-4">{bundleError}</p>
+                            )}
                             {modalTab === 'info' && (
                                 <div className="space-y-5 max-w-2xl">
                                     {editImagePreview && (
@@ -378,6 +418,9 @@ const Admin = () => {
                             )}
                             {modalTab === 'questions' && (
                                 <div className="space-y-4">
+                                    {editQuestions.length === 0 && !bundleLoading && (
+                                        <p className="text-sm text-gray-500">문항이 없습니다.</p>
+                                    )}
                                     {editQuestions.map((q, idx) => (
                                         <div key={idx} className="border-[1.5px] border-black p-5 rounded-lg">
                                             <input type="text" value={q.question_text || ''} onChange={(e) => handleQuestionChange(idx, 'question_text', e.target.value)} className="w-full px-4 py-2 mb-3 border-[1.5px] border-black" />
@@ -494,6 +537,7 @@ const Admin = () => {
                                                     <div>
                                                         <h3>AI 퀴즈 팩토리</h3>
                                                         <p>MBTI · 성격 테스트 · Gemini 이미지 자동 생성 · {factoryOpen ? '접기' : '펼치기'}</p>
+                                                        <p className="text-[10px] text-gray-400 mt-1">텍스트 1~2분 · 이미지는 저장 후 백그라운드 5~8분</p>
                                                     </div>
                                                     <span style={{ fontWeight: 900 }}>{factoryOpen ? '▲' : '▼'}</span>
                                                 </button>
@@ -502,6 +546,15 @@ const Admin = () => {
                                                         {archetypeStatus && (
                                                             <p className="text-xs font-bold text-[#FF2D85] mb-2">{archetypeStatus}</p>
                                                         )}
+                                                        <label className="flex items-center gap-2 mb-3 text-xs font-bold text-gray-600 cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={factoryWithImages}
+                                                                disabled={!!generatingArchetypeId}
+                                                                onChange={(e) => setFactoryWithImages(e.target.checked)}
+                                                            />
+                                                            커버+결과 이미지 포함 (텍스트 저장 후 백그라운드, 약 5~8분)
+                                                        </label>
                                                         <p className="text-[10px] font-black uppercase tracking-widest text-purple-600 mt-2">MBTI</p>
                                                         <div className="admin-archetype-grid">
                                                             {mbtiArchetypes.map((arch) => (

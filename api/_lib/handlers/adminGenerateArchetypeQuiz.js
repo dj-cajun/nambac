@@ -1,6 +1,6 @@
 import { requireAdmin } from '../adminAuth.js';
 import { createQuiz, insertQuestions, insertResults } from '../quizDb.js';
-import { generateAllQuizImages } from '../quizImages.js';
+import { enrichArchetypeQuizImages } from '../enrichArchetypeImages.js';
 import { getArchetypeById } from '../../../shared/personalityArchetypes.js';
 import {
   generateArchetypeQuizContent,
@@ -14,7 +14,7 @@ function getGeminiKey() {
 /**
  * POST /api/admin/generate-archetype-quiz
  * Body: { archetypeId: string, generateImages?: boolean }
- * One-click GitHub-style MBTI / personality quiz factory.
+ * Saves quiz text first (~1–2 min), returns immediately; images run in background.
  */
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -46,80 +46,22 @@ export default async function handler(req, res) {
       return res.status(422).json({ error: 'Quiz validation failed', details: validationErrors });
     }
 
-    let coverUrl = '/images/default_cover.png';
-    let resultsWithImages = payload.results.map((r) => ({
+    const placeholderResults = payload.results.map((r) => ({
       ...r,
       image_url: '/images/default_cover.png',
     }));
-
-    if (generateImages && (process.env.OPENROUTER_API_KEY || apiKey)) {
-      try {
-        if (archetype.quiz_type === 'mbti_12q') {
-          const { generateQuizImage } = await import('../generateQuizImage.js');
-          const { finalizeImagePrompt, coverPrompt } = await import('../../../shared/imagePrompts.js');
-          const { generateQuizImagePrompts } = await import('../../../shared/imagePromptEngine.js');
-          let coverPromptText;
-          try {
-            const generated = await generateQuizImagePrompts({
-              geminiKey: apiKey,
-              openrouterKey: process.env.OPENROUTER_API_KEY,
-              quiz: {
-                title: payload.title,
-                description: payload.description,
-                category: payload.category,
-                questions: [],
-                results: payload.results.slice(0, 8),
-              },
-              skipQuestions: true,
-            });
-            coverPromptText = finalizeImagePrompt(generated.cover);
-          } catch {
-            coverPromptText = finalizeImagePrompt(
-              coverPrompt({
-                title: payload.title,
-                description: payload.description,
-                category: payload.category,
-              }),
-            );
-          }
-          const { b64 } = await generateQuizImage(coverPromptText);
-          const { saveImageB64AsWebp } = await import('../saveQuizImage.js');
-          coverUrl = await saveImageB64AsWebp(b64, `arch_${archetypeId.slice(0, 8)}_cover`);
-        } else {
-          const images = await generateAllQuizImages({
-            quiz: {
-              title: payload.title,
-              description: payload.description,
-              category: payload.category,
-              questions: payload.questions,
-              results: payload.results,
-            },
-            idPrefix: `arch_${archetypeId.slice(0, 8)}`,
-            delayMs: 2500,
-            skipQuestions: true,
-          });
-          if (images.cover_url) coverUrl = images.cover_url;
-          resultsWithImages = payload.results.map((r) => {
-            const img = images.results.find((x) => x.result_code === r.result_code);
-            return { ...r, image_url: img?.image_url || '/images/default_cover.png' };
-          });
-        }
-      } catch (imgErr) {
-        console.warn('Archetype quiz images skipped:', imgErr.message);
-      }
-    }
 
     const quiz = await createQuiz({
       title: payload.title,
       description: payload.description,
       category: payload.category,
       quiz_type: payload.quiz_type || archetype.quiz_type,
-      image_url: coverUrl,
+      image_url: '/images/default_cover.png',
     });
     await insertQuestions(quiz.id, payload.questions);
-    await insertResults(quiz.id, resultsWithImages);
+    await insertResults(quiz.id, placeholderResults);
 
-    return res.status(201).json({
+    const response = {
       ok: true,
       id: quiz.id,
       title: payload.title,
@@ -127,7 +69,25 @@ export default async function handler(req, res) {
       quiz_type: payload.quiz_type,
       archetypeId: archetype.id,
       playUrl: `/quiz/${quiz.id}`,
-    });
+      imagesPending: false,
+    };
+
+    const canGenerateImages = generateImages && (openrouterKey || apiKey);
+    if (canGenerateImages) {
+      response.imagesPending = true;
+      res.status(201).json(response);
+      enrichArchetypeQuizImages({
+        quizId: quiz.id,
+        archetype,
+        payload,
+        apiKey,
+      }).catch((err) => {
+        console.error('[archetype-images] background failed:', err.message || err);
+      });
+      return;
+    }
+
+    return res.status(201).json(response);
   } catch (err) {
     console.error('POST /api/admin/generate-archetype-quiz', err);
     return res.status(500).json({ error: err.message || 'Archetype quiz generation failed' });

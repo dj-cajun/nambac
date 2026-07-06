@@ -21,8 +21,9 @@ export function createAdminApi(adminKey = '') {
       return data.quizzes || [];
     },
 
+    /** Public read — same bundle as quiz page; avoids admin-only route issues in prod */
     async fetchQuizBundle(quizId) {
-      return parseJson(await fetch(apiUrl(`/admin/quizzes/${quizId}`), { headers: headers() }));
+      return parseJson(await fetch(apiUrl(`/quizzes/${quizId}`)));
     },
 
     async updateQuizStatus(quizId, is_active, status) {
