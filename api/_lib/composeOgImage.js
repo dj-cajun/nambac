@@ -8,6 +8,10 @@ const IMAGES_DIR = path.join(__dirname, '../../public/images');
 const FONT_REGULAR = path.join(__dirname, 'fonts/NotoSans-Regular.ttf');
 const FONT_BOLD = path.join(__dirname, 'fonts/NotoSans-Bold.ttf');
 
+// librsvg on Vercel cannot load file:// fonts — embed as data URLs once at startup.
+const FONT_REGULAR_B64 = fs.readFileSync(FONT_REGULAR).toString('base64');
+const FONT_BOLD_B64 = fs.readFileSync(FONT_BOLD).toString('base64');
+
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 const IMAGE_HEIGHT = 400;
@@ -99,18 +103,16 @@ function wrapLines(text, maxLen, maxLines) {
 }
 
 function fontFaceCss() {
-  const regular = FONT_REGULAR.replace(/\\/g, '/');
-  const bold = FONT_BOLD.replace(/\\/g, '/');
   return `
     @font-face {
       font-family: 'OgSans';
-      src: url('file://${regular}') format('truetype');
+      src: url('data:font/ttf;base64,${FONT_REGULAR_B64}') format('truetype');
       font-weight: 400;
       font-style: normal;
     }
     @font-face {
       font-family: 'OgSans';
-      src: url('file://${bold}') format('truetype');
+      src: url('data:font/ttf;base64,${FONT_BOLD_B64}') format('truetype');
       font-weight: 700;
       font-style: normal;
     }
