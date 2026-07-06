@@ -8,7 +8,7 @@ export const IS_PRODUCTION = import.meta.env.VITE_ENV === 'production' || import
 export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 function handlerApiUrl(apiPath, extraQuery = '') {
-  const base = `/api/handler?route=${encodeURIComponent(apiPath)}`;
+  const base = `/api/handler?path=${encodeURIComponent(apiPath)}`;
   return extraQuery ? `${base}&${extraQuery}` : base;
 }
 

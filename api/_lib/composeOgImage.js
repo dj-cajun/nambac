@@ -182,7 +182,7 @@ export async function composeOgImage({
 
 export function buildOgImageApiUrl(host, quizId, scoreCode = null) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
-  const params = new URLSearchParams({ route: 'og-image', quizId });
+  const params = new URLSearchParams({ path: 'og-image', quizId });
   if (scoreCode !== null && scoreCode !== undefined && !Number.isNaN(scoreCode)) {
     params.set('score', String(scoreCode));
   }

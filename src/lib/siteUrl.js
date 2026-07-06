@@ -20,7 +20,7 @@ export function getOgDefaultImageUrl() {
 
 /** Composed OG card (image + quiz title + answer + #tags) */
 export function buildOgImageUrl(quizId, score = null) {
-  const params = new URLSearchParams({ route: 'og-image', quizId });
+  const params = new URLSearchParams({ path: 'og-image', quizId });
   if (score !== null && score !== undefined && score !== '') {
     params.set('score', String(score));
   }

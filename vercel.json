@@ -1,22 +1,22 @@
 {
   "crons": [
     {
-      "path": "/api/handler?route=cron/daily-quiz",
+      "path": "/api/handler?path=cron/daily-quiz",
       "schedule": "0 3 * * *"
     }
   ],
   "rewrites": [
     {
       "source": "/share/:id/:score",
-      "destination": "/api/handler?route=og&id=:id&score=:score"
+      "destination": "/api/handler?path=og&id=:id&score=:score"
     },
     {
       "source": "/share/:id",
-      "destination": "/api/handler?route=og&id=:id"
+      "destination": "/api/handler?path=og&id=:id"
     },
     {
-      "source": "/api/:path*",
-      "destination": "/api/handler?route=:path*"
+      "source": "/api/(?!handler$)(.*)",
+      "destination": "/api/handler?path=$1"
     },
     {
       "source": "/((?!api/).*)",
