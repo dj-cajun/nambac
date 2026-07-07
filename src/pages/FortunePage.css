@@ -1,4 +1,4 @@
-/* Fortune — Tử vi bóc phốt hàng ngày */
+/* Fortune — Tử vi tình yêu hàng ngày */
 
 .fortune-page {
   width: 100%;
@@ -247,7 +247,7 @@
   overflow-x: visible;
 }
 
-/* 퀴즈 Result.jsx result-main 과 동일한 상단 배치 */
+/* Cùng bố cục result-main như trang kết quả quiz */
 .fortune-result-main {
   width: 100%;
   max-width: 420px;

@@ -14,6 +14,7 @@ import {
   getDateStr,
   parseFortuneShareParams,
 } from '../../shared/fortuneEngine.js';
+import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import { fetchFortuneSceneImage } from '../lib/fortuneApi.js';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink.js';
 import CopyToast from '../components/CopyToast.jsx';
@@ -145,21 +146,21 @@ export default function FortunePage() {
       <Helmet>
         <title>
           {resultTitle
-            ? `${resultTitle} — Tử vi bóc phốt`
-            : 'Tử vi bóc phốt hàng ngày 🔮 — nambac.xyz'}
+            ? `${resultTitle} — ${FORTUNE_BRAND.label}`
+            : `${FORTUNE_BRAND.kicker} ${FORTUNE_BRAND.emoji} — nambac.xyz`}
         </title>
         <meta
           name="description"
           content={
             fortune
               ? `${fortune.body.slice(0, 120)}…`
-              : 'Nhập tên — xem vận may (hay vận nạn) Gen Z Sài Gòn hôm nay. Cùng ngày cùng tên = cùng kết quả.'
+              : FORTUNE_BRAND.metaDefault
           }
         />
         {result && ogImageUrl && (
           <>
             <meta property="og:type" content="website" />
-            <meta property="og:title" content={resultTitle ? `${resultTitle} — nambac.xyz` : 'Tử vi bóc phốt — nambac.xyz'} />
+            <meta property="og:title" content={resultTitle ? `${resultTitle} — nambac.xyz` : `${FORTUNE_BRAND.labelFull} — nambac.xyz`} />
             <meta property="og:description" content={fortune?.body.slice(0, 160)} />
             <meta property="og:image" content={ogImageUrl} />
             <meta property="og:image:width" content="1200" />
@@ -175,8 +176,8 @@ export default function FortunePage() {
         <>
           <header className="fortune-hero">
             <p className="fortune-date-badge">📅 {introDateLabel}</p>
-            <h1>Tử vi bóc phốt 🔮</h1>
-            <p>Điền tên — Rút bài — Xem sự thật tàn nhẫn hôm nay.</p>
+            <h1>{FORTUNE_BRAND.labelFull} {FORTUNE_BRAND.emoji}</h1>
+            <p>{FORTUNE_BRAND.heroLine}</p>
           </header>
 
           {friendShare && (
@@ -205,12 +206,12 @@ export default function FortunePage() {
               autoComplete="nickname"
             />
             <button type="submit" className="fortune-submit-btn" disabled={!name.trim()}>
-              Xem vận hôm nay ⚡
+              {FORTUNE_BRAND.submitCta}
             </button>
           </form>
 
           <p className="fortune-hint">
-            Kết quả cố định cả ngày với cùng tên — mai quay lại sẽ khác. Không lưu server, 0 đồng.
+            Kết quả cố định cả ngày với cùng tên — mai quay lại sẽ khác. Không lưu máy chủ, 0 đồng.
           </p>
         </>
       )}

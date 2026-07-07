@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import sharp from 'sharp';
 import { formatFortuneDateShort } from '../../shared/fortuneEngine.js';
+import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMAGES_DIR = path.join(__dirname, '../../public/images');
@@ -264,16 +265,16 @@ const FORTUNE_PANEL_HEIGHT = FORTUNE_OG_HEIGHT - FORTUNE_IMAGE_HEIGHT;
 
 function buildFortunePanelSvg({ name, fortuneTitle, emoji, dateStr }) {
   const who = truncate(name || 'Bạn thân', 28);
-  const title = truncate(`${emoji || '🔮'} ${fortuneTitle || 'Tử vi bóc phốt'}`, 56);
+  const title = truncate(`${emoji || FORTUNE_BRAND.emoji} ${fortuneTitle || FORTUNE_BRAND.labelFull}`, 56);
   const dateLine = truncate(formatFortuneDateShort(dateStr), 24);
 
   return Buffer.from(`<svg width="${FORTUNE_OG_WIDTH}" height="${FORTUNE_PANEL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs><style>${fontFaceCss()}</style></defs>
   <rect width="100%" height="100%" fill="#1e0a14"/>
   <rect width="100%" height="6" fill="#FF2D85"/>
-  <text x="48" y="40" fill="#fda4af" font-size="20" font-weight="700">TỬ VI BÓC PHỐT · NAMBAC.XYZ</text>
+  <text x="48" y="40" fill="#fda4af" font-size="20" font-weight="700">TỬ VI TÌNH YÊU · NAMBAC.XYZ</text>
   <text x="${FORTUNE_OG_WIDTH - 48}" y="40" fill="#fda4af" font-size="18" text-anchor="end">${escapeXml(dateLine)}</text>
-  <text x="48" y="100" fill="#FF2D85" font-size="52" font-weight="700">Thẻ vận của: ${escapeXml(who)}</text>
+  <text x="48" y="100" fill="#FF2D85" font-size="52" font-weight="700">Thẻ tình yêu của: ${escapeXml(who)}</text>
   <text x="48" y="155" fill="#fde047" font-size="30" font-weight="700">${escapeXml(title)}</text>
   <text x="48" y="${FORTUNE_PANEL_HEIGHT - 36}" fill="#94a3b8" font-size="20">Cùng ngày cùng tên = cùng kết quả · nambac.xyz/fortune</text>
 </svg>`);

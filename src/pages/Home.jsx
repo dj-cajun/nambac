@@ -372,7 +372,7 @@ export default function Home() {
       )}
 
       <nav className="home-quick-chips" aria-label="Chơi nhanh">
-        <Link to="/fortune" className="home-quick-chip fortune">🔮 Tử vi bóc phốt</Link>
+        <Link to="/fortune" className="home-quick-chip fortune">💘 Tử vi tình yêu</Link>
         <Link to="/balance" className="home-quick-chip balance">⚖️ Chọn 1 trong 2</Link>
         <Link to="/roast-card" className="home-quick-chip roast">💳 Thẻ đen bóc phốt</Link>
       </nav>

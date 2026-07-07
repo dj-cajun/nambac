@@ -1,4 +1,5 @@
 import { finalizeResultImagePrompt } from './imagePrompts.js';
+import { FORTUNE_BRAND } from './fortuneMeta.js';
 
 /** Visual scene briefs for daily fortune archetypes (0–7) — English only, no text in art */
 const FORTUNE_SCENES = [
@@ -16,7 +17,7 @@ export function getFortuneScenePrompt(fortuneIndex) {
   const idx = ((Number(fortuneIndex) % 8) + 8) % 8;
   const scene = FORTUNE_SCENES[idx];
   return finalizeResultImagePrompt(
-    `Daily fortune share-card poster ${idx}. Center-framed Vietnamese Gen Z character, expressive roast comedy reaction. Scene: ${scene}. Ho Chi Minh City Gen Z spiritual humor aesthetic, premium viral quiz share energy.`,
-    { resultCode: idx, quizTitle: 'Tử vi bóc phốt', category: 'fortune' },
+    `Daily love fortune share-card poster ${idx}. Center-framed Vietnamese Gen Z character, expressive romantic roast comedy reaction. Scene: ${scene}. Ho Chi Minh City Gen Z love drama humor aesthetic, premium viral quiz share energy.`,
+    { resultCode: idx, quizTitle: FORTUNE_BRAND.labelFull, category: 'fortune' },
   );
 }

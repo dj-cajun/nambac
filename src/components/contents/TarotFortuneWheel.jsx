@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buildFortuneResultTitle } from '../../../shared/fortuneEngine.js';
+import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
 import './TarotFortuneWheel.css';
 
 const CARD_COUNT = 20;
@@ -16,7 +17,7 @@ const SOLO_PAUSE_MS = 400;
 const GROW_MS = 1100;
 const VANISH_MS = 700;
 
-/** 뒤집힌 뒤 선택 카드 고정 위치 (덱 좌표) */
+/** 뒤집힌 뒤 선택 카드 고정 위치 */
 const PICKED_CARD_X = 0;
 const PICKED_CARD_Y = -50;
 const PICKED_CARD_SCALE_START = 1.4;
@@ -71,7 +72,7 @@ function CardFaces({ frontMode = 'default' }) {
         ) : (
           <>
             <div className="tarot-wheel-comic-front-head">
-              <span>NAMBAC TAROT</span>
+              <span>BÀI TỬ VI TÌNH YÊU</span>
               <span className="tarot-wheel-comic-year">#2026</span>
             </div>
             <div className="tarot-wheel-comic-front-body">
@@ -81,7 +82,7 @@ function CardFaces({ frontMode = 'default' }) {
                 <div className="tarot-wheel-sk-line tarot-wheel-sk-line--md" />
               </div>
             </div>
-            <div className="tarot-wheel-comic-badge">Tâm linh AI</div>
+            <div className="tarot-wheel-comic-badge">{FORTUNE_BRAND.cardBadge}</div>
           </>
         )}
       </div>
@@ -104,7 +105,7 @@ function pickedFrontMode(phase) {
 
 /**
  * awaitingGather → gathered → grid → pick → flip → revealed
- * → solo (카드만) → growing → vanish → expanded (블러 페이드인)
+ * → solo → growing → vanish → expanded
  */
 export default function TarotFortuneWheel({
   fortune,
@@ -169,7 +170,7 @@ export default function TarotFortuneWheel({
             ? 'KẾT QUẢ CỦA BẠN ✨'
             : isPicking
               ? 'ĐANG MỞ LÁ BÀI…'
-              : 'ĐANG XẾP BÀI… 🔮';
+              : 'ĐANG XẾP BÀI… 💘';
 
   const hintText =
     phase === 'awaitingGather'
@@ -216,7 +217,7 @@ export default function TarotFortuneWheel({
         </div>
 
         <div className="fortune-compat-box">
-          <p className="fortune-compat-title">🔥 Cung hoàn sinh tồn Sài Gòn hôm nay</p>
+          <p className="fortune-compat-title">{FORTUNE_BRAND.compatTitle}</p>
           <p className="fortune-compat-line fortune-compat-good">
             <strong>Cứu tinh (chỉ số trạng thái hôm nay {result.soulmateIndex}) 🌟:</strong>{' '}
             {result.soulmate.emoji} {result.soulmate.title}
@@ -226,7 +227,7 @@ export default function TarotFortuneWheel({
             {result.rival.emoji} {result.rival.title}
           </p>
           <p className="fortune-compat-cta">
-            Tag ngay đứa &quot;Báo thủ&quot; hoặc &quot;Cứu tinh&quot; của bạn vào đây! 💬
+            Nhắn ngay đứa &quot;Báo thủ&quot; hoặc &quot;Cứu tinh&quot; của bạn vào đây! 💬
           </p>
         </div>
 
@@ -249,7 +250,7 @@ export default function TarotFortuneWheel({
             {resultCard}
             {imageError && (
               <p className="fortune-image-error">
-                Không tải được ảnh AI — vẫn có thể tải card bên dưới nhé.
+                Không tải được ảnh — vẫn có thể tải thẻ bên dưới nhé.
               </p>
             )}
           </motion.main>
@@ -286,7 +287,7 @@ export default function TarotFortuneWheel({
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            <p className="tarot-wheel-kicker">Tử vi bóc phốt hàng ngày</p>
+            <p className="tarot-wheel-kicker">{FORTUNE_BRAND.kicker}</p>
             <h2 className="tarot-wheel-title">{headerTitle}</h2>
           </motion.div>
         )}

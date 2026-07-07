@@ -1,5 +1,6 @@
 import { getFortuneByIndex } from '../../../shared/fortuneData.js';
 import { buildFortuneResultTitle, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
+import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
 import { isBot, ogHtml } from './og.js';
 
 function buildFortuneOgImageApiUrl(host, name, fortuneIndex, dateStr) {
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
       return res.redirect(302, redirectUrl);
     }
 
-    const title = `${buildFortuneResultTitle({ name, fortune, dateLabel: dateStr })} — Tử vi bóc phốt`;
+    const title = `${buildFortuneResultTitle({ name, fortune, dateLabel: dateStr })} — ${FORTUNE_BRAND.label}`;
     const description = `${fortune.body.slice(0, 160)}…`;
 
     const html = ogHtml({
