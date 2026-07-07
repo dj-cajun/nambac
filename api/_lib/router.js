@@ -24,6 +24,7 @@ import balanceOg from './handlers/balanceOg.js';
 import balanceShare from './handlers/balanceShare.js';
 import roastOg from './handlers/roastOg.js';
 import roastShare from './handlers/roastShare.js';
+import roastImage from './handlers/roastImage.js';
 import featureStats from './handlers/featureStats.js';
 import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
@@ -117,6 +118,9 @@ export async function dispatch(req, res, segments = []) {
   // ── Roast blacklist OG card + crawler share page ──
   if (a === 'roast-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
     return roastOg(req, res);
+  }
+  if (a === 'roast-image' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return roastImage(req, res);
   }
   if (a === 'roast-share' && !b) return roastShare(req, res);
 

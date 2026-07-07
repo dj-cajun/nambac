@@ -49,6 +49,24 @@
   margin-bottom: 14px;
 }
 
+.fortune-intro-grid--single {
+  grid-template-columns: 1fr;
+}
+
+.fortune-intro-card--single {
+  padding: 10px;
+}
+
+.fortune-intro-card--single .fortune-intro-card-image,
+.fortune-intro-card--single .fortune-intro-card-skeleton {
+  aspect-ratio: 4 / 3;
+}
+
+.fortune-intro-card--single .fortune-intro-card-kicker {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
 .fortune-intro-card {
   padding: 8px;
   background: #fff;

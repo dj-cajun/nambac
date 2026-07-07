@@ -217,6 +217,13 @@ export function getTraitById(id) {
   return ROAST_TRAITS.find((t) => t.id === id) || ROAST_TRAITS[0];
 }
 
+/** Pick a random roast trait, optionally avoiding one id (for re-rolls). */
+export function pickRandomTrait(excludeId) {
+  const pool = excludeId ? ROAST_TRAITS.filter((t) => t.id !== excludeId) : ROAST_TRAITS;
+  const list = pool.length ? pool : ROAST_TRAITS;
+  return list[Math.floor(Math.random() * list.length)];
+}
+
 export function buildRoastShareUrl(name, traitId, origin) {
   const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
   const params = new URLSearchParams({

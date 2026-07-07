@@ -86,22 +86,54 @@
   margin-bottom: 16px;
 }
 
-/* 3:4 capture target */
+/* portrait blacklist share card (natural height so the AI scene + text fit) */
 .roast-blacklist-card {
   width: 100%;
-  aspect-ratio: 3 / 4;
   background: linear-gradient(145deg, #f43f5e 0%, #ec4899 45%, #db2777 100%);
   border: 4px solid #0f172a;
   border-radius: 1.5rem;
-  padding: 24px 20px;
+  padding: 22px 18px;
   box-shadow: 8px 8px 0 #0f172a;
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 14px;
   position: relative;
   box-sizing: border-box;
   overflow: hidden;
+}
+
+.roast-card-scene {
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 2px solid rgba(15, 23, 42, 0.55);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.roast-card-scene-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  object-fit: cover;
+}
+
+.roast-card-scene-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  font-size: 3.5rem;
+}
+
+.roast-card-scene-fallback.is-loading {
+  animation: roast-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes roast-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 
 .roast-danger-badge {
@@ -140,8 +172,7 @@
 }
 
 .roast-card-body-panel {
-  margin: auto 0;
-  padding: 16px;
+  padding: 14px 16px;
   background: rgba(15, 23, 42, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1rem;
@@ -162,16 +193,25 @@
   font-size: 1.5rem;
   font-weight: 900;
   color: #fff;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   word-break: break-word;
+}
+
+.roast-card-field-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.3;
+  color: #fde047;
+  margin-bottom: 6px;
 }
 
 .roast-card-field-crime {
   display: block;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 12.5px;
+  font-weight: 700;
   line-height: 1.45;
-  color: #fde047;
+  color: #fee2e2;
 }
 
 .roast-card-footer-row {
@@ -258,5 +298,137 @@
   font-size: 13px;
   font-weight: 800;
   color: #ff2d85;
+  text-decoration: underline;
+}
+
+/* ── Generate button + form hint ── */
+.roast-generate-btn {
+  width: 100%;
+  padding: 15px;
+  border: 3px solid #0f172a;
+  border-radius: 1rem;
+  background: #ff2d85;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #0f172a;
+  transition: transform 0.1s;
+}
+
+.roast-generate-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #0f172a;
+}
+
+.roast-generate-btn:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.roast-form-hint {
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+/* ── Loading screen ── */
+.roast-loading {
+  background: #fff;
+  border: 2px solid #1e293b;
+  border-radius: 1.25rem;
+  box-shadow: 4px 4px 0 #1e293b;
+  padding: 30px 22px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.roast-loading-emoji {
+  font-size: 3rem;
+  margin-bottom: 8px;
+  animation: roast-bob 1.1s ease-in-out infinite;
+}
+
+@keyframes roast-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.roast-loading-name {
+  margin: 0 0 18px;
+  font-size: 15px;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+.roast-loading-track {
+  width: 100%;
+  height: 16px;
+  background: #e2e8f0;
+  border: 2px solid #0f172a;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.roast-loading-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f43f5e, #ec4899, #db2777);
+  border-radius: 999px;
+  transition: width 0.08s linear;
+}
+
+.roast-loading-pct {
+  margin: 10px 0 4px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #ff2d85;
+}
+
+.roast-loading-line {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+/* ── Reroll / restart ── */
+.roast-reroll-btn {
+  width: 100%;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 2.5px solid #0f172a;
+  border-radius: 1rem;
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #0f172a;
+}
+
+.roast-reroll-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #0f172a;
+}
+
+.roast-restart-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
   text-decoration: underline;
 }

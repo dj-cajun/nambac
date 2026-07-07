@@ -294,19 +294,15 @@ export default function FortunePage({ dayOffset = 0 }) {
             <p>{isTomorrow ? 'Xem trước vận tình yêu ngày mai — chuẩn bị tinh thần nhé!' : FORTUNE_BRAND.heroLine}</p>
           </header>
 
-          <section className="fortune-intro-grid" aria-label="Tử vi hôm nay và ngày mai">
-            <article className="fortune-intro-card">
-              <p className="fortune-intro-card-kicker">Hôm nay</p>
-              {introTodayImage ? (
-                <img src={introTodayImage} alt="Tử vi tình yêu hôm nay" className="fortune-intro-card-image" />
-              ) : (
-                <div className="fortune-intro-card-skeleton" aria-hidden="true" />
-              )}
-            </article>
-            <article className="fortune-intro-card">
-              <p className="fortune-intro-card-kicker">Ngày mai</p>
-              {introTomorrowImage ? (
-                <img src={introTomorrowImage} alt="Tử vi tình yêu ngày mai" className="fortune-intro-card-image" />
+          <section className="fortune-intro-grid fortune-intro-grid--single" aria-label={`Tử vi tình yêu ${dayLabel.toLowerCase()}`}>
+            <article className="fortune-intro-card fortune-intro-card--single">
+              <p className="fortune-intro-card-kicker">{dayLabel}</p>
+              {(isTomorrow ? introTomorrowImage : introTodayImage) ? (
+                <img
+                  src={isTomorrow ? introTomorrowImage : introTodayImage}
+                  alt={`Tử vi tình yêu ${dayLabel.toLowerCase()}`}
+                  className="fortune-intro-card-image"
+                />
               ) : (
                 <div className="fortune-intro-card-skeleton" aria-hidden="true" />
               )}
