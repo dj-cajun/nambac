@@ -96,6 +96,11 @@
     background: linear-gradient(135deg, #ffe4e6, #fff);
 }
 
+.home-today-brain {
+    border-color: #7c3aed;
+    background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+}
+
 .home-today-kicker {
     display: block;
     font-size: 11px;

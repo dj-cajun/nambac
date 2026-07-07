@@ -27,6 +27,7 @@ import BlogPost from './pages/BlogPost';
 import FortunePage from './pages/FortunePage';
 import BalancePage from './pages/BalancePage';
 import RoastCardPage from './pages/RoastCardPage';
+import BrainPage from './pages/BrainPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import { DrawerProvider } from './components/shell/DrawerContext';
 import SidebarDrawer from './components/shell/SidebarDrawer';
@@ -93,6 +94,7 @@ function AppContent() {
         <Route path="/balance" element={<BalancePage />} />
         <Route path="/balance/:questionId" element={<BalancePage />} />
         <Route path="/roast-card" element={<RoastCardPage />} />
+        <Route path="/brain" element={<BrainPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/editor" element={<QuizEditor />} />
         <Route path="/about" element={<About />} />

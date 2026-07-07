@@ -50,6 +50,11 @@ export function buildBalanceOgImageUrl(questionId, choice = null) {
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
 
+/** Brain (What's in your head) OG — uses the pre-generated scene image directly */
+export function buildBrainOgImageUrl(resultId) {
+  return `${getSiteOrigin()}/images/brain_${resultId}.webp`;
+}
+
 /** Fortune result OG — same handler pattern as quiz */
 export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel) {
   const params = new URLSearchParams({

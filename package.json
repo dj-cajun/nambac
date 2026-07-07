@@ -15,6 +15,7 @@
     "images:fortune": "node scripts/images/backfill_fortune.mjs",
     "images:balance": "node scripts/images/backfill_balance.mjs",
     "images:roast": "node scripts/images/backfill_roast.mjs",
+    "images:brain": "node scripts/images/backfill_brain.mjs",
     "images:backfill:all": "bash scripts/images/backfill_all.sh",
     "images:webp": "node scripts/images/convert_to_webp.mjs",
     "images:fix-urls": "node scripts/images/fix_image_urls.mjs",

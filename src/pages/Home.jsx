@@ -404,6 +404,10 @@ export default function Home() {
             <span className="home-today-kicker">💳 Thẻ đen bóc phốt</span>
             <span className="home-today-card-title">Bóc phốt đứa bạn hay trễ hẹn, ghost Zalo</span>
           </Link>
+          <Link to="/brain" className="home-today-card home-today-brain">
+            <span className="home-today-kicker">🧠 Trong đầu bạn có gì</span>
+            <span className="home-today-card-title">Quét sóng não — xem % suy nghĩ thầm kín</span>
+          </Link>
         </div>
       </section>
 

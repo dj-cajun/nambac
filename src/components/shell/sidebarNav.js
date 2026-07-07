@@ -35,6 +35,7 @@ export const SIDEBAR_SECTIONS = [
     links: [
       { to: '/balance', label: 'Chọn 1 trong 2 ⚖️' },
       { to: '/roast-card', label: 'Thẻ đen bóc phốt 💳' },
+      { to: '/brain', label: 'Trong đầu bạn có gì 🧠' },
     ],
   },
 ];
