@@ -1,5 +1,5 @@
 import { composeOgImageOnly } from '../composeOgImage.js';
-import { isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
+import { getDateStr, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
 import { resolveFortuneSceneForOg } from '../fortuneImageService.js';
 
 export default async function handler(req, res) {
@@ -11,10 +11,10 @@ export default async function handler(req, res) {
   try {
     const idxRaw = req.query?.idx;
     const fortuneIndex = idxRaw !== undefined && idxRaw !== '' ? Number(idxRaw) : 0;
-    const dateStr = String(req.query?.date || '').trim();
-    if (!isValidFortuneDateLabel(dateStr)) {
-      return res.status(400).json({ error: 'Thiếu tham số date (YYYY-MM-DD)' });
-    }
+    const dateStr = (() => {
+      const raw = String(req.query?.date || '').trim();
+      return isValidFortuneDateLabel(raw) ? raw : getDateStr();
+    })();
 
     const idx = ((fortuneIndex % 8) + 8) % 8;
     const host = req.headers['x-forwarded-host'] || req.headers.host;

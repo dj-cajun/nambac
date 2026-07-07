@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown } from 'lucide-react';
 import { useDrawer } from './DrawerContext';
 import { SIDEBAR_SECTIONS } from './sidebarNav';
+import { scrollToTop } from '../../lib/scrollToTop';
 import './SidebarDrawer.css';
 
 function DrawerAccordion({ section, closeDrawer }) {
@@ -44,7 +45,10 @@ function DrawerAccordion({ section, closeDrawer }) {
                   <Link
                     key={link.to + link.label}
                     to={link.to}
-                    onClick={closeDrawer}
+                    onClick={() => {
+                      if (link.to === '/') scrollToTop();
+                      closeDrawer();
+                    }}
                     className={`drawer-link${active ? ' active' : ''}`}
                   >
                     {link.label}

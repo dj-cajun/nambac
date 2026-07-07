@@ -19,6 +19,10 @@
       "destination": "/api/handler?path=fortune-share&name=:name&idx=:idx&date=:date"
     },
     {
+      "source": "/share-fortune/:name/:idx",
+      "destination": "/api/handler?path=fortune-share&name=:name&idx=:idx"
+    },
+    {
       "source": "/share/:id/:score",
       "destination": "/api/handler?path=og&id=:id&score=:score"
     },

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Send, X } from 'lucide-react';
+import { scrollToTop } from '../lib/scrollToTop';
 import './Home.css';
 import './MiniApp.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
@@ -191,6 +192,10 @@ export default function Home() {
     ...HOME_SPECIAL_TABS,
     ...QUIZ_CATEGORIES.map(c => ({ id: c.id, label: c.label, color: c.color })),
   ];
+
+  useEffect(() => {
+    scrollToTop();
+  }, []);
 
   useEffect(() => {
     fetchQuizzes()

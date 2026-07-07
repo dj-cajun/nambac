@@ -65,6 +65,7 @@ async function main() {
     ['OG image (intro)', `${base}/api/og-image?quizId=${quizId}`],
     ['OG image (result)', `${base}/api/og-image?quizId=${quizId}&score=${score}`],
     ['Fortune OG HTML', `${base}/share-fortune/Minh/2/2026-07-07`],
+    ['Fortune OG HTML (legacy, no date)', `${base}/share-fortune/Minh/2`],
     ['Fortune OG image', `${base}/api/fortune-og?name=Minh&idx=2&date=2026-07-07`],
   ]) {
     try {
@@ -73,6 +74,8 @@ async function main() {
         const html = await res.text();
         if (!res.ok || !html.includes('og:image') || !html.includes('fortune-og')) {
           fail(label, `status ${res.status}`);
+        } else if (label.includes('legacy') && html.includes('og-default.png')) {
+          fail(label, 'still using default OG');
         } else {
           pass(label);
         }

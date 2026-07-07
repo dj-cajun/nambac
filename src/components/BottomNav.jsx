@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home as HomeIcon, Compass, BarChart2 } from 'lucide-react';
+import { scrollToTop } from '../lib/scrollToTop';
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function BottomNav() {
 
   return (
     <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-[80px] bg-white border-t-2 border-black flex items-center justify-around z-50">
-      <div className={`nav-item-col ${isActive('/') && pathname === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>
+      <div className={`nav-item-col ${isActive('/') && pathname === '/' ? 'active' : ''}`} onClick={() => { scrollToTop(); if (pathname !== '/') navigate('/'); }}>
         <HomeIcon size={24} strokeWidth={isActive('/') && pathname === '/' ? 2.5 : 2} color={isActive('/') && pathname === '/' ? '#FF2D85' : '#94A3B8'} />
         <span className={`text-[10px] font-bold ${isActive('/') && pathname === '/' ? 'text-[#FF2D85]' : 'text-gray-400'}`}>Trang chủ</span>
       </div>

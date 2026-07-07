@@ -9,6 +9,10 @@ import { registerServiceWorker } from './lib/pushNotifications';
 import { restoreCookieConsent, hasAdConsent } from './lib/cookieConsent';
 import { loadAdSenseScript } from './lib/adsConfig';
 
+if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
+
 registerServiceWorker();
 restoreCookieConsent();
 if (hasAdConsent()) loadAdSenseScript();
