@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Share, PlusSquare, X, Download } from 'lucide-react';
 import './InstallBanner.css';
 

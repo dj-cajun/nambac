@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home as HomeIcon, Compass, BarChart2 } from 'lucide-react';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { isAdFree } from '../lib/premium';
 import { isAdsEnabled, AD_SLOTS } from '../lib/adsConfig';
 import AdSenseUnit from './AdSenseUnit';
