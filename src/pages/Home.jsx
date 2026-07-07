@@ -6,7 +6,6 @@ import { fetchFortuneStats } from '../lib/fortuneApi';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import './Home.css';
 import './MiniApp.css';
-import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../shared/dailyPicks.js';
@@ -185,7 +184,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
   const [sortMode, setSortMode] = useState('trending');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [introModal, setIntroModal] = useState(null);
@@ -194,11 +192,6 @@ export default function Home() {
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
   const introBodyRef = useRef(null);
-
-  const categories = [
-    ...HOME_SPECIAL_TABS,
-    ...QUIZ_CATEGORIES.map(c => ({ id: c.id, label: c.label, color: c.color })),
-  ];
 
   useEffect(() => {
     scrollToTop();
@@ -237,10 +230,7 @@ export default function Home() {
     [quizzes, sortFn],
   );
 
-  const filteredQuizzes = useMemo(() => {
-    if (activeTab === 'all') return sortedQuizzes;
-    return sortedQuizzes.filter((q) => matchesCategory(q.category, activeTab));
-  }, [sortedQuizzes, activeTab]);
+  const filteredQuizzes = sortedQuizzes;
 
   const heroQuizzes = useMemo(
     () => sortByViralScore(quizzes).slice(0, 3),
@@ -452,21 +442,6 @@ export default function Home() {
         <Link to="/balance" className="home-quick-chip balance">⚖️ Chọn 1 trong 2</Link>
         <Link to="/roast-card" className="home-quick-chip roast">💳 Thẻ đen bóc phốt</Link>
       </nav>
-
-      <div className="category-tabs" role="tablist" aria-label="Danh mục quiz">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === cat.id}
-            className={`glass-tab ${cat.color} ${activeTab === cat.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(cat.id)}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
 
       <div className="sort-tabs">
         {SORT_OPTIONS.map((opt) => (
