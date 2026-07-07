@@ -43,12 +43,11 @@ export default function ExplorePage() {
         <meta name="description" content="Quiz viral được chia sẻ nhiều nhất trên nambac.xyz" />
       </Helmet>
 
-      <div className="mt-4 px-5">
-        <h1 className="glass-section-title mb-1">🧭 Khám phá</h1>
-        <p className="text-sm text-gray-500 font-bold mb-4">Quiz được chia sẻ nhiều nhất — thử ngay!</p>
-      </div>
+      <div className="mt-6">
+        <h3 className="glass-section-title">🧭 Khám phá</h3>
+        <p className="page-list-subtitle">Quiz được chia sẻ nhiều nhất — thử ngay!</p>
 
-      <div className="glass-list grid-cols-2">
+        <div className="glass-list grid-cols-2">
         {sorted.length === 0 ? (
           <div className="text-center p-8 text-gray-500 font-bold col-span-2">Chưa có quiz nào hết trơn á! 🕸️</div>
         ) : (
@@ -63,7 +62,7 @@ export default function ExplorePage() {
                   <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
                     <User size={10} /> {(quiz.view_count || 0).toLocaleString()}
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] font-bold text-[#FF2D85]">
+                  <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
                     <Send size={10} /> {(quiz.share_count || 0).toLocaleString()}
                   </div>
                 </div>
@@ -71,6 +70,7 @@ export default function ExplorePage() {
             </div>
           ))
         )}
+        </div>
       </div>
 
       <div style={{ marginBottom: '100px' }} />

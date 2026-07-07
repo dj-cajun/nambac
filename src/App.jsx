@@ -24,13 +24,21 @@ import ExplorePage from './pages/ExplorePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import BlogIndex from './pages/BlogIndex';
 import BlogPost from './pages/BlogPost';
+import FortunePage from './pages/FortunePage';
+import BalancePage from './pages/BalancePage';
+import RoastCardPage from './pages/RoastCardPage';
+import CookieConsentBanner from './components/CookieConsentBanner';
+import { DrawerProvider } from './components/shell/DrawerContext';
+import SidebarDrawer from './components/shell/SidebarDrawer';
 
 import './App.css';
 
 function App() {
   return (
     <Router>
-      <AppContent />
+      <DrawerProvider>
+        <AppContent />
+      </DrawerProvider>
     </Router>
   );
 }
@@ -42,17 +50,23 @@ function AppContent() {
   const mainTabPaths = ['/', '/explore', '/leaderboard'];
   const showBottomNav = mainTabPaths.includes(location.pathname);
   const hideFooter = showBottomNav || isBrandsPage;
+  const showSiteHeader = !isAdminPage && location.pathname !== '/brands';
 
   return (
     <div
-      className={`app-layout ${isAdminPage ? 'wide-layout' : ''}${isBrandsPage ? ' brands-layout' : ''}`}
+      className={`app-layout ${isAdminPage ? 'wide-layout' : ''}${isBrandsPage ? ' brands-layout' : ''}${showBottomNav ? ' has-bottom-nav' : ''}`}
       style={{ position: 'relative', minHeight: '100vh' }}
     >
       <div className="blob-bg blob-1"></div>
       <div className="blob-bg blob-2"></div>
       <div className="blob-bg blob-3"></div>
 
-      {!isAdminPage && location.pathname !== '/brands' && <SiteLogoBar />}
+      {!showSiteHeader ? null : (
+        <>
+          <SiteLogoBar />
+          <SidebarDrawer />
+        </>
+      )}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -74,6 +88,10 @@ function AppContent() {
         <Route path="/blog/ai-entertainment-content" element={<Navigate to="/blog/ung-dung-ai-sang-tao-noi-dung-giai-tri" replace />} />
         <Route path="/blog/mem-van-phong-sai-gon" element={<Navigate to="/blog/van-hoa-meme-va-ap-luc-cot-song-gen-z" replace />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/fortune" element={<FortunePage />} />
+        <Route path="/balance" element={<BalancePage />} />
+        <Route path="/balance/:questionId" element={<BalancePage />} />
+        <Route path="/roast-card" element={<RoastCardPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/editor" element={<QuizEditor />} />
         <Route path="/about" element={<About />} />
@@ -88,6 +106,7 @@ function AppContent() {
       {showBottomNav && <BottomNav />}
       <InstallBanner />
       <PushPrompt />
+      <CookieConsentBanner />
     </div>
   );
 }

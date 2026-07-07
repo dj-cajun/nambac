@@ -1,0 +1,124 @@
+/* Cookie consent — first-visit bottom banner (above bottom nav) */
+
+.cookie-consent-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 440px;
+  z-index: 1100;
+  animation: cookie-banner-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cookie-banner-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 24px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.cookie-consent-inner {
+  position: relative;
+  background: #fff;
+  border: 2px solid #1e293b;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 #1e293b;
+  padding: 18px 16px 16px;
+}
+
+.cookie-consent-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid #1e293b;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.cookie-consent-close:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.cookie-consent-title {
+  margin: 0 36px 8px 0;
+  font-size: 15px;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.cookie-consent-text {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.cookie-consent-links {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cookie-consent-links a {
+  color: #ff2d85;
+  text-decoration: underline;
+}
+
+.cookie-consent-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cookie-consent-btn {
+  flex: 1;
+  padding: 11px 10px;
+  border: 2px solid #1e293b;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.cookie-consent-btn:active {
+  transform: translate(1px, 1px);
+}
+
+.cookie-consent-btn.secondary {
+  background: #fff;
+  color: #1e293b;
+  box-shadow: 2px 2px 0 #1e293b;
+}
+
+.cookie-consent-btn.primary {
+  background: #ff2d85;
+  color: #fff;
+  box-shadow: 2px 2px 0 #1e293b;
+}
+
+/* Home with bottom nav — lift above tab bar */
+.app-layout.has-bottom-nav .cookie-consent-banner {
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 380px) {
+  .cookie-consent-actions {
+    flex-direction: column;
+  }
+}

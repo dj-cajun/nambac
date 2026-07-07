@@ -256,6 +256,71 @@ export async function composeOgImage({
     .toBuffer();
 }
 
+const FORTUNE_OG_WIDTH = 1200;
+const FORTUNE_OG_HEIGHT = 630;
+const FORTUNE_IMAGE_HEIGHT = 450;
+const FORTUNE_PANEL_HEIGHT = FORTUNE_OG_HEIGHT - FORTUNE_IMAGE_HEIGHT;
+
+function buildFortunePanelSvg({ name, fortuneTitle, emoji, dateStr }) {
+  const who = truncate(name || 'Bạn thân', 28);
+  const title = truncate(`${emoji || '🔮'} ${fortuneTitle || 'Tử vi bóc phốt'}`, 56);
+  const dateLine = truncate(dateStr || '', 24);
+
+  return Buffer.from(`<svg width="${FORTUNE_OG_WIDTH}" height="${FORTUNE_PANEL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <defs><style>${fontFaceCss()}</style></defs>
+  <rect width="100%" height="100%" fill="#1e0a14"/>
+  <rect width="100%" height="6" fill="#FF2D85"/>
+  <text x="48" y="40" fill="#fda4af" font-size="20" font-weight="700">TỬ VI BÓC PHỐT · NAMBAC.XYZ</text>
+  <text x="${FORTUNE_OG_WIDTH - 48}" y="40" fill="#fda4af" font-size="18" text-anchor="end">${escapeXml(dateLine)}</text>
+  <text x="48" y="100" fill="#FF2D85" font-size="52" font-weight="700">Thẻ vận của: ${escapeXml(who)}</text>
+  <text x="48" y="155" fill="#fde047" font-size="30" font-weight="700">${escapeXml(title)}</text>
+  <text x="48" y="${FORTUNE_PANEL_HEIGHT - 36}" fill="#94a3b8" font-size="20">Cùng ngày cùng tên = cùng kết quả · nambac.xyz/fortune</text>
+</svg>`);
+}
+
+/**
+ * Fortune share OG — cached AI scene + name/title burn-in (no @vercel/og dep).
+ */
+export async function composeFortuneOgImage({
+  imageUrl,
+  host,
+  imagePath,
+  name,
+  fortuneTitle,
+  emoji,
+  dateStr,
+}) {
+  let imageBuffer;
+  try {
+    imageBuffer = await loadImageBufferFromSources({ imageUrl, host, imagePath });
+  } catch {
+    const fallback = path.join(__dirname, 'og-default.png');
+    imageBuffer = fs.readFileSync(fallback);
+  }
+
+  const topImage = await sharp(imageBuffer)
+    .resize(FORTUNE_OG_WIDTH, FORTUNE_IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
+    .toBuffer();
+
+  const panelSvg = buildFortunePanelSvg({ name, fortuneTitle, emoji, dateStr });
+  const panelBuffer = await renderPanelPng(panelSvg);
+
+  return sharp({
+    create: {
+      width: FORTUNE_OG_WIDTH,
+      height: FORTUNE_OG_HEIGHT,
+      channels: 3,
+      background: '#1e0a14',
+    },
+  })
+    .composite([
+      { input: topImage, top: 0, left: 0 },
+      { input: panelBuffer, top: FORTUNE_IMAGE_HEIGHT, left: 0 },
+    ])
+    .webp({ quality: 88 })
+    .toBuffer();
+}
+
 export function buildOgImageApiUrl(host, quizId, scoreCode = null) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const params = new URLSearchParams({ path: 'og-image', quizId });

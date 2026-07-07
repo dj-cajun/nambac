@@ -18,6 +18,9 @@ import brandStats from './handlers/brandStats.js';
 import dailyQuiz from './handlers/dailyQuiz.js';
 import og from './handlers/og.js';
 import ogImage from './handlers/ogImage.js';
+import balance from './handlers/balance.js';
+import fortuneImage from './handlers/fortuneImage.js';
+import fortuneOg from './handlers/fortuneOg.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -84,6 +87,20 @@ export async function dispatch(req, res, segments = []) {
   // ── OG scraper (also reached via /share/* rewrites) ──
   if (a === 'og' && !b) return og(req, res);
   if (a === 'og-image' && !b && method === 'GET') return ogImage(req, res);
+
+  // ── Balance game (A vs B votes) ──
+  if (a === 'balance' && !b && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {
+    return balance(req, res);
+  }
+
+  // ── Daily fortune AI scene ──
+  if (a === 'fortune-image' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return fortuneImage(req, res);
+  }
+
+  if (a === 'fortune-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return fortuneOg(req, res);
+  }
 
   return res.status(404).json({ error: 'Not found', path: segments.join('/') });
 }

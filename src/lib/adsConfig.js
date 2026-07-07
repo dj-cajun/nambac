@@ -1,5 +1,7 @@
 const PLACEHOLDER_SLOTS = new Set(['1234567890', '0987654321', '0000000000']);
 
+import { hasAdConsent } from './cookieConsent.js';
+
 function resolveSlot(raw) {
   const slot = String(raw || '').trim();
   if (!slot || PLACEHOLDER_SLOTS.has(slot)) return '';
@@ -27,7 +29,7 @@ let scriptLoaded = false;
 
 /** Load adsbygoogle.js only when ads are enabled (not in index.html) */
 export function loadAdSenseScript() {
-  if (!isAdsEnabled() || scriptLoaded || scriptLoading) return;
+  if (!isAdsEnabled() || !hasAdConsent() || scriptLoaded || scriptLoading) return;
   if (document.querySelector('script[data-nambac-adsense]')) {
     scriptLoaded = true;
     return;

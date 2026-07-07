@@ -1,0 +1,252 @@
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
+import { Download, Share2 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import {
+  calculateTodayFortune,
+  buildFortuneShareUrl,
+  buildFortuneOgImageUrl,
+  parseFortuneShareParams,
+} from '../../shared/fortuneEngine.js';
+import { fetchFortuneSceneImage } from '../lib/fortuneApi.js';
+import { copyShareLinkWithFeedback } from '../lib/copyShareLink.js';
+import CopyToast from '../components/CopyToast.jsx';
+import { useCopyToast } from '../hooks/useCopyToast.js';
+import TarotFortuneWheel from '../components/contents/TarotFortuneWheel.jsx';
+import './FortunePage.css';
+import './Result.css';
+
+const NAME_KEY = 'nambac_fortune_name';
+
+export default function FortunePage() {
+  const cardRef = useRef(null);
+  const [searchParams] = useSearchParams();
+  const friendShare = parseFortuneShareParams(searchParams);
+  const { toast, showToast } = useCopyToast();
+
+  const [name, setName] = useState(() => {
+    try {
+      return localStorage.getItem(NAME_KEY) || friendShare?.friendName || '';
+    } catch {
+      return friendShare?.friendName || '';
+    }
+  });
+  const [phase, setPhase] = useState('form'); // form | ritual | done
+  const [showActions, setShowActions] = useState(false);
+  const [result, setResult] = useState(null);
+  const [imageSrc, setImageSrc] = useState('');
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const todayLabel = new Date().toLocaleDateString('vi-VN', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const handleReveal = (e) => {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    try {
+      localStorage.setItem(NAME_KEY, trimmed);
+    } catch {
+      /* private mode */
+    }
+    const calc = calculateTodayFortune(trimmed);
+    setResult(calc);
+    setImageSrc('');
+    setImageError(false);
+    setShowActions(false);
+    setPhase('ritual');
+  };
+
+  const handleRitualComplete = () => {
+    setPhase('done');
+    setShowActions(true);
+  };
+
+  const handleRetry = () => {
+    setPhase('form');
+    setShowActions(false);
+    setResult(null);
+    setImageSrc('');
+    setImageError(false);
+  };
+
+  useEffect(() => {
+    if ((phase !== 'ritual' && phase !== 'done') || !result) return undefined;
+
+    let cancelled = false;
+    setImageLoading(true);
+    setImageError(false);
+
+    fetchFortuneSceneImage({
+      fortuneIndex: result.fortuneIndex,
+      dateLabel: result.dateLabel,
+    })
+      .then(({ src }) => {
+        if (!cancelled) setImageSrc(src);
+      })
+      .catch(() => {
+        if (!cancelled) setImageError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setImageLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, result]);
+
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        useCORS: true,
+        scale: 2,
+        backgroundColor: '#ffffff',
+      });
+      const link = document.createElement('a');
+      link.download = `nambac-fortune-${result?.name || 'today'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch {
+      alert('Có lỗi khi tải ảnh — thử chụp màn hình nhé!');
+    }
+  };
+
+  const handleShareLink = async () => {
+    if (!result) return;
+    const url = buildFortuneShareUrl(result.name, result.fortuneIndex);
+    await copyShareLinkWithFeedback(url, showToast);
+  };
+
+  const fortune = result?.fortune;
+  const ogImageUrl = result
+    ? buildFortuneOgImageUrl(result.name, result.fortuneIndex, result.dateLabel)
+    : null;
+  const sharePageUrl = result
+    ? buildFortuneShareUrl(result.name, result.fortuneIndex)
+    : null;
+
+  return (
+    <div className={`fortune-page${phase !== 'form' ? ' fortune-page--result' : ''}`}>
+      <Helmet>
+        <title>
+          {result
+            ? `${result.name} · ${fortune?.emoji} ${fortune?.title} — Tử vi bóc phốt`
+            : 'Tử vi bóc phốt hàng ngày 🔮 — nambac.xyz'}
+        </title>
+        <meta
+          name="description"
+          content={
+            fortune
+              ? `${fortune.body.slice(0, 120)}…`
+              : 'Nhập tên — xem vận may (hay vận nạn) Gen Z Sài Gòn hôm nay. Cùng ngày cùng tên = cùng kết quả.'
+          }
+        />
+        {result && ogImageUrl && (
+          <>
+            <meta property="og:type" content="website" />
+            <meta property="og:title" content={`${result.name} · ${fortune?.title} — nambac.xyz`} />
+            <meta property="og:description" content={fortune?.body.slice(0, 160)} />
+            <meta property="og:image" content={ogImageUrl} />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta property="og:url" content={sharePageUrl} />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:image" content={ogImageUrl} />
+          </>
+        )}
+      </Helmet>
+
+      {phase === 'form' && (
+        <>
+          <header className="fortune-hero">
+            <h1>Tử vi bóc phốt 🔮</h1>
+            <p>Nhập tên — chọn lá bài — lá bài mở ra thành kết quả của bạn.</p>
+          </header>
+
+          {friendShare && (
+            <div className="fortune-friend-banner">
+              <strong>{friendShare.friendName}</strong> hôm nay dính{' '}
+              <strong>{friendShare.fortune.emoji} {friendShare.fortune.title}</strong>
+              <br />
+              Nhập tên bạn — xem có thoát được không 👀
+            </div>
+          )}
+
+          <form className="fortune-form" onSubmit={handleReveal}>
+            <input
+              className="fortune-name-input"
+              type="text"
+              placeholder="Tên bạn (VD: Minh, Lan…)"
+              maxLength={24}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete="nickname"
+            />
+            <button type="submit" className="fortune-submit-btn" disabled={!name.trim()}>
+              Xem vận hôm nay ⚡
+            </button>
+          </form>
+
+          <p className="fortune-hint">
+            Kết quả cố định cả ngày với cùng tên — mai quay lại sẽ khác. Không lưu server, 0 đồng.
+          </p>
+        </>
+      )}
+
+      {(phase === 'ritual' || phase === 'done') && result && (
+        <TarotFortuneWheel
+          fortune={result.fortune}
+          userName={result.name}
+          result={result}
+          imageSrc={imageSrc}
+          imageLoading={imageLoading}
+          imageError={imageError}
+          todayLabel={todayLabel}
+          cardRef={cardRef}
+          onComplete={handleRitualComplete}
+        />
+      )}
+
+      {showActions && fortune && (
+        <motion.div
+          className="result-bottom-bar"
+          initial={{ y: '150%' }}
+          animate={{ y: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <div className="bar-actions">
+            <button type="button" className="restart-btn" onClick={handleRetry}>
+              <span className="btn-label">XEM LẠI</span>
+            </button>
+
+            <button type="button" className="download-action-btn" onClick={handleDownload}>
+              <Download size={20} />
+              <span className="btn-label">TẢI ẢNH</span>
+            </button>
+
+            <div className="share-btn-wrap">
+              <CopyToast toast={toast} anchored />
+              <button
+                type="button"
+                className="share-btn"
+                onClick={handleShareLink}
+                aria-label="Sao chép link chia sẻ"
+              >
+                <Share2 size={24} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}

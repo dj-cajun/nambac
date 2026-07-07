@@ -6,7 +6,12 @@ import './index.css';
 import { HelmetProvider } from 'react-helmet-async';
 import { registerServiceWorker } from './lib/pushNotifications';
 
+import { restoreCookieConsent, hasAdConsent } from './lib/cookieConsent';
+import { loadAdSenseScript } from './lib/adsConfig';
+
 registerServiceWorker();
+restoreCookieConsent();
+if (hasAdConsent()) loadAdSenseScript();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

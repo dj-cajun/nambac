@@ -15,10 +15,10 @@ function handlerApiUrl(apiPath, extraQuery = '') {
 export const getImageUrl = (path) => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
+  if (path.startsWith('/images/')) return path;
+  const imagesIdx = path.indexOf('/images/');
+  if (imagesIdx !== -1) return path.slice(imagesIdx);
   const filename = path.split('/').pop();
-  if (path.startsWith('/images/') || path.includes('/images/')) {
-    return `/images/${filename}`;
-  }
   return `/images/${filename}`;
 };
 

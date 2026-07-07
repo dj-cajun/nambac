@@ -274,6 +274,44 @@
     margin-bottom: 12px;
 }
 
+.page-list-subtitle {
+    padding: 0 20px;
+    margin: -4px 0 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.leaderboard-card {
+    position: relative;
+}
+
+.leaderboard-rank-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 3;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 2px solid #1e293b;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    color: #1e293b;
+    box-shadow: 2px 2px 0 #1e293b;
+}
+
+.leaderboard-rank-badge.top-rank {
+    background: #fbbf24;
+    color: #1e293b;
+}
+
 .glass-list {
     padding: 0 20px;
     display: flex;
@@ -619,13 +657,63 @@
     border: 2px solid #1e293b;
     border-radius: 16px;
     box-shadow: 3px 3px 0 0 #1e293b;
+    scroll-margin-top: 72px;
+}
+
+.home-intro-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .home-intro-panel-title {
     font-size: 15px;
     font-weight: 900;
-    margin: 0 0 12px;
+    margin: 0;
     color: #1e293b;
+    flex: 1;
+    line-height: 1.35;
+    padding-top: 2px;
+}
+
+.home-intro-panel-close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 2px solid #1e293b;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.home-intro-panel-close:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.home-intro-panel-close:active {
+    transform: scale(0.95);
+}
+
+.home-intro-panel-body {
+    max-height: min(60vh, 420px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.home-intro-panel-body .home-intro-lead:first-child,
+.home-intro-panel-body .home-intro-faq-list:first-child,
+.home-intro-panel-body .home-intro-list:first-child {
+    margin-top: 0;
 }
 
 .home-intro-lead {

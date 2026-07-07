@@ -58,3 +58,10 @@ CREATE TABLE IF NOT EXISTS brand_inquiries (
   status TEXT DEFAULT 'pending',
   created_at TEXT DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS balance_votes (
+  question_id TEXT PRIMARY KEY,
+  votes_a INTEGER NOT NULL DEFAULT 0,
+  votes_b INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

@@ -1,0 +1,198 @@
+/* Modern mobile sidebar drawer — plain CSS (Tailwind utilities not reliably generated) */
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  padding: 0;
+  cursor: default;
+}
+
+.drawer-panel {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  width: min(85vw, 340px);
+  height: 100%;
+  max-height: 100dvh;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+  box-shadow: 4px 0 24px rgba(15, 23, 42, 0.12);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.drawer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.drawer-brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.drawer-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.drawer-close-btn:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.drawer-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-section {
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.drawer-section-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.drawer-section-toggle:hover {
+  background: rgba(241, 245, 249, 0.8);
+}
+
+.drawer-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-section-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.drawer-chevron {
+  flex-shrink: 0;
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+
+.drawer-chevron.open {
+  transform: rotate(180deg);
+}
+
+.drawer-links-wrap {
+  overflow: hidden;
+  border-top: 1px solid rgba(241, 245, 249, 0.9);
+  background: #fff;
+}
+
+.drawer-links {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drawer-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  box-sizing: border-box;
+}
+
+.drawer-link:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.drawer-link:active {
+  background: #f1f5f9;
+}
+
+.drawer-link.active {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.drawer-footer {
+  flex-shrink: 0;
+  padding: 16px;
+  border-top: 1px solid #f1f5f9;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.drawer-footer p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}

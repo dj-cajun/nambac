@@ -1,0 +1,447 @@
+/* Fortune — Tử vi bóc phốt hàng ngày */
+
+.fortune-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: calc(100vh - 56px);
+  padding: 8px 20px calc(28px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.fortune-hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.fortune-hero h1 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+.fortune-hero p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.fortune-friend-banner {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fce7f3, #ede9fe);
+  border: 2px solid #1e293b;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #1e293b;
+  text-align: center;
+  box-shadow: 3px 3px 0 #1e293b;
+}
+
+.fortune-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.fortune-name-input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 2.5px solid #1e293b;
+  border-radius: 1rem;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  background: #fff;
+  box-shadow: 4px 4px 0 #1e293b;
+  box-sizing: border-box;
+}
+
+.fortune-name-input:focus {
+  outline: 2px solid #ff2d85;
+  outline-offset: 2px;
+}
+
+.fortune-submit-btn {
+  width: 100%;
+  padding: 16px;
+  border: 2.5px solid #1e293b;
+  border-radius: 1rem;
+  background: #a78bfa;
+  color: #1e293b;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #1e293b;
+}
+
+.fortune-submit-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #1e293b;
+}
+
+.fortune-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fortune-actions {
+  display: none;
+}
+
+.fortune-share-btn {
+  display: none;
+}
+
+.fortune-secondary-btn {
+  display: none;
+}
+
+.fortune-result-card {
+  background: #fff;
+  border: 2.5px solid #1e293b;
+  border-radius: 1.5rem;
+  box-shadow: 6px 6px 0 #1e293b;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+}
+
+.fortune-result-emoji {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.fortune-result-title {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 14px;
+  padding: 6px 14px;
+  background: #fef08a;
+  border: 2px solid #1e293b;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  color: #1e293b;
+  text-align: center;
+}
+
+.fortune-result-body {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.65;
+  color: #334155;
+}
+
+.fortune-remedy-box {
+  padding: 14px;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+}
+
+.fortune-remedy-label {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #ff2d85;
+  text-transform: uppercase;
+}
+
+.fortune-remedy-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.fortune-result-meta {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.fortune-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fortune-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px;
+  border: 2.5px solid #1e293b;
+  border-radius: 1rem;
+  background: #ff2d85;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #1e293b;
+}
+
+.fortune-share-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #1e293b;
+}
+
+.fortune-secondary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border: 2.5px solid #1e293b;
+  border-radius: 1rem;
+  background: #fff;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #1e293b;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.fortune-hint {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.fortune-page--result {
+  padding: 0 20px calc(100px + env(safe-area-inset-bottom));
+  overflow-x: visible;
+}
+
+/* 퀴즈 Result.jsx result-main 과 동일한 상단 배치 */
+.fortune-result-main {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 0 2px 16px 0;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.fortune-result-main .result-unified-card {
+  width: 100%;
+}
+
+.fortune-result-wrap {
+  width: 100%;
+}
+
+.fortune-image-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, #fce7f3 25%, #fdf2f8 50%, #fce7f3 75%);
+  background-size: 200% 100%;
+  animation: fortune-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes fortune-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.fortune-remedy-in-panel {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+}
+
+.fortune-remedy-in-panel-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #ff2d85;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.fortune-remedy-in-panel-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.fortune-result-date {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.fortune-image-error {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f97316;
+}
+
+/* Tarot / helmet shuffle */
+.fortune-shuffle-stage {
+  margin: 8px 0 24px;
+  text-align: center;
+}
+
+.fortune-shuffle-kicker {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 900;
+  color: #7c3aed;
+}
+
+.fortune-shuffle-hint {
+  margin: 14px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.fortune-shuffle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.fortune-shuffle-card {
+  aspect-ratio: 3 / 4;
+  position: relative;
+  perspective: 800px;
+}
+
+.fortune-shuffle-card.is-active {
+  grid-column: span 1;
+}
+
+.fortune-shuffle-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s ease;
+}
+
+.fortune-shuffle-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.fortune-shuffle-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border: 2.5px solid #0f172a;
+  border-radius: 10px;
+  box-shadow: 3px 3px 0 #0f172a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.fortune-shuffle-back {
+  background: linear-gradient(145deg, #a78bfa, #7c3aed);
+  color: #fff;
+}
+
+.fortune-shuffle-front {
+  background: linear-gradient(145deg, #fce7f3, #fbcfe8);
+  transform: rotateY(180deg);
+}
+
+.fortune-shuffle-helmet {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.fortune-shuffle-back-label {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.fortune-shuffle-emoji {
+  font-size: 2rem;
+}
+
+/* Soulmate / rival compat */
+.fortune-compat-box {
+  margin-top: 4px;
+  padding: 14px;
+  background: linear-gradient(135deg, #fff1f2, #faf5ff);
+  border: 2px solid #0f172a;
+  border-radius: 14px;
+  box-shadow: 3px 3px 0 #0f172a;
+}
+
+.fortune-compat-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.fortune-compat-line {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.fortune-compat-line:last-of-type {
+  margin-bottom: 0;
+}
+
+.fortune-compat-good strong {
+  color: #16a34a;
+}
+
+.fortune-compat-bad strong {
+  color: #dc2626;
+}
+
+.fortune-compat-cta {
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ff2d85;
+  line-height: 1.45;
+}

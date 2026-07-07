@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Send } from 'lucide-react';
+import { User, Send, X } from 'lucide-react';
 import './Home.css';
+import './MiniApp.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
@@ -183,6 +184,8 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [introModal, setIntroModal] = useState(null);
   const carouselRef = useRef(null);
+  const introPanelRef = useRef(null);
+  const introBodyRef = useRef(null);
 
   const categories = [
     ...HOME_SPECIAL_TABS,
@@ -195,6 +198,20 @@ export default function Home() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!introModal) return;
+    if (introBodyRef.current) introBodyRef.current.scrollTop = 0;
+    requestAnimationFrame(() => {
+      introPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [introModal]);
+
+  const openIntroSection = (sectionId) => {
+    setIntroModal((prev) => (prev === sectionId ? null : sectionId));
+  };
+
+  const closeIntroSection = () => setIntroModal(null);
 
   const sortFn = SORT_OPTIONS.find((s) => s.id === sortMode)?.sortFn || SORT_OPTIONS[0].sortFn;
 
@@ -354,6 +371,12 @@ export default function Home() {
         </div>
       )}
 
+      <nav className="home-quick-chips" aria-label="Chơi nhanh">
+        <Link to="/fortune" className="home-quick-chip fortune">🔮 Tử vi bóc phốt</Link>
+        <Link to="/balance" className="home-quick-chip balance">⚖️ Chọn 1 trong 2</Link>
+        <Link to="/roast-card" className="home-quick-chip roast">💳 Thẻ đen bóc phốt</Link>
+      </nav>
+
       <div className="category-tabs" role="tablist" aria-label="Danh mục quiz">
         {categories.map((cat) => (
           <button
@@ -424,7 +447,7 @@ export default function Home() {
               type="button"
               className={`home-intro-btn${introModal === btn.id ? ' active' : ''}`}
               aria-expanded={introModal === btn.id}
-              onClick={() => setIntroModal((prev) => (prev === btn.id ? null : btn.id))}
+              onClick={() => openIntroSection(btn.id)}
             >
               {btn.label}
             </button>
@@ -435,7 +458,7 @@ export default function Home() {
           type="button"
           className={`home-intro-btn home-intro-btn-wide${introModal === 'brands' ? ' active' : ''}`}
           aria-expanded={introModal === 'brands'}
-          onClick={() => setIntroModal((prev) => (prev === 'brands' ? null : 'brands'))}
+          onClick={() => openIntroSection('brands')}
         >
           Hợp tác thương hiệu 🎯
         </button>
@@ -445,9 +468,24 @@ export default function Home() {
         </Link>
 
         {introModal && (
-          <div className="home-intro-panel" role="region" aria-label={INTRO_MODAL_META[introModal].title}>
-            <h4 className="home-intro-panel-title">{INTRO_MODAL_META[introModal].title}</h4>
-            <div className="home-intro-section">
+          <div
+            ref={introPanelRef}
+            className="home-intro-panel"
+            role="region"
+            aria-label={INTRO_MODAL_META[introModal].title}
+          >
+            <div className="home-intro-panel-header">
+              <h4 className="home-intro-panel-title">{INTRO_MODAL_META[introModal].title}</h4>
+              <button
+                type="button"
+                className="home-intro-panel-close"
+                onClick={closeIntroSection}
+                aria-label="Đóng"
+              >
+                <X size={18} strokeWidth={2.25} />
+              </button>
+            </div>
+            <div ref={introBodyRef} className="home-intro-panel-body">
               <IntroModalBody sectionId={introModal} />
               <Link to={INTRO_MODAL_META[introModal].more} className="home-intro-more">
                 {INTRO_MODAL_META[introModal].moreLabel}
