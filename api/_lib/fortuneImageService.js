@@ -62,8 +62,8 @@ async function tryLoadFortuneSceneBuffer({ dateStr, idx, host }) {
 
   const fetchHost = resolveFetchHost(host);
   const urls = [
-    getFortuneImagePublicPath(dateStr, idx),
     `/images/fortune/${cacheFilename(dateStr, idx)}`,
+    getFortuneImagePublicPath(dateStr, idx),
   ];
   for (const imageUrl of urls) {
     try {

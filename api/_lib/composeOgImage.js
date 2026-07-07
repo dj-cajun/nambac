@@ -79,6 +79,17 @@ export function imageUrlToAbsolute(imageUrl, host) {
   return `${base}${imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`}`;
 }
 
+function isLikelyImageBuffer(buffer, contentType) {
+  if (contentType && !contentType.startsWith('image/') && contentType !== 'application/octet-stream') {
+    return false;
+  }
+  if (!buffer || buffer.length < 12) return false;
+  if (buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP') return true;
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return true;
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) return true;
+  return Boolean(contentType?.startsWith('image/'));
+}
+
 /** Load quiz cover/result image from disk (dev) or static CDN (Vercel). */
 export async function loadImageBuffer(imageUrl, host) {
   const localPath = resolveImagePath(imageUrl);
@@ -89,7 +100,12 @@ export async function loadImageBuffer(imageUrl, host) {
   if (!url) throw new Error(`Invalid image URL: ${imageUrl}`);
   const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`Failed to fetch image ${url}: ${res.status}`);
-  return Buffer.from(await res.arrayBuffer());
+  const buffer = Buffer.from(await res.arrayBuffer());
+  const contentType = res.headers.get('content-type');
+  if (!isLikelyImageBuffer(buffer, contentType)) {
+    throw new Error(`Not an image: ${url} (${contentType || 'unknown'})`);
+  }
+  return buffer;
 }
 
 function escapeXml(value) {
