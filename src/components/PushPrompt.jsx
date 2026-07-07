@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Bell, X } from 'lucide-react';
 import { isPushSupported, isPushSubscribed, subscribeToPush } from '../lib/pushNotifications';
 import './PushPrompt.css';
 

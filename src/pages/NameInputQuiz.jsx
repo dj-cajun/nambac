@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { calculateNameScore } from '../logic/mbtiScoring';
 import { getImageUrl } from '../lib/apiConfig';
+import AdPlaceholder from '../components/AdPlaceholder';
 import './QuizPage.css';
 
 /**

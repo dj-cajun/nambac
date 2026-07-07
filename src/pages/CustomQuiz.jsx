@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getImageUrl } from '../lib/apiConfig';
 import { trackQuizStart } from '../lib/analytics';
 import { incrementQuizStat } from '../lib/quizApi';
+import AdPlaceholder from '../components/AdPlaceholder';
 import './QuizPage.css';
 
 /**

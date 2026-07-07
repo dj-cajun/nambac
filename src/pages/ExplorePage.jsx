@@ -1,8 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { User, Send } from 'lucide-react';
 import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
+import QuizImage from '../components/QuizImage';
 
 export default function ExplorePage() {
   const navigate = useNavigate();

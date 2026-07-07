@@ -1,4 +1,24 @@
-import { useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
+import SiteLogoBar from './components/SiteLogoBar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import QuizPage from './pages/QuizPage';
+import Admin from './pages/Admin';
+import QuizEditor from './pages/QuizEditor';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import About from './pages/About';
+import Result from './pages/Result';
+import ShareRedirect from './pages/ShareRedirect';
+import FAQ from './pages/FAQ';
+import CompatibilityPage from './pages/CompatibilityPage';
+import InstallBanner from './components/InstallBanner';
+import PushPrompt from './components/PushPrompt';
+import BottomNav from './components/BottomNav';
+import BrandsLanding from './pages/BrandsLanding';
+import BrandReport from './pages/BrandReport';
+import ExplorePage from './pages/ExplorePage';
+import LeaderboardPage from './pages/LeaderboardPage';
 
 import './App.css';
 

@@ -1,9 +1,13 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { User, Send } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import './Home.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
+import AdSenseUnit from '../components/AdSenseUnit';
+import QuizImage from '../components/QuizImage';
 import { AD_SLOTS } from '../lib/adsConfig';
 
 const SORT_OPTIONS = [

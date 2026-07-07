@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { TrendingUp, Eye, Share2, Users } from 'lucide-react';
 import { apiUrl } from '../lib/apiConfig';
 import './BrandReport.css';
 

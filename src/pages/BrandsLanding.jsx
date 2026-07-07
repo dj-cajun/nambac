@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Send, CheckCircle2, ChevronRight, Award, TrendingUp, Zap, Sparkles, ArrowLeft } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { submitBrandInquiry } from '../lib/quizApi';
 import './BrandsLanding.css';
 

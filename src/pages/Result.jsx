@@ -1,6 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Download, Share2 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 import html2canvas from 'html2canvas';
+import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizComplete, trackShare } from '../lib/analytics';
 import './Result.css';
@@ -8,6 +12,7 @@ import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizResults, fetchQuizzes as loadQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
+import CopyToast from '../components/CopyToast';
 import { useCopyToast } from '../hooks/useCopyToast';
 
 const Result = () => {
