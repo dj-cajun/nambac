@@ -16,38 +16,60 @@ export const BINARY_5Q_SCORES = Object.freeze([
   [0, 0],
 ]);
 
-export const QUIZ_MASTER_PROMPT = `
-# 🎮 MASTER Quiz Generation Prompt (v4.0 - King-Bad Upgrade)
+/** Golden quiz reference — minimum Vietnamese character counts (binary_5q) */
+export const QUIZ_RICHNESS_LIMITS = Object.freeze({
+  titleMin: 35,
+  descriptionMin: 70,
+  questionMin: 55,
+  optionMin: 60,
+  resultTitleMin: 15,
+  resultDescMin: 320,
+  traitsCount: 3,
+});
 
-## 🎯 Core Philosophy: "KING-BAD (킹받음) + Hyper-Localization"
+export const QUIZ_MASTER_PROMPT = `
+# 🎮 MASTER Quiz Generation Prompt (v5.0 - Rich Content Standard)
+
+## 🎯 Core Philosophy: "KING-BAD (킹받음) + Hyper-Localization + Rich Storytelling"
 "재미없으면 죽음뿐. 무조건 베트남어(Vietnamese)로만 대답하십시오."
+짧고 건조한 퀴즈는 **실패**입니다. 모든 문장은 구체적 상황 + Gen Z Sài Gòn 밈/슬랭 + 유머가 있어야 합니다.
 
 > **Language Rule**: 모든 사용자 대면 텍스트는 **반드시 베트남어(Vietnamese)**.
 
-## 📏 텍스트 길이 (STRICT)
-| 항목 | 권장 |
-| --- | --- |
-| 질문 | 30~40자, 구체적 상황 |
-| 선택지 A/B | 15~25자, 점수/성향 노출 금지 — **절대 "A"/"B" 라벨만 쓰지 말 것** |
-| 결과 설명 | 80~100자 |
-| 결과 제목 | 10~20자 |
+## 📏 텍스트 길이 (STRICT MINIMUM — shorter = reject)
+| 항목 | 최소 | 권장 | 스타일 |
+| --- | --- | --- | --- |
+| title | 35자 | 45~70자 | 훅 + 따옴표 슬랭 ('trà xanh', 'thả thính'…) |
+| description | 70자 | 90~130자 | 티저 + (괄호 한 방) |
+| question_text | 55자 | 70~110자 | **미니 시나리오**: 장소(The Alley, Zalo, Quận 1) + 갈등 + "Bạn sẽ làm gì?" |
+| option_a / option_b | 60자 | 70~115자 | 행동/대사 + **(괄호 펀치라인)** 필수 |
+| type_name (결과 제목) | 15자 | 18~35자 | 아키타입: 'Thánh Lầy' ẩn mình, 'Thánh Thả Thính' chuyên nghiệp |
+| description (결과) | 320자 | 420~550자 | **4~5문장**: ①아키타입 ②주변 반응 ③팩폭 ④조언/경고 |
+| traits | 3개 | 3개 | 각 1~3단어 (Hài hước, Bí ẩn, Dè dặt) |
+
+## ✍️ Rich Writing Rules (golden quiz quality)
+1. **Every option** contains a punchline in parentheses: (Cao thủ ẩn mình là đây!), (Rồi sau đó... tính sau!)
+2. Use **quoted slang**: 'thả thính', 'cưa đổ', 'thảo mai', 'flop', 'sống ảo', 'toxic'
+3. Name **local brands/places**: The Alley, Grab, Zalo, TikTok, Quận 1, Thảo Điền, bánh mì, trà chanh
+4. Result descriptions: start with "Bạn là…", plot twist ("Crush tưởng… nhưng thực ra…"), end with roast/advice
+5. Never generic one-liners. Never bare "A"/"B" labels.
 
 ## ⚠️ 필수
 1. 2지선다 (A/B) only — option_a / option_b는 **완전한 베트남어 문장**
-2. 호치민 로컬 (Grab, bánh mì, Quận 1, Thao Điền…)
+2. 호치민 로컬 디테일 필수
 3. **category 필드**: EXPERT가 지정한 id와 **완전히 동일한 문자열**만 사용
 
 ## 🔢 3-Bit Scoring
-- Q1 B=+4, Q2 B=+2, Q3 B=+1, Q4/Q5 B=0, A=0
-- results 8개, score 0~7
+- Q1 B=+4, Q2 B=+2, Q3 B=+1, Q4/Q5 B=+0, A=0
+- results 8개, score 0~7 (each score = unique archetype)
 
 ## 📝 JSON only (no markdown)
 {
-  "title": "[Vietnamese]",
-  "description": "[Vietnamese]",
+  "title": "[Vietnamese, rich hook]",
+  "description": "[Vietnamese teaser with parenthetical punchline]",
   "category": "[EXACT category id from EXPERT directive]",
-  "questions": [ ...5 items with question_text, option_a, option_b, score_a, score_b ... ],
-  "results": [ ...8 items with score 0-7, type_name, description, traits ... ]
+  "questions": [ ...5 items ... ],
+  "results": [ ...8 items: score 0-7, type_name, description (320+ chars), traits [3 strings] ... ]
 }
 `;
 
@@ -76,7 +98,11 @@ STRICT RULES:
 - Return ONLY valid JSON.
 - All user-facing text in Vietnamese.
 - Exactly 5 questions, exactly 8 results (scores 0-7).
+- Meet ALL minimum character counts in the Rich Content table (v5.0).
 - Each option_a and option_b MUST be a full Vietnamese phrase (never the letters "A" or "B" alone).
+- Each option MUST include a parenthetical punchline (…).
+- Each result description MUST be 320+ Vietnamese characters with 4+ sentences.
+- Each result MUST have exactly 3 traits.
 - The JSON field "category" MUST be exactly: "${category}"
 - Do NOT use fun, fortune, personality, trend or any other category string.
 - Allowed category ids (for reference only): ${GEMINI_CATEGORY_LIST}
@@ -88,8 +114,8 @@ export function buildQuizUserPrompt(categoryId, customTopic = '') {
   const topicSeed = getTopicSeed(category);
 
   return customTopic?.trim()
-    ? `Write a quiz in category "${category}". User topic: ${customTopic.trim()}. Remember: "category": "${category}"`
-    : `Write a quiz in category "${category}". Topic direction: ${topicSeed}. Remember: "category": "${category}"`;
+    ? `Write a RICH, story-driven quiz in category "${category}". User topic: ${customTopic.trim()}. Match golden nambac quality: long situational questions, options with (parenthetical punchlines), 320+ char result descriptions. Remember: "category": "${category}"`
+    : `Write a RICH, story-driven quiz in category "${category}". Topic direction: ${topicSeed}. Match golden nambac quality: mini-scenarios (Zalo, crush, The Alley, Grab), options with (punchlines), 8 unique archetype results with 320+ char descriptions. Remember: "category": "${category}"`;
 }
 
 function isPlaceholderOption(text) {
@@ -144,6 +170,55 @@ export function formatQuizForDb(geminiData) {
   };
 }
 
+function hasPunchlineOption(text) {
+  return /\([^)]{4,}\)/.test(String(text || ''));
+}
+
+function validateQuizRichness(payload) {
+  const errors = [];
+  const L = QUIZ_RICHNESS_LIMITS;
+
+  if ((payload.title?.trim().length || 0) < L.titleMin) {
+    errors.push(`title too short (min ${L.titleMin} chars)`);
+  }
+  if ((payload.description?.trim().length || 0) < L.descriptionMin) {
+    errors.push(`description too short (min ${L.descriptionMin} chars)`);
+  }
+
+  payload.questions.forEach((q, i) => {
+    const qLen = q.question_text?.trim().length || 0;
+    if (qLen < L.questionMin) {
+      errors.push(`Q${i + 1}: question too short (${qLen} < ${L.questionMin})`);
+    }
+    for (const [key, label] of [['option_a', 'A'], ['option_b', 'B']]) {
+      const opt = q[key]?.trim() || '';
+      if (opt.length < L.optionMin) {
+        errors.push(`Q${i + 1} option ${label}: too short (${opt.length} < ${L.optionMin})`);
+      }
+      if (!hasPunchlineOption(opt)) {
+        errors.push(`Q${i + 1} option ${label}: missing (parenthetical punchline)`);
+      }
+    }
+  });
+
+  payload.results.forEach((r, i) => {
+    const title = (r.type_name || r.title || '').trim();
+    const desc = r.description?.trim() || '';
+    if (title.length < L.resultTitleMin) {
+      errors.push(`Result ${i}: title too short (${title.length} < ${L.resultTitleMin})`);
+    }
+    if (desc.length < L.resultDescMin) {
+      errors.push(`Result ${i}: description too short (${desc.length} < ${L.resultDescMin})`);
+    }
+    const traits = Array.isArray(r.traits) ? r.traits.filter(Boolean) : [];
+    if (traits.length < L.traitsCount) {
+      errors.push(`Result ${i}: need ${L.traitsCount} traits, got ${traits.length}`);
+    }
+  });
+
+  return errors;
+}
+
 /** Returns validation errors (empty array = OK for publish) */
 export function validateQuizPayload(payload) {
   const errors = [];
@@ -158,6 +233,10 @@ export function validateQuizPayload(payload) {
     }
   });
 
+  if (payload.quiz_type !== 'mbti_12q') {
+    errors.push(...validateQuizRichness(payload));
+  }
+
   return errors;
 }
 
@@ -166,19 +245,32 @@ export async function generateQuizContent({ apiKey, openrouterKey, categoryId, c
   const systemInstruction = buildQuizSystemInstruction(category);
   const userPrompt = buildQuizUserPrompt(category, customTopic);
 
-  const { text } = await generateJsonViaLlm({
-    geminiKey: apiKey,
-    openrouterKey,
-    system: systemInstruction,
-    user: userPrompt,
-    temperature: 0.9,
-    maxOutputTokens: 8192,
-    label: 'quiz-content',
-  });
+  const maxAttempts = 2;
+  let lastErrors = [];
 
-  const parsed = parseJsonFromLlm(text);
-  parsed.category = category;
-  return parsed;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const retryHint = attempt > 1
+      ? `\n\nRETRY: Previous output failed validation: ${lastErrors.join('; ')}. Write LONGER, RICHER Vietnamese text.`
+      : '';
+
+    const { text } = await generateJsonViaLlm({
+      geminiKey: apiKey,
+      openrouterKey,
+      system: systemInstruction,
+      user: userPrompt + retryHint,
+      temperature: attempt > 1 ? 0.85 : 0.9,
+      maxOutputTokens: 8192,
+      label: 'quiz-content',
+    });
+
+    const parsed = parseJsonFromLlm(text);
+    parsed.category = category;
+    const payload = formatQuizForDb(parsed);
+    lastErrors = validateQuizPayload(payload);
+    if (lastErrors.length === 0) return parsed;
+  }
+
+  throw new Error(`Quiz failed richness validation: ${lastErrors.join('; ')}`);
 }
 
 export function pickDailyCategory() {
@@ -214,7 +306,8 @@ ${archetype.topicPrompt}
 Result framework:
 ${archetype.resultFramework}
 
-Make it King-bad + Ho Chi Minh localized (Grab, Zalo, Thao Dien, Quận 1, TikTok).`;
+Make it King-bad + Ho Chi Minh localized (Grab, Zalo, Thao Dien, Quận 1, TikTok).
+Rich content standard v5.0: long situational questions (70+ chars), options with (punchlines), result descriptions 320+ chars with 4+ sentences, 3 traits each.`;
 }
 
 export function formatMbtiQuizForDb(geminiData, category) {
@@ -281,28 +374,39 @@ export async function generateArchetypeQuizContent({ apiKey, openrouterKey, arch
   }
 
   const userPrompt = buildArchetypeUserPrompt(archetype);
+  const maxAttempts = archetype.quiz_type === 'mbti_12q' ? 1 : 2;
+  let lastErrors = [];
 
-  const { text } = await generateJsonViaLlm({
-    geminiKey: apiKey,
-    openrouterKey,
-    system: systemInstruction,
-    user: userPrompt,
-    temperature: 0.88,
-    maxOutputTokens: 8192,
-    label: 'archetype-quiz',
-  });
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const retryHint = attempt > 1
+      ? `\n\nRETRY: Previous output failed validation: ${lastErrors.join('; ')}. Write LONGER, RICHER Vietnamese text.`
+      : '';
 
-  const parsed = parseJsonFromLlm(text);
-  parsed.category = category;
+    const { text } = await generateJsonViaLlm({
+      geminiKey: apiKey,
+      openrouterKey,
+      system: systemInstruction,
+      user: userPrompt + retryHint,
+      temperature: attempt > 1 ? 0.85 : 0.88,
+      maxOutputTokens: 8192,
+      label: 'archetype-quiz',
+    });
 
-  if (archetype.quiz_type === 'mbti_12q') {
-    return formatMbtiQuizForDb(parsed, category);
+    const parsed = parseJsonFromLlm(text);
+    parsed.category = category;
+
+    if (archetype.quiz_type === 'mbti_12q') {
+      return formatMbtiQuizForDb(parsed, category);
+    }
+
+    const formatted = formatQuizForDb(parsed);
+    formatted.quiz_type = 'binary_5q';
+    formatted.category = category;
+    lastErrors = validateQuizPayload(formatted);
+    if (lastErrors.length === 0) return formatted;
   }
 
-  const formatted = formatQuizForDb(parsed);
-  formatted.quiz_type = 'binary_5q';
-  formatted.category = category;
-  return formatted;
+  throw new Error(`Archetype quiz failed richness validation: ${lastErrors.join('; ')}`);
 }
 
 export function validateArchetypePayload(payload, quizType = 'binary_5q') {

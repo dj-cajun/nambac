@@ -6,7 +6,7 @@
 
 | 역할 | 파일 | 주요 export |
 |------|------|-------------|
-| MASTER + scoring + validation | `shared/quizPrompts.js` | `QUIZ_MASTER_PROMPT`, `generateQuizContent`, `validateQuizPayload`, `formatQuizForDb` |
+| MASTER + scoring + validation | `shared/quizPrompts.js` | `QUIZ_MASTER_PROMPT` (v5.0 rich content), `QUIZ_RICHNESS_LIMITS`, `generateQuizContent`, `validateQuizPayload` |
 | 8 Expert agents + topic seeds | `shared/quizExpertPrompts.js` | `QUIZ_EXPERT_PROMPTS`, `QUIZ_TOPIC_SEEDS` |
 | MBTI / personality archetypes | `shared/personalityArchetypes.js` | `getArchetypesByGroup`, archetype quiz builders |
 | LLM JSON (Gemini → OpenRouter) | `shared/llmJson.js` | `generateJsonViaLlm`, `parseJsonFromLlm` |
