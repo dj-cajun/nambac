@@ -33,12 +33,13 @@ const PANEL_HEIGHT = OG_HEIGHT - IMAGE_HEIGHT;
 const RESULT_BOTTOM_CROP = 0.12;
 const OG_BG = { r: 255, g: 249, b: 252, alpha: 1 };
 
-async function loadImageBufferFromSources({ imageUrl, host, imagePath }) {
-  if (imageUrl) {
-    return loadImageBuffer(imageUrl, host);
-  }
+async function loadImageBufferFromSources({ imageUrl, host, imagePath, imageBuffer }) {
+  if (imageBuffer) return imageBuffer;
   if (imagePath && fs.existsSync(imagePath)) {
     return fs.readFileSync(imagePath);
+  }
+  if (imageUrl) {
+    return loadImageBuffer(imageUrl, host);
   }
   throw new Error(`Image not found: ${imageUrl || imagePath}`);
 }
@@ -47,10 +48,10 @@ async function loadImageBufferFromSources({ imageUrl, host, imagePath }) {
  * SNS OG preview — full quiz/result image visible (contain), no baked-in text.
  * Title/description come from og:title / og:description meta tags.
  */
-export async function composeOgImageOnly({ imageUrl, host, imagePath }) {
-  const imageBuffer = await loadImageBufferFromSources({ imageUrl, host, imagePath });
+export async function composeOgImageOnly({ imageUrl, host, imagePath, imageBuffer }) {
+  const buffer = await loadImageBufferFromSources({ imageUrl, host, imagePath, imageBuffer });
 
-  return sharp(imageBuffer)
+  return sharp(buffer)
     .resize(OG_WIDTH, OG_HEIGHT, {
       fit: 'contain',
       background: OG_BG,
@@ -61,9 +62,10 @@ export async function composeOgImageOnly({ imageUrl, host, imagePath }) {
 
 export function resolveImagePath(imageUrl) {
   if (!imageUrl) return null;
-  const filename = imageUrl.split('/').pop()?.split('?')[0];
-  if (!filename) return null;
-  const fp = path.join(IMAGES_DIR, filename);
+  const normalized = String(imageUrl).split('?')[0];
+  const rel = normalized.replace(/^\/?images\//, '');
+  if (!rel) return null;
+  const fp = path.join(IMAGES_DIR, rel);
   return fs.existsSync(fp) ? fp : null;
 }
 
