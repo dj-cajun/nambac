@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { composeFortuneOgImage } from '../composeOgImage.js';
 import { getFortuneByIndex } from '../../../shared/fortuneData.js';
-import { getDateStr } from '../../../shared/fortuneEngine.js';
+import { formatFortuneDateShort, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
 import {
   getFortuneImageLocalPath,
   getFortuneImagePublicPath,
@@ -22,7 +22,10 @@ export default async function handler(req, res) {
     const name = (req.query?.name || 'Bạn thân').trim().slice(0, 24);
     const idxRaw = req.query?.idx;
     const fortuneIndex = idxRaw !== undefined && idxRaw !== '' ? Number(idxRaw) : 0;
-    const dateStr = (req.query?.date || getDateStr()).trim();
+    const dateStr = String(req.query?.date || '').trim();
+    if (!isValidFortuneDateLabel(dateStr)) {
+      return res.status(400).json({ error: 'date query required (YYYY-MM-DD)' });
+    }
     const idx = ((fortuneIndex % 8) + 8) % 8;
     const fortune = getFortuneByIndex(idx);
     const host = req.headers['x-forwarded-host'] || req.headers.host;
@@ -40,7 +43,7 @@ export default async function handler(req, res) {
         imagePath: imageUrl ? localPath : imagePath,
         host,
         name,
-        fortuneTitle: fortune.title,
+        fortuneTitle: `${formatFortuneDateShort(dateStr)} · ${fortune.title}`,
         emoji: fortune.emoji,
         dateStr,
       });
@@ -49,7 +52,7 @@ export default async function handler(req, res) {
         imagePath: FALLBACK_OG,
         host,
         name,
-        fortuneTitle: fortune.title,
+        fortuneTitle: `${formatFortuneDateShort(dateStr)} · ${fortune.title}`,
         emoji: fortune.emoji,
         dateStr,
       });

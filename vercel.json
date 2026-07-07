@@ -15,6 +15,10 @@
   ],
   "rewrites": [
     {
+      "source": "/share-fortune/:name/:idx/:date",
+      "destination": "/api/handler?path=fortune-share&name=:name&idx=:idx&date=:date"
+    },
+    {
       "source": "/share/:id/:score",
       "destination": "/api/handler?path=og&id=:id&score=:score"
     },

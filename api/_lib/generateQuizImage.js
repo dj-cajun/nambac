@@ -5,6 +5,11 @@ export function getCoverImageModel() {
   return process.env.OPENROUTER_COVER_IMAGE_MODEL || 'google/gemini-2.5-flash-image';
 }
 
+/** Cover + result images in one quiz set — same model/renderer for consistent tone. */
+export async function generateQuizSetImage(prompt, options = {}) {
+  return generateCoverImage(prompt, options);
+}
+
 /** Cover/intro images — Gemini Image on OpenRouter by default (Flux paints quiz titles as text). */
 export async function generateCoverImage(prompt, options = {}) {
   const coverProvider = (process.env.COVER_IMAGE_PROVIDER || 'gemini-openrouter').toLowerCase();

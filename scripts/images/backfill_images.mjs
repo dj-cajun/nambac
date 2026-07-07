@@ -1,5 +1,5 @@
 /**
- * Backfill quiz images: Gemini prompts + Imagen (multi-key) → Flux fallback → WebP.
+ * Backfill quiz images: Gemini prompts + same model for cover/results (tone-matched) → WebP.
  * Cover + 8 results = 9 images per quiz (question images off by default).
  *
  * Run: npm run images:backfill
@@ -102,7 +102,7 @@ async function main() {
   const { generateQuizImagePrompts } = await import('../../shared/imagePromptEngine.js');
   const { getOpenRouterTextModel } = await import('../../shared/openrouterText.js');
   const { finalizeCoverImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt } = await import('../../shared/imagePrompts.js');
-  const { generateCoverImage, generateQuizImage } = await import('../../api/_lib/generateQuizImage.js');
+  const { generateCoverImage, generateQuizSetImage } = await import('../../api/_lib/generateQuizImage.js');
   const { saveImageB64AsWebp } = await import('../../api/_lib/saveQuizImage.js');
 
   const db = getTurso();
@@ -225,7 +225,7 @@ async function main() {
       const idx = (q.order_number || 1) - 1;
       if (idx < 0 || idx > 4) continue;
       try {
-        const { b64, cost, provider } = await generateQuizImage(prompts.questions[idx]);
+        const { b64, cost, provider } = await generateQuizSetImage(prompts.questions[idx]);
         const imageUrl = await saveImage(b64, `${prefix}_q${idx + 1}`);
         await db.execute({ sql: 'UPDATE questions SET image_url = ? WHERE id = ?', args: [imageUrl, q.id] });
         console.log(`   ✅ Q${idx + 1} → ${imageUrl} (${provider}${cost != null ? ` $${cost}` : ''})`);
@@ -241,7 +241,7 @@ async function main() {
       const code = r.result_code ?? 0;
       if (code < 0 || code > 7) continue;
       try {
-        const { b64, cost, provider } = await generateQuizImage(prompts.results[code]);
+        const { b64, cost, provider } = await generateQuizSetImage(prompts.results[code]);
         const imageUrl = await saveImage(b64, `${prefix}_r${code}`);
         await db.execute({ sql: 'UPDATE results SET image_url = ? WHERE id = ?', args: [imageUrl, r.id] });
         console.log(`   ✅ result ${code} → ${imageUrl} (${provider}${cost != null ? ` $${cost}` : ''})`);

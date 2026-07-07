@@ -69,6 +69,13 @@ function enhanceResponse(res) {
     return res;
   };
 
+  res.redirect = (code, url) => {
+    res.statusCode = code;
+    res.setHeader('Location', url);
+    originalEnd();
+    return res;
+  };
+
   return res;
 }
 

@@ -21,6 +21,7 @@ import ogImage from './handlers/ogImage.js';
 import balance from './handlers/balance.js';
 import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
+import fortuneShare from './handlers/fortuneShare.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -101,6 +102,8 @@ export async function dispatch(req, res, segments = []) {
   if (a === 'fortune-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
     return fortuneOg(req, res);
   }
+
+  if (a === 'fortune-share' && !b) return fortuneShare(req, res);
 
   return res.status(404).json({ error: 'Not found', path: segments.join('/') });
 }

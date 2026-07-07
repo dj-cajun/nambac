@@ -64,9 +64,20 @@ async function main() {
   for (const [label, url] of [
     ['OG image (intro)', `${base}/api/og-image?quizId=${quizId}`],
     ['OG image (result)', `${base}/api/og-image?quizId=${quizId}&score=${score}`],
+    ['Fortune OG HTML', `${base}/share-fortune/Minh/2/2026-07-07`],
+    ['Fortune OG image', `${base}/api/fortune-og?name=Minh&idx=2&date=2026-07-07`],
   ]) {
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, label.includes('HTML') ? { headers: { 'User-Agent': botUa } } : undefined);
+      if (label.includes('HTML')) {
+        const html = await res.text();
+        if (!res.ok || !html.includes('og:image') || !html.includes('fortune-og')) {
+          fail(label, `status ${res.status}`);
+        } else {
+          pass(label);
+        }
+        continue;
+      }
       const buf = Buffer.from(await res.arrayBuffer());
       if (!res.ok || buf.length < 1000) {
         fail(label, `${res.status}, ${buf.length} bytes`);

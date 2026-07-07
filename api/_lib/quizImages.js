@@ -1,6 +1,6 @@
 import { generateQuizImagePrompts } from '../../shared/imagePromptEngine.js';
 import { finalizeCoverImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt, coverPrompt, resultPrompt, questionPrompt } from '../../shared/imagePrompts.js';
-import { generateCoverImage, generateQuizImage } from './generateQuizImage.js';
+import { generateCoverImage, generateQuizSetImage } from './generateQuizImage.js';
 import { getGeminiKey, getOpenRouterKey } from '../../shared/llmJson.js';
 import { getOpenRouterTextModel } from '../../shared/openrouterText.js';
 import { saveImageB64AsWebp } from './saveQuizImage.js';
@@ -45,7 +45,7 @@ function fallbackPrompts(quiz) {
 }
 
 /**
- * Gemini prompts + Imagen 4.0 (multi-key) → OpenRouter Flux fallback → WebP save.
+ * Gemini prompts + same image model for cover + results (tone-matched set) → WebP save.
  * @param {{ quiz: object, idPrefix?: string, delayMs?: number, skipQuestions?: boolean, onProgress?: Function }} opts
  */
 export async function generateAllQuizImages({
@@ -104,7 +104,7 @@ export async function generateAllQuizImages({
   if (!skipQuestions) {
     for (let i = 0; i < 5; i++) {
       report(`question ${i + 1}`);
-      const { b64, cost } = await generateQuizImage(prompts.questions[i]);
+      const { b64, cost } = await generateQuizSetImage(prompts.questions[i]);
       out.questions.push({ order_number: i + 1, image_url: await saveImageB64AsWebp(b64, `${prefix}_q${i + 1}`) });
       out.costs.push(cost);
       await sleep(delayMs);
@@ -114,7 +114,7 @@ export async function generateAllQuizImages({
   // Results (8) — share/OG images
   for (let i = 0; i < 8; i++) {
     report(`result ${i}`);
-      const { b64, cost } = await generateQuizImage(prompts.results[i]);
+      const { b64, cost } = await generateQuizSetImage(prompts.results[i]);
       const image_url = await saveImageB64AsWebp(b64, `${prefix}_r${i}`);
       out.results.push({ result_code: i, image_url });
       out.costs.push(cost);

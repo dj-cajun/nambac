@@ -4,7 +4,7 @@ import { generateAllQuizImages } from '../quizImages.js';
 /**
  * POST /api/admin/generate-quiz-images
  * Body: { title, description, category, questions[], results[], idPrefix?, skipQuestions?, withQuestions? }
- * Gemini → 9 manga prompts (cover + 8 results) → OpenRouter images.
+ * Gemini → cover + 8 result prompts → same image model per quiz set.
  */
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

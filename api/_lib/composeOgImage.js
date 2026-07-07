@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import sharp from 'sharp';
+import { formatFortuneDateShort } from '../../shared/fortuneEngine.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMAGES_DIR = path.join(__dirname, '../../public/images');
@@ -264,7 +265,7 @@ const FORTUNE_PANEL_HEIGHT = FORTUNE_OG_HEIGHT - FORTUNE_IMAGE_HEIGHT;
 function buildFortunePanelSvg({ name, fortuneTitle, emoji, dateStr }) {
   const who = truncate(name || 'Bạn thân', 28);
   const title = truncate(`${emoji || '🔮'} ${fortuneTitle || 'Tử vi bóc phốt'}`, 56);
-  const dateLine = truncate(dateStr || '', 24);
+  const dateLine = truncate(formatFortuneDateShort(dateStr), 24);
 
   return Buffer.from(`<svg width="${FORTUNE_OG_WIDTH}" height="${FORTUNE_PANEL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs><style>${fontFaceCss()}</style></defs>

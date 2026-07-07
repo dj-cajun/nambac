@@ -11,7 +11,7 @@ const BOT_AGENTS = [
   'kakaotalk', 'kakaostory',
 ];
 
-function isBot(ua) {
+export function isBot(ua) {
   if (!ua) return false;
   const lower = ua.toLowerCase();
   return BOT_AGENTS.some(bot => lower.includes(bot));
@@ -32,7 +32,7 @@ function buildResultDescription(result) {
   return tags ? `${body}\n\n${tags}` : body;
 }
 
-function ogHtml({ title, description, image, url, redirectUrl }) {
+export function ogHtml({ title, description, image, url, redirectUrl }) {
   const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return `<!DOCTYPE html>
 <html><head>

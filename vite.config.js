@@ -15,6 +15,15 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           const pathname = req.url?.split('?')[0] || '';
+          const fortuneShareMatch = pathname.match(/^\/share-fortune\/([^/]+)\/(\d+)(?:\/([^/]+))?$/);
+          if (fortuneShareMatch) {
+            const [, name, idx, date] = fortuneShareMatch;
+            const decodedName = decodeURIComponent(name);
+            let q = `name=${encodeURIComponent(decodedName)}&idx=${idx}`;
+            if (date) q += `&date=${encodeURIComponent(date)}`;
+            req.url = `/api/fortune-share?${q}`;
+            return next();
+          }
           const scoreMatch = pathname.match(/^\/share\/([^/]+)\/(\d+)$/);
           const quizMatch = pathname.match(/^\/share\/([^/]+)$/);
           if (scoreMatch) {

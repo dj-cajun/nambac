@@ -135,11 +135,12 @@ STRICT for "cover" prompt:
 - ZERO typography in image. Background from quiz topic — not a generic alley.
 
 STRICT for every "results" prompt you write:
-- **SAME art style as cover** (style_plan) — one visual set per quiz. Vary scene, pose, prop, glow color — NOT the rendering style.
+- **SAME art style AND color grading as cover** (style_plan) — one visual set per quiz. Vary scene, pose, prop only — NOT rendering style, NOT lighting mood shift.
 - English only; never quote Vietnamese/Chinese for the image model to paint.
-- Centered character + glowing hero prop + sparkle. Unique setting per result 0–7.
+- Centered character + glowing hero prop. Unique setting per result 0–7.
 - Never mention shop signs, speech bubbles, or readable writing. NO bottom caption strip.
-- Result title/description are mood references only — never draw as text.`;
+- Result title/description are mood references only — never draw as text.
+- Do NOT add comedy-manga roast energy or neon palette shifts unless the assigned style_plan is comedy_manga.`;
 
   const { text, provider } = await generateJsonViaLlm({
     geminiKey,

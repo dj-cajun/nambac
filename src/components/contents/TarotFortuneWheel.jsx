@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { buildFortuneResultTitle } from '../../../shared/fortuneEngine.js';
 import './TarotFortuneWheel.css';
 
 const CARD_COUNT = 20;
@@ -172,7 +173,7 @@ export default function TarotFortuneWheel({
 
   const hintText =
     phase === 'awaitingGather'
-      ? '👇 Chạm để gom 20 lá bài lại'
+      ? '👇 Chạm để gom bài lại'
       : isGridPhase
         ? 'Chạm 1 lá bài úp trên bàn 👆'
         : phase === 'gathered'
@@ -180,6 +181,12 @@ export default function TarotFortuneWheel({
           : isPicking
             ? 'Đừng chớp mắt…'
             : '';
+
+  const resultHeadline = buildFortuneResultTitle({
+    name: result.name,
+    fortune,
+    dateLabel: result.dateLabel,
+  });
 
   const resultCard = (
     <div className="result-unified-card" ref={cardRef}>
@@ -200,7 +207,7 @@ export default function TarotFortuneWheel({
 
       <div className="result-text-panel">
         <div className="result-title-badge">
-          {result.name} · {fortune.emoji} {fortune.title}
+          {resultHeadline}
         </div>
         <p className="result-description-text">{fortune.body}</p>
         <div className="fortune-remedy-in-panel">
@@ -211,15 +218,15 @@ export default function TarotFortuneWheel({
         <div className="fortune-compat-box">
           <p className="fortune-compat-title">🔥 Cung hoàn sinh tồn Sài Gòn hôm nay</p>
           <p className="fortune-compat-line fortune-compat-good">
-            <strong>Quý nhân (index {result.soulmateIndex}):</strong>{' '}
+            <strong>Cứu tinh (chỉ số trạng thái hôm nay {result.soulmateIndex}) 🌟:</strong>{' '}
             {result.soulmate.emoji} {result.soulmate.title}
           </p>
           <p className="fortune-compat-line fortune-compat-bad">
-            <strong>Villain (index {result.rivalIndex}):</strong>{' '}
+            <strong>Báo thủ (chỉ số trạng thái hôm nay {result.rivalIndex}) ⚠️:</strong>{' '}
             {result.rival.emoji} {result.rival.title}
           </p>
           <p className="fortune-compat-cta">
-            Tag bạn index {result.soulmateIndex} hoặc {result.rivalIndex} vào group 😈
+            Tag ngay đứa &quot;Báo thủ&quot; hoặc &quot;Cứu tinh&quot; của bạn vào đây! 💬
           </p>
         </div>
 

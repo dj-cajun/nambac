@@ -7,6 +7,10 @@ import { pickQuizStyle, prependStylePrompt } from './imageStyles.js';
 export const NO_TEXT_RULES =
   'ABSOLUTELY NO text, NO letters, NO numbers, NO Korean hangul, NO Chinese hanzi 中文, NO Japanese kanji, NO Vietnamese words, NO logos, NO watermarks, NO speech bubbles with writing. Pure illustration only.';
 
+/** Cover + all 8 results must look like one visual set (same renderer + grading). */
+export const QUIZ_SET_CONSISTENCY_RULES =
+  'Part of ONE quiz image set with the cover thumbnail: IDENTICAL art style, line weight, color grading, and lighting mood — only scene, pose, and hero prop change. Never switch rendering style (e.g. photoreal cover + anime result).';
+
 /** Result/share image — one natural full scene; app shows answer text below the image */
 export const RESULT_SCENE_RULES =
   'Single unified illustration scene with seamless background — style may be photoreal, comic, anime, or watercolor per assignment. NO vertical split, NO divider line, NO empty half-panel. Character and environment blend naturally across the full frame.';
@@ -23,16 +27,16 @@ export const RESULT_SHARE_RULES =
 export const RESULT_HERO_RULES =
   'SAME visual formula as the quiz cover thumbnail: center-framed character, ONE oversized hero prop from the quiz theme glowing with colored aura and sparkle particles, premium poster composition. Background and lighting MUST match the specific quiz topic — pick a unique place from the prompt (home, office, school, beach, gym, fantasy realm, kitchen, concert, etc.). NEVER default to a generic narrow alley, wet pavement, shop-lined street, or cafe unless the quiz is explicitly about that place. NOT a bland standing portrait, NOT slice-of-life without a glowing focal prop.';
 
-/** Per-result accent so 8 answers look distinct */
+/** Per-result subtle prop accent — hue shift only, same palette as cover */
 export const RESULT_GLOW_ACCENTS = [
-  'hot pink and magenta neon glow',
-  'electric purple and violet aura',
-  'sunset orange and gold rim light',
-  'mint cyan and teal sparkle',
-  'coral red and warm amber glow',
-  'lavender and soft pink bokeh',
-  'lime green and yellow accent pop',
-  'deep blue and silver starlight shimmer',
+  'subtle warm pink prop glow',
+  'subtle violet prop glow',
+  'subtle golden prop glow',
+  'subtle teal prop glow',
+  'subtle coral prop glow',
+  'subtle lavender prop glow',
+  'subtle lime prop glow',
+  'subtle silver-blue prop glow',
 ];
 
 export const COVER_SHARE_RULES =
@@ -117,7 +121,7 @@ export function finalizeCoverImagePrompt(geminiPrompt, { quiz } = {}) {
   if (!/glowing hero prop|hero prop|center-framed character|premium poster/i.test(base)) {
     base = `${base} ${RESULT_HERO_RULES}`;
   }
-  return `${COVER_TEXT_FREE_LEAD} ${base} ${COVER_NO_TEXT_RULES} ${FLUX_COVER_TEXT_GUARD} ${COVER_TEXT_FREE_LEAD}`;
+  return `${COVER_TEXT_FREE_LEAD} ${base} ${QUIZ_SET_CONSISTENCY_RULES} ${COVER_NO_TEXT_RULES} ${FLUX_COVER_TEXT_GUARD} ${COVER_TEXT_FREE_LEAD}`;
 }
 
 /** Question images — same quiz style when quiz ctx provided */
@@ -141,14 +145,15 @@ export function finalizeResultImagePrompt(geminiPrompt, { resultCode = 0, quizTi
   if (!/glowing hero prop|hero prop|center-framed|premium poster/i.test(base)) {
     base = `${base} ${RESULT_HERO_RULES}`;
   }
-  if (!/expressive|exaggerat|dramatic pose|prop gag|roast/i.test(base)) base = `${base} ${RESULT_FUN_RULES}`;
-  if (!/share-card|screenshot|viral|sparkle|rim light|scroll-stopping/i.test(base)) base = `${base} ${RESULT_SHARE_RULES}`;
+  if (!/scroll-stopping|tap-worthy|feed thumbnail|share-card|rim light/i.test(base)) {
+    base = `${base} ${COVER_SHARE_RULES}`;
+  }
   const accent = RESULT_GLOW_ACCENTS[((resultCode % 8) + 8) % 8];
   const styleLine = style
-    ? `SAME art style as quiz cover (${style.label}) — do not switch to a different rendering style.`
+    ? `SAME art style as quiz cover (${style.label}) — identical rendering, never switch style.`
     : '';
-  const accentLine = `Result ${resultCode}: hero prop radiates ${accent}; unique pose and setting from other results. ${styleLine}`;
-  return `${base} ${accentLine} ${RESULT_NO_TEXT_RULES} ${FLUX_RESULT_TEXT_GUARD}`;
+  const accentLine = `Result ${resultCode}: ${accent}; unique pose and setting — ${styleLine} ${QUIZ_SET_CONSISTENCY_RULES}`;
+  return `${COVER_TEXT_FREE_LEAD} ${base} ${accentLine} ${RESULT_NO_TEXT_RULES} ${FLUX_RESULT_TEXT_GUARD}`;
 }
 
 /** @deprecated Fallback when Gemini prompts unavailable */
@@ -172,7 +177,7 @@ export function resultPrompt({ title, description, quizTitle, category, resultCo
   const quiz = { id, title: quizTitle, category };
   const accent = RESULT_GLOW_ACCENTS[((resultCode % 8) + 8) % 8];
   return finalizeResultImagePrompt(
-    `Premium share-card poster result ${resultCode}. Center-framed character with expressive reaction (mood reference only — do not draw text: ${sanitizeResultScenePrompt(mood)}). Character holds ONE oversized glowing hero prop — ${accent} on the prop, sparkle particles. Unique setting for this result personality. NOT bland portrait.`,
+    `Result ${resultCode} share image — SAME visual set as quiz cover. Center-framed character with mood from: ${sanitizeResultScenePrompt(mood)}. ONE oversized glowing hero prop with ${accent}. Unique setting for this personality. NOT a different art style from the cover.`,
     { resultCode, quizTitle, category, quiz },
   );
 }

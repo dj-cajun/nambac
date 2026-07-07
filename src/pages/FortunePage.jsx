@@ -8,6 +8,10 @@ import {
   calculateTodayFortune,
   buildFortuneShareUrl,
   buildFortuneOgImageUrl,
+  buildFortuneResultTitle,
+  formatFortuneDateLong,
+  formatFortuneDateShort,
+  getDateStr,
   parseFortuneShareParams,
 } from '../../shared/fortuneEngine.js';
 import { fetchFortuneSceneImage } from '../lib/fortuneApi.js';
@@ -40,12 +44,11 @@ export default function FortunePage() {
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const todayLabel = new Date().toLocaleDateString('vi-VN', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const pageDateLabel = friendShare?.dateLabel || getDateStr();
+  const introDateLabel = formatFortuneDateLong(pageDateLabel);
+  const todayLabel = result?.dateLabel
+    ? formatFortuneDateLong(result.dateLabel)
+    : introDateLabel;
 
   const handleReveal = (e) => {
     e.preventDefault();
@@ -122,24 +125,27 @@ export default function FortunePage() {
 
   const handleShareLink = async () => {
     if (!result) return;
-    const url = buildFortuneShareUrl(result.name, result.fortuneIndex);
+    const url = buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel);
     await copyShareLinkWithFeedback(url, showToast);
   };
 
   const fortune = result?.fortune;
+  const resultTitle = result && fortune
+    ? buildFortuneResultTitle({ name: result.name, fortune, dateLabel: result.dateLabel })
+    : null;
   const ogImageUrl = result
     ? buildFortuneOgImageUrl(result.name, result.fortuneIndex, result.dateLabel)
     : null;
   const sharePageUrl = result
-    ? buildFortuneShareUrl(result.name, result.fortuneIndex)
+    ? buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)
     : null;
 
   return (
     <div className={`fortune-page${phase !== 'form' ? ' fortune-page--result' : ''}`}>
       <Helmet>
         <title>
-          {result
-            ? `${result.name} · ${fortune?.emoji} ${fortune?.title} — Tử vi bóc phốt`
+          {resultTitle
+            ? `${resultTitle} — Tử vi bóc phốt`
             : 'Tử vi bóc phốt hàng ngày 🔮 — nambac.xyz'}
         </title>
         <meta
@@ -153,7 +159,7 @@ export default function FortunePage() {
         {result && ogImageUrl && (
           <>
             <meta property="og:type" content="website" />
-            <meta property="og:title" content={`${result.name} · ${fortune?.title} — nambac.xyz`} />
+            <meta property="og:title" content={resultTitle ? `${resultTitle} — nambac.xyz` : 'Tử vi bóc phốt — nambac.xyz'} />
             <meta property="og:description" content={fortune?.body.slice(0, 160)} />
             <meta property="og:image" content={ogImageUrl} />
             <meta property="og:image:width" content="1200" />
@@ -168,14 +174,21 @@ export default function FortunePage() {
       {phase === 'form' && (
         <>
           <header className="fortune-hero">
+            <p className="fortune-date-badge">📅 {introDateLabel}</p>
             <h1>Tử vi bóc phốt 🔮</h1>
-            <p>Nhập tên — chọn lá bài — lá bài mở ra thành kết quả của bạn.</p>
+            <p>Điền tên — Rút bài — Xem sự thật tàn nhẫn hôm nay.</p>
           </header>
 
           {friendShare && (
             <div className="fortune-friend-banner">
-              <strong>{friendShare.friendName}</strong> hôm nay dính{' '}
-              <strong>{friendShare.fortune.emoji} {friendShare.fortune.title}</strong>
+              <strong>{friendShare.friendName}</strong>
+              {friendShare.dateLabel && (
+                <>
+                  {' '}
+                  · <strong>{formatFortuneDateShort(friendShare.dateLabel)}</strong>
+                </>
+              )}{' '}
+              dính <strong>{friendShare.fortune.emoji} {friendShare.fortune.title}</strong>
               <br />
               Nhập tên bạn — xem có thoát được không 👀
             </div>
