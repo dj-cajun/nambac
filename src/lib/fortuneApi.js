@@ -1,6 +1,32 @@
 import { apiUrl, getImageUrl } from './apiConfig';
+import { FORTUNE_KIND } from '../../shared/fortuneMeta.js';
 
 const IMG_CACHE_PREFIX = 'nambac_fortune_img_v2_';
+
+const DEFAULT_STATS = { kind: FORTUNE_KIND, view_count: 0, share_count: 0, like_count: 0 };
+
+async function parseJson(res) {
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data;
+}
+
+export async function fetchFortuneStats(kind = FORTUNE_KIND) {
+  try {
+    const params = new URLSearchParams({ kind });
+    return await parseJson(await fetch(apiUrl(`fortune/stats?${params}`)));
+  } catch {
+    return { ...DEFAULT_STATS, kind };
+  }
+}
+
+export async function incrementFortuneStat(field, kind = FORTUNE_KIND) {
+  return parseJson(await fetch(apiUrl('fortune/stats'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ field, kind }),
+  }));
+}
 
 export function fortuneImageCacheKey(dateLabel, fortuneIndex) {
   return `${IMG_CACHE_PREFIX}${dateLabel}_${fortuneIndex}`;

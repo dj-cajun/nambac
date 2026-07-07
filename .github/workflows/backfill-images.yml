@@ -1,4 +1,4 @@
-# 원격 이미지 백필 — GitHub Actions → Turso 업데이트 → WebP 커밋 → Vercel 배포
+# 원격 이미지 백필 — 누락분 보완 (일일 퀴즈는 daily-quiz.yml에서 처리)
 #
 # 필수 Secrets (Settings → Secrets → Actions):
 #   TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, GEMINI_API_KEY, OPENROUTER_API_KEY

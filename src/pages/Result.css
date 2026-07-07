@@ -781,6 +781,44 @@
     box-shadow: 0px 0px 0px 0px var(--comic-charcoal);
 }
 
+.result-page-container .share-btn-wrap {
+    flex: none;
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-like-btn {
+    height: 48px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border: 2px solid var(--comic-charcoal);
+    border-radius: 12px;
+    box-shadow: 2px 2px 0 var(--comic-charcoal);
+    color: var(--comic-charcoal);
+    cursor: pointer;
+}
+
+.result-like-btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+.result-like-btn.is-liked {
+    color: var(--primary-pink);
+    cursor: default;
+}
+
+.result-like-count {
+    font-size: 12px;
+    font-weight: 900;
+    min-width: 1ch;
+}
+
 /* ==== Share Modal ==== */
 .share-modal-overlay {
     position: fixed;

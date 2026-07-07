@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * Manual daily quiz trigger (local or CI).
- * Usage: npm run daily:quiz
- *        npm run daily:quiz -- --category Trendy
+ * Trigger daily quiz via HTTP API (legacy).
+ * Prefer: npm run daily:quiz  (runs scripts/ops/run_daily_quiz.mjs directly)
+ *
+ * Usage: npm run daily:quiz:api
+ *        npm run daily:quiz:api -- --prod --category=Trendy
  */
 import dotenv from 'dotenv';
 import path from 'path';

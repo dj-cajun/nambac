@@ -458,3 +458,41 @@
   color: #ff2d85;
   line-height: 1.45;
 }
+
+.fortune-page .share-btn-wrap {
+  flex: none;
+  width: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fortune-like-btn {
+  height: 48px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 2px solid #1e293b;
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 #1e293b;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.fortune-like-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.fortune-like-btn.is-liked {
+  color: #ff2d85;
+  cursor: default;
+}
+
+.fortune-like-count {
+  font-size: 12px;
+  font-weight: 900;
+  min-width: 1ch;
+}

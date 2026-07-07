@@ -860,6 +860,7 @@ const Admin = () => {
                                                                     <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">조회</th>
                                                                     <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">참여</th>
                                                                     <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">공유</th>
+                                                                    <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">좋아요</th>
                                                                     <th className="p-3 text-center text-xs font-bold text-gray-500 uppercase">공유율</th>
                                                                 </tr>
                                                             </thead>
@@ -870,6 +871,7 @@ const Admin = () => {
                                                                         <td className="p-3 text-center">{q.view_count}</td>
                                                                         <td className="p-3 text-center">{q.participant_count}</td>
                                                                         <td className="p-3 text-center">{q.share_count}</td>
+                                                                        <td className="p-3 text-center">{q.like_count || 0}</td>
                                                                         <td className="p-3 text-center font-bold text-[#FF2D85]">
                                                                             {q.participant_count ? Math.round((q.share_count / q.participant_count) * 100) : 0}%
                                                                         </td>

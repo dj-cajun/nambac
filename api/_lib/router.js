@@ -22,6 +22,7 @@ import balance from './handlers/balance.js';
 import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
 import fortuneShare from './handlers/fortuneShare.js';
+import fortuneStats from './handlers/fortuneStats.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -95,6 +96,10 @@ export async function dispatch(req, res, segments = []) {
   }
 
   // ── Daily fortune AI scene ──
+  if (a === 'fortune' && b === 'stats' && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {
+    return fortuneStats(req, res);
+  }
+
   if (a === 'fortune-image' && !b && (method === 'GET' || method === 'OPTIONS')) {
     return fortuneImage(req, res);
   }

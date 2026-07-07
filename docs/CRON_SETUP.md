@@ -1,41 +1,52 @@
-# Vercel Cron — 일일 퀴즈 자동 생성
+# 일일 퀴즈 자동 생성 (GitHub Actions)
 
-> API는 Hobby 12함수 제한 대응으로 **`api/[...path].js` 단일 라우터**에 통합되어 있습니다.
+> Vercel Cron은 사용하지 않습니다. **GitHub Actions**에서 퀴즈 생성·이미지 백필·커밋까지 한 번에 처리합니다.
 
-n8n 없이 **Vercel Cron**이 매일 Gemini → Turso → Push까지 처리합니다.
+## 1. 스케줄
 
-## 1. Vercel 환경 변수
+`.github/workflows/daily-quiz.yml`:
 
-| Key | 필수 | 설명 |
-|-----|------|------|
-| `CRON_SECRET` | ✅ | Cron 인증 — **직접 만든 랜덤 문자열** (Vercel이 제공하는 값 아님) |
-| `VITE_GEMINI_API_KEY` | ✅ | 퀴즈 텍스트 (이미 있으면 OK) |
-| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Push용 | `npm run vapid:generate` 후 Vercel에 3개 등록 |
-| `TURSO_*` | ✅ | DB |
-
-**Vercel 입력 예:** Name=`CRON_SECRET`, Value=`nambac-cron-2026-xxxxxxxx` (본인만 아는 문자열)
-
-저장 후 **Redeploy** 필수.
-
-## 2. 스케줄
-
-`vercel.json`:
-
-```json
-"crons": [{ "path": "/api/cron/daily-quiz", "schedule": "0 3 * * *" }]
+```yaml
+schedule:
+  - cron: '0 3 * * *'   # 03:00 UTC = 10:00 ICT
 ```
 
-- **03:00 UTC** = **10:00 호치민 (ICT)**
-- 카테고리는 8 Expert 중 **날짜별 로테이션** (MBTI → … → Lookalike)
+카테고리는 8 Expert 중 **날짜별 로테이션** (MBTI → … → Lookalike).
 
-## 3. 수동 실행
+## 2. GitHub Secrets (Actions)
 
-로컬 (dev API 실행 중):
+| Secret | 필수 | 설명 |
+|--------|------|------|
+| `TURSO_DATABASE_URL` | ✅ | Turso DB |
+| `TURSO_AUTH_TOKEN` | ✅ | Turso 토큰 |
+| `GEMINI_API_KEY` | ✅ | 퀴즈 텍스트 생성 |
+| `OPENROUTER_API_KEY` | ✅ | 이미지 + Gemini fallback |
+| `VITE_GEMINI_API_KEY` | 권장 | Gemini 키 (없으면 `GEMINI_API_KEY`) |
+| `OPENROUTER_TEXT_MODEL` | 선택 | Gemini 실패 시 텍스트 모델 |
+| `OPENROUTER_IMAGE_MODEL` | 선택 | 이미지 모델 |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Push용 | `npm run vapid:generate` 후 등록 |
+
+등록 방법: `docs/REMOTE_OPS.md` §1 참고.
+
+## 3. 동작 흐름
+
+```
+GitHub Actions (03:00 UTC)
+  → Gemini 퀴즈 생성 → Turso 저장
+  → Web Push (VAPID 있을 때)
+  → cover + 결과 8장 backfill
+  → public/images/backfill_*.webp 커밋 → push → Vercel 자동 배포
+```
+
+누락 이미지 보완: `.github/workflows/backfill-images.yml` (2시간마다 스캔).
+
+## 4. 수동 실행
+
+### 로컬 (권장)
 
 ```bash
-# .env.local에 CRON_SECRET 추가
-npm run dev:api   # optional — standalone API on 8787
-npm run daily:quiz   # 터미널 2
+# .env.local에 TURSO_*, GEMINI_API_KEY, OPENROUTER_API_KEY
+npm run daily:quiz
 ```
 
 특정 카테고리:
@@ -44,33 +55,37 @@ npm run daily:quiz   # 터미널 2
 npm run daily:quiz -- --category=Trendy
 ```
 
-프로덕션 curl:
+이미지·푸시 생략:
 
 ```bash
-curl -X POST "https://nambac.vercel.app/api/cron/daily-quiz" \
+npm run daily:quiz -- --no-images --no-push
+```
+
+### GitHub Actions UI
+
+1. https://github.com/dj-cajun/nambac/actions/workflows/daily-quiz.yml
+2. **Run workflow** → 카테고리·옵션 선택
+
+### Vercel API (레거시, 텍스트만)
+
+`CRON_SECRET`이 Vercel에 설정되어 있으면 수동 curl 가능. 이미지는 GHA에서 처리하므로 API 기본값은 `backfill: false`.
+
+```bash
+curl -X POST "https://nambac.xyz/api/cron/daily-quiz" \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
-## 4. Vercel Cron 보안
+로컬에서 API 경유:
 
-Vercel이 Cron 호출 시 `Authorization: Bearer ${CRON_SECRET}` 헤더를 자동 전송합니다.  
-`CRON_SECRET`은 Git에 커밋하지 마세요.
+```bash
+npm run daily:quiz:api -- --prod
+```
 
-## 5. n8n vs Cron
+## 5. Vercel Cron 비활성화
 
-| | Vercel Cron | n8n |
-|--|-------------|-----|
-| 설치 | 없음 | 별도 |
-| 일 1퀴즈 | ✅ 기본 | 가능 |
-| 이미지 9장 | ❌ (수동/backfill) | 파이프라인 확장 가능 |
-| SNS/Slack | 코드 추가 필요 | GUI |
-
-이미지가 필요하면 생성 후 `npm run images:backfill -- --quiz-id=...` 실행.
-
-**자동화 (권장):** Vercel env에 `GITHUB_DISPATCH_TOKEN`(repo scope PAT) 설정 시 daily cron 직후 GitHub Actions backfill이 해당 퀴즈만 처리합니다. Actions는 2시간마다 누락분도 스캔하며, 생성된 `.webp`를 커밋해 Vercel에 배포합니다.
+`vercel.json`에서 `crons` 배열을 제거했습니다. Vercel 대시보드 Cron 탭에 항목이 남아 있으면 삭제하세요.
 
 ## 6. Hobby 제한
 
-- **Serverless Functions**: 1개 (`api/[...path].js`)
-- **일일 배포 100회**: 한도 초과 시 익일 자동 배포 — `docs/VERCEL_ENV.md`
-- Cron **Pro** 권장; 로컬 대안: `npm run daily:quiz`
+- Vercel serverless에서 이미지 파일 저장 불가 → GHA에서 커밋 후 배포
+- 일일 배포 한도: `docs/VERCEL_ENV.md`

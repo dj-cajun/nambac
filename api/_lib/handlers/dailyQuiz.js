@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     }
 
     let imageBackfill = null;
-    if (body.backfill !== false) {
+    if (body.backfill === true) {
       try {
         imageBackfill = await triggerImageBackfill(quiz.id);
       } catch (err) {

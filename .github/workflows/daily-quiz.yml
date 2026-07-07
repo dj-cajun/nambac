@@ -1,0 +1,97 @@
+# 일일 퀴즈 — Gemini → Turso → Push → 이미지 백필 → WebP 커밋 → Vercel 배포
+#
+# 필수 Secrets: TURSO_*, GEMINI_API_KEY, OPENROUTER_API_KEY
+# Push(선택): VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT
+
+name: Daily quiz
+
+on:
+  schedule:
+    # 03:00 UTC = 10:00 ICT
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Optional category override (e.g. Trendy, MBTI)'
+        required: false
+        default: ''
+      skip_push:
+        description: 'Skip web push notification'
+        type: boolean
+        default: false
+      skip_images:
+        description: 'Skip image backfill (text only)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: daily-quiz
+  cancel-in-progress: false
+
+jobs:
+  daily-quiz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate quiz + backfill images
+        id: quiz
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_TEXT_MODEL: ${{ secrets.OPENROUTER_TEXT_MODEL }}
+          OPENROUTER_IMAGE_MODEL: ${{ secrets.OPENROUTER_IMAGE_MODEL }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          VITE_SITE_URL: https://nambac.xyz
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.category }}" ]; then
+            ARGS="$ARGS --category=${{ github.event.inputs.category }}"
+          fi
+          if [ "${{ github.event.inputs.skip_push }}" = "true" ]; then
+            ARGS="$ARGS --no-push"
+          fi
+          if [ "${{ github.event.inputs.skip_images }}" = "true" ]; then
+            ARGS="$ARGS --no-images"
+          fi
+          node scripts/ops/run_daily_quiz.mjs $ARGS 2>&1 | tee daily-quiz.log
+
+      - name: Upload log artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-quiz-log-${{ github.run_id }}
+          path: daily-quiz.log
+          retention-days: 14
+
+      - name: Commit new images
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images/backfill_*.webp public/images/backfill_*.png 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No new backfill images to commit."
+            exit 0
+          fi
+          git commit -m "chore(images): daily quiz backfill $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push

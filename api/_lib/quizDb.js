@@ -3,6 +3,7 @@ import { getTurso, rowToQuiz, rowToQuestion, rowToResult } from './turso.js';
 import { normalizeCategory } from '../../shared/categories.js';
 
 export async function listActiveQuizzes() {
+  await ensureQuizLikeColumn();
   const db = getTurso();
   const rs = await db.execute({
     sql: `SELECT * FROM quizzes
@@ -68,11 +69,37 @@ const STAT_FIELDS = {
   view: 'view_count',
   share: 'share_count',
   participate: 'participant_count',
+  like: 'like_count',
 };
+
+async function ensureQuizLikeColumn() {
+  const db = getTurso();
+  try {
+    await db.execute({ sql: 'ALTER TABLE quizzes ADD COLUMN like_count INTEGER DEFAULT 0' });
+  } catch (err) {
+    if (!String(err.message).toLowerCase().includes('duplicate column')) {
+      throw err;
+    }
+  }
+}
+
+export function quizPublicStats(quiz) {
+  if (!quiz) {
+    return { view_count: 0, share_count: 0, like_count: 0, participant_count: 0 };
+  }
+  return {
+    view_count: Number(quiz.view_count) || 0,
+    share_count: Number(quiz.share_count) || 0,
+    like_count: Number(quiz.like_count) || 0,
+    participant_count: Number(quiz.participant_count) || 0,
+  };
+}
 
 export async function incrementQuizStat(quizId, field) {
   const column = STAT_FIELDS[field];
   if (!column) throw new Error(`Invalid stat field: ${field}`);
+
+  await ensureQuizLikeColumn();
 
   const quiz = await getQuizById(quizId);
   if (!quiz || !isQuizPublic(quiz)) {
@@ -84,6 +111,9 @@ export async function incrementQuizStat(quizId, field) {
     sql: `UPDATE quizzes SET ${column} = COALESCE(${column}, 0) + 1 WHERE id = ?`,
     args: [quizId],
   });
+
+  const updated = await getQuizById(quizId);
+  return { ok: true, ...quizPublicStats(updated) };
 }
 
 export async function createBrandInquiry(payload) {
@@ -164,9 +194,10 @@ export async function updateQuiz(quizId, fields) {
 }
 
 export async function getAnalyticsSummary() {
+  await ensureQuizLikeColumn();
   const db = getTurso();
   const rs = await db.execute({
-    sql: `SELECT id, title, category, quiz_type, view_count, share_count, participant_count,
+    sql: `SELECT id, title, category, quiz_type, view_count, share_count, like_count, participant_count,
                  is_active, status, created_at
           FROM quizzes ORDER BY datetime(created_at) DESC`,
   });
@@ -176,6 +207,7 @@ export async function getAnalyticsSummary() {
     is_active: row.is_active === 1,
     view_count: row.view_count || 0,
     share_count: row.share_count || 0,
+    like_count: row.like_count || 0,
     participant_count: row.participant_count || 0,
   }));
 
@@ -183,9 +215,10 @@ export async function getAnalyticsSummary() {
     (acc, q) => ({
       views: acc.views + q.view_count,
       shares: acc.shares + q.share_count,
+      likes: acc.likes + q.like_count,
       participants: acc.participants + q.participant_count,
     }),
-    { views: 0, shares: 0, participants: 0 },
+    { views: 0, shares: 0, likes: 0, participants: 0 },
   );
 
   return { totals, quizzes: rows };
@@ -214,6 +247,7 @@ export async function getBrandReport(quizId, token) {
     stats: {
       views: quiz.view_count || 0,
       shares: quiz.share_count || 0,
+      likes: quiz.like_count || 0,
       participants: quiz.participant_count || 0,
       share_rate_pct: shareRate,
     },

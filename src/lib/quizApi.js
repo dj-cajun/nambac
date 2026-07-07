@@ -23,7 +23,7 @@ export async function fetchQuizResults(quizId) {
 }
 
 export async function incrementQuizStat(quizId, field) {
-  await parseJson(await fetch(apiUrl(`/quizzes/${quizId}/stats`), {
+  return parseJson(await fetch(apiUrl(`/quizzes/${quizId}/stats`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ field }),

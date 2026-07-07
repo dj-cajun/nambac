@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Download, Share2 } from 'lucide-react';
+import { Download, Share2, Heart } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import html2canvas from 'html2canvas';
@@ -10,6 +10,7 @@ import { trackQuizComplete, trackShare } from '../lib/analytics';
 import './Result.css';
 import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizResults, fetchQuizzes as loadQuizzes, incrementQuizStat } from '../lib/quizApi';
+import { hasQuizLikedThisSession, trackQuizLikeOnce } from '../lib/quizRanking';
 import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
 import CopyToast from '../components/CopyToast';
@@ -27,6 +28,8 @@ const Result = () => {
     const [results, setResults] = useState([]);
     const [finalResult, setFinalResult] = useState({ title: "Đang tải...", description: "", image_url: "" });
     const [recommendedQuizzes, setRecommendedQuizzes] = useState([]);
+    const [liked, setLiked] = useState(() => hasQuizLikedThisSession(quizIdParam));
+    const [likeCount, setLikeCount] = useState(0);
     const { toast, showToast } = useCopyToast();
 
     // Fetch Results if not present
@@ -59,6 +62,8 @@ const Result = () => {
         const fetchQuizzes = async () => {
             try {
                 const all = await loadQuizzes();
+                const current = all.find((q) => q.id === quizIdParam);
+                if (current) setLikeCount(current.like_count || 0);
                 setRecommendedQuizzes(all.filter(q => q.id !== quizIdParam).slice(0, 8));
             } catch (err) {
                 console.error('Failed to fetch recommended quizzes:', err);
@@ -105,6 +110,19 @@ const Result = () => {
         if (!window.__sharedQuiz?.[quizIdParam]) {
             incrementQuizStat(quizIdParam, 'share').catch(console.error);
             window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
+        }
+    };
+
+    const handleLike = async () => {
+        if (liked || !trackQuizLikeOnce(quizIdParam)) return;
+        setLiked(true);
+        setLikeCount((n) => n + 1);
+        try {
+            const data = await incrementQuizStat(quizIdParam, 'like');
+            if (typeof data.like_count === 'number') setLikeCount(data.like_count);
+        } catch {
+            setLiked(false);
+            setLikeCount((n) => Math.max(0, n - 1));
         }
     };
 
@@ -214,6 +232,16 @@ const Result = () => {
 
                     <div className="share-btn-wrap">
                         <CopyToast toast={toast} anchored />
+                        <button
+                            type="button"
+                            className={`result-like-btn${liked ? ' is-liked' : ''}`}
+                            onClick={handleLike}
+                            disabled={liked}
+                            aria-label={liked ? 'Đã thích' : 'Thích kết quả'}
+                        >
+                            <Heart size={22} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} />
+                            <span className="result-like-count">{likeCount.toLocaleString()}</span>
+                        </button>
                         <button type="button" className="share-btn" onClick={handleShareLink} aria-label="Sao chép link chia sẻ">
                             <Share2 size={24} />
                         </button>

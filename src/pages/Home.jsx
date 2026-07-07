@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Send, X } from 'lucide-react';
+import { User, Send, X, Heart } from 'lucide-react';
 import { scrollToTop } from '../lib/scrollToTop';
+import { fetchFortuneStats } from '../lib/fortuneApi';
+import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import './Home.css';
 import './MiniApp.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
@@ -9,6 +11,7 @@ import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import AdSenseUnit from '../components/AdSenseUnit';
 import QuizImage from '../components/QuizImage';
+import QuizCardStats from '../components/QuizCardStats';
 import { AD_SLOTS } from '../lib/adsConfig';
 
 const SORT_OPTIONS = [
@@ -184,6 +187,7 @@ export default function Home() {
   const [sortMode, setSortMode] = useState('trending');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [introModal, setIntroModal] = useState(null);
+  const [fortuneStats, setFortuneStats] = useState({ view_count: 0, share_count: 0, like_count: 0 });
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
   const introBodyRef = useRef(null);
@@ -195,6 +199,10 @@ export default function Home() {
 
   useEffect(() => {
     scrollToTop();
+  }, []);
+
+  useEffect(() => {
+    fetchFortuneStats().then(setFortuneStats).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -377,7 +385,23 @@ export default function Home() {
       )}
 
       <nav className="home-quick-chips" aria-label="Chơi nhanh">
-        <Link to="/fortune" className="home-quick-chip fortune">💘 Tử vi tình yêu</Link>
+        <Link to="/fortune" className="home-fortune-card">
+          <span className="home-fortune-card-label">{FORTUNE_BRAND.emoji} {FORTUNE_BRAND.label}</span>
+          <div className="home-fortune-card-stats">
+            <span title="Lượt xem">
+              <User size={11} aria-hidden="true" />
+              {(fortuneStats.view_count || 0).toLocaleString()}
+            </span>
+            <span title="Lượt chia sẻ">
+              <Send size={11} aria-hidden="true" />
+              {(fortuneStats.share_count || 0).toLocaleString()}
+            </span>
+            <span title="Lượt thích">
+              <Heart size={11} strokeWidth={2} aria-hidden="true" />
+              {(fortuneStats.like_count || 0).toLocaleString()}
+            </span>
+          </div>
+        </Link>
         <Link to="/balance" className="home-quick-chip balance">⚖️ Chọn 1 trong 2</Link>
         <Link to="/roast-card" className="home-quick-chip roast">💳 Thẻ đen bóc phốt</Link>
       </nav>
@@ -423,14 +447,7 @@ export default function Home() {
                 </div>
                 <div className="glass-card-info-bottom">
                   <h4 className="info-title-sm line-clamp-2">{quiz.title}</h4>
-                  <div className="flex justify-between items-center mt-auto w-full">
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-                      <User size={10} /> {(quiz.view_count || 0).toLocaleString()}
-                    </div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-                      <Send size={10} /> {(quiz.share_count || 0).toLocaleString()}
-                    </div>
-                  </div>
+                  <QuizCardStats quiz={quiz} />
                 </div>
               </div>
             ))

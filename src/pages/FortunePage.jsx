@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { Download, Share2 } from 'lucide-react';
+import { Download, Share2, Heart } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import {
   calculateTodayFortune,
@@ -14,7 +14,8 @@ import {
   parseFortuneShareParams,
 } from '../../shared/fortuneEngine.js';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
-import { fetchFortuneSceneImage } from '../lib/fortuneApi.js';
+import { fetchFortuneSceneImage, fetchFortuneStats, incrementFortuneStat } from '../lib/fortuneApi.js';
+import { trackFortuneViewOnce, trackFortuneLikeOnce, hasFortuneLikedThisSession } from '../lib/fortuneStats.js';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink.js';
 import { buildFortuneOgImageUrl } from '../lib/siteUrl.js';
 import CopyToast from '../components/CopyToast.jsx';
@@ -44,6 +45,8 @@ export default function FortunePage() {
   const [imageSrc, setImageSrc] = useState('');
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [liked, setLiked] = useState(() => hasFortuneLikedThisSession());
+  const [likeCount, setLikeCount] = useState(0);
 
   const pageDateLabel = friendShare?.dateLabel || getDateStr();
   const introDateLabel = formatFortuneDateLong(pageDateLabel);
@@ -80,6 +83,16 @@ export default function FortunePage() {
     setImageSrc('');
     setImageError(false);
   };
+
+  useEffect(() => {
+    fetchFortuneStats().then((s) => setLikeCount(s.like_count || 0)).catch(() => {});
+    if (!trackFortuneViewOnce()) return;
+    incrementFortuneStat('view')
+      .then((data) => {
+        if (typeof data.like_count === 'number') setLikeCount(data.like_count);
+      })
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     if ((phase !== 'ritual' && phase !== 'done') || !result) return undefined;
@@ -127,7 +140,23 @@ export default function FortunePage() {
   const handleShareLink = async () => {
     if (!result) return;
     const url = buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel);
-    await copyShareLinkWithFeedback(url, showToast);
+    const ok = await copyShareLinkWithFeedback(url, showToast);
+    if (ok) {
+      incrementFortuneStat('share').catch(console.error);
+    }
+  };
+
+  const handleLike = async () => {
+    if (liked || !trackFortuneLikeOnce()) return;
+    setLiked(true);
+    setLikeCount((n) => n + 1);
+    try {
+      const data = await incrementFortuneStat('like');
+      if (typeof data.like_count === 'number') setLikeCount(data.like_count);
+    } catch {
+      setLiked(false);
+      setLikeCount((n) => Math.max(0, n - 1));
+    }
   };
 
   const fortune = result?.fortune;
@@ -249,6 +278,16 @@ export default function FortunePage() {
 
             <div className="share-btn-wrap">
               <CopyToast toast={toast} anchored />
+              <button
+                type="button"
+                className={`fortune-like-btn${liked ? ' is-liked' : ''}`}
+                onClick={handleLike}
+                disabled={liked}
+                aria-label={liked ? 'Đã thích' : 'Thích kết quả'}
+              >
+                <Heart size={22} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} />
+                <span className="fortune-like-count">{likeCount.toLocaleString()}</span>
+              </button>
               <button
                 type="button"
                 className="share-btn"

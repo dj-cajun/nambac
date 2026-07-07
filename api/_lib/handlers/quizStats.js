@@ -21,8 +21,8 @@ export default async function handler(req, res) {
     const field = body.field;
     if (!field) return res.status(400).json({ error: 'Missing field' });
 
-    await incrementQuizStat(id, field);
-    return res.status(200).json({ ok: true });
+    const stats = await incrementQuizStat(id, field);
+    return res.status(200).json(stats);
   } catch (err) {
     if (err.message === 'Quiz not available' || err.message?.startsWith('Invalid stat field')) {
       return res.status(400).json({ error: err.message });

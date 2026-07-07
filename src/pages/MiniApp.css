@@ -327,6 +327,49 @@
   background: #ddd6fe;
 }
 
+.home-fortune-card {
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 16px;
+  background: #ddd6fe;
+  border: 2px solid #0f172a;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #1e293b;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 #0f172a;
+  transition: transform 0.12s;
+  min-width: 148px;
+}
+
+.home-fortune-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.home-fortune-card-label {
+  line-height: 1.2;
+}
+
+.home-fortune-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.home-fortune-card-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
 .home-quick-chip.balance {
   background: #fde68a;
 }

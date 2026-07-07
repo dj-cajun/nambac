@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { User, Send } from 'lucide-react';
 import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import QuizImage from '../components/QuizImage';
+import QuizCardStats from '../components/QuizCardStats';
 
 export default function LeaderboardPage() {
   const navigate = useNavigate();
@@ -67,14 +67,7 @@ export default function LeaderboardPage() {
                 </div>
                 <div className="glass-card-info-bottom">
                   <h4 className="info-title-sm line-clamp-2">{quiz.title}</h4>
-                  <div className="flex justify-between items-center mt-auto w-full">
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-                      <User size={10} /> {(quiz.view_count || 0).toLocaleString()}
-                    </div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-                      <Send size={10} /> {(quiz.share_count || 0).toLocaleString()}
-                    </div>
-                  </div>
+                  <QuizCardStats quiz={quiz} />
                 </div>
               </div>
             ))

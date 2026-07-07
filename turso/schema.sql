@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS quizzes (
   status TEXT DEFAULT 'active',
   view_count INTEGER DEFAULT 0,
   share_count INTEGER DEFAULT 0,
+  like_count INTEGER DEFAULT 0,
   participant_count INTEGER DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -65,3 +66,14 @@ CREATE TABLE IF NOT EXISTS balance_votes (
   votes_b INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS fortune_stats (
+  kind TEXT PRIMARY KEY,
+  view_count INTEGER NOT NULL DEFAULT 0,
+  share_count INTEGER NOT NULL DEFAULT 0,
+  like_count INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+INSERT OR IGNORE INTO fortune_stats (kind, view_count, share_count, like_count)
+VALUES ('love', 0, 0, 0);

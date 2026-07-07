@@ -15,6 +15,7 @@ Repository → **Settings → Secrets and variables → Actions → New reposito
 | `VITE_GEMINI_API_KEY` | 권장 | Gemini 키 (없으면 `GEMINI_API_KEY`만) |
 | `OPENROUTER_TEXT_MODEL` | 선택 | 기본 `deepseek/deepseek-v4-pro` (Gemini 실패 시) |
 | `OPENROUTER_IMAGE_MODEL` | 선택 | 기본 `black-forest-labs/flux.2-klein-4b` |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Push용 | 일일 퀴즈 워크플로에서 알림 전송 |
 
 터미널에서 한 번에 등록 (로컬 `.env.local` 있을 때):
 
@@ -44,14 +45,22 @@ gh secret set OPENROUTER_API_KEY --body "$(grep OPENROUTER_API_KEY .env.local | 
 GitHub Runner → Turso DB 업데이트 → `public/images/backfill_*.webp` 커밋 → push → Vercel 배포
 ```
 
-## 3. 일일 퀴즈 (이미 설정됨)
+## 3. 일일 퀴즈 (GitHub Actions)
 
-Vercel Cron `03:00 UTC` = **10:00 ICT** — `docs/CRON_SETUP.md` 참고.
+**Vercel Cron 대신** `.github/workflows/daily-quiz.yml`이 매일 **03:00 UTC (10:00 ICT)** 에 실행됩니다.
 
-수동 트리거:
+- 퀴즈 생성 → Turso → Push(선택) → 이미지 backfill → WebP 커밋 → Vercel 배포
+- 상세: `docs/CRON_SETUP.md`
+
+### 수동 실행
+
+1. https://github.com/dj-cajun/nambac/actions/workflows/daily-quiz.yml → **Run workflow**
+2. 또는 로컬: `npm run daily:quiz`
+
+레거시 API (텍스트만, 이미지는 GHA 권장):
 
 ```bash
-curl -X POST "https://nambac.vercel.app/api/cron/daily-quiz" \
+curl -X POST "https://nambac.xyz/api/cron/daily-quiz" \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
