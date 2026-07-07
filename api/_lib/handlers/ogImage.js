@@ -4,8 +4,7 @@ import { fileURLToPath } from 'url';
 import { getQuizById, getResultsByQuizId } from '../quizDb.js';
 import {
   buildOgImageApiUrl,
-  composeOgImage,
-  parseTraits,
+  composeOgImageOnly,
 } from '../composeOgImage.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,28 +43,21 @@ export default async function handler(req, res) {
         return res.status(200).send(fb);
       }
 
-      buffer = await composeOgImage({
+      buffer = await composeOgImageOnly({
         imageUrl,
         host,
-        quizTitle: quiz.title,
-        headline: result.title || result.type_name || 'Kết quả',
-        description: result.description,
-        hashtags: parseTraits(result.traits),
-        mode: 'result',
       });
     } else {
       if (!quiz.image_url) {
-        return res.status(404).json({ error: 'Cover not found' });
+        const fb = fs.readFileSync(FALLBACK_OG);
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'public, s-maxage=86400');
+        return res.status(200).send(fb);
       }
 
-      buffer = await composeOgImage({
+      buffer = await composeOgImageOnly({
         imageUrl: quiz.image_url,
         host,
-        quizTitle: quiz.title,
-        headline: quiz.title,
-        description: quiz.description,
-        hashtags: [],
-        mode: 'intro',
       });
     }
 

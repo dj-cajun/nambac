@@ -18,7 +18,7 @@ export function getOgDefaultImageUrl() {
   return `${getSiteOrigin()}/og-default.png`;
 }
 
-/** Composed OG card (image + quiz title + answer + #tags) */
+/** Composed OG card — full quiz/result image (title via og:title meta) */
 export function buildOgImageUrl(quizId, score = null) {
   const params = new URLSearchParams({ path: 'og-image', quizId });
   if (score !== null && score !== undefined && score !== '') {

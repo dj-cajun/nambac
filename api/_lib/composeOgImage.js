@@ -29,6 +29,33 @@ const OG_HEIGHT = 630;
 const IMAGE_HEIGHT = 420;
 const PANEL_HEIGHT = OG_HEIGHT - IMAGE_HEIGHT;
 const RESULT_BOTTOM_CROP = 0.12;
+const OG_BG = { r: 255, g: 249, b: 252, alpha: 1 };
+
+async function loadImageBufferFromSources({ imageUrl, host, imagePath }) {
+  if (imageUrl) {
+    return loadImageBuffer(imageUrl, host);
+  }
+  if (imagePath && fs.existsSync(imagePath)) {
+    return fs.readFileSync(imagePath);
+  }
+  throw new Error(`Image not found: ${imageUrl || imagePath}`);
+}
+
+/**
+ * SNS OG preview — full quiz/result image visible (contain), no baked-in text.
+ * Title/description come from og:title / og:description meta tags.
+ */
+export async function composeOgImageOnly({ imageUrl, host, imagePath }) {
+  const imageBuffer = await loadImageBufferFromSources({ imageUrl, host, imagePath });
+
+  return sharp(imageBuffer)
+    .resize(OG_WIDTH, OG_HEIGHT, {
+      fit: 'contain',
+      background: OG_BG,
+    })
+    .webp({ quality: 88 })
+    .toBuffer();
+}
 
 export function resolveImagePath(imageUrl) {
   if (!imageUrl) return null;
@@ -200,14 +227,7 @@ export async function composeOgImage({
   hashtags = [],
   mode = 'result',
 }) {
-  let imageBuffer;
-  if (imageUrl) {
-    imageBuffer = await loadImageBuffer(imageUrl, host);
-  } else if (imagePath && fs.existsSync(imagePath)) {
-    imageBuffer = fs.readFileSync(imagePath);
-  } else {
-    throw new Error(`Image not found: ${imageUrl || imagePath}`);
-  }
+  let imageBuffer = await loadImageBufferFromSources({ imageUrl, host, imagePath });
 
   const topImage = await loadTopImage(imageBuffer, { cropBottom: mode === 'result' });
   const panelSvg = buildPanelSvg({
