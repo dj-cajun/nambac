@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -49,11 +49,19 @@ function introIndexFromDate(dateLabel) {
   return Math.abs(hash) % FORTUNE_COUNT;
 }
 
-export default function FortunePage() {
+export default function FortunePage({ dayOffset = 0 }) {
   const cardRef = useRef(null);
   const [searchParams] = useSearchParams();
   const friendShare = parseFortuneShareParams(searchParams);
   const { toast, showToast } = useCopyToast();
+
+  const isTomorrow = dayOffset === 1;
+  const dayLabel = isTomorrow ? 'Ngày mai' : 'Hôm nay';
+  const baseDateObj = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + dayOffset);
+    return d;
+  }, [dayOffset]);
 
   const [name, setName] = useState(() => {
     try {
@@ -73,7 +81,7 @@ export default function FortunePage() {
   const [liked, setLiked] = useState(() => hasFortuneLikedThisSession());
   const [likeCount, setLikeCount] = useState(0);
 
-  const pageDateLabel = friendShare?.dateLabel || getDateStr();
+  const pageDateLabel = friendShare?.dateLabel || getDateStr(baseDateObj);
   const introDateLabel = formatFortuneDateLong(pageDateLabel);
   const todayLabel = result?.dateLabel
     ? formatFortuneDateLong(result.dateLabel)
@@ -88,7 +96,7 @@ export default function FortunePage() {
     } catch {
       /* private mode */
     }
-    const calc = calculateTodayFortune(trimmed);
+    const calc = calculateTodayFortune(trimmed, baseDateObj);
     setResult(calc);
     trackFortuneReveal('love');
     setImageSrc('');
@@ -253,7 +261,7 @@ export default function FortunePage() {
         <title>
           {resultTitle
             ? `${resultTitle} — ${FORTUNE_BRAND.label}`
-            : `${FORTUNE_BRAND.kicker} ${FORTUNE_BRAND.emoji} — nambac.xyz`}
+            : `${FORTUNE_BRAND.labelFull} ${isTomorrow ? 'ngày mai' : 'hôm nay'} ${FORTUNE_BRAND.emoji} — nambac.xyz`}
         </title>
         <meta
           name="description"
@@ -281,9 +289,9 @@ export default function FortunePage() {
       {phase === 'form' && (
         <>
           <header className="fortune-hero">
-            <p className="fortune-date-badge">📅 {introDateLabel}</p>
-            <h1>{FORTUNE_BRAND.labelFull} {FORTUNE_BRAND.emoji}</h1>
-            <p>{FORTUNE_BRAND.heroLine}</p>
+            <p className="fortune-date-badge">📅 {dayLabel} · {introDateLabel}</p>
+            <h1>{FORTUNE_BRAND.labelFull} {isTomorrow ? 'ngày mai' : 'hôm nay'} {FORTUNE_BRAND.emoji}</h1>
+            <p>{isTomorrow ? 'Xem trước vận tình yêu ngày mai — chuẩn bị tinh thần nhé!' : FORTUNE_BRAND.heroLine}</p>
           </header>
 
           <section className="fortune-intro-grid" aria-label="Tử vi hôm nay và ngày mai">
@@ -336,7 +344,9 @@ export default function FortunePage() {
           </form>
 
           <p className="fortune-hint">
-            Kết quả cố định cả ngày với cùng tên — mai quay lại sẽ khác. Không lưu máy chủ, 0 đồng.
+            {isTomorrow
+              ? 'Kết quả cố định cho ngày mai với cùng tên. Không lưu máy chủ, 0 đồng.'
+              : 'Kết quả cố định cả ngày với cùng tên — mai quay lại sẽ khác. Không lưu máy chủ, 0 đồng.'}
           </p>
         </>
       )}

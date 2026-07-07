@@ -89,6 +89,7 @@ function AppContent() {
         <Route path="/blog/mem-van-phong-sai-gon" element={<Navigate to="/blog/van-hoa-meme-va-ap-luc-cot-song-gen-z" replace />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/fortune" element={<FortunePage />} />
+        <Route path="/fortune/tomorrow" element={<FortunePage dayOffset={1} />} />
         <Route path="/balance" element={<BalancePage />} />
         <Route path="/balance/:questionId" element={<BalancePage />} />
         <Route path="/roast-card" element={<RoastCardPage />} />

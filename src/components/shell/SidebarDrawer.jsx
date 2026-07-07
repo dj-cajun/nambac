@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown } from 'lucide-react';
 import { useDrawer } from './DrawerContext';
 import { SIDEBAR_SECTIONS } from './sidebarNav';
+import { fetchQuizzes } from '../../lib/quizApi';
 import { scrollToTop } from '../../lib/scrollToTop';
 import './SidebarDrawer.css';
 
-function DrawerAccordion({ section, closeDrawer }) {
+function DrawerAccordion({ section, closeDrawer, isLoading }) {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(section.defaultOpen ?? false);
+
+  const links = section.links || [];
+  const scrollable = section.dynamic === 'quizzes';
 
   return (
     <div className="drawer-section">
@@ -23,6 +27,9 @@ function DrawerAccordion({ section, closeDrawer }) {
         <span className="drawer-section-title">
           <span className="drawer-section-icon" aria-hidden="true">{section.icon}</span>
           {section.title}
+          {scrollable && links.length > 0 && (
+            <span className="drawer-section-count">{links.length}</span>
+          )}
         </span>
         <ChevronDown size={16} className={`drawer-chevron${isOpen ? ' open' : ''}`} />
       </button>
@@ -36,8 +43,14 @@ function DrawerAccordion({ section, closeDrawer }) {
             transition={{ duration: 0.2 }}
             className="drawer-links-wrap"
           >
-            <div className="drawer-links">
-              {section.links.map((link) => {
+            <div className={`drawer-links${scrollable ? ' drawer-links--scroll' : ''}`}>
+              {scrollable && isLoading && links.length === 0 && (
+                <span className="drawer-link drawer-link--muted">Đang tải quiz…</span>
+              )}
+              {scrollable && !isLoading && links.length === 0 && (
+                <span className="drawer-link drawer-link--muted">Chưa có quiz nào</span>
+              )}
+              {links.map((link) => {
                 const active = link.to === '/'
                   ? location.pathname === '/'
                   : location.pathname.startsWith(link.to);
@@ -65,6 +78,28 @@ function DrawerAccordion({ section, closeDrawer }) {
 
 export default function SidebarDrawer() {
   const { open, closeDrawer } = useDrawer();
+  const [quizLinks, setQuizLinks] = useState([]);
+  const [quizzesLoading, setQuizzesLoading] = useState(false);
+  const [quizzesLoaded, setQuizzesLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!open || quizzesLoaded) return;
+    setQuizzesLoading(true);
+    fetchQuizzes()
+      .then((quizzes) => {
+        const links = (quizzes || [])
+          .filter((q) => q && q.id && q.title)
+          .map((q) => ({ to: `/quiz/${q.id}`, label: q.title }));
+        setQuizLinks(links);
+        setQuizzesLoaded(true);
+      })
+      .catch(console.error)
+      .finally(() => setQuizzesLoading(false));
+  }, [open, quizzesLoaded]);
+
+  const sections = SIDEBAR_SECTIONS.map((section) =>
+    section.dynamic === 'quizzes' ? { ...section, links: quizLinks } : section,
+  );
 
   if (typeof document === 'undefined') return null;
 
@@ -118,8 +153,13 @@ export default function SidebarDrawer() {
             </div>
 
             <div className="drawer-scroll">
-              {SIDEBAR_SECTIONS.map((section) => (
-                <DrawerAccordion key={section.id} section={section} closeDrawer={closeDrawer} />
+              {sections.map((section) => (
+                <DrawerAccordion
+                  key={section.id}
+                  section={section}
+                  closeDrawer={closeDrawer}
+                  isLoading={section.dynamic === 'quizzes' ? quizzesLoading : false}
+                />
               ))}
             </div>
 

@@ -154,6 +154,41 @@
   gap: 2px;
 }
 
+.drawer-links--scroll {
+  max-height: 320px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.drawer-section-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drawer-link--muted {
+  color: #94a3b8;
+  font-weight: 600;
+  cursor: default;
+}
+
+.drawer-link.line-clamp,
+.drawer-links--scroll .drawer-link {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+}
+
 .drawer-link {
   display: flex;
   align-items: center;

@@ -17,6 +17,7 @@
   <url><loc>https://nambac.xyz/editorial-policy</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://nambac.xyz/brands</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://nambac.xyz/fortune</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://nambac.xyz/fortune/tomorrow</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://nambac.xyz/balance</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://nambac.xyz/roast-card</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>
