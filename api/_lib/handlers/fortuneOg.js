@@ -1,47 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { composeOgImageOnly } from '../composeOgImage.js';
 import { isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
-import {
-  ensureFortuneSceneImage,
-  getFortuneImageLocalPath,
-  getFortuneImagePublicPath,
-} from '../fortuneImageService.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const FALLBACK_OG = path.join(__dirname, '../og-default.png');
-
-async function composeFortuneSceneOg({ dateStr, idx, host }) {
-  const publicUrl = getFortuneImagePublicPath(dateStr, idx);
-  const localPath = getFortuneImageLocalPath(dateStr, idx);
-
-  try {
-    return await composeOgImageOnly({
-      imageUrl: publicUrl,
-      host,
-      imagePath: fs.existsSync(localPath) ? localPath : undefined,
-    });
-  } catch (fetchErr) {
-    console.warn('[fortune-og] static miss, generating scene', fetchErr.message);
-    const generated = await ensureFortuneSceneImage({ fortuneIndex: idx, dateStr });
-
-    if (generated.b64) {
-      return composeOgImageOnly({
-        imageBuffer: Buffer.from(generated.b64, 'base64'),
-      });
-    }
-
-    if (generated.image_url) {
-      return composeOgImageOnly({
-        imageUrl: generated.image_url,
-        host,
-      });
-    }
-
-    throw fetchErr;
-  }
-}
+import { loadFortuneSceneForOg } from '../fortuneImageService.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -60,13 +19,8 @@ export default async function handler(req, res) {
     const idx = ((fortuneIndex % 8) + 8) % 8;
     const host = req.headers['x-forwarded-host'] || req.headers.host;
 
-    let buffer;
-    try {
-      buffer = await composeFortuneSceneOg({ dateStr, idx, host });
-    } catch (err) {
-      console.warn('[fortune-og] fallback to default OG', err.message);
-      buffer = await composeOgImageOnly({ imagePath: FALLBACK_OG });
-    }
+    const sceneBuffer = await loadFortuneSceneForOg({ fortuneIndex: idx, dateStr, host });
+    const buffer = await composeOgImageOnly({ imageBuffer: sceneBuffer });
 
     res.setHeader('Content-Type', 'image/webp');
     res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');

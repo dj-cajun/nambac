@@ -17,7 +17,12 @@ export default async function handler(req, res) {
     }
 
     const dateStr = (req.query?.date || getDateStr()).trim();
-    const result = await ensureFortuneSceneImage({ fortuneIndex, dateStr });
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    const { buffer: _buffer, source: _source, ...result } = await ensureFortuneSceneImage({
+      fortuneIndex,
+      dateStr,
+      host,
+    });
     return res.status(200).json(result);
   } catch (err) {
     console.error('GET /api/fortune-image', err);
