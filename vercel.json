@@ -25,6 +25,10 @@
       "destination": "/api/handler?path=balance-share&q=:id"
     },
     {
+      "source": "/share-roast/:name/:trait",
+      "destination": "/api/handler?path=roast-share&name=:name&trait=:trait"
+    },
+    {
       "source": "/share/:id/:score",
       "destination": "/api/handler?path=og&id=:id&score=:score"
     },

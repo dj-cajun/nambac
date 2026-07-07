@@ -32,6 +32,12 @@ export default defineConfig({
             req.url = `/api/balance-share?${q}`;
             return next();
           }
+          const roastShareMatch = pathname.match(/^\/share-roast\/([^/]+)\/([^/]+)$/);
+          if (roastShareMatch) {
+            const [, rname, rtrait] = roastShareMatch;
+            req.url = `/api/roast-share?name=${encodeURIComponent(decodeURIComponent(rname))}&trait=${encodeURIComponent(rtrait)}`;
+            return next();
+          }
           const scoreMatch = pathname.match(/^\/share\/([^/]+)\/(\d+)$/);
           const quizMatch = pathname.match(/^\/share\/([^/]+)$/);
           if (scoreMatch) {

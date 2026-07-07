@@ -226,6 +226,12 @@ export function buildRoastShareUrl(name, traitId, origin) {
   return `${base}/roast-card?${params.toString()}`;
 }
 
+/** Crawler-friendly share link — bots get OG card, humans redirect to /roast-card */
+export function buildRoastShareLink(name, traitId, origin) {
+  const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
+  return `${base}/share-roast/${encodeURIComponent(String(name).trim())}/${encodeURIComponent(traitId)}`;
+}
+
 export function parseRoastShareParams(searchParams) {
   const name = (searchParams.get('name') || '').trim();
   const traitId = searchParams.get('trait');

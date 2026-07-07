@@ -6,9 +6,10 @@ import html2canvas from 'html2canvas';
 import {
   ROAST_TRAITS,
   getTraitById,
-  buildRoastShareUrl,
+  buildRoastShareLink,
   parseRoastShareParams,
 } from '../../shared/roastData.js';
+import { buildRoastOgImageUrl } from '../lib/siteUrl';
 import './RoastCardPage.css';
 
 export default function RoastCardPage() {
@@ -22,6 +23,13 @@ export default function RoastCardPage() {
 
   const currentTrait = getTraitById(selectedTraitId);
   const displayName = friendName.trim();
+
+  const ogName = displayName || 'Bạn thân';
+  const ogImageUrl = buildRoastOgImageUrl(ogName, selectedTraitId);
+  const sharePageUrl = buildRoastShareLink(ogName, selectedTraitId);
+  const ogTitle = displayName
+    ? `${displayName} vừa bị bóc phốt: ${currentTrait.title} 💳`
+    : 'Thẻ đen bóc phốt bạn bè 💳 — nambac.xyz';
 
   const handleDownload = async () => {
     if (!cardRef.current || !displayName) return;
@@ -46,7 +54,7 @@ export default function RoastCardPage() {
 
   const handleShare = async () => {
     if (!displayName) return;
-    const url = buildRoastShareUrl(displayName, selectedTraitId);
+    const url = buildRoastShareLink(displayName, selectedTraitId);
     const text = `💳 ${displayName} — ${currentTrait.emoji} ${currentTrait.title}\n${currentTrait.description.slice(0, 100)}…\nBạn vào làm thẻ trả đũa đi!`;
     if (navigator.share) {
       try {
@@ -72,6 +80,18 @@ export default function RoastCardPage() {
           name="description"
           content="Tạo thẻ blacklist roast bạn thân — nhập tên, chọn tội, tải ảnh tag Zalo. Không cần đăng nhập."
         />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={ogTitle} />
+        <meta
+          property="og:description"
+          content="Tạo thẻ đen bóc phốt bạn thân — chọn tội, tag Zalo. Vào làm thẻ trả đũa ngay!"
+        />
+        <meta property="og:url" content={sharePageUrl} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>
 
       <header className="roast-generator-hero">

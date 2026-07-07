@@ -27,6 +27,16 @@ export function buildOgImageUrl(quizId, score = null) {
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
 
+/** Roast blacklist share OG — dark card with friend name + crime */
+export function buildRoastOgImageUrl(name, traitId) {
+  if (import.meta.env.DEV) {
+    const devQ = new URLSearchParams({ name: String(name).trim(), trait: traitId });
+    return `${getSiteOrigin()}/api/roast-og?${devQ}`;
+  }
+  const params = new URLSearchParams({ path: 'roast-og', name: String(name).trim(), trait: traitId });
+  return `${getSiteOrigin()}/api/handler?${params}`;
+}
+
 /** Balance (Chọn 1 trong 2) share OG — scene image + question + picked A/B */
 export function buildBalanceOgImageUrl(questionId, choice = null) {
   const side = choice === 'a' ? 'A' : choice === 'b' ? 'B' : '';

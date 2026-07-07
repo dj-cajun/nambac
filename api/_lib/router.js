@@ -22,6 +22,8 @@ import balance from './handlers/balance.js';
 import balanceImage from './handlers/balanceImage.js';
 import balanceOg from './handlers/balanceOg.js';
 import balanceShare from './handlers/balanceShare.js';
+import roastOg from './handlers/roastOg.js';
+import roastShare from './handlers/roastShare.js';
 import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
 import fortuneShare from './handlers/fortuneShare.js';
@@ -110,6 +112,12 @@ export async function dispatch(req, res, segments = []) {
 
   // ── Balance crawler share page (bot → OG html, human → /balance) ──
   if (a === 'balance-share' && !b) return balanceShare(req, res);
+
+  // ── Roast blacklist OG card + crawler share page ──
+  if (a === 'roast-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return roastOg(req, res);
+  }
+  if (a === 'roast-share' && !b) return roastShare(req, res);
 
   // ── Daily fortune AI scene ──
   if (a === 'fortune' && b === 'stats' && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {

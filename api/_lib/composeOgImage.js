@@ -450,6 +450,52 @@ export async function composeBalanceOgImage({
     .toBuffer();
 }
 
+const ROAST_OG_WIDTH = 1200;
+const ROAST_OG_HEIGHT = 630;
+
+function buildRoastCardSvg({ name, traitTitle, description }) {
+  const who = truncate(stripEmoji(name || 'Bạn thân'), 22);
+  const crime = truncate(stripEmoji(traitTitle || 'Tội danh bí ẩn'), 46);
+  const descLines = wrapLines(stripEmoji(description), 64, 2);
+  const descSvg = descLines
+    .map((line, i) => `<tspan x="90" dy="${i === 0 ? 0 : 40}">${escapeXml(line)}</tspan>`)
+    .join('');
+
+  return Buffer.from(`<svg width="${ROAST_OG_WIDTH}" height="${ROAST_OG_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <defs><style>${fontFaceCss()}</style></defs>
+  <rect width="100%" height="100%" fill="#140b16"/>
+  <rect x="40" y="40" width="${ROAST_OG_WIDTH - 80}" height="${ROAST_OG_HEIGHT - 80}" rx="28" fill="#1e1220" stroke="#ff2d55" stroke-width="4"/>
+  <rect x="${ROAST_OG_WIDTH - 260}" y="70" width="190" height="46" rx="23" fill="#ff2d55"/>
+  <text x="${ROAST_OG_WIDTH - 165}" y="101" fill="#fff" font-size="22" font-weight="700" text-anchor="middle">ĐỘC HẠI</text>
+  <text x="90" y="112" fill="#ff8fa3" font-size="22" font-weight="700">DANH SÁCH ĐEN SÀI GÒN</text>
+  <text x="90" y="180" fill="#fff" font-size="58" font-weight="700">THẺ ĐEN BÓC PHỐT</text>
+  <text x="90" y="270" fill="#8a7590" font-size="22" font-weight="700">ĐỐI TƯỢNG</text>
+  <text x="90" y="322" fill="#ffd166" font-size="48" font-weight="700">${escapeXml(who)}</text>
+  <text x="90" y="386" fill="#8a7590" font-size="22" font-weight="700">TỘI DANH CHÍNH</text>
+  <text x="90" y="430" fill="#ff6b81" font-size="30" font-weight="700">${escapeXml(crime)}</text>
+  ${descLines.length ? `<text x="90" y="478" fill="#d6c9de" font-size="24">${descSvg}</text>` : ''}
+  <text x="90" y="${ROAST_OG_HEIGHT - 70}" fill="#8a7590" font-size="20">nambac.xyz · Hệ tâm linh AI</text>
+  <text x="${ROAST_OG_WIDTH - 90}" y="${ROAST_OG_HEIGHT - 70}" fill="#8a7590" font-size="20" text-anchor="end">#SAIGON-GENZ-2026</text>
+</svg>`);
+}
+
+/** Roast blacklist OG — pure server-rendered dark card (no scene image). */
+export async function composeRoastOgImage({ name, traitTitle, description }) {
+  const cardSvg = buildRoastCardSvg({ name, traitTitle, description });
+  const cardPng = await renderPanelPng(cardSvg);
+  return sharp(cardPng).webp({ quality: 90 }).toBuffer();
+}
+
+export function buildRoastOgImageApiUrl(host, { name, trait }) {
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const devQuery = new URLSearchParams({ name: String(name), trait: String(trait) });
+  const prodQuery = new URLSearchParams({ path: 'roast-og', name: String(name), trait: String(trait) });
+  const path = host.includes('localhost')
+    ? `/api/roast-og?${devQuery}`
+    : `/api/handler?${prodQuery}`;
+  return `${protocol}://${host}${path}`;
+}
+
 export function buildOgImageApiUrl(host, quizId, scoreCode = null) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const params = new URLSearchParams({ path: 'og-image', quizId });
