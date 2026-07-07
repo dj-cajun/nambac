@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
         <div className="legal-page-container">
             <div className="legal-content glass-card">
                 <h1>Chính sách bảo mật (Privacy Policy)</h1>
-                <p className="last-updated">Cập nhật lần cuối: Tháng 4, 2026</p>
+                <p className="last-updated">Cập nhật lần cuối: Tháng 7, 2026</p>
 
                 <section>
                     <h2>1. Giới thiệu</h2>
@@ -59,35 +59,45 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section>
-                    <h2>5. Google Analytics & Tag Manager</h2>
+                    <h2>5. Google Analytics, Tag Manager & Vercel Analytics</h2>
                     <p>
-                        Chúng tôi sử dụng Google Analytics và Google Tag Manager để phân tích lưu lượng truy cập và hành vi người dùng trên trang web. Các công cụ này thu thập dữ liệu ẩn danh giúp chúng tôi hiểu rõ hơn cách người dùng tương tác với nội dung, từ đó cải thiện dịch vụ.
+                        Chúng tôi sử dụng Google Analytics, Google Tag Manager và Vercel Analytics để phân tích lưu lượng truy cập và hành vi người dùng trên trang web. Các công cụ này thu thập dữ liệu ẩn danh giúp chúng tôi hiểu rõ hơn cách người dùng tương tác với nội dung, từ đó cải thiện dịch vụ.
+                    </p>
+                    <p>
+                        Chi tiết cookie: xem <a href="/cookie-policy" style={{ color: '#FF2D85', textDecoration: 'underline' }}>Chính sách Cookie</a>.
                     </p>
                 </section>
 
                 <section>
-                    <h2>6. Thời gian lưu trữ dữ liệu</h2>
+                    <h2>6. Thông báo đẩy (Web Push) — tuỳ chọn</h2>
+                    <p>
+                        Nếu bạn chọn bật thông báo, trình duyệt sẽ lưu subscription token để gửi tin quiz mới. Bạn có thể tắt bất cứ lúc nào trong cài đặt trình duyệt. Chúng tôi không gửi spam.
+                    </p>
+                </section>
+
+                <section>
+                    <h2>7. Thời gian lưu trữ dữ liệu</h2>
                     <p>
                         Dữ liệu sử dụng tổng quát được lưu trữ trong khoảng thời gian cần thiết để phục vụ mục đích phân tích, thường không quá 26 tháng (theo thời hạn mặc định của Google Analytics). Sau thời gian này, dữ liệu sẽ được xóa tự động.
                     </p>
                 </section>
 
                 <section>
-                    <h2>7. Bảo vệ trẻ em / Người chưa thành niên</h2>
+                    <h2>8. Bảo vệ trẻ em / Người chưa thành niên</h2>
                     <p>
                         nambac.xyz không cố ý thu thập thông tin từ trẻ em dưới 13 tuổi. Nếu chúng tôi phát hiện đã thu thập thông tin từ trẻ em, chúng tôi sẽ xóa thông tin đó ngay lập tức. Nếu bạn là phụ huynh và phát hiện con bạn đã cung cấp thông tin cho chúng tôi, vui lòng liên hệ qua email.
                     </p>
                 </section>
 
                 <section>
-                    <h2>8. Chia sẻ dữ liệu với bên thứ ba</h2>
+                    <h2>9. Chia sẻ dữ liệu với bên thứ ba</h2>
                     <p>
                         Chúng tôi <strong>không bán, cho thuê, hoặc trao đổi</strong> thông tin cá nhân của bạn cho bất kỳ bên thứ ba nào. Chúng tôi chỉ chia sẻ dữ liệu ẩn danh hóa với các dịch vụ phân tích (Google Analytics) và quảng cáo (Google AdSense) như đã nêu ở trên.
                     </p>
                 </section>
 
                 <section>
-                    <h2>9. Quyền của bạn</h2>
+                    <h2>10. Quyền của bạn</h2>
                     <p>Bạn có quyền:</p>
                     <ul style={{ paddingLeft: '20px', marginTop: '10px', lineHeight: '2' }}>
                         <li>Yêu cầu xóa bất kỳ dữ liệu nào liên quan đến bạn</li>
@@ -98,14 +108,14 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section>
-                    <h2>10. Thay đổi chính sách</h2>
+                    <h2>11. Thay đổi chính sách</h2>
                     <p>
                         Chúng tôi có thể cập nhật Chính sách bảo mật này theo thời gian. Mọi thay đổi quan trọng sẽ được thông báo trên trang web. Ngày "Cập nhật lần cuối" ở đầu trang sẽ phản ánh phiên bản mới nhất. Chúng tôi khuyến khích bạn kiểm tra trang này định kỳ.
                     </p>
                 </section>
 
                 <section>
-                    <h2>11. Liên hệ</h2>
+                    <h2>12. Liên hệ</h2>
                     <p>
                         Nếu bạn có bất kỳ câu hỏi nào về Chính sách bảo mật này, vui lòng liên hệ:
                     </p>

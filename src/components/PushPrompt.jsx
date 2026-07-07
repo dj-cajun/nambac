@@ -39,12 +39,12 @@ export default function PushPrompt() {
   return (
     <div className="push-prompt">
       <button type="button" className="push-prompt-close" onClick={dismiss} aria-label="Đóng">
-        <X size={16} />
+        <X size={20} />
       </button>
-      <div className="push-prompt-icon"><Bell size={20} /></div>
+      <div className="push-prompt-icon"><Bell size={26} /></div>
       <div className="push-prompt-text">
         <strong>Quiz mới mỗi ngày!</strong>
-        <span>Nhận thông báo khi có trắc nghiệm viral mới.</span>
+        <span>Thông báo khi có trắc nghiệm mới trên nambac.</span>
       </div>
       <button type="button" className="push-prompt-btn" onClick={handleSubscribe} disabled={loading}>
         {loading ? '...' : 'Bật'}

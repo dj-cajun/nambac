@@ -55,7 +55,7 @@ const InstallBanner = () => {
     return (
         <div className="install-banner-container">
             <button className="install-banner-close" onClick={handleDismiss} aria-label="Close banner">
-                <X size={18} />
+                <X size={22} />
             </button>
 
             <div className="install-banner-content">
@@ -73,10 +73,10 @@ const InstallBanner = () => {
             ) : (
                 <div className="install-guide-steps">
                     <span className="step-item">
-                        Nhấn nút <span className="inline-icon"><Share size={14} color="#FF2D85" /></span> dưới trình duyệt.
+                        Nhấn nút <span className="inline-icon"><Share size={18} color="#FF2D85" /></span> dưới trình duyệt.
                     </span>
                     <span className="step-item">
-                        Chọn <span className="inline-icon"><PlusSquare size={14} color="#FF2D85" /></span> <strong>&quot;Thêm vào MH chính&quot;</strong>.
+                        Chọn <span className="inline-icon"><PlusSquare size={18} color="#FF2D85" /></span> <strong>&quot;Thêm vào MH chính&quot;</strong>.
                     </span>
                 </div>
             )}

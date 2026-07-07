@@ -11,6 +11,9 @@ import About from './pages/About';
 import Result from './pages/Result';
 import ShareRedirect from './pages/ShareRedirect';
 import FAQ from './pages/FAQ';
+import Contact from './pages/Contact';
+import CookiePolicy from './pages/CookiePolicy';
+import EditorialPolicy from './pages/EditorialPolicy';
 import CompatibilityPage from './pages/CompatibilityPage';
 import InstallBanner from './components/InstallBanner';
 import PushPrompt from './components/PushPrompt';
@@ -19,6 +22,8 @@ import BrandsLanding from './pages/BrandsLanding';
 import BrandReport from './pages/BrandReport';
 import ExplorePage from './pages/ExplorePage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import BlogIndex from './pages/BlogIndex';
+import BlogPost from './pages/BlogPost';
 
 import './App.css';
 
@@ -63,10 +68,19 @@ function AppContent() {
         <Route path="/brands/report/:quizId/:token" element={<BrandReport />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/blog" element={<BlogIndex />} />
+        <Route path="/blog/saigon-genz-mobile" element={<Navigate to="/blog/xu-huong-di-dong-gen-z-sai-gon" replace />} />
+        <Route path="/blog/vietnam-quiz-history" element={<Navigate to="/blog/lich-su-quiz-truc-tuyen-viet-nam" replace />} />
+        <Route path="/blog/ai-entertainment-content" element={<Navigate to="/blog/ung-dung-ai-sang-tao-noi-dung-giai-tri" replace />} />
+        <Route path="/blog/mem-van-phong-sai-gon" element={<Navigate to="/blog/van-hoa-meme-va-ap-luc-cot-song-gen-z" replace />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/editor" element={<QuizEditor />} />
         <Route path="/about" element={<About />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/cookie-policy" element={<CookiePolicy />} />
+        <Route path="/editorial-policy" element={<EditorialPolicy />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>

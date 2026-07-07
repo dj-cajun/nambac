@@ -51,14 +51,18 @@ const HOME_INTRO_FAQ = [
 const INTRO_BUTTONS = [
   { id: 'about', label: 'Giới thiệu' },
   { id: 'faq', label: 'FAQ' },
+  { id: 'contact', label: 'Liên hệ' },
   { id: 'privacy', label: 'Bảo mật' },
+  { id: 'cookie', label: 'Cookie' },
   { id: 'terms', label: 'Điều khoản' },
 ];
 
 const INTRO_MODAL_META = {
   about: { title: 'Giới thiệu', more: '/about', moreLabel: 'Xem thêm giới thiệu →' },
   faq: { title: 'Câu hỏi thường gặp', more: '/faq', moreLabel: 'Xem tất cả FAQ →' },
+  contact: { title: 'Liên hệ', more: '/contact', moreLabel: 'Trang liên hệ đầy đủ →' },
   privacy: { title: 'Bảo mật', more: '/privacy-policy', moreLabel: 'Chính sách bảo mật →' },
+  cookie: { title: 'Cookie & quảng cáo', more: '/cookie-policy', moreLabel: 'Chính sách Cookie →' },
   terms: { title: 'Điều khoản', more: '/terms-of-service', moreLabel: 'Xem điều khoản đầy đủ →' },
   brands: { title: 'Hợp tác thương hiệu', more: '/brands', moreLabel: 'Đăng ký tư vấn →' },
 };
@@ -98,9 +102,38 @@ function IntroModalBody({ sectionId }) {
       <ul className="home-intro-list">
         <li>Không yêu cầu đăng ký — không thu thập tên, email, SĐT</li>
         <li>Chỉ thu thập dữ liệu kỹ thuật ẩn danh (IP, trình duyệt, trang truy cập)</li>
-        <li>Cookie cơ bản để cải thiện trải nghiệm — có thể tắt trong trình duyệt</li>
+        <li>Cookie cơ bản + phân tích (Google Analytics, Vercel Analytics)</li>
         <li>Quảng cáo qua Google AdSense — có thể tắt cá nhân hoá trong cài đặt Google</li>
+        <li>Thông báo push (tuỳ chọn) — chỉ khi bạn bấm &quot;Bật&quot;</li>
         <li>Kết quả quiz dùng để chia sẻ — không bán cho bên thứ ba</li>
+      </ul>
+    );
+  }
+
+  if (sectionId === 'contact') {
+    return (
+      <>
+        <p className="home-intro-lead">
+          Góp ý, báo lỗi hoặc hợp tác — chúng tôi phản hồi trong 24–48 giờ.
+        </p>
+        <ul className="home-intro-list">
+          <li>📧 <strong>contact@nambac.xyz</strong></li>
+          <li>Báo lỗi quiz / hình ảnh / kết quả</li>
+          <li>Đề xuất chủ đề trắc nghiệm mới</li>
+          <li>Hợp tác thương hiệu → mục &quot;Hợp tác thương hiệu&quot; bên dưới</li>
+        </ul>
+      </>
+    );
+  }
+
+  if (sectionId === 'cookie') {
+    return (
+      <ul className="home-intro-list">
+        <li>Cookie cần thiết: phiên, tùy chọn UI, đóng banner</li>
+        <li>Phân tích: Google Analytics, Vercel Analytics (ẩn danh)</li>
+        <li>Quảng cáo: Google AdSense / DoubleClick (khi bật)</li>
+        <li>Tắt quảng cáo cá nhân hoá: google.com/settings/ads</li>
+        <li>Xóa cookie bất cứ lúc nào trong cài đặt trình duyệt</li>
       </ul>
     );
   }
@@ -406,6 +439,10 @@ export default function Home() {
         >
           Hợp tác thương hiệu 🎯
         </button>
+
+        <Link to="/blog" className="home-intro-btn home-intro-btn-wide home-intro-btn-link">
+          Insights 📰 — Bài viết phân tích
+        </Link>
 
         {introModal && (
           <div className="home-intro-panel" role="region" aria-label={INTRO_MODAL_META[introModal].title}>

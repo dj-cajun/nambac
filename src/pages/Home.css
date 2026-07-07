@@ -569,9 +569,10 @@
 }
 
 .home-intro-btns {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
 }
 
 .home-intro-btn,
@@ -591,6 +592,13 @@
 .home-intro-btn-wide {
     width: 100%;
     margin-top: 4px;
+}
+
+.home-intro-btn-link {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
 }
 
 .home-intro-btn.active,

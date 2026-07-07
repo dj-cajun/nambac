@@ -5,7 +5,7 @@ const TermsOfService = () => {
         <div className="legal-page-container">
             <div className="legal-content glass-card">
                 <h1>Điều khoản dịch vụ (Terms of Service)</h1>
-                <p className="last-updated">Cập nhật lần cuối: Tháng 4, 2026</p>
+                <p className="last-updated">Cập nhật lần cuối: Tháng 7, 2026</p>
 
                 <section>
                     <h2>1. Chấp nhận điều khoản</h2>

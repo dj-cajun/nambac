@@ -134,7 +134,10 @@ const FAQ = () => {
                     </p>
                     <ul style={{ paddingLeft: '20px', marginTop: '10px', lineHeight: '2' }}>
                         <li><a href="/about" style={{ color: '#FF2D85', textDecoration: 'underline' }}>Giới thiệu về nambac.xyz</a></li>
+                        <li><a href="/contact" style={{ color: '#FF2D85', textDecoration: 'underline' }}>Liên hệ</a></li>
                         <li><a href="/privacy-policy" style={{ color: '#FF2D85', textDecoration: 'underline' }}>Chính sách bảo mật</a></li>
+                        <li><a href="/cookie-policy" style={{ color: '#FF2D85', textDecoration: 'underline' }}>Chính sách Cookie</a></li>
+                        <li><a href="/editorial-policy" style={{ color: '#FF2D85', textDecoration: 'underline' }}>Chính sách nội dung &amp; AI</a></li>
                         <li><a href="/terms-of-service" style={{ color: '#FF2D85', textDecoration: 'underline' }}>Điều khoản dịch vụ</a></li>
                     </ul>
                 </section>

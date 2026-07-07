@@ -1,123 +1,150 @@
-/* ============================================
-   InstallBanner.css - PWA Install Slide Banner
-   ============================================ */
+/* PWA Install banner — solid card, readable on any background */
 
 .install-banner-container {
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 440px;
-    padding: 16px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    box-sizing: border-box;
-    animation: banner-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: fixed;
+  bottom: calc(168px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 440px;
+  padding: 20px 18px 18px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 3px solid #1e293b;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 #1e293b;
+  animation: banner-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes banner-slide-up {
-    from {
-        transform: translate(-50%, 150%);
-        opacity: 0;
-    }
-    to {
-        transform: translate(-50%, 0);
-        opacity: 1;
-    }
+  from {
+    transform: translate(-50%, 150%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 
 .install-banner-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #94a3b8;
-    transition: color 0.1s;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f1f5f9;
+  border: 2px solid #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #1e293b;
+  padding: 6px;
+  line-height: 0;
+  transition: background 0.1s;
 }
 
 .install-banner-close:hover {
-    color: var(--comic-charcoal, #1e293b);
+  background: #e2e8f0;
 }
 
 .install-banner-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-right: 32px;
 }
 
 .install-banner-mascot {
-    font-size: 28px;
-    animation: mascot-wiggle 2s ease-in-out infinite;
+  font-size: 40px;
+  line-height: 1;
+  animation: mascot-wiggle 2s ease-in-out infinite;
 }
 
 @keyframes mascot-wiggle {
-    0%, 100% { transform: rotate(0); }
-    50% { transform: rotate(15deg); }
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(12deg); }
 }
 
 .install-banner-text {
-    flex: 1;
+  flex: 1;
 }
 
 .install-title {
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
-    font-size: 15px;
-    margin: 0;
-    color: var(--comic-charcoal, #1e293b);
+  font-family: var(--font-primary, 'Patrick Hand'), cursive;
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  color: #1e293b;
+  line-height: 1.3;
 }
 
 .install-desc {
-    font-size: 11px;
-    color: #64748b;
-    margin: 2px 0 0 0;
-    font-weight: 700;
+  font-size: 15px;
+  color: #475569;
+  margin: 6px 0 0;
+  font-weight: 600;
+  line-height: 1.45;
 }
 
 .install-guide-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 10px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  box-sizing: border-box;
 }
 
 .step-item {
-    font-size: 11px;
-    color: var(--comic-charcoal, #1e293b);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  line-height: 1.5;
 }
 
 .inline-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    border-radius: 4px;
-    padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 2px solid #1e293b;
+  border-radius: 6px;
+  padding: 4px;
 }
 
 .install-android-btn {
-    width: 100%;
-    padding: 12px;
-    color: white;
-    font-weight: 800;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: transform 0.15s ease;
+  width: 100%;
+  padding: 14px;
+  background: #ff2d85;
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  border: 2px solid #1e293b;
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
 
 .install-android-btn:active {
-    transform: scale(0.98);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #1e293b;
+}
+
+@media (max-width: 380px) {
+  .install-banner-container {
+    bottom: calc(180px + env(safe-area-inset-bottom, 0px));
+  }
 }

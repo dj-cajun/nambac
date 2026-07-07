@@ -4,6 +4,30 @@
   background: transparent;
 }
 
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.footer-nav a {
+  color: #888;
+  text-decoration: none;
+}
+
+.footer-nav a:hover {
+  color: #555;
+  text-decoration: underline;
+}
+
+.footer-nav span {
+  color: #ccc;
+}
+
 .footer-copy {
   font-size: 12px;
   color: #ccc;
