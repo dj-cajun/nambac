@@ -41,7 +41,7 @@ gh secret set OPENROUTER_API_KEY --body "$(grep OPENROUTER_API_KEY .env.local | 
 ### 동작 요약
 
 ```
-GitHub Runner → Turso DB 업데이트 → public/images/backfill_*.png 커밋 → push → Vercel 배포
+GitHub Runner → Turso DB 업데이트 → `public/images/backfill_*.webp` 커밋 → push → Vercel 배포
 ```
 
 ## 3. 일일 퀴즈 (이미 설정됨)
@@ -62,10 +62,10 @@ curl -X POST "https://nambac.vercel.app/api/cron/daily-quiz" \
 
 ## 5. 로컬에만 있는 이미지
 
-로컬 `public/images/backfill_*.png`가 아직 push 안 됐으면:
+로컬 `public/images/backfill_*.webp`가 아직 push 안 됐으면:
 
 - **옵션 A**: 원격 워크플로우가 DB 기준으로 다시 생성 (API 비용)
-- **옵션 B**: 로컬 복귀 후 `git add public/images/backfill_*.png && git push`
+- **옵션 B**: 로컬 복귀 후 `git add public/images/backfill_*.webp && git push`
 
 ## 6. Cursor Cloud Agent
 

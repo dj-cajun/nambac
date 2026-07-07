@@ -3,6 +3,7 @@ import { createFullQuiz } from '../quizDb.js';
 import { generateQuizContent, formatQuizForDb, pickDailyCategory, validateQuizPayload } from '../geminiQuiz.js';
 import { sendPushToAll } from '../pushService.js';
 import { buildSiteUrl } from '../siteUrl.js';
+import { triggerImageBackfill } from '../triggerImageBackfill.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -42,11 +43,22 @@ export default async function handler(req, res) {
       }
     }
 
+    let imageBackfill = null;
+    if (body.backfill !== false) {
+      try {
+        imageBackfill = await triggerImageBackfill(quiz.id);
+      } catch (err) {
+        console.error('daily-quiz image backfill dispatch', err);
+        imageBackfill = { error: err.message };
+      }
+    }
+
     return res.status(201).json({
       ok: true,
       category,
       quiz: { id: quiz.id, title: payload.title },
       push,
+      imageBackfill,
     });
   } catch (err) {
     console.error('GET/POST /api/cron/daily-quiz', err);

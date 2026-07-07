@@ -67,6 +67,8 @@ Vercel이 Cron 호출 시 `Authorization: Bearer ${CRON_SECRET}` 헤더를 자�
 
 이미지가 필요하면 생성 후 `npm run images:backfill -- --quiz-id=...` 실행.
 
+**자동화 (권장):** Vercel env에 `GITHUB_DISPATCH_TOKEN`(repo scope PAT) 설정 시 daily cron 직후 GitHub Actions backfill이 해당 퀴즈만 처리합니다. Actions는 2시간마다 누락분도 스캔하며, 생성된 `.webp`를 커밋해 Vercel에 배포합니다.
+
 ## 6. Hobby 제한
 
 - **Serverless Functions**: 1개 (`api/[...path].js`)

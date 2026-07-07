@@ -1,4 +1,4 @@
-# 원격 이미지 백필 — 로컬 없이 GitHub에서 실행 → Turso 업데이트 → 이미지 커밋 → Vercel 배포
+# 원격 이미지 백필 — GitHub Actions → Turso 업데이트 → WebP 커밋 → Vercel 배포
 #
 # 필수 Secrets (Settings → Secrets → Actions):
 #   TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, GEMINI_API_KEY, OPENROUTER_API_KEY
@@ -9,6 +9,10 @@ name: Remote image backfill
 on:
   workflow_dispatch:
     inputs:
+      quiz_id:
+        description: 'Optional quiz UUID — backfill this quiz only (after daily cron)'
+        required: false
+        default: ''
       max_batches:
         description: 'Max quiz batches (1 batch ≈ 1 quiz, ~2–3 min)'
         required: false
@@ -17,9 +21,11 @@ on:
         description: 'Force re-gen backfill_* images'
         type: boolean
         default: false
+  repository_dispatch:
+    types: [backfill-quiz]
   schedule:
-    # 6시간마다 누락 이미지 채우기 (UTC)
-    - cron: '0 */6 * * *'
+    # 2시간마다 누락 이미지 채우기 (UTC)
+    - cron: '0 */2 * * *'
 
 concurrency:
   group: backfill-images
@@ -55,10 +61,17 @@ jobs:
           OPENROUTER_TEXT_MODEL: ${{ secrets.OPENROUTER_TEXT_MODEL }}
           OPENROUTER_IMAGE_MODEL: ${{ secrets.OPENROUTER_IMAGE_MODEL }}
           BACKFILL_MAX: ${{ github.event.inputs.max_batches || '10' }}
-          BACKFILL_FORCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force == true && '--force' || '' }}
+          BACKFILL_FORCE: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.force == true) && '--force' || '' }}
           BACKFILL_DELAY: '4000'
           BACKFILL_PAUSE: '8000'
-        run: npm run images:backfill:all 2>&1 | tee backfill.log
+          BACKFILL_QUIZ_ID: ${{ github.event.client_payload.quiz_id || github.event.inputs.quiz_id || '' }}
+        run: |
+          if [ -n "$BACKFILL_QUIZ_ID" ]; then
+            echo "Single-quiz backfill: $BACKFILL_QUIZ_ID"
+            npm run images:backfill -- --quiz-id="$BACKFILL_QUIZ_ID" --max-quizzes=1 --delay=4000 --skip-questions $BACKFILL_FORCE 2>&1 | tee backfill.log
+          else
+            npm run images:backfill:all 2>&1 | tee backfill.log
+          fi
 
       - name: Upload log artifact
         if: always()
@@ -73,7 +86,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/images/backfill_*.png 2>/dev/null || true
+          git add public/images/backfill_*.webp public/images/backfill_*.png 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No new backfill images to commit."
             exit 0
