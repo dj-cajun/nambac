@@ -6,16 +6,24 @@ import { Download, Share2, Heart } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import {
   calculateTodayFortune,
+  getDateStr,
   buildFortuneShareUrl,
   buildFortuneResultTitle,
   formatFortuneDateLong,
   formatFortuneDateShort,
-  getDateStr,
   parseFortuneShareParams,
 } from '../../shared/fortuneEngine.js';
+import { FORTUNE_COUNT } from '../../shared/fortuneData.js';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import { fetchFortuneSceneImage, fetchFortuneStats, incrementFortuneStat } from '../lib/fortuneApi.js';
 import { trackFortuneViewOnce, trackFortuneLikeOnce, hasFortuneLikedThisSession } from '../lib/fortuneStats.js';
+import {
+  trackFortuneDownload,
+  trackFortuneLike,
+  trackFortuneReveal,
+  trackFortuneShare,
+  trackFortuneView,
+} from '../lib/analytics.js';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink.js';
 import { buildFortuneOgImageUrl } from '../lib/siteUrl.js';
 import CopyToast from '../components/CopyToast.jsx';
@@ -25,6 +33,21 @@ import './FortunePage.css';
 import './Result.css';
 
 const NAME_KEY = 'nambac_fortune_name';
+
+function addDays(dateLabel, days) {
+  const d = new Date(`${dateLabel}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  return getDateStr(d);
+}
+
+function introIndexFromDate(dateLabel) {
+  let hash = 2166136261;
+  for (let i = 0; i < dateLabel.length; i += 1) {
+    hash ^= dateLabel.charCodeAt(i);
+    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+  }
+  return Math.abs(hash) % FORTUNE_COUNT;
+}
 
 export default function FortunePage() {
   const cardRef = useRef(null);
@@ -45,6 +68,8 @@ export default function FortunePage() {
   const [imageSrc, setImageSrc] = useState('');
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [introTodayImage, setIntroTodayImage] = useState('');
+  const [introTomorrowImage, setIntroTomorrowImage] = useState('');
   const [liked, setLiked] = useState(() => hasFortuneLikedThisSession());
   const [likeCount, setLikeCount] = useState(0);
 
@@ -65,6 +90,7 @@ export default function FortunePage() {
     }
     const calc = calculateTodayFortune(trimmed);
     setResult(calc);
+    trackFortuneReveal('love');
     setImageSrc('');
     setImageError(false);
     setShowActions(false);
@@ -87,11 +113,33 @@ export default function FortunePage() {
   useEffect(() => {
     fetchFortuneStats().then((s) => setLikeCount(s.like_count || 0)).catch(() => {});
     if (!trackFortuneViewOnce()) return;
+    trackFortuneView('love');
     incrementFortuneStat('view')
       .then((data) => {
         if (typeof data.like_count === 'number') setLikeCount(data.like_count);
       })
       .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    const today = getDateStr();
+    const tomorrow = addDays(today, 1);
+    const todayIdx = introIndexFromDate(today);
+    const tomorrowIdx = introIndexFromDate(tomorrow);
+    let cancelled = false;
+
+    Promise.allSettled([
+      fetchFortuneSceneImage({ fortuneIndex: todayIdx, dateLabel: today }),
+      fetchFortuneSceneImage({ fortuneIndex: tomorrowIdx, dateLabel: tomorrow }),
+    ]).then(([todayRes, tomorrowRes]) => {
+      if (cancelled) return;
+      if (todayRes.status === 'fulfilled') setIntroTodayImage(todayRes.value.src);
+      if (tomorrowRes.status === 'fulfilled') setIntroTomorrowImage(tomorrowRes.value.src);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -132,6 +180,7 @@ export default function FortunePage() {
       link.download = `nambac-fortune-${result?.name || 'today'}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      trackFortuneDownload('love');
     } catch {
       alert('Có lỗi khi tải ảnh — thử chụp màn hình nhé!');
     }
@@ -142,12 +191,40 @@ export default function FortunePage() {
     const url = buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel);
     const ok = await copyShareLinkWithFeedback(url, showToast);
     if (ok) {
+      trackFortuneShare('love');
+      incrementFortuneStat('share').catch(console.error);
+    }
+  };
+
+  const handleTagFriends = async () => {
+    if (!result) return;
+    const url = buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel);
+    const fortuneTitle = result.fortune?.title || 'Vận mệnh hôm nay';
+    const text = `Vận mệnh hôm nay của mình: "${fortuneTitle}" 🔮 Xem của bạn rồi tag 3 người nhé!\n${url}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${result.name} — ${FORTUNE_BRAND.label}`,
+          text,
+          url,
+        });
+        trackFortuneShare('tag_friends');
+        incrementFortuneStat('share').catch(console.error);
+        return;
+      } catch {
+        // fall through to clipboard
+      }
+    }
+    const ok = await copyShareLinkWithFeedback(text, showToast);
+    if (ok) {
+      trackFortuneShare('tag_friends');
       incrementFortuneStat('share').catch(console.error);
     }
   };
 
   const handleLike = async () => {
     if (liked || !trackFortuneLikeOnce()) return;
+    trackFortuneLike('love');
     setLiked(true);
     setLikeCount((n) => n + 1);
     try {
@@ -209,6 +286,25 @@ export default function FortunePage() {
             <p>{FORTUNE_BRAND.heroLine}</p>
           </header>
 
+          <section className="fortune-intro-grid" aria-label="Tử vi hôm nay và ngày mai">
+            <article className="fortune-intro-card">
+              <p className="fortune-intro-card-kicker">Hôm nay</p>
+              {introTodayImage ? (
+                <img src={introTodayImage} alt="Tử vi tình yêu hôm nay" className="fortune-intro-card-image" />
+              ) : (
+                <div className="fortune-intro-card-skeleton" aria-hidden="true" />
+              )}
+            </article>
+            <article className="fortune-intro-card">
+              <p className="fortune-intro-card-kicker">Ngày mai</p>
+              {introTomorrowImage ? (
+                <img src={introTomorrowImage} alt="Tử vi tình yêu ngày mai" className="fortune-intro-card-image" />
+              ) : (
+                <div className="fortune-intro-card-skeleton" aria-hidden="true" />
+              )}
+            </article>
+          </section>
+
           {friendShare && (
             <div className="fortune-friend-banner">
               <strong>{friendShare.friendName}</strong>
@@ -269,6 +365,10 @@ export default function FortunePage() {
           <div className="bar-actions">
             <button type="button" className="restart-btn" onClick={handleRetry}>
               <span className="btn-label">XEM LẠI</span>
+            </button>
+
+            <button type="button" className="tag-friends-btn" onClick={handleTagFriends}>
+              <span className="btn-label">TAG 3 BẠN</span>
             </button>
 
             <button type="button" className="download-action-btn" onClick={handleDownload}>

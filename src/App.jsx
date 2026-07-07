@@ -25,7 +25,8 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import BlogIndex from './pages/BlogIndex';
 import BlogPost from './pages/BlogPost';
 import FortunePage from './pages/FortunePage';
-import ComingSoonPage from './pages/ComingSoonPage';
+import BalancePage from './pages/BalancePage';
+import RoastCardPage from './pages/RoastCardPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import { DrawerProvider } from './components/shell/DrawerContext';
 import SidebarDrawer from './components/shell/SidebarDrawer';
@@ -88,15 +89,9 @@ function AppContent() {
         <Route path="/blog/mem-van-phong-sai-gon" element={<Navigate to="/blog/van-hoa-meme-va-ap-luc-cot-song-gen-z" replace />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/fortune" element={<FortunePage />} />
-        <Route
-          path="/balance"
-          element={<ComingSoonPage title="Chọn 1 trong 2" emoji="⚖️" />}
-        />
-        <Route path="/balance/:questionId" element={<Navigate to="/balance" replace />} />
-        <Route
-          path="/roast-card"
-          element={<ComingSoonPage title="Thẻ đen bóc phốt" emoji="💳" />}
-        />
+        <Route path="/balance" element={<BalancePage />} />
+        <Route path="/balance/:questionId" element={<BalancePage />} />
+        <Route path="/roast-card" element={<RoastCardPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/editor" element={<QuizEditor />} />
         <Route path="/about" element={<About />} />

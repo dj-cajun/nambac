@@ -1,4 +1,4 @@
-import { getFortuneByIndex } from './fortuneData.js';
+import { FORTUNE_COUNT, getFortuneByIndex } from './fortuneData.js';
 
 /** YYYY-MM-DD in local timezone */
 export function getDateStr(date = new Date()) {
@@ -25,10 +25,16 @@ export function calculateTodayFortune(name = '', date = new Date()) {
     hash = (hash * 33) ^ combinedSeed.charCodeAt(i);
   }
 
-  const fortuneIndex = Math.abs(hash) % 8;
+  const fortuneIndex = Math.abs(hash) % FORTUNE_COUNT;
   const fortune = getFortuneByIndex(fortuneIndex);
-  const soulmateIndex = (fortuneIndex + 3) % 8;
-  const rivalIndex = (fortuneIndex + 4) % 8;
+  const soulmateIndex =
+    Number.isInteger(fortune?.soulmateIndex)
+      ? ((fortune.soulmateIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT
+      : (fortuneIndex + 7) % FORTUNE_COUNT;
+  const rivalIndex =
+    Number.isInteger(fortune?.villainIndex)
+      ? ((fortune.villainIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT
+      : (fortuneIndex + 11) % FORTUNE_COUNT;
   const soulmate = getFortuneByIndex(soulmateIndex);
   const rival = getFortuneByIndex(rivalIndex);
 
@@ -86,7 +92,7 @@ export function buildFortuneShareUrl(name, fortuneIndex, dateLabel, origin) {
     throw new Error('buildFortuneShareUrl requires dateLabel (YYYY-MM-DD)');
   }
   const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
-  const idx = ((Number(fortuneIndex) % 8) + 8) % 8;
+  const idx = ((Number(fortuneIndex) % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
   const encodedName = encodeURIComponent(String(name).trim());
   return `${base}/share-fortune/${encodedName}/${idx}/${dateLabel}`;
 }
@@ -124,7 +130,7 @@ export function parseFortuneShareParams(searchParams) {
   if (!friendName || idx === null || Number.isNaN(idx)) return null;
   return {
     friendName,
-    fortuneIndex: ((idx % 8) + 8) % 8,
+    fortuneIndex: ((idx % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT,
     dateLabel,
     fortune: getFortuneByIndex(idx),
   };

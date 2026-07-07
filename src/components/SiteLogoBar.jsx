@@ -20,7 +20,7 @@ export default function SiteLogoBar() {
         aria-controls="sidebar-drawer"
         onClick={toggleDrawer}
       >
-        <Menu size={24} strokeWidth={2.25} />
+        <Menu size={16} strokeWidth={2.25} />
       </button>
       <button type="button" className="site-logo-btn" onClick={() => { scrollToTop(); if (pathname !== '/') navigate('/'); }} aria-label="NamBắc Trang chủ">
         <NambacLogo />

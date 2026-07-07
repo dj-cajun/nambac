@@ -1,4 +1,4 @@
-/** Daily love fortune archetypes — Tử vi tình yêu (8 types, chỉ số 0–7) */
+/** Daily love fortune archetypes — Tử vi tình yêu (20 types, chỉ số 0–19) */
 
 export const FORTUNE_RESULTS = [
   {
@@ -81,6 +81,126 @@ export const FORTUNE_RESULTS = [
     cuuTinh: 'Chỉ số 1 (Đồng nghiệp khen xã giao cứu vớt sĩ diện)',
     baoThu: 'Chỉ số 3 (Đứa bạn thân nghèo rớt mồng tơi dập tắt giấc mơ cf sang chảnh)',
   },
+  {
+    id: 8,
+    title: 'Seen lúc 3 phút — rep sau 3 ngày 🕒',
+    desc:
+      'Nhịp tim của bạn hôm nay phụ thuộc hoàn toàn vào trạng thái online của crush. Tin nhắn thì được xem rất nhanh, nhưng phản hồi lại xuất hiện sau hai mùa mưa như một dạng nghệ thuật khiến bạn học lại chữ "kiên nhẫn".',
+    remedy:
+      'Giới hạn bản thân: không mở khung chat quá 3 lần/giờ. Khi đầu óc rối, đi bộ 15 phút rồi quay lại làm việc thật.',
+    cuuTinh: 'Chỉ số 12 (Người kéo bạn về thực tế)',
+    baoThu: 'Chỉ số 2 (Crush im lặng gieo sầu)',
+  },
+  {
+    id: 9,
+    title: 'Tối nay timeline toàn ảnh cưới 📸',
+    desc:
+      'Bạn vừa mở mạng xã hội đã gặp một loạt ảnh cưới, đính hôn, kỷ niệm 5 năm yêu nhau. Vũ trụ không ác ý, nhưng thuật toán hôm nay rõ ràng muốn thử sức chịu đựng của trái tim độc thân.',
+    remedy:
+      'Tắt feed 1 giờ, bật playlist vui và hẹn bạn thân đi ăn gì đó thật ngon. Đời không phải cuộc đua về tốc độ lấy chồng/lấy vợ.',
+    cuuTinh: 'Chỉ số 15 (Bạn thân chữa lành)',
+    baoThu: 'Chỉ số 4 (FOMO xã hội)',
+  },
+  {
+    id: 10,
+    title: 'Yêu chưa tới đã roleplay đám cưới 💍',
+    desc:
+      'Trí tưởng tượng hôm nay bay rất xa: từ một buổi cà phê thành kế hoạch cưới hỏi, decor, danh sách nhạc first dance. Bạn không sai, chỉ là đang đi nhanh hơn thực tế khoảng 6 tháng.',
+    remedy:
+      'Hạ tốc độ cảm xúc xuống mức "thử tìm hiểu". Đừng gửi tin nhắn dài 9 đoạn trước 10h sáng.',
+    cuuTinh: 'Chỉ số 14 (Người giữ nhịp bình tĩnh)',
+    baoThu: 'Chỉ số 7 (Ảo tưởng xịn sò)',
+  },
+  {
+    id: 11,
+    title: 'Ex cũ lên story "Anh ổn" đầy ẩn ý 📱',
+    desc:
+      'Bạn không chủ động tìm, nhưng vũ trụ vẫn gửi story của ex vào đúng lúc yếu lòng nhất. Câu chữ mơ hồ cộng bản nhạc buồn khiến não bật lại mode "nếu như ngày đó...".',
+    remedy:
+      'Mute ngay 30 ngày và khóa cửa trí tưởng tượng. Người cũ là dữ liệu lịch sử, không phải roadmap tương lai.',
+    cuuTinh: 'Chỉ số 18 (Người cắt đứt vòng lặp)',
+    baoThu: 'Chỉ số 6 (Suy nghĩ quá đà)',
+  },
+  {
+    id: 12,
+    title: 'Bạn thân lên chức quân sư tình cảm 🧠',
+    desc:
+      'Hôm nay bạn được tư vấn 360 độ từ bạn thân, đồng nghiệp, và cả người lạ trong comment. Vấn đề là mỗi người một kịch bản, khiến trái tim bạn như đang họp đa phòng ban.',
+    remedy:
+      'Chọn một người bạn tin nhất làm cố vấn chính. Nhiều lời khuyên quá đôi khi chỉ làm bạn xa cảm xúc thật của mình.',
+    cuuTinh: 'Chỉ số 1 (Đồng đội trung thành)',
+    baoThu: 'Chỉ số 17 (Drama hội đồng)',
+  },
+  {
+    id: 13,
+    title: 'Tình yêu kiểu "đợi em 5 phút" thành 50 phút 🚦',
+    desc:
+      'Lịch hẹn hôm nay gặp đúng combo trễ giờ, kẹt xe và pin điện thoại yếu. Không có gì quá nghiêm trọng, nhưng đủ để hai bên hiểu nhầm nhau trong một buổi tối.',
+    remedy:
+      'Báo trễ càng sớm càng tốt và nói rõ thời gian thực tế. Sự rõ ràng cứu tình cảm tốt hơn 100 lời xin lỗi sau đó.',
+    cuuTinh: 'Chỉ số 5 (Người giải cứu logistics)',
+    baoThu: 'Chỉ số 19 (Vua mất kết nối)',
+  },
+  {
+    id: 14,
+    title: 'Crush hôm nay đẹp quá mức cho phép ✨',
+    desc:
+      'Bạn gặp crush trong phiên bản hoàn hảo nhất: ánh sáng đẹp, outfit đẹp, thần thái đẹp. Não tạm ngừng logic và chuyển sang chế độ "lỡ lời toàn tập".',
+    remedy:
+      'Giữ cuộc trò chuyện ngắn, tự nhiên và có điểm dừng. Đừng cố gồng thành phiên bản "quá ấn tượng".',
+    cuuTinh: 'Chỉ số 10 (Nhịp tim ổn định)',
+    baoThu: 'Chỉ số 16 (Nói quá tay)',
+  },
+  {
+    id: 15,
+    title: 'Mưa Sài Gòn + tim mềm = dễ rung động 🌧️',
+    desc:
+      'Thời tiết hôm nay rất biết cách khuếch đại cảm xúc. Một tin nhắn bình thường cũng có thể khiến bạn nghĩ đó là định mệnh vừa gõ cửa.',
+    remedy:
+      'Nhìn vào hành động thay vì cảm giác tức thì. Mưa làm mọi thứ thơ hơn, nhưng quyết định vẫn cần tỉnh táo.',
+    cuuTinh: 'Chỉ số 9 (Bộ lọc cảm xúc)',
+    baoThu: 'Chỉ số 10 (Dễ mềm lòng)',
+  },
+  {
+    id: 16,
+    title: 'Lỡ nói mạnh miệng, giờ tự chữa cháy 🔥',
+    desc:
+      'Trong lúc tranh luận, bạn đã nói câu hơi quá tay và bây giờ thấy áy náy. Đây không phải thảm họa, chỉ là một bài kiểm tra về cách xin lỗi trưởng thành.',
+    remedy:
+      'Xin lỗi ngắn gọn, đúng việc và không biện minh dài dòng. Thái độ sau đó quan trọng hơn câu chữ đẹp.',
+    cuuTinh: 'Chỉ số 18 (Người gỡ mìn giao tiếp)',
+    baoThu: 'Chỉ số 11 (Ký ức người cũ quay lại)',
+  },
+  {
+    id: 17,
+    title: 'Drama nhóm bạn chạm ngõ tình cảm 🎭',
+    desc:
+      'Một câu chuyện nhỏ trong nhóm bạn bất ngờ kéo bạn vào vùng nhạy cảm. Mọi người đều có quan điểm, nhưng ít ai biết hết bối cảnh.',
+    remedy:
+      'Đừng chọn phe quá sớm. Ưu tiên nói chuyện riêng với người liên quan trước khi kết luận.',
+    cuuTinh: 'Chỉ số 12 (Người giữ cân bằng)',
+    baoThu: 'Chỉ số 4 (Sợ bỏ lỡ nên dễ cuốn vào drama)',
+  },
+  {
+    id: 18,
+    title: 'Bình tĩnh là siêu năng lực hôm nay 🧊',
+    desc:
+      'Bạn xử lý tình huống tình cảm với độ điềm tĩnh hiếm thấy. Người khác có thể nóng vội, nhưng bạn đang giữ được nhịp rất đẹp.',
+    remedy:
+      'Giữ phong độ: nghe đủ, nói vừa, quyết định chậm hơn cảm xúc 1 nhịp. Hôm nay bạn hợp vai "trụ cột".',
+    cuuTinh: 'Chỉ số 14 (Nội lực ổn định)',
+    baoThu: 'Chỉ số 7 (Ảo tưởng hình ảnh)',
+  },
+  {
+    id: 19,
+    title: 'Mất kết nối tạm thời, hiểu lầm tăng tốc 📵',
+    desc:
+      'Pin yếu, mạng chập chờn, thông báo tới trễ — công nghệ hôm nay không đứng về phía bạn. Chỉ cần thiếu một câu xác nhận là mọi thứ dễ bị hiểu sai.',
+    remedy:
+      'Khi quan trọng, gọi trực tiếp thay vì nhắn qua lại quá nhiều. Một cuộc gọi 2 phút có thể cứu cả buổi tối.',
+    cuuTinh: 'Chỉ số 13 (Người giao tiếp rõ ràng)',
+    baoThu: 'Chỉ số 5 (Kẹt xe + trễ hẹn)',
+  },
 ];
 
 const TITLE_EMOJI_RE = /^(.+?)\s+([\p{Extended_Pictographic}\uFE0F]+)$/u;
@@ -108,8 +228,9 @@ function normalizeFortune(entry) {
 
 /** @deprecated use FORTUNE_RESULTS — kept for existing imports */
 export const FORTUNE_ARCHETYPES = FORTUNE_RESULTS.map(normalizeFortune);
+export const FORTUNE_COUNT = FORTUNE_ARCHETYPES.length;
 
 export function getFortuneByIndex(index) {
-  const i = ((Number(index) % 8) + 8) % 8;
+  const i = ((Number(index) % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
   return FORTUNE_ARCHETYPES[i];
 }

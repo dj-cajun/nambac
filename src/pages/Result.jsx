@@ -113,6 +113,31 @@ const Result = () => {
         }
     };
 
+    const handleTagFriends = async () => {
+        const resultName = finalResult.type_name || finalResult.title || 'Kết quả';
+        const text = `Mình là "${resultName}" 🎯 Bạn là gì? Làm test 90 giây rồi tag 3 người nhé!\n${shareUrl}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${resultName} — nambac.xyz`,
+                    text,
+                    url: shareUrl,
+                });
+                trackShare('tag_friends', quizIdParam, score);
+                if (!window.__sharedQuiz?.[quizIdParam]) {
+                    incrementQuizStat(quizIdParam, 'share').catch(console.error);
+                    window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
+                }
+                return;
+            } catch {
+                /* cancelled */
+            }
+        }
+        const ok = await copyShareLinkWithFeedback(text, showToast);
+        if (!ok) return;
+        trackShare('tag_friends', quizIdParam, score);
+    };
+
     const handleLike = async () => {
         if (liked || !trackQuizLikeOnce(quizIdParam)) return;
         setLiked(true);
@@ -210,6 +235,22 @@ const Result = () => {
                         </div>
                     </div>
                 )}
+
+                <section className="result-brand-cta" aria-label="Hợp tác thương hiệu">
+                    <p className="result-brand-cta-kicker">Cho brand/agency</p>
+                    <h3>Muốn làm quiz viral cho chiến dịch của bạn?</h3>
+                    <p>
+                        Tạo quiz theo insight khách hàng, có hình AI riêng và báo cáo realtime.
+                        Hợp tác nhanh trong 24-48h.
+                    </p>
+                    <button
+                        type="button"
+                        className="result-brand-cta-btn"
+                        onClick={() => navigate('/brands')}
+                    >
+                        Nhận proposal từ nambac
+                    </button>
+                </section>
             </main>
 
             {/* Bottom Modal Bar — slides up on mount */}
@@ -222,6 +263,10 @@ const Result = () => {
                 <div className="bar-actions">
                     <button className="restart-btn" onClick={() => navigate(`/quiz/${quizIdParam}`)}>
                         <span className="btn-label">CHƠI LẠI</span>
+                    </button>
+
+                    <button type="button" className="tag-friends-btn" onClick={handleTagFriends}>
+                        <span className="btn-label">TAG 3 BẠN</span>
                     </button>
 
                     {/* Download Image Button */}

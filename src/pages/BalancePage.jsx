@@ -10,9 +10,14 @@ import {
   getQuestionProgress,
   parseSharedChoice,
   buildShareUrl,
+  buildBalanceShareLink,
 } from '../../shared/balanceData.js';
 import { readLocalVotes, saveLocalVote, getVotedIds } from '../lib/balanceVotes';
+import { fetchBalanceSceneImage } from '../lib/balanceApi';
+import { buildBalanceOgImageUrl } from '../lib/siteUrl';
 import './BalancePage.css';
+
+const REVEAL_MS = 1400;
 
 export default function BalancePage() {
   const { questionId: routeId } = useParams();
@@ -26,7 +31,10 @@ export default function BalancePage() {
   const [stats, setStats] = useState({ pct_a: 50, pct_b: 50, total: 0 });
   const [voted, setVoted] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState({ current: 1, total: 20 });
+  const [progress, setProgress] = useState({ current: 1, total: 40 });
+  const [sceneSrc, setSceneSrc] = useState('');
+  const [sceneLoading, setSceneLoading] = useState(true);
+  const [revealing, setRevealing] = useState(false);
 
   const resolveQuestionId = useCallback(() => {
     return queryId || routeId || null;
@@ -49,6 +57,7 @@ export default function BalancePage() {
     setQuestion(q);
     setProgress(getQuestionProgress(q.id));
     setVoted(local[q.id] || null);
+    setRevealing(false);
 
     try {
       const res = await fetch(apiUrl(`balance?id=${encodeURIComponent(q.id)}`));
@@ -68,24 +77,56 @@ export default function BalancePage() {
     loadQuestion(id);
   }, [resolveQuestionId, loadQuestion]);
 
-  const handleVote = async (choice) => {
-    if (!question || voted) return;
-    saveLocalVote(question.id, choice);
-    setVoted(choice);
-
-    try {
-      const res = await fetch(apiUrl('balance'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question_id: question.id, choice }),
+  useEffect(() => {
+    if (!question?.id) return undefined;
+    let alive = true;
+    setSceneSrc('');
+    setSceneLoading(true);
+    fetchBalanceSceneImage(question.id)
+      .then(({ src }) => {
+        if (alive) setSceneSrc(src);
+      })
+      .catch(() => {
+        /* graceful fallback to emoji */
+      })
+      .finally(() => {
+        if (alive) setSceneLoading(false);
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.stats) setStats(data.stats);
+    return () => {
+      alive = false;
+    };
+  }, [question?.id]);
+
+  const handleVote = async (choice) => {
+    if (!question || voted || revealing) return;
+    saveLocalVote(question.id, choice);
+    setRevealing(true);
+
+    const votePromise = (async () => {
+      try {
+        const res = await fetch(apiUrl('balance'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question_id: question.id, choice }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.stats) return data.stats;
+        }
+      } catch {
+        /* keep local vote — fall back to current stats */
       }
-    } catch {
-      /* keep local vote */
-    }
+      return null;
+    })();
+
+    const [nextStats] = await Promise.all([
+      votePromise,
+      new Promise((resolve) => setTimeout(resolve, REVEAL_MS)),
+    ]);
+
+    if (nextStats) setStats(nextStats);
+    setVoted(choice);
+    setRevealing(false);
   };
 
   const goNext = () => {
@@ -95,7 +136,7 @@ export default function BalancePage() {
 
   const shareResult = async () => {
     if (!question || !voted) return;
-    const url = buildShareUrl(question.id, voted);
+    const url = buildBalanceShareLink(question.id, voted);
     const side = voted === 'a' ? 'A' : 'B';
     const text = `⚖️ ${question.title.slice(0, 90)}… — Tôi chọn ${side}! Bạn chọn gì?`;
     if (navigator.share) {
@@ -125,6 +166,13 @@ export default function BalancePage() {
   const showChallenge = friendChoice && !voted;
   const aWins = stats.pct_a >= stats.pct_b;
 
+  const ogChoice = voted || friendChoice || null;
+  const ogImageUrl = question ? buildBalanceOgImageUrl(question.id, ogChoice) : null;
+  const sharePageUrl = question ? buildBalanceShareLink(question.id, ogChoice || 'a') : null;
+  const ogTitle = question
+    ? `${question.title.slice(0, 80)} — A hay B? ⚖️`
+    : 'Chọn 1 trong 2 ⚖️ — nambac.xyz';
+
   return (
     <div className="balance-game-page">
       <Helmet>
@@ -133,6 +181,18 @@ export default function BalancePage() {
           name="description"
           content="A hay B? Tình huống Gen Z Sài Gòn — vote 3 giây, xem % cộng đồng, khoe Zalo."
         />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={ogTitle} />
+        <meta
+          property="og:description"
+          content="A hay B? Vote 3 giây, xem % cộng đồng chọn gì — rồi tag bạn bè trên Zalo!"
+        />
+        {sharePageUrl && <meta property="og:url" content={sharePageUrl} />}
+        {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+        {ogImageUrl && <meta property="og:image:width" content="1200" />}
+        {ogImageUrl && <meta property="og:image:height" content="630" />}
+        <meta name="twitter:card" content="summary_large_image" />
+        {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
       </Helmet>
 
       <div className="balance-game-top">
@@ -148,13 +208,35 @@ export default function BalancePage() {
       )}
 
       <div className="balance-scenario">
-        {question.emoji && (
-          <div className="balance-scenario-emoji" aria-hidden="true">{question.emoji}</div>
-        )}
+        <div className="balance-scene">
+          {sceneSrc ? (
+            <img
+              src={sceneSrc}
+              alt=""
+              className="balance-scene-img"
+              loading="eager"
+              decoding="async"
+            />
+          ) : sceneLoading ? (
+            <div className="balance-scene-skeleton" aria-hidden="true">
+              <span className="balance-scene-emoji">{question.emoji || '⚖️'}</span>
+            </div>
+          ) : (
+            <div className="balance-scene-fallback" aria-hidden="true">
+              <span className="balance-scene-emoji">{question.emoji || '⚖️'}</span>
+            </div>
+          )}
+        </div>
         <h1 className="balance-scenario-title">{question.title}</h1>
       </div>
 
-      {!voted ? (
+      {revealing ? (
+        <div className="balance-reveal-loading">
+          <div className="balance-reveal-spinner" aria-hidden="true" />
+          <p className="balance-reveal-text">Đang thống kê phe của bạn… 📊</p>
+          <p className="balance-reveal-sub">Xem có bao nhiêu người cùng gu với bạn 👀</p>
+        </div>
+      ) : !voted ? (
         <div className="balance-vs-stack">
           <button
             type="button"

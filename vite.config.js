@@ -24,6 +24,14 @@ export default defineConfig({
             req.url = `/api/fortune-share?${q}`;
             return next();
           }
+          const balanceShareMatch = pathname.match(/^\/share-balance\/([^/]+)(?:\/([^/]+))?$/);
+          if (balanceShareMatch) {
+            const [, bid, voted] = balanceShareMatch;
+            let q = `q=${encodeURIComponent(bid)}`;
+            if (voted) q += `&voted=${encodeURIComponent(voted)}`;
+            req.url = `/api/balance-share?${q}`;
+            return next();
+          }
           const scoreMatch = pathname.match(/^\/share\/([^/]+)\/(\d+)$/);
           const quizMatch = pathname.match(/^\/share\/([^/]+)$/);
           if (scoreMatch) {

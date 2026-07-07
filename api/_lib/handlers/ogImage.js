@@ -4,11 +4,20 @@ import { fileURLToPath } from 'url';
 import { getQuizById, getResultsByQuizId } from '../quizDb.js';
 import {
   buildOgImageApiUrl,
-  composeOgImageOnly,
+  composeOgImage,
+  parseTraits,
 } from '../composeOgImage.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FALLBACK_OG = path.join(__dirname, '../og-default.png');
+
+function stripHtml(text) {
+  return String(text || '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,9 +35,8 @@ export default async function handler(req, res) {
     const quiz = await getQuizById(quizId);
     if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
 
-    let buffer;
-
     const host = req.headers['x-forwarded-host'] || req.headers.host;
+    let buffer;
 
     if (scoreCode !== null && !Number.isNaN(scoreCode)) {
       const results = await getResultsByQuizId(quizId);
@@ -43,9 +51,15 @@ export default async function handler(req, res) {
         return res.status(200).send(fb);
       }
 
-      buffer = await composeOgImageOnly({
+      const traits = parseTraits(result.traits);
+      buffer = await composeOgImage({
         imageUrl,
         host,
+        quizTitle: quiz.title,
+        headline: result.type_name || result.title || 'Kết quả',
+        description: stripHtml(result.description),
+        hashtags: traits,
+        mode: 'result',
       });
     } else {
       if (!quiz.image_url) {
@@ -55,9 +69,14 @@ export default async function handler(req, res) {
         return res.status(200).send(fb);
       }
 
-      buffer = await composeOgImageOnly({
+      buffer = await composeOgImage({
         imageUrl: quiz.image_url,
         host,
+        quizTitle: quiz.title,
+        headline: quiz.title,
+        description: stripHtml(quiz.description),
+        hashtags: [],
+        mode: 'intro',
       });
     }
 

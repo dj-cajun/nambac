@@ -47,10 +47,91 @@
   margin-bottom: 20px;
 }
 
+.balance-scene {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin: 0 auto 14px;
+  border: 2.5px solid #1e293b;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 #1e293b;
+  background: #f1f5f9;
+}
+
+.balance-scene-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.balance-scene-skeleton,
+.balance-scene-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fdf2f8, #ede9fe);
+}
+
+.balance-scene-skeleton {
+  animation: balancePulse 1.2s ease infinite;
+}
+
+.balance-scene-emoji {
+  font-size: 3rem;
+  line-height: 1;
+}
+
 .balance-scenario-emoji {
   font-size: 2.5rem;
   line-height: 1;
   margin-bottom: 8px;
+}
+
+/* Suspense reveal after vote */
+.balance-reveal-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 0;
+  text-align: center;
+}
+
+.balance-reveal-spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 4px solid #ede9fe;
+  border-top-color: #ff2d85;
+  animation: balanceSpin 0.7s linear infinite;
+}
+
+.balance-reveal-text {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+.balance-reveal-sub {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+@keyframes balanceSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes balancePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 
 .balance-scenario-title {

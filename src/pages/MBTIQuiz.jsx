@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculateMBTI } from '../logic/mbtiScoring';
 import { getImageUrl } from '../lib/apiConfig';
+import { incrementQuizStat } from '../lib/quizApi';
+import { trackQuizStart } from '../lib/analytics';
 import QuizImage from '../components/QuizImage';
 import AdPlaceholder from '../components/AdPlaceholder';
 import './QuizPage.css';
@@ -21,6 +23,12 @@ export default function MBTIQuiz({ quizInfo, questions, results }) {
     const handleStart = () => {
         setStarted(true);
         window.scrollTo(0, 0);
+        trackQuizStart(quizInfo?.id, quizInfo?.category);
+
+        if (quizInfo?.id && !window.__participatedQuiz?.[quizInfo.id]) {
+            incrementQuizStat(quizInfo.id, 'participate').catch(console.error);
+            window.__participatedQuiz = { ...(window.__participatedQuiz || {}), [quizInfo.id]: true };
+        }
     };
 
     const handleAnswer = (isB) => {

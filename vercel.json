@@ -17,6 +17,14 @@
       "destination": "/api/handler?path=fortune-share&name=:name&idx=:idx"
     },
     {
+      "source": "/share-balance/:id/:voted",
+      "destination": "/api/handler?path=balance-share&q=:id&voted=:voted"
+    },
+    {
+      "source": "/share-balance/:id",
+      "destination": "/api/handler?path=balance-share&q=:id"
+    },
+    {
       "source": "/share/:id/:score",
       "destination": "/api/handler?path=og&id=:id&score=:score"
     },

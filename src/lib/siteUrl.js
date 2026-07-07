@@ -27,6 +27,19 @@ export function buildOgImageUrl(quizId, score = null) {
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
 
+/** Balance (Chọn 1 trong 2) share OG — scene image + question + picked A/B */
+export function buildBalanceOgImageUrl(questionId, choice = null) {
+  const side = choice === 'a' ? 'A' : choice === 'b' ? 'B' : '';
+  if (import.meta.env.DEV) {
+    const devQ = new URLSearchParams({ q: questionId });
+    if (side) devQ.set('voted', side);
+    return `${getSiteOrigin()}/api/balance-og?${devQ}`;
+  }
+  const params = new URLSearchParams({ path: 'balance-og', q: questionId });
+  if (side) params.set('voted', side);
+  return `${getSiteOrigin()}/api/handler?${params}`;
+}
+
 /** Fortune result OG — same handler pattern as quiz */
 export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel) {
   const params = new URLSearchParams({

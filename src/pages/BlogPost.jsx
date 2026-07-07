@@ -41,6 +41,14 @@ export default function BlogPost() {
       </div>
 
       <footer className="blog-article-footer">
+        <div className="blog-brand-cta">
+          <p className="blog-brand-cta-kicker">Cho nhãn hàng &amp; agency</p>
+          <h3>Muốn làm quiz branded để tăng reach tự nhiên?</h3>
+          <p>
+            nambac triển khai trọn gói: concept, nội dung, visual AI, tracking và báo cáo realtime.
+          </p>
+          <Link to="/brands" className="blog-brand-cta-link">Xem gói hợp tác thương hiệu →</Link>
+        </div>
         <p>
           Bạn muốn thử trắc nghiệm? <Link to="/">Về trang chủ nambac.xyz</Link>
         </p>

@@ -1,4 +1,4 @@
-import { getFortuneByIndex } from '../../../shared/fortuneData.js';
+import { FORTUNE_COUNT, getFortuneByIndex } from '../../../shared/fortuneData.js';
 import { buildFortuneResultTitle, getDateStr, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
 import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
 import { buildFortuneOgImageApiUrl } from '../composeOgImage.js';
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       return res.redirect(302, `${currentBase}/fortune`);
     }
 
-    const idx = ((fortuneIndex % 8) + 8) % 8;
+    const idx = ((fortuneIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
     const fortune = getFortuneByIndex(idx);
     const encodedName = encodeURIComponent(name);
     const fullShareUrl = hasExplicitDate

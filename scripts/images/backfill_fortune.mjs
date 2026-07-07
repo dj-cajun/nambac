@@ -1,5 +1,5 @@
 /**
- * Pre-generate daily fortune AI scene images (8 archetypes × date).
+ * Pre-generate daily fortune AI scene images (FORTUNE_COUNT archetypes × date).
  *
  * Run: npm run images:fortune
  * Options: --date=2026-07-07  --idx=3  --force
@@ -22,14 +22,15 @@ const dateStr = dateArg ? dateArg.split('=')[1] : new Date().toISOString().slice
 const onlyIdx = idxArg !== undefined ? parseInt(idxArg.split('=')[1], 10) : null;
 
 const { getDateStr } = await import('../../shared/fortuneEngine.js');
+const { FORTUNE_COUNT } = await import('../../shared/fortuneData.js');
 const { ensureFortuneSceneImage, getFortuneImageLocalPath } = await import(
   '../../api/_lib/fortuneImageService.js'
 );
 
 const targetDate = dateArg ? dateStr : getDateStr();
 const indices = onlyIdx !== null && !Number.isNaN(onlyIdx)
-  ? [((onlyIdx % 8) + 8) % 8]
-  : [0, 1, 2, 3, 4, 5, 6, 7];
+  ? [((onlyIdx % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT]
+  : Array.from({ length: FORTUNE_COUNT }, (_, i) => i);
 
 if (!process.env.OPENROUTER_API_KEY && !process.env.GEMINI_API_KEY && !process.env.VITE_GEMINI_API_KEY) {
   console.error('❌ OPENROUTER_API_KEY or GEMINI_API_KEY required');

@@ -42,6 +42,49 @@
   line-height: 1.5;
 }
 
+.fortune-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.fortune-intro-card {
+  padding: 8px;
+  background: #fff;
+  border: 2px solid #1e293b;
+  border-radius: 14px;
+  box-shadow: 3px 3px 0 #1e293b;
+}
+
+.fortune-intro-card-kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fortune-intro-card-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  display: block;
+}
+
+.fortune-intro-card-skeleton {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #fce7f3 25%, #fdf2f8 50%, #fce7f3 75%);
+  background-size: 200% 100%;
+  animation: fortune-shimmer 1.2s ease-in-out infinite;
+  border: 1.5px solid #e2e8f0;
+}
+
 .fortune-friend-banner {
   margin-bottom: 16px;
   padding: 14px 16px;
@@ -457,6 +500,34 @@
   font-weight: 800;
   color: #ff2d85;
   line-height: 1.45;
+}
+
+.fortune-page .tag-friends-btn {
+  flex: 1.1;
+  height: 48px;
+  background: #ff2d85;
+  color: #fff;
+  border: 2px solid #0f172a;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  box-shadow: 2px 2px 0 0 #0f172a;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.fortune-page .tag-friends-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 #0f172a;
+}
+
+.fortune-page .tag-friends-btn .btn-label {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .fortune-page .share-btn-wrap {

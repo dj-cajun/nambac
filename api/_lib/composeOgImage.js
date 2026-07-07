@@ -12,9 +12,11 @@ const FONT_REGULAR = path.join(__dirname, 'fonts/NotoSans-Regular.ttf');
 const FONT_BOLD = path.join(__dirname, 'fonts/NotoSans-Bold.ttf');
 const RESVG_WASM = path.join(__dirname, '../../node_modules/@resvg/resvg-wasm/index_bg.wasm');
 
-// librsvg on Vercel cannot load file:// fonts — embed as data URLs once at startup.
-const FONT_REGULAR_B64 = fs.readFileSync(FONT_REGULAR).toString('base64');
-const FONT_BOLD_B64 = fs.readFileSync(FONT_BOLD).toString('base64');
+// resvg-wasm ignores @font-face data URLs — load raw buffers and pass via fontBuffers.
+const FONT_REGULAR_BUF = fs.readFileSync(FONT_REGULAR);
+const FONT_BOLD_BUF = fs.readFileSync(FONT_BOLD);
+const FONT_REGULAR_B64 = FONT_REGULAR_BUF.toString('base64');
+const FONT_BOLD_B64 = FONT_BOLD_BUF.toString('base64');
 
 async function ensureResvgReady() {
   if (globalThis.__nambacResvgInit) return;
@@ -125,6 +127,14 @@ function stripHtml(text) {
     .trim();
 }
 
+// NotoSans has no color-emoji glyphs → strip them so they don't render as tofu boxes.
+function stripEmoji(text) {
+  return String(text || '')
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function parseTraits(traits) {
   if (!traits) return [];
   if (Array.isArray(traits)) return traits.filter(Boolean);
@@ -180,9 +190,9 @@ function fontFaceCss() {
 }
 
 function buildPanelSvg({ quizTitle, headline, description, hashtags, mode }) {
-  const quizLabel = truncate(quizTitle, 72);
-  const title = truncate(headline, 56);
-  const descLines = wrapLines(description, 68, 2);
+  const quizLabel = truncate(stripEmoji(quizTitle), 72);
+  const title = truncate(stripEmoji(headline), 56);
+  const descLines = wrapLines(stripEmoji(description), 68, 2);
   const tagLine = hashtags.map((t) => `#${String(t).replace(/^#/, '')}`).join('  ');
   const tagText = truncate(tagLine, 90);
 
@@ -210,6 +220,7 @@ async function renderPanelPng(svgBuffer) {
     fitTo: { mode: 'width', value: OG_WIDTH },
     font: {
       loadSystemFonts: false,
+      fontBuffers: [FONT_REGULAR_BUF, FONT_BOLD_BUF],
       defaultFontFamily: 'OgSans',
     },
   });
@@ -281,20 +292,20 @@ const FORTUNE_OG_HEIGHT = 630;
 const FORTUNE_IMAGE_HEIGHT = 450;
 const FORTUNE_PANEL_HEIGHT = FORTUNE_OG_HEIGHT - FORTUNE_IMAGE_HEIGHT;
 
-function buildFortunePanelSvg({ name, fortuneTitle, emoji, dateStr }) {
-  const who = truncate(name || 'Bạn thân', 28);
-  const title = truncate(`${emoji || FORTUNE_BRAND.emoji} ${fortuneTitle || FORTUNE_BRAND.labelFull}`, 56);
+function buildFortunePanelSvg({ name, fortuneTitle, dateStr }) {
+  const who = truncate(stripEmoji(name || 'Bạn thân'), 26);
+  const title = truncate(stripEmoji(fortuneTitle || FORTUNE_BRAND.labelFull), 58);
   const dateLine = truncate(formatFortuneDateShort(dateStr), 24);
 
   return Buffer.from(`<svg width="${FORTUNE_OG_WIDTH}" height="${FORTUNE_PANEL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs><style>${fontFaceCss()}</style></defs>
   <rect width="100%" height="100%" fill="#1e0a14"/>
   <rect width="100%" height="6" fill="#FF2D85"/>
-  <text x="48" y="40" fill="#fda4af" font-size="20" font-weight="700">TỬ VI TÌNH YÊU · NAMBAC.XYZ</text>
-  <text x="${FORTUNE_OG_WIDTH - 48}" y="40" fill="#fda4af" font-size="18" text-anchor="end">${escapeXml(dateLine)}</text>
-  <text x="48" y="100" fill="#FF2D85" font-size="52" font-weight="700">Thẻ tình yêu của: ${escapeXml(who)}</text>
-  <text x="48" y="155" fill="#fde047" font-size="30" font-weight="700">${escapeXml(title)}</text>
-  <text x="48" y="${FORTUNE_PANEL_HEIGHT - 36}" fill="#94a3b8" font-size="20">Cùng ngày cùng tên = cùng kết quả · nambac.xyz/fortune</text>
+  <text x="48" y="38" fill="#fda4af" font-size="20" font-weight="700">TỬ VI TÌNH YÊU · NAMBAC.XYZ</text>
+  <text x="${FORTUNE_OG_WIDTH - 48}" y="38" fill="#fda4af" font-size="18" text-anchor="end">${escapeXml(dateLine)}</text>
+  <text x="48" y="90" fill="#FF2D85" font-size="42" font-weight="700">Thẻ tình yêu của: ${escapeXml(who)}</text>
+  <text x="48" y="134" fill="#fde047" font-size="27" font-weight="700">${escapeXml(title)}</text>
+  <text x="48" y="${FORTUNE_PANEL_HEIGHT - 20}" fill="#94a3b8" font-size="18">Cùng ngày cùng tên = cùng kết quả · nambac.xyz/fortune</text>
 </svg>`);
 }
 
@@ -305,14 +316,19 @@ export async function composeFortuneOgImage({
   imageUrl,
   host,
   imagePath,
+  imageBuffer: inputBuffer,
   name,
   fortuneTitle,
-  emoji,
   dateStr,
 }) {
   let imageBuffer;
   try {
-    imageBuffer = await loadImageBufferFromSources({ imageUrl, host, imagePath });
+    imageBuffer = await loadImageBufferFromSources({
+      imageUrl,
+      host,
+      imagePath,
+      imageBuffer: inputBuffer,
+    });
   } catch {
     const fallback = path.join(__dirname, 'og-default.png');
     imageBuffer = fs.readFileSync(fallback);
@@ -322,7 +338,7 @@ export async function composeFortuneOgImage({
     .resize(FORTUNE_OG_WIDTH, FORTUNE_IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
     .toBuffer();
 
-  const panelSvg = buildFortunePanelSvg({ name, fortuneTitle, emoji, dateStr });
+  const panelSvg = buildFortunePanelSvg({ name, fortuneTitle, dateStr });
   const panelBuffer = await renderPanelPng(panelSvg);
 
   return sharp({
@@ -341,6 +357,99 @@ export async function composeFortuneOgImage({
     .toBuffer();
 }
 
+const BALANCE_OG_WIDTH = 1200;
+const BALANCE_OG_HEIGHT = 630;
+const BALANCE_IMAGE_HEIGHT = 360;
+const BALANCE_PANEL_HEIGHT = BALANCE_OG_HEIGHT - BALANCE_IMAGE_HEIGHT;
+
+function buildBalancePanelSvg({ title, optionA, optionB, choice }) {
+  const titleLines = wrapLines(title, 58, 2);
+  const titleSvg = titleLines
+    .map((line, i) => `<tspan x="48" dy="${i === 0 ? 0 : 40}">${escapeXml(line)}</tspan>`)
+    .join('');
+
+  const rowY = titleLines.length > 1 ? 168 : 132;
+  const optA = truncate(stripHtml(optionA), 62);
+  const optB = truncate(stripHtml(optionB), 62);
+  const pickedA = choice === 'a';
+  const pickedB = choice === 'b';
+
+  const optionRow = (label, text, y, picked) => {
+    const chipFill = label === 'A' ? '#FF2D85' : '#7c3aed';
+    const rowFill = picked ? '#fff' : '#f4eef9';
+    const rowStroke = picked ? chipFill : '#e0d4ee';
+    const badgeW = 150;
+    const badgeX = BALANCE_OG_WIDTH - 60 - badgeW;
+    const check = picked
+      ? `<rect x="${badgeX}" y="${y + 14}" width="${badgeW}" height="36" rx="18" fill="${chipFill}"/>
+    <text x="${badgeX + badgeW / 2}" y="${y + 39}" fill="#fff" font-size="21" font-weight="700" text-anchor="middle">TÔI CHỌN</text>`
+      : '';
+    return `
+    <rect x="40" y="${y}" width="${BALANCE_OG_WIDTH - 80}" height="64" rx="14" fill="${rowFill}" stroke="${rowStroke}" stroke-width="${picked ? 3 : 2}"/>
+    <rect x="52" y="${y + 14}" width="36" height="36" rx="10" fill="${chipFill}"/>
+    <text x="70" y="${y + 41}" fill="#fff" font-size="24" font-weight="700" text-anchor="middle">${label}</text>
+    <text x="104" y="${y + 41}" fill="#3f3350" font-size="24" font-weight="${picked ? 700 : 400}">${escapeXml(text)}</text>
+    ${check}`;
+  };
+
+  return Buffer.from(`<svg width="${BALANCE_OG_WIDTH}" height="${BALANCE_PANEL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <defs><style>${fontFaceCss()}</style></defs>
+  <rect width="100%" height="100%" fill="#fff9fc"/>
+  <rect width="100%" height="6" fill="#FF2D85"/>
+  <text x="48" y="40" fill="#94a3b8" font-size="20" font-weight="700">CHỌN 1 TRONG 2 · NAMBAC.XYZ</text>
+  <text x="48" y="86" fill="#3f3350" font-size="34" font-weight="700">${titleSvg}</text>
+  ${optionRow('A', optA, rowY, pickedA)}
+  ${optionRow('B', optB, rowY + 76, pickedB)}
+</svg>`);
+}
+
+/** Balance (Chọn 1 trong 2) OG — scene image + question + A/B with picked side highlighted. */
+export async function composeBalanceOgImage({
+  imageUrl,
+  host,
+  imagePath,
+  imageBuffer: inputBuffer,
+  title,
+  optionA,
+  optionB,
+  choice,
+}) {
+  let imageBuffer;
+  try {
+    imageBuffer = await loadImageBufferFromSources({
+      imageUrl,
+      host,
+      imagePath,
+      imageBuffer: inputBuffer,
+    });
+  } catch {
+    const fallback = path.join(__dirname, 'og-default.png');
+    imageBuffer = fs.readFileSync(fallback);
+  }
+
+  const topImage = await sharp(imageBuffer)
+    .resize(BALANCE_OG_WIDTH, BALANCE_IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
+    .toBuffer();
+
+  const panelSvg = buildBalancePanelSvg({ title, optionA, optionB, choice });
+  const panelBuffer = await renderPanelPng(panelSvg);
+
+  return sharp({
+    create: {
+      width: BALANCE_OG_WIDTH,
+      height: BALANCE_OG_HEIGHT,
+      channels: 3,
+      background: '#fff9fc',
+    },
+  })
+    .composite([
+      { input: topImage, top: 0, left: 0 },
+      { input: panelBuffer, top: BALANCE_IMAGE_HEIGHT, left: 0 },
+    ])
+    .webp({ quality: 88 })
+    .toBuffer();
+}
+
 export function buildOgImageApiUrl(host, quizId, scoreCode = null) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const params = new URLSearchParams({ path: 'og-image', quizId });
@@ -350,6 +459,20 @@ export function buildOgImageApiUrl(host, quizId, scoreCode = null) {
   const path = host.includes('localhost')
     ? `/api/og-image?${new URLSearchParams({ quizId, ...(scoreCode != null && !Number.isNaN(scoreCode) ? { score: String(scoreCode) } : {}) })}`
     : `/api/handler?${params}`;
+  return `${protocol}://${host}${path}`;
+}
+
+/** Balance share OG — same handler routing as quiz og-image */
+export function buildBalanceOgImageApiUrl(host, { id, choice }) {
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const side = choice === 'a' ? 'A' : choice === 'b' ? 'B' : '';
+  const devQuery = new URLSearchParams({ q: String(id) });
+  if (side) devQuery.set('voted', side);
+  const prodQuery = new URLSearchParams({ path: 'balance-og', q: String(id) });
+  if (side) prodQuery.set('voted', side);
+  const path = host.includes('localhost')
+    ? `/api/balance-og?${devQuery}`
+    : `/api/handler?${prodQuery}`;
   return `${protocol}://${host}${path}`;
 }
 

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { calculateNameScore } from '../logic/mbtiScoring';
 import { getImageUrl } from '../lib/apiConfig';
+import { incrementQuizStat } from '../lib/quizApi';
+import { trackQuizStart } from '../lib/analytics';
 import AdPlaceholder from '../components/AdPlaceholder';
 import './QuizPage.css';
 
@@ -14,7 +16,16 @@ export default function NameInputQuiz({ quizInfo, results }) {
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [started, setStarted] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
+
+    const handleStart = () => {
+        setStarted(true);
+        trackQuizStart(quizInfo?.id, quizInfo?.category);
+
+        if (quizInfo?.id && !window.__participatedQuiz?.[quizInfo.id]) {
+            incrementQuizStat(quizInfo.id, 'participate').catch(console.error);
+            window.__participatedQuiz = { ...(window.__participatedQuiz || {}), [quizInfo.id]: true };
+        }
+    };
 
     const handleSubmit = () => {
         if (!name.trim()) return;
@@ -51,7 +62,7 @@ export default function NameInputQuiz({ quizInfo, results }) {
                         className="intro-bottom-sheet"
                     >
                         <div className="sheet-actions">
-                            <button className="start-sheet-btn" onClick={() => setStarted(true)}>
+                            <button className="start-sheet-btn" onClick={handleStart}>
                                 <span className="btn-label">BẮT ĐẦU</span>
                             </button>
                         </div>

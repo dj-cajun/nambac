@@ -19,6 +19,9 @@ import dailyQuiz from './handlers/dailyQuiz.js';
 import og from './handlers/og.js';
 import ogImage from './handlers/ogImage.js';
 import balance from './handlers/balance.js';
+import balanceImage from './handlers/balanceImage.js';
+import balanceOg from './handlers/balanceOg.js';
+import balanceShare from './handlers/balanceShare.js';
 import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
 import fortuneShare from './handlers/fortuneShare.js';
@@ -94,6 +97,19 @@ export async function dispatch(req, res, segments = []) {
   if (a === 'balance' && !b && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {
     return balance(req, res);
   }
+
+  // ── Balance dilemma AI scene image ──
+  if (a === 'balance-image' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return balanceImage(req, res);
+  }
+
+  // ── Balance share OG card ──
+  if (a === 'balance-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return balanceOg(req, res);
+  }
+
+  // ── Balance crawler share page (bot → OG html, human → /balance) ──
+  if (a === 'balance-share' && !b) return balanceShare(req, res);
 
   // ── Daily fortune AI scene ──
   if (a === 'fortune' && b === 'stats' && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {

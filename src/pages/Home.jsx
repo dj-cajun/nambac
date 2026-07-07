@@ -9,6 +9,8 @@ import './MiniApp.css';
 import { QUIZ_CATEGORIES, HOME_SPECIAL_TABS, matchesCategory } from '../constants/categories';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
+import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../shared/dailyPicks.js';
+import { recordDailyVisit } from '../lib/dailyStreak.js';
 import AdSenseUnit from '../components/AdSenseUnit';
 import QuizImage from '../components/QuizImage';
 import QuizCardStats from '../components/QuizCardStats';
@@ -188,6 +190,7 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [introModal, setIntroModal] = useState(null);
   const [fortuneStats, setFortuneStats] = useState({ view_count: 0, share_count: 0, like_count: 0 });
+  const [dailyStreak, setDailyStreak] = useState({ streak: 0, best: 0 });
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
   const introBodyRef = useRef(null);
@@ -199,6 +202,7 @@ export default function Home() {
 
   useEffect(() => {
     scrollToTop();
+    setDailyStreak(recordDailyVisit());
   }, []);
 
   useEffect(() => {
@@ -242,6 +246,9 @@ export default function Home() {
     () => sortByViralScore(quizzes).slice(0, 3),
     [quizzes],
   );
+
+  const todayQuiz = useMemo(() => pickDailyQuiz(quizzes), [quizzes]);
+  const todayBalance = useMemo(() => pickDailyBalanceQuestion(), []);
 
   const getCarouselStep = () => {
     const el = carouselRef.current;
@@ -346,6 +353,41 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      {dailyStreak.streak > 0 && (
+        <div className="home-streak-badge" aria-label="Chuỗi ngày liên tiếp">
+          🔥 {dailyStreak.streak} ngày liên tiếp
+          {dailyStreak.streak >= 3 ? ' — bạn đỉnh!' : ''}
+        </div>
+      )}
+
+      <section className="home-today" aria-label="Hôm nay">
+        <h2 className="home-today-title">Hôm nay · Chơi 90 giây ☕</h2>
+        <p className="home-today-sub">Ở quán cf? Làm nhanh rồi khoe Zalo nhé</p>
+        <div className="home-today-grid">
+          {todayQuiz && (
+            <button
+              type="button"
+              className="home-today-card home-today-quiz"
+              onClick={() => handleQuizClick(todayQuiz.id)}
+            >
+              <span className="home-today-kicker">Quiz hôm nay</span>
+              <span className="home-today-card-title">{todayQuiz.title}</span>
+              <span className="home-today-cta">Làm ngay →</span>
+            </button>
+          )}
+          <Link to="/fortune" className="home-today-card home-today-fortune">
+            <span className="home-today-kicker">{FORTUNE_BRAND.emoji} Tử vi tình yêu</span>
+            <span className="home-today-card-title">Xem vận may hôm nay</span>
+            <span className="home-today-cta">Mở thẻ →</span>
+          </Link>
+          <Link to={`/balance/${todayBalance.id}`} className="home-today-card home-today-balance">
+            <span className="home-today-kicker">{todayBalance.emoji || '⚖️'} Chọn 1 trong 2</span>
+            <span className="home-today-card-title">{todayBalance.title}</span>
+            <span className="home-today-cta">Vote ngay →</span>
+          </Link>
+        </div>
+      </section>
+
       {heroQuizzes.length > 0 && (
         <div className="hero-carousel-outer">
           <div className="hero-carousel-wrapper">
@@ -516,6 +558,19 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      <section className="home-brand-cta" aria-label="Hợp tác thương hiệu">
+        <p className="home-brand-cta-kicker">Dành cho nhãn hàng</p>
+        <h3>Chạy quiz branded để kéo Gen Z thật</h3>
+        <p>
+          Team nambac hỗ trợ từ concept, nội dung, hình ảnh đến báo cáo realtime.
+          Phù hợp cho launch sản phẩm, social campaign, seeding cộng đồng.
+        </p>
+        <div className="home-brand-cta-actions">
+          <Link to="/brands" className="home-brand-cta-btn primary">Nhận tư vấn miễn phí</Link>
+          <Link to="/brands" className="home-brand-cta-btn">Xem gói hợp tác</Link>
+        </div>
+      </section>
 
       <footer className="home-footer">
         <p className="home-footer-copy">

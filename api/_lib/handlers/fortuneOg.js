@@ -1,5 +1,6 @@
-import { composeOgImageOnly } from '../composeOgImage.js';
+import { composeFortuneOgImage } from '../composeOgImage.js';
 import { getDateStr, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
+import { getFortuneByIndex, FORTUNE_COUNT } from '../../../shared/fortuneData.js';
 import { resolveFortuneSceneForOg } from '../fortuneImageService.js';
 
 export default async function handler(req, res) {
@@ -11,26 +12,26 @@ export default async function handler(req, res) {
   try {
     const idxRaw = req.query?.idx;
     const fortuneIndex = idxRaw !== undefined && idxRaw !== '' ? Number(idxRaw) : 0;
+    const name = String(req.query?.name || 'Bạn thân').trim().slice(0, 24);
     const dateStr = (() => {
       const raw = String(req.query?.date || '').trim();
       return isValidFortuneDateLabel(raw) ? raw : getDateStr();
     })();
 
-    const idx = ((fortuneIndex % 8) + 8) % 8;
+    const idx = ((fortuneIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
+    const fortune = getFortuneByIndex(idx);
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const scene = await resolveFortuneSceneForOg({ fortuneIndex: idx, dateStr, host });
 
-    let buffer;
-    if (scene.image_url) {
-      try {
-        buffer = await composeOgImageOnly({ imageUrl: scene.image_url, host });
-      } catch (fetchErr) {
-        if (!scene.buffer) throw fetchErr;
-        buffer = await composeOgImageOnly({ imageBuffer: scene.buffer });
-      }
-    } else {
-      buffer = await composeOgImageOnly({ imageBuffer: scene.buffer });
-    }
+    const buffer = await composeFortuneOgImage({
+      imageUrl: scene.image_url,
+      host,
+      imageBuffer: scene.buffer,
+      name,
+      fortuneTitle: fortune.title,
+      emoji: fortune.emoji,
+      dateStr,
+    });
 
     res.setHeader('Content-Type', 'image/webp');
     res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
