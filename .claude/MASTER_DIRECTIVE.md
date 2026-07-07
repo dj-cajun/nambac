@@ -20,11 +20,14 @@
 
 | 구분 | 기술 / 도구 | 비중 및 역할 |
 | :--- | :--- | :--- |
-| **Frontend** | React (Vite) + Tailwind | Antigravity를 통한 고속 UI 구현 및 핑크 테마 유지. |
-| **Backend/Auth** | Supabase | Google OAuth 및 퀴즈/외부링크 데이터베이스 관리. |
-| **Main Engine** | **Google Gemini (API)** | **Grade A**: 보안, 아키텍처 설계, 복잡한 기능 구현. |
-| **Sub Engine** | **OpenRouter (GLM-4)** | **Grade B**: 병맛 퀴즈 시나리오 대량 생성 및 번역. |
-| **Automation** | **n8n + OpenCode CLI** | 24/7 콘텐츠 자동 생성, DB 업데이트, SNS 포스팅. |
+| **Frontend** | React (Vite) + Tailwind | SPA — Home, Quiz, Admin, Result |
+| **Database** | **Turso (libSQL)** | quizzes, questions, results, brand_inquiries |
+| **API** | Vercel Serverless (`api/handler.js`) | 단일 진입 → router → handlers |
+| **Main Engine** | **Google Gemini (server)** | 퀴즈 텍스트, Imagen/cover |
+| **Sub Engine** | **OpenRouter** | Flux 이미지, LLM JSON fallback |
+| **Automation** | **Vercel Cron** (+ optional n8n) | 일일 퀴즈, webhook |
+
+> Supabase Auth는 제거됨. 로그인/UGC(likes, comments)는 별도 Phase 4.
 
 ---
 

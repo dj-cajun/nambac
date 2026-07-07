@@ -49,15 +49,17 @@ export async function enrichArchetypeQuizImages({ quizId, archetype, payload, ap
   };
 
   if (archetype.quiz_type === 'mbti_12q') {
-    const { generateQuizImage } = await import('./generateQuizImage.js');
+    const { generateCoverImage } = await import('./generateQuizImage.js');
     const { finalizeCoverImagePrompt, coverPrompt } = await import('../../shared/imagePrompts.js');
     const { generateQuizImagePrompts } = await import('../../shared/imagePromptEngine.js');
     let coverPromptText;
+    const quizCtx = { id: quizId, title: payload.title, category: payload.category };
     try {
       const generated = await generateQuizImagePrompts({
         geminiKey: apiKey,
         openrouterKey,
         quiz: {
+          id: quizId,
           title: payload.title,
           description: payload.description,
           category: payload.category,
@@ -66,21 +68,23 @@ export async function enrichArchetypeQuizImages({ quizId, archetype, payload, ap
         },
         skipQuestions: true,
       });
-      coverPromptText = finalizeCoverImagePrompt(generated.cover);
+      coverPromptText = finalizeCoverImagePrompt(generated.cover, { quiz: quizCtx });
     } catch {
       coverPromptText = coverPrompt({
+        id: quizId,
         title: payload.title,
         description: payload.description,
         category: payload.category,
       });
     }
-    const { b64 } = await generateQuizImage(coverPromptText);
+    const { b64 } = await generateCoverImage(coverPromptText);
     const { saveImageB64AsWebp } = await import('./saveQuizImage.js');
     const coverUrl = await saveImageB64AsWebp(b64, `${prefix}_cover`);
     await onCover(coverUrl);
   } else {
     await generateAllQuizImages({
       quiz: {
+        id: quizId,
         title: payload.title,
         description: payload.description,
         category: payload.category,

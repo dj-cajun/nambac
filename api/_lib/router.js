@@ -5,6 +5,7 @@ import brandInquiries from './handlers/brandInquiries.js';
 import generateImage from './handlers/generateImage.js';
 import generateQuizImages from './handlers/generateQuizImages.js';
 import adminGenerateArchetypeQuiz from './handlers/adminGenerateArchetypeQuiz.js';
+import adminGenerateQuizContent from './handlers/adminGenerateQuizContent.js';
 import adminQuizzes from './handlers/adminQuizzes.js';
 import adminQuizById from './handlers/adminQuizById.js';
 import adminBrandInquiries from './handlers/adminBrandInquiries.js';
@@ -53,6 +54,9 @@ export async function dispatch(req, res, segments = []) {
   }
   if (a === 'admin' && b === 'generate-archetype-quiz' && !c && (method === 'POST' || method === 'OPTIONS')) {
     return adminGenerateArchetypeQuiz(req, res);
+  }
+  if (a === 'admin' && b === 'generate-quiz-content' && !c && (method === 'POST' || method === 'OPTIONS')) {
+    return adminGenerateQuizContent(req, res);
   }
 
   // ── Admin quizzes ──

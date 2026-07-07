@@ -8,9 +8,7 @@ import {
   validateArchetypePayload,
 } from '../../../shared/quizPrompts.js';
 
-function getGeminiKey() {
-  return process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
-}
+import { getGeminiKey } from '../../../shared/geminiKeys.js';
 
 /**
  * POST /api/admin/generate-archetype-quiz

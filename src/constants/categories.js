@@ -6,7 +6,6 @@ import {
   LEGACY_CATEGORY_ALIASES,
   normalizeCategory,
 } from '../../shared/categories.js';
-import { QUIZ_EXPERT_PROMPTS, QUIZ_TOPIC_SEEDS } from '../../shared/quizExpertPrompts.js';
 
 export { QUIZ_CATEGORY_IDS, LEGACY_CATEGORY_ALIASES, normalizeCategory };
 
@@ -47,22 +46,3 @@ export const getPersonas = () => QUIZ_CATEGORIES.map((cat) => ({
   emoji: cat.emoji,
   labelKo: cat.labelKo,
 }));
-
-export const GEMINI_CATEGORY_LIST = QUIZ_CATEGORY_IDS.join(', ');
-
-export function getCategoryById(id) {
-  const canonical = normalizeCategory(id);
-  return QUIZ_CATEGORIES.find((c) => c.id === canonical) || null;
-}
-
-export function getExpertPrompt(categoryId) {
-  const canonical = normalizeCategory(categoryId);
-  return QUIZ_EXPERT_PROMPTS[canonical] || QUIZ_EXPERT_PROMPTS.Personality;
-}
-
-export function getTopicSeed(categoryId) {
-  const canonical = normalizeCategory(categoryId);
-  return QUIZ_TOPIC_SEEDS[canonical] || QUIZ_TOPIC_SEEDS.Personality;
-}
-
-export { QUIZ_EXPERT_PROMPTS, QUIZ_TOPIC_SEEDS };

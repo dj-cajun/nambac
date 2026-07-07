@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { QUIZ_CATEGORIES, getFilterTypes, getCategoryLabel, matchesCategory, normalizeCategory } from '../constants/categories';
 import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi } from '../lib/adminApi';
+import { getAdminKey, setAdminKey } from '../lib/adminKey';
 import { getArchetypesByGroup } from '../../shared/personalityArchetypes.js';
-import QuizEditor from './QuizEditor';
 import './Admin.css';
 
 const getAdminCategoryLabel = (type) => {
@@ -13,9 +13,11 @@ const getAdminCategoryLabel = (type) => {
 };
 
 const Admin = () => {
-    const [isAuthenticated] = useState(true);
-    const [adminKey] = useState(() => import.meta.env.VITE_ADMIN_API_KEY || '');
-    const api = createAdminApi(adminKey);
+    const [adminKey, setAdminKeyState] = useState(() => getAdminKey());
+    const [unlockInput, setUnlockInput] = useState('');
+    const [unlockError, setUnlockError] = useState('');
+    const [unlockLoading, setUnlockLoading] = useState(false);
+    const api = useMemo(() => createAdminApi(adminKey), [adminKey]);
 
     const [quizzes, setQuizzes] = useState([]);
     const [showEditor, setShowEditor] = useState(false);
@@ -35,6 +37,15 @@ const Admin = () => {
     const [generatingArchetypeId, setGeneratingArchetypeId] = useState(null);
     const [archetypeStatus, setArchetypeStatus] = useState('');
     const [factoryWithImages, setFactoryWithImages] = useState(true);
+    const [modalTab, setModalTab] = useState('info');
+    const [editTitle, setEditTitle] = useState('');
+    const [editDescription, setEditDescription] = useState('');
+    const [editCategory, setEditCategory] = useState('');
+    const [editQuestions, setEditQuestions] = useState([]);
+    const [editResults, setEditResults] = useState([]);
+    const [editImagePreview, setEditImagePreview] = useState('');
+    const [bundleLoading, setBundleLoading] = useState(false);
+    const [bundleError, setBundleError] = useState('');
 
     const mbtiArchetypes = getArchetypesByGroup('mbti');
     const personalityArchetypes = getArchetypesByGroup('personality');
@@ -44,6 +55,25 @@ const Admin = () => {
         setToast({ message, type });
         window.setTimeout(() => setToast(null), 3200);
     }, []);
+
+    const handleUnlock = async (e) => {
+        e.preventDefault();
+        const key = unlockInput.trim();
+        if (!key) return;
+        setUnlockLoading(true);
+        setUnlockError('');
+        try {
+            const testApi = createAdminApi(key);
+            await testApi.fetchAllQuizzes();
+            setAdminKey(key);
+            setAdminKeyState(key);
+            setUnlockInput('');
+        } catch {
+            setUnlockError('Admin key가 올바르지 않습니다.');
+        } finally {
+            setUnlockLoading(false);
+        }
+    };
 
     const displayedQuizzes = useMemo(() => {
         let list = quizzes;
@@ -71,16 +101,6 @@ const Admin = () => {
         active: quizzes.filter((q) => q.is_active !== false && q.status !== 'hidden').length,
         hidden: quizzes.filter((q) => q.is_active === false || q.status === 'hidden').length,
     }), [quizzes]);
-    // Edit Modal State
-    const [modalTab, setModalTab] = useState('info');
-    const [editTitle, setEditTitle] = useState('');
-    const [editDescription, setEditDescription] = useState('');
-    const [editCategory, setEditCategory] = useState('');
-    const [editQuestions, setEditQuestions] = useState([]);
-    const [editResults, setEditResults] = useState([]);
-    const [editImagePreview, setEditImagePreview] = useState('');
-    const [bundleLoading, setBundleLoading] = useState(false);
-    const [bundleError, setBundleError] = useState('');
 
     const fetchQuizzes = async () => {
         setLoading(true);
@@ -96,10 +116,10 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (adminKey) {
             fetchQuizzes();
         }
-    }, [isAuthenticated]);
+    }, [adminKey]);
 
     const fetchInquiries = async () => {
         setInquiriesLoading(true);
@@ -114,10 +134,10 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        if (isAuthenticated && adminTab === 'b2b') {
+        if (adminKey && adminTab === 'b2b') {
             fetchInquiries();
         }
-    }, [isAuthenticated, adminTab]);
+    }, [adminKey, adminTab]);
 
     const fetchAnalytics = async () => {
         setAnalyticsLoading(true);
@@ -132,10 +152,10 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        if (isAuthenticated && adminTab === 'analytics') {
+        if (adminKey && adminTab === 'analytics') {
             fetchAnalytics();
         }
-    }, [isAuthenticated, adminTab]);
+    }, [adminKey, adminTab]);
 
     const updateInquiryStatus = async (id, newStatus) => {
         try {
@@ -381,6 +401,30 @@ const Admin = () => {
 
     return (
         <div className="admin-shell">
+        {!adminKey ? (
+            <div className="min-h-screen flex items-center justify-center p-6">
+                <form onSubmit={handleUnlock} className="w-full max-w-sm space-y-4 border-[3px] border-black rounded-lg p-8 bg-white shadow-md">
+                    <h1 className="text-xl font-black">Admin</h1>
+                    <p className="text-sm text-gray-600">Admin API key를 입력하세요. (세션에만 저장)</p>
+                    <input
+                        type="password"
+                        value={unlockInput}
+                        onChange={(e) => setUnlockInput(e.target.value)}
+                        className="w-full border-2 border-black rounded px-3 py-2"
+                        placeholder="ADMIN_API_KEY"
+                        autoComplete="off"
+                    />
+                    {unlockError && <p className="text-sm text-red-600 font-bold">{unlockError}</p>}
+                    <button
+                        type="submit"
+                        disabled={unlockLoading}
+                        className="w-full py-2 bg-[#FF2D85] text-white font-black rounded border-2 border-black disabled:opacity-50"
+                    >
+                        {unlockLoading ? '확인 중…' : 'Unlock'}
+                    </button>
+                </form>
+            </div>
+        ) : (
         <>
             {editingQuiz && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
@@ -519,7 +563,7 @@ const Admin = () => {
                                 >
                                     ← 목록으로
                                 </button>
-                                <QuizEditor embedded={true} initialAuth={true} />
+                                <QuizEditor embedded={true} initialAuth={true} adminKey={adminKey} />
                             </div>
                         ) : (
                             <>
@@ -853,6 +897,7 @@ const Admin = () => {
                 </div>
             )}
         </>
+        )}
         </div>
     );
 };

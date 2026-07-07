@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi, uploadQuizImage } from '../lib/adminApi';
-import { generateQuizContent } from '../lib/gemini';
+import { getAdminKey } from '../lib/adminKey';
 import { QUIZ_CATEGORIES, DEFAULT_QUIZ_CATEGORY, normalizeCategory, getPersonas } from '../constants/categories';
 import { QUIZ_TEMPLATES } from '../../shared/quizTemplates.js';
 import './QuizEditor.css';
@@ -50,11 +50,11 @@ const BINARY_SCORES = [
     [0, 4], [0, 2], [0, 1], [0, 0], [0, 0] // Q1=4, Q2=2, Q3=1, Q4/Q5=0
 ];
 
-export default function QuizEditor({ embedded = false, initialAuth = false }) {
+export default function QuizEditor({ embedded = false, initialAuth = false, adminKey: adminKeyProp }) {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const zipInputRef = useRef(null);
-    const adminKey = import.meta.env.VITE_ADMIN_API_KEY || '';
+    const adminKey = adminKeyProp ?? getAdminKey();
     const api = createAdminApi(adminKey);
 
     const saveImageFile = async (file) => {
@@ -151,11 +151,11 @@ export default function QuizEditor({ embedded = false, initialAuth = false }) {
         setGenerateStatus('🤖 AI đang lên kịch bản quiz...');
         
         try {
-            // Direct Gemini API call (works on both local and production)
+            // Server-side Gemini (Admin API key required)
             const activeCategory = normalizeCategory(selectedPersona?.category || category);
             setGenerateStatus(`🤖 Agent ${activeCategory} đang tạo quiz...`);
 
-            const data = await generateQuizContent(activeCategory);
+            const data = await api.generateQuizContent(activeCategory);
             console.log("AI Generation Successful:", data);
 
             // Populate state from Gemini response

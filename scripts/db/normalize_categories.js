@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { getTurso } from '../../api/_lib/turso.js';
-import { normalizeCategory } from '../../api/_lib/categories.js';
+import { normalizeCategory } from '../../shared/categories.js';
 import { PROJECT_ROOT } from '../_root.mjs';
 
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });

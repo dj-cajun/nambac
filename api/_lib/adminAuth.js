@@ -1,6 +1,15 @@
+/** Production requires ADMIN_API_KEY; local dev may run without it. */
 export function requireAdmin(req, res) {
-  const expected = process.env.ADMIN_API_KEY || process.env.VITE_ADMIN_API_KEY || '';
-  if (!expected) return true;
+  const expected = process.env.ADMIN_API_KEY || '';
+  const isProduction = Boolean(process.env.VERCEL);
+
+  if (!expected) {
+    if (isProduction) {
+      res.status(503).json({ error: 'Admin API key not configured' });
+      return false;
+    }
+    return true;
+  }
 
   const key = req.headers['x-admin-key'] || req.headers['X-Admin-Key'];
   if (key !== expected) {

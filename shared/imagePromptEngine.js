@@ -1,32 +1,31 @@
 /**
- * LLM → per-item image prompts (Japanese manga style).
- * Gemini first; OpenRouter text model on quota/outage.
- * Default: cover + R0–R7 (9 images). Optional: Q1–Q5 when skipQuestions is false.
+ * LLM → per-item image prompts with per-quiz visual style (one set per quiz).
  */
 import { generateJsonViaLlm, parseJsonFromLlm } from './llmJson.js';
+import { stylePaletteForLlm, stylePlanForLlm } from './imageStyles.js';
 
-const GEMINI_PROMPT_OUTPUT = `# Role: Japanese Manga Image Prompt Director
+const GEMINI_PROMPT_OUTPUT = `# Role: Quiz Image Prompt Director
 
-You write **English** image-generation prompts for an AI art model (Flux).
-Every prompt must describe a **unique scene** — never reuse the same background, alley, or sunset.
+You write **English** image-generation prompts for an AI art model.
+Each **quiz** gets ONE assigned art style (see style_plan) — cover + all results 0–7 MUST use that **same style** (one visual set).
+Different quizzes may use different styles from the palette below.
 
-## Visual style (include in EVERY prompt)
-Japanese manga / anime illustration, clean ink linework, screentone shading, expressive eyes, dynamic panel composition, rich environmental detail.
+## Style palette (assigned per quiz — do not mix styles within one quiz)
+{{STYLE_PALETTE}}
+
+## Scene rules
+Every prompt must describe a **unique scene** — never reuse the same background template.
+**NEVER default to**: narrow alley, wet pavement, shop-lined street, golden-hour cafe — unless the quiz topic is explicitly about that place.
 
 ## Content rules
 - Read the Vietnamese quiz content and translate **meaning** into a concrete visual scene (props, place, action, mood).
-- **Cover**: scroll-stopping mobile thumbnail — vibrant color pop, dramatic lighting, mysterious hook, premium feed aesthetic people want to tap and share.
-{{QUESTION_RULES}}- **Result i** (answer/share image — MUST match cover thumbnail quality):
-  - **Cover-formula poster shot**: centered character + ONE oversized hero prop from the quiz theme glowing with neon aura and sparkle particles, cinematic golden-hour alley or trendy cafe, wet reflective ground — identical premium energy to the cover, NOT a generic portrait.
-  - **Comedy roast panel** — exaggerated expression, dramatic pose, ironic prop gag tied to result i personality.
-  - **Share-card energy** — bold saturated colors, rim light, lens flare, high contrast; screenshot-worthy on Zalo/Facebook.
-  - One unified manga scene — NO vertical split, NO empty half, NO dark dusty indoor room, NO muted slice-of-life without a glowing prop.
-  - **ZERO text in image**: no captions, signs, subtitles, speech bubbles, letters, numbers, logos, or writing in ANY language — especially NO Chinese hanzi (中文), Japanese kanji, Korean hangul, Vietnamese, or English.
-  - **NO bottom caption strip** — Flux often adds hanzi/footer text at the lower edge; the frame must end with clean illustration only (sky, floor, scenery), never a text band.
-  - Saigon street scenes must use **blank shop facades** — never neon signs, market banners, or readable menus.
-  - Quiz result **title/description are mood references only** — never instruct the image model to draw those words as signage, phone UI, or labels.
-  - **Each result 0–7 must look wildly different** — unique setting, pose, prop gag, and color mood per result; never reuse the same alley, sunset, or cafe.
-- Global: no watermarks.
+- **Cover**: scroll-stopping mobile thumbnail. Background from quiz topic — not a generic alley.
+{{QUESTION_RULES}}- **Result i** (answer/share image):
+  - **SAME art style as cover** — identical rendering style (photoreal OR comic OR anime OR shoujo OR etc.), only scene/pose/prop changes.
+  - Centered character + ONE oversized hero prop from the quiz theme glowing with colored aura.
+  - **Unique setting per result** — different place/pose/prop per result 0–7, but **same art style throughout the quiz**.
+  - **ZERO text in image**: no captions, signs, subtitles, speech bubbles, letters, numbers, logos, or writing in ANY language.
+  - **NO bottom caption strip** — frame ends with clean illustration only (sky, floor, scenery).
 
 ## Output
 Return ONLY valid JSON (no markdown):
@@ -42,7 +41,8 @@ const QUESTION_RULES = `- **Question i** (question scene image):
 `;
 
 function buildImagePromptSystem(skipQuestions) {
-  return GEMINI_PROMPT_OUTPUT.replace(
+  return GEMINI_PROMPT_OUTPUT.replace('{{STYLE_PALETTE}}', stylePaletteForLlm())
+    .replace(
     '{{QUESTION_RULES}}',
     skipQuestions ? '' : QUESTION_RULES,
   ).replace(
@@ -62,6 +62,7 @@ function buildImagePromptSystem(skipQuestions) {
 
 function buildImagePromptUserPayload(quiz, skipQuestions) {
   return {
+    style_plan: stylePlanForLlm(quiz),
     quiz_title: quiz.title,
     quiz_description: quiz.description,
     category: quiz.category,
@@ -122,24 +123,23 @@ export async function generateQuizImagePrompts({
     : `
 STRICT for every "questions" prompt you write:
 - English prompt text only; describe visuals, never quote Vietnamese/Chinese strings for the image model to paint as text.
-- Never mention shop signs, neon text, menus, phone screens with UI, speech bubbles, question text, option labels, or readable writing.
-- NO bottom caption strip — Flux often paints hanzi/footer text on the lower edge.
-- Ho Chi Minh settings: generic cafes/streets with NO readable signage.`;
+- Never mention shop signs, neon text, menus, phone screens with UI, speech bubbles, or readable writing.
+- NO bottom caption strip — end with clean floor/sky only.
+- Outdoor street scenes: blank facades only — no readable signage.`;
   const user = `Quiz data (Vietnamese — translate to unique visual scenes):
 ${JSON.stringify(userPayload, null, 2)}
 ${questionStrict}
 STRICT for "cover" prompt:
-- Scroll-stopping mobile thumbnail — vibrant, dramatic lighting, tap-worthy, share-worthy; not generic or flat.
+- Begin with the assigned style from style_plan.quiz_visual_style_id — same style for entire quiz set.
+- Scroll-stopping mobile thumbnail; 100% English only — NEVER paste quiz_title or Vietnamese text.
+- ZERO typography in image. Background from quiz topic — not a generic alley.
 
 STRICT for every "results" prompt you write:
-- English prompt text only; describe visuals, never quote Vietnamese/Chinese strings for the image model to paint as text.
-- MUST use cover-formula: centered character + glowing neon hero prop from quiz theme + golden-hour/neon alley + sparkle + wet reflective ground.
-- Comedy roast + share-card energy — exaggerated face, dynamic pose; never bland portrait or dark muted indoor scene.
-- Center-weighted unified scene — NOT split panel, NOT empty half-frame.
-- Never mention shop signs, neon text, menus, phone screens with UI, speech bubbles, or readable writing.
-- NO bottom caption strip — end with clean floor/sky only.
-- Each result 0–7: different hero prop pose, glow color accent, and setting.
-- Ho Chi Minh settings: generic cafes/streets with NO readable signage.`;
+- **SAME art style as cover** (style_plan) — one visual set per quiz. Vary scene, pose, prop, glow color — NOT the rendering style.
+- English only; never quote Vietnamese/Chinese for the image model to paint.
+- Centered character + glowing hero prop + sparkle. Unique setting per result 0–7.
+- Never mention shop signs, speech bubbles, or readable writing. NO bottom caption strip.
+- Result title/description are mood references only — never draw as text.`;
 
   const { text, provider } = await generateJsonViaLlm({
     geminiKey,

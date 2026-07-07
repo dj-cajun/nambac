@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { requireAdmin } from '../adminAuth.js';
 import { saveUploadB64AsWebp } from '../saveQuizImage.js';
 

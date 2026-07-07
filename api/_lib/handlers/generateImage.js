@@ -1,5 +1,5 @@
 import { requireAdmin } from '../adminAuth.js';
-import { generateQuizImage } from '../generateQuizImage.js';
+import { generateCoverImage, generateQuizImage } from '../generateQuizImage.js';
 import { getOpenRouterImageModel } from '../openrouterImage.js';
 import { applyImageStyle } from '../../../shared/imagePrompts.js';
 
@@ -24,7 +24,9 @@ export default async function handler(req, res) {
       ? prompt.trim()
       : applyImageStyle(type || 'generic', prompt);
 
-    const result = await generateQuizImage(fullPrompt);
+    const result = type === 'cover'
+      ? await generateCoverImage(fullPrompt)
+      : await generateQuizImage(fullPrompt);
 
     return res.status(200).json({
       b64_json: result.b64,

@@ -102,7 +102,7 @@ async function main() {
   const { generateQuizImagePrompts } = await import('../../shared/imagePromptEngine.js');
   const { getOpenRouterTextModel } = await import('../../shared/openrouterText.js');
   const { finalizeCoverImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt } = await import('../../shared/imagePrompts.js');
-  const { generateQuizImage } = await import('../../api/_lib/generateQuizImage.js');
+  const { generateCoverImage, generateQuizImage } = await import('../../api/_lib/generateQuizImage.js');
   const { saveImageB64AsWebp } = await import('../../api/_lib/saveQuizImage.js');
 
   const db = getTurso();
@@ -179,14 +179,18 @@ async function main() {
         quiz: { ...quiz, questions, results },
         skipQuestions,
       });
+      const quizCtx = { id: quiz.id, title: quiz.title, category: quiz.category };
       prompts = {
-        cover: finalizeCoverImagePrompt(generated.cover),
-        questions: skipQuestions ? [] : generated.questions.map(finalizeQuestionImagePrompt),
+        cover: finalizeCoverImagePrompt(generated.cover, { quiz: quizCtx }),
+        questions: skipQuestions ? [] : generated.questions.map((p) =>
+          finalizeQuestionImagePrompt(p, { quiz: quizCtx }),
+        ),
         results: generated.results.map((p, i) =>
           finalizeResultImagePrompt(p, {
             resultCode: i,
             quizTitle: quiz.title,
             category: quiz.category,
+            quiz: quizCtx,
           }),
         ),
       };
@@ -205,7 +209,7 @@ async function main() {
 
     if (coverNeeded && generated < imageLimit) {
       try {
-        const { b64, cost, provider } = await generateQuizImage(prompts.cover);
+        const { b64, cost, provider } = await generateCoverImage(prompts.cover);
         const imageUrl = await saveImage(b64, `${prefix}_cover`);
         await db.execute({ sql: 'UPDATE quizzes SET image_url = ? WHERE id = ?', args: [imageUrl, quiz.id] });
         console.log(`   ✅ cover → ${imageUrl} (${provider}${cost != null ? ` $${cost}` : ''})`);

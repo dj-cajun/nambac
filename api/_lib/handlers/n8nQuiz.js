@@ -2,6 +2,7 @@ import { requireWebhook } from '../webhookAuth.js';
 import { createFullQuiz } from '../quizDb.js';
 import { sendPushToAll } from '../pushService.js';
 import { buildSiteUrl } from '../siteUrl.js';
+import { validateQuizPayload } from '../geminiQuiz.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,6 +17,17 @@ export default async function handler(req, res) {
 
   try {
     if (!body.title) return res.status(400).json({ error: 'title required' });
+
+    if (body.questions?.length || body.results?.length) {
+      const validationErrors = validateQuizPayload({
+        title: body.title,
+        questions: body.questions || [],
+        results: body.results || [],
+      });
+      if (validationErrors.length) {
+        return res.status(400).json({ error: `Invalid quiz payload: ${validationErrors.join('; ')}` });
+      }
+    }
 
     const quiz = await createFullQuiz(body);
 

@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import NambacLogo from './NambacLogo';
 import './SiteLogoBar.css';
 
 /** Top logo only — rendered once from App.jsx */

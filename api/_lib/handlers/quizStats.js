@@ -1,4 +1,5 @@
 import { incrementQuizStat } from '../quizDb.js';
+import { isTrustedSiteRequest } from '../requestOrigin.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,6 +12,10 @@ export default async function handler(req, res) {
   const { id } = req.query;
   if (!id) return res.status(400).json({ error: 'Missing quiz id' });
 
+  if (!isTrustedSiteRequest(req)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const field = body.field;
@@ -19,6 +24,9 @@ export default async function handler(req, res) {
     await incrementQuizStat(id, field);
     return res.status(200).json({ ok: true });
   } catch (err) {
+    if (err.message === 'Quiz not available' || err.message?.startsWith('Invalid stat field')) {
+      return res.status(400).json({ error: err.message });
+    }
     console.error(`POST /api/quizzes/${id}/stats`, err);
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }

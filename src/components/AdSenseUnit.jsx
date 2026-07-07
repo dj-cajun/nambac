@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { isAdFree } from '../lib/premium';
 import { isAdsEnabled, loadAdSenseScript, AD_PUB_ID } from '../lib/adsConfig';
 

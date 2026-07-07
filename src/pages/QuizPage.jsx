@@ -1,23 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Share2 } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import { calculateScore } from '../logic/scoring';
-import MBTIQuiz from './MBTIQuiz';
-import CustomQuiz from './CustomQuiz';
-import NameInputQuiz from './NameInputQuiz';
 import './QuizPage.css';
 import { getImageUrl } from '../lib/apiConfig';
 import { getCategoryLabel } from '../constants/categories';
 import { fetchQuizBundle, incrementQuizStat } from '../lib/quizApi';
 import { trackQuizViewOnce } from '../lib/quizRanking';
-import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizStart, trackShare } from '../lib/analytics';
-import QuizImage from '../components/QuizImage';
 import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
-import CopyToast from '../components/CopyToast';
 import { useCopyToast } from '../hooks/useCopyToast';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
 

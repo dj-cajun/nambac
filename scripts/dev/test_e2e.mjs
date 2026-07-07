@@ -3,7 +3,6 @@
  * Run: node scripts/test_e2e.mjs
  */
 import dotenv from 'dotenv';
-import fs from 'fs';
 import path from 'path';
 import { PROJECT_ROOT } from '../_root.mjs';
 

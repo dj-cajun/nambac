@@ -4,7 +4,7 @@
  * Env (server-only preferred):
  *   GEMINI_API_KEY, GEMINI_API_KEY_2
  *   or GEMINI_API_KEYS=key1,key2
- * Browser fallback: VITE_GEMINI_API_KEY (last resort)
+ * Browser fallback: VITE_GEMINI_API_KEY (dev scripts only — not used on Vercel server)
  */
 
 export function getGeminiKeys() {
@@ -16,7 +16,7 @@ export function getGeminiKeys() {
   const singles = [
     process.env.GEMINI_API_KEY,
     process.env.GEMINI_API_KEY_2,
-    process.env.VITE_GEMINI_API_KEY,
+    ...(process.env.VERCEL ? [] : [process.env.VITE_GEMINI_API_KEY]),
   ].filter(Boolean);
 
   return [...new Set([...fromList, ...singles])];

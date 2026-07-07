@@ -1,6 +1,6 @@
 import { generateQuizImagePrompts } from '../../shared/imagePromptEngine.js';
 import { finalizeCoverImagePrompt, finalizeQuestionImagePrompt, finalizeResultImagePrompt, coverPrompt, resultPrompt, questionPrompt } from '../../shared/imagePrompts.js';
-import { generateQuizImage } from './generateQuizImage.js';
+import { generateCoverImage, generateQuizImage } from './generateQuizImage.js';
 import { getGeminiKey, getOpenRouterKey } from '../../shared/llmJson.js';
 import { getOpenRouterTextModel } from '../../shared/openrouterText.js';
 import { saveImageB64AsWebp } from './saveQuizImage.js';
@@ -9,9 +9,14 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+function quizStyleCtx(quiz) {
+  return { id: quiz.id, title: quiz.title, category: quiz.category };
+}
+
 function fallbackPrompts(quiz) {
   return {
     cover: coverPrompt({
+      id: quiz.id,
       title: quiz.title,
       description: quiz.description,
       category: quiz.category,
@@ -23,6 +28,7 @@ function fallbackPrompts(quiz) {
         optionB: q.option_b,
         quizTitle: quiz.title,
         category: quiz.category,
+        id: quiz.id,
       }),
     ),
     results: (quiz.results || []).slice(0, 8).map((r, i) =>
@@ -32,6 +38,7 @@ function fallbackPrompts(quiz) {
         quizTitle: quiz.title,
         category: quiz.category,
         resultCode: r.result_code ?? i,
+        id: quiz.id,
       }),
     ),
   };
@@ -64,13 +71,16 @@ export async function generateAllQuizImages({
       console.warn(`Image prompts via OpenRouter fallback (${getOpenRouterTextModel()})`);
     }
     prompts = {
-      cover: finalizeCoverImagePrompt(generated.cover),
-      questions: skipQuestions ? [] : generated.questions.map(finalizeQuestionImagePrompt),
+      cover: finalizeCoverImagePrompt(generated.cover, { quiz: quizStyleCtx(quiz) }),
+      questions: skipQuestions ? [] : generated.questions.map((p) =>
+        finalizeQuestionImagePrompt(p, { quiz: quizStyleCtx(quiz) }),
+      ),
       results: generated.results.map((p, i) =>
         finalizeResultImagePrompt(p, {
           resultCode: i,
           quizTitle: quiz.title,
           category: quiz.category,
+          quiz: quizStyleCtx(quiz),
         }),
       ),
     };
@@ -84,7 +94,7 @@ export async function generateAllQuizImages({
 
   // Cover
   report('cover');
-  const coverRes = await generateQuizImage(prompts.cover);
+  const coverRes = await generateCoverImage(prompts.cover);
   out.cover_url = await saveImageB64AsWebp(coverRes.b64, `${prefix}_cover`);
   out.costs.push(coverRes.cost);
   if (onCoverSaved) await onCoverSaved(out.cover_url);

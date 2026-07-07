@@ -21,9 +21,18 @@ export function createAdminApi(adminKey = '') {
       return data.quizzes || [];
     },
 
-    /** Public read — same bundle as quiz page; avoids admin-only route issues in prod */
+    /** Public read — admin route so hidden/draft quizzes load in editor */
     async fetchQuizBundle(quizId) {
-      return parseJson(await fetch(apiUrl(`/quizzes/${quizId}`)));
+      return parseJson(await fetch(apiUrl(`/admin/quizzes/${quizId}`), { headers: headers() }));
+    },
+
+    /** Gemini quiz text — server-side keys only */
+    async generateQuizContent(categoryId, customTopic = '') {
+      return parseJson(await fetch(apiUrl('/admin/generate-quiz-content'), {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ categoryId, customTopic }),
+      }));
     },
 
     async updateQuizStatus(quizId, is_active, status) {

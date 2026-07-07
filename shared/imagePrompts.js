@@ -2,25 +2,26 @@
  * Image style suffix — Gemini writes scene prompts; we enforce layout + no-text guards.
  * Used by: quizImages pipeline, /api/generate-image fallback.
  */
+import { pickQuizStyle, prependStylePrompt } from './imageStyles.js';
 
 export const NO_TEXT_RULES =
   'ABSOLUTELY NO text, NO letters, NO numbers, NO Korean hangul, NO Chinese hanzi 中文, NO Japanese kanji, NO Vietnamese words, NO logos, NO watermarks, NO speech bubbles with writing. Pure illustration only.';
 
 /** Result/share image — one natural full scene; app shows answer text below the image */
 export const RESULT_SCENE_RULES =
-  'Single natural manga illustration — one unified scene with seamless background. NO vertical split, NO divider line, NO empty half-panel, NO hard edge separating left and right. Character and environment blend naturally across the full frame. The app displays answer text separately below the image.';
+  'Single unified illustration scene with seamless background — style may be photoreal, comic, anime, or watercolor per assignment. NO vertical split, NO divider line, NO empty half-panel. Character and environment blend naturally across the full frame.';
 
-/** Result comedy / personality roast visual energy */
+/** Result comedy / personality roast visual energy (when comedy/action styles) */
 export const RESULT_FUN_RULES =
-  'Comedy manga punchline energy: exaggerated facial expression, dramatic pose, speed lines, sweat drops, sparkle or doom aura, ironic prop gag, visual metaphor for this personality roast. Feel like a viral Vietnamese meme quiz result — never a bland standing portrait or stock pose. Include 1–2 hyper-specific props tied to the quiz theme (Saigon motorbike chaos, plastic stools, iced coffee, tropical plants, messy room) when it fits. Each result must look distinctly different from the other seven.';
+  'Expressive personality roast energy: exaggerated reaction, dramatic pose, ironic prop gag, visual metaphor for this result — never a bland stock portrait. Include 1–2 props tied to THIS quiz topic. Each result must look distinctly different from the other seven.';
 
 /** Result/cover — scroll-stopping share-card look (Zalo/FB story) */
 export const RESULT_SHARE_RULES =
   'Share-card thumbnail energy: bold saturated colors, cinematic rim lighting, soft sparkle bokeh, lens flare accents, high contrast, punchy silhouette readable at phone size — premium viral quiz aesthetic people want to screenshot and post on Zalo/Facebook story. Flashy and magnetic, NOT flat slice-of-life or generic anime poster.';
 
-/** Match the quiz cover formula — glowing hero prop poster shot */
+/** Match the quiz cover formula — glowing hero prop poster shot (setting follows quiz topic) */
 export const RESULT_HERO_RULES =
-  'SAME visual formula as the quiz cover thumbnail: center-framed character, ONE oversized hero prop from the quiz theme glowing with neon-pink/magenta aura and sparkle particles, cinematic golden-hour or neon alley lighting, wet reflective Saigon street or trendy cafe floor, premium poster composition — NOT a generic standing portrait, NOT a muted indoor scene, NOT slice-of-life without a glowing focal prop.';
+  'SAME visual formula as the quiz cover thumbnail: center-framed character, ONE oversized hero prop from the quiz theme glowing with colored aura and sparkle particles, premium poster composition. Background and lighting MUST match the specific quiz topic — pick a unique place from the prompt (home, office, school, beach, gym, fantasy realm, kitchen, concert, etc.). NEVER default to a generic narrow alley, wet pavement, shop-lined street, or cafe unless the quiz is explicitly about that place. NOT a bland standing portrait, NOT slice-of-life without a glowing focal prop.';
 
 /** Per-result accent so 8 answers look distinct */
 export const RESULT_GLOW_ACCENTS = [
@@ -39,11 +40,15 @@ export const COVER_SHARE_RULES =
 
 /** Stricter no-text for quiz cover/intro thumbnails */
 export const COVER_NO_TEXT_RULES =
-  'CRITICAL — quiz cover must be 100% text-free: zero glyphs anywhere. Forbidden: quiz title, captions, subtitles, bottom caption strip, footer text band, shop signs, neon lettering, street signs, market banners, phone or tablet screens with UI or documents, books/menus with readable content, posters with slogans, speech bubbles, Latin alphabet, Vietnamese diacritics, Korean hangul, Japanese kana/kanji, Chinese hanzi (中文), numbers, emoji text, watermarks. Use sign-free streets, blank shop facades, turned-away phones, abstract wall art with NO readable symbols. Pure illustration only — the app shows quiz title separately.';
+  'CRITICAL — quiz cover must be 100% text-free: zero glyphs anywhere. Forbidden: quiz title, captions, subtitles, bottom caption strip, footer text band, shop signs, neon lettering, street signs, market banners, phone or tablet screens with UI or documents, books/menus with readable content, posters with slogans, speech bubbles, Latin alphabet, Vietnamese diacritics, Korean hangul, Japanese kana/kanji, Chinese hanzi (中文), numbers, emoji text, watermarks. Use environments without readable signage. Pure illustration only — the app shows quiz title separately.';
+
+/** Lead/trail anchor — Flux weights start/end of prompt heavily */
+export const COVER_TEXT_FREE_LEAD =
+  'TEXT-FREE QUIZ COVER ART ONLY — absolutely no letters, no words, no quiz title, no headline banner, no caption strip, no subtitle bar, no signage, no typography anywhere in the frame. Pure illustration — the app renders all text separately.';
 
 /** Extra guard appended to every cover prompt for Flux/Imagen */
 export const FLUX_COVER_TEXT_GUARD =
-  'Negative: text, typography, letters, numbers, Vietnamese words, Chinese characters, hanzi 中文, kanji, hangul, captions, bottom caption strip, subtitle bar, footer text band, signage, neon text, shop names, speech bubbles, tablet screen UI, spreadsheet, watermark.';
+  'Negative: text, typography, letters, numbers, words, title banner, top headline, bottom caption strip, subtitle bar, footer text band, Vietnamese words, Chinese characters, hanzi 中文, kanji, hangul, captions, signage, neon text, shop names, speech bubbles, tablet screen UI, spreadsheet, watermark.';
 
 /** Stricter no-text for answer/result images (text is rendered by the app UI) */
 export const RESULT_NO_TEXT_RULES =
@@ -90,20 +95,35 @@ export function finalizeImagePrompt(geminiPrompt) {
 }
 
 /** Quiz cover/intro — strict zero typography in art */
-export function finalizeCoverImagePrompt(geminiPrompt) {
-  const core = sanitizeResultScenePrompt(geminiPrompt);
+const VIET_CHAR_RE = /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]/;
+
+/** Strip strings that image models paint as on-image typography (especially quiz titles). */
+export function sanitizeCoverForImageModel(prompt) {
+  let s = String(prompt || '').trim();
+  // Drop sentences containing Vietnamese — Flux renders them as headline text
+  s = s.split(/(?<=[.!?])\s+/).filter((line) => !VIET_CHAR_RE.test(line)).join(' ');
+  s = s.replace(/["'「」『』][^"'「」『』]{2,120}["'「」『』]/g, '');
+  s = s.replace(/Quiz cover establishing shot:[^.]*\./gi, 'Quiz cover establishing shot.');
+  s = s.replace(/\b(quiz title|headline|title text|top banner|caption strip|subtitle)\b[^.]*/gi, '');
+  return sanitizeResultScenePrompt(s).replace(/\s{2,}/g, ' ').trim();
+}
+
+export function finalizeCoverImagePrompt(geminiPrompt, { quiz } = {}) {
+  const styled = quiz ? prependStylePrompt(pickQuizStyle(quiz), geminiPrompt) : geminiPrompt;
+  const core = sanitizeCoverForImageModel(styled);
   if (!core) throw new Error('Empty cover image prompt');
   let base = core;
   if (!/scroll-stopping|tap-worthy|feed thumbnail/i.test(base)) base = `${base} ${COVER_SHARE_RULES}`;
-  if (!/glowing hero prop|neon.*glow|center-framed character|premium poster/i.test(base)) {
+  if (!/glowing hero prop|hero prop|center-framed character|premium poster/i.test(base)) {
     base = `${base} ${RESULT_HERO_RULES}`;
   }
-  return `${base} ${COVER_NO_TEXT_RULES} ${FLUX_COVER_TEXT_GUARD}`;
+  return `${COVER_TEXT_FREE_LEAD} ${base} ${COVER_NO_TEXT_RULES} ${FLUX_COVER_TEXT_GUARD} ${COVER_TEXT_FREE_LEAD}`;
 }
 
-/** Question images — show the situation, never bake question text into the art */
-export function finalizeQuestionImagePrompt(geminiPrompt) {
-  const core = sanitizeResultScenePrompt(geminiPrompt);
+/** Question images — same quiz style when quiz ctx provided */
+export function finalizeQuestionImagePrompt(geminiPrompt, { quiz } = {}) {
+  const styled = quiz ? prependStylePrompt(pickQuizStyle(quiz), geminiPrompt) : geminiPrompt;
+  const core = sanitizeResultScenePrompt(styled);
   if (!core) throw new Error('Empty question image prompt');
   let base = core;
   if (!/situation|dilemma|visually clear|question scene/i.test(base)) base = `${base} ${QUESTION_SCENE_RULES}`;
@@ -111,21 +131,23 @@ export function finalizeQuestionImagePrompt(geminiPrompt) {
 }
 
 /** Result images — natural full scene, zero typography in art */
-export function finalizeResultImagePrompt(geminiPrompt, { resultCode = 0, quizTitle = '', category = '' } = {}) {
-  const core = sanitizeResultScenePrompt(geminiPrompt);
+export function finalizeResultImagePrompt(geminiPrompt, { resultCode = 0, quizTitle = '', category = '', quiz } = {}) {
+  const style = quiz ? pickQuizStyle(quiz) : null;
+  const styled = style ? prependStylePrompt(style, geminiPrompt) : geminiPrompt;
+  const core = sanitizeResultScenePrompt(styled);
   if (!core) throw new Error('Empty result image prompt');
   let base = core;
   if (!/unified|seamless|no vertical split|no divider/i.test(base)) base = `${base} ${RESULT_SCENE_RULES}`;
-  if (!/glowing hero prop|neon.*glow|same visual formula as.*cover|premium poster/i.test(base)) {
+  if (!/glowing hero prop|hero prop|center-framed|premium poster/i.test(base)) {
     base = `${base} ${RESULT_HERO_RULES}`;
   }
-  if (!/comedy|exaggerat|punchline|meme|roast|speed line|prop gag/i.test(base)) base = `${base} ${RESULT_FUN_RULES}`;
+  if (!/expressive|exaggerat|dramatic pose|prop gag|roast/i.test(base)) base = `${base} ${RESULT_FUN_RULES}`;
   if (!/share-card|screenshot|viral|sparkle|rim light|scroll-stopping/i.test(base)) base = `${base} ${RESULT_SHARE_RULES}`;
   const accent = RESULT_GLOW_ACCENTS[((resultCode % 8) + 8) % 8];
-  const themeHint = [quizTitle, category].filter(Boolean).join(' — ');
-  const accentLine = themeHint
-    ? `Result ${resultCode} for "${themeHint}": hero prop radiates ${accent}; wildly different pose and setting from the other seven results.`
-    : `Result ${resultCode}: hero prop radiates ${accent}; unique pose and setting.`;
+  const styleLine = style
+    ? `SAME art style as quiz cover (${style.label}) — do not switch to a different rendering style.`
+    : '';
+  const accentLine = `Result ${resultCode}: hero prop radiates ${accent}; unique pose and setting from other results. ${styleLine}`;
   return `${base} ${accentLine} ${RESULT_NO_TEXT_RULES} ${FLUX_RESULT_TEXT_GUARD}`;
 }
 
@@ -137,27 +159,29 @@ export const STYLE_BASE =
 export const RESULT_STYLE_BASE =
   'Ultra-vibrant comedy manga illustration, bold ink outlines, halftone screentones, dramatic foreshortening, caricatured expressive face, neon-accent saturated colors, sparkle particles, visual humor, meme-quiz roast energy, dynamic action pose, instagram-story share-card polish.';
 
-export function coverPrompt({ title, description, category }) {
-  const theme = [title, description, category].filter(Boolean).join('. ');
+export function coverPrompt({ title, description, category, id } = {}) {
+  const quiz = { id, title, category };
   return finalizeCoverImagePrompt(
-    `${RESULT_STYLE_BASE} Quiz cover establishing shot: ${theme}. Unique environment and props matching this exact topic — dramatic, colorful, tap-worthy thumbnail. Sign-free blank storefronts, no readable screens or documents.`,
+    'Quiz cover illustration. Invent a vivid English-only scene: character plus one glowing hero prop that symbolizes the quiz topic through visuals alone. Background matches the topic — not a generic alley. Pure artwork — zero typography in the image.',
+    { quiz },
   );
 }
 
-export function resultPrompt({ title, description, quizTitle, category, resultCode = 0 }) {
+export function resultPrompt({ title, description, quizTitle, category, resultCode = 0, id } = {}) {
   const mood = [title, description].filter(Boolean).join('. ');
-  const theme = [quizTitle, category].filter(Boolean).join(' — ');
+  const quiz = { id, title: quizTitle, category };
   const accent = RESULT_GLOW_ACCENTS[((resultCode % 8) + 8) % 8];
   return finalizeResultImagePrompt(
-    `${RESULT_STYLE_BASE} Premium share-card poster for quiz "${theme}" result ${resultCode}. Center-framed character with over-the-top roast reaction (mood: ${mood}). Character holds or interacts with ONE oversized glowing hero prop from the quiz theme — ${accent} on the prop, sparkle particles, wet reflective ground, cinematic alley or cafe lighting exactly like the quiz cover thumbnail quality. Exaggerated face and prop gag — NOT bland portrait, NOT dark dusty room, NOT muted slice-of-life.`,
-    { resultCode, quizTitle, category },
+    `Premium share-card poster result ${resultCode}. Center-framed character with expressive reaction (mood reference only — do not draw text: ${sanitizeResultScenePrompt(mood)}). Character holds ONE oversized glowing hero prop — ${accent} on the prop, sparkle particles. Unique setting for this result personality. NOT bland portrait.`,
+    { resultCode, quizTitle, category, quiz },
   );
 }
 
-export function questionPrompt({ questionText, optionA, optionB, quizTitle, category }) {
-  const quizContext = [quizTitle, category].filter(Boolean).join(' — ');
+export function questionPrompt({ questionText, optionA, optionB, quizTitle, category, id }) {
+  const quiz = { id, title: quizTitle, category };
   return finalizeQuestionImagePrompt(
-    `${STYLE_BASE} Quiz "${quizContext}" — question scene (visual storytelling ONLY, zero readable text in image). Scene meaning reference — never paint these words: ${questionText}. Show the dilemma visually between "${optionA}" and "${optionB}" through character actions, props, and sign-free environment.`,
+    `Question scene (visual storytelling ONLY, zero readable text in image). Show the dilemma visually through character actions and props — never paint question or option words.`,
+    { quiz },
   );
 }
 

@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { getTurso, rowToQuiz, rowToQuestion, rowToResult } from './turso.js';
-import { normalizeCategory } from './categories.js';
+import { normalizeCategory } from '../../shared/categories.js';
 
 export async function listActiveQuizzes() {
   const db = getTurso();
@@ -44,6 +44,17 @@ export async function getQuizBundle(quizId) {
   };
 }
 
+export function isQuizPublic(quiz) {
+  if (!quiz) return false;
+  return quiz.is_active !== false && quiz.status !== 'hidden';
+}
+
+export async function getPublicQuizBundle(quizId) {
+  const bundle = await getQuizBundle(quizId);
+  if (!bundle || !isQuizPublic(bundle.quiz)) return null;
+  return bundle;
+}
+
 export async function getResultsByQuizId(quizId) {
   const db = getTurso();
   const rs = await db.execute({
@@ -62,6 +73,11 @@ const STAT_FIELDS = {
 export async function incrementQuizStat(quizId, field) {
   const column = STAT_FIELDS[field];
   if (!column) throw new Error(`Invalid stat field: ${field}`);
+
+  const quiz = await getQuizById(quizId);
+  if (!quiz || !isQuizPublic(quiz)) {
+    throw new Error('Quiz not available');
+  }
 
   const db = getTurso();
   await db.execute({

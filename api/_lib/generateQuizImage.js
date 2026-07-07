@@ -1,5 +1,42 @@
 import { generateGeminiImage } from './geminiImage.js';
-import { generateOpenRouterImage } from './openrouterImage.js';
+import { generateOpenRouterImage, getOpenRouterImageModel } from './openrouterImage.js';
+
+export function getCoverImageModel() {
+  return process.env.OPENROUTER_COVER_IMAGE_MODEL || 'google/gemini-2.5-flash-image';
+}
+
+/** Cover/intro images — Gemini Image on OpenRouter by default (Flux paints quiz titles as text). */
+export async function generateCoverImage(prompt, options = {}) {
+  const coverProvider = (process.env.COVER_IMAGE_PROVIDER || 'gemini-openrouter').toLowerCase();
+  if (coverProvider === 'flux' || coverProvider === 'openrouter') {
+    return generateQuizImage(prompt, options);
+  }
+
+  const coverModel = options.model || getCoverImageModel();
+  if (process.env.OPENROUTER_API_KEY) {
+    try {
+      const result = await generateOpenRouterImage(prompt, { ...options, model: coverModel });
+      return { ...result, provider: 'openrouter-cover' };
+    } catch (err) {
+      console.warn(`[cover] ${coverModel} failed → Flux (${err.message})`);
+    }
+  }
+
+  const provider = getImageProvider();
+  if (provider !== 'openrouter') {
+    try {
+      return await generateGeminiImage(prompt, options);
+    } catch (err) {
+      console.warn(`[cover] Imagen failed → Flux (${err.message})`);
+    }
+  }
+
+  const result = await generateOpenRouterImage(prompt, {
+    ...options,
+    model: options.fallbackModel || getOpenRouterImageModel(),
+  });
+  return { ...result, provider: 'openrouter-fallback' };
+}
 
 /**
  * IMAGE_PROVIDER:

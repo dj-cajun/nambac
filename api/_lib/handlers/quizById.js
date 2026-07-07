@@ -1,4 +1,4 @@
-import { getQuizBundle } from '../quizDb.js';
+import { getPublicQuizBundle } from '../quizDb.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   if (!id) return res.status(400).json({ error: 'Missing quiz id' });
 
   try {
-    const bundle = await getQuizBundle(id);
+    const bundle = await getPublicQuizBundle(id);
     if (!bundle) return res.status(404).json({ error: 'Quiz not found' });
     return res.status(200).json(bundle);
   } catch (err) {

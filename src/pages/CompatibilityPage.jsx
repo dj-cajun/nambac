@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Home, Share2, Download, Zap } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import html2canvas from 'html2canvas';
 import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizBundle } from '../lib/quizApi';
