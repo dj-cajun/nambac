@@ -24,6 +24,7 @@ import balanceOg from './handlers/balanceOg.js';
 import balanceShare from './handlers/balanceShare.js';
 import roastOg from './handlers/roastOg.js';
 import roastShare from './handlers/roastShare.js';
+import featureStats from './handlers/featureStats.js';
 import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
 import fortuneShare from './handlers/fortuneShare.js';
@@ -118,6 +119,11 @@ export async function dispatch(req, res, segments = []) {
     return roastOg(req, res);
   }
   if (a === 'roast-share' && !b) return roastShare(req, res);
+
+  // ── Mini-app engagement stats (balance / roast) ──
+  if (a === 'feature' && b === 'stats' && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {
+    return featureStats(req, res);
+  }
 
   // ── Daily fortune AI scene ──
   if (a === 'fortune' && b === 'stats' && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {

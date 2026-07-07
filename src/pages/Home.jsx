@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { User, Send, X, Heart } from 'lucide-react';
 import { scrollToTop } from '../lib/scrollToTop';
 import { fetchFortuneStats } from '../lib/fortuneApi';
+import { fetchAllFeatureStats } from '../lib/featureStats';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import './Home.css';
 import './MiniApp.css';
@@ -180,6 +181,28 @@ function IntroModalBody({ sectionId }) {
   return null;
 }
 
+function StatChipCard({ to, label, stats, variant }) {
+  return (
+    <Link to={to} className={`home-fortune-card${variant ? ` ${variant}` : ''}`}>
+      <span className="home-fortune-card-label">{label}</span>
+      <div className="home-fortune-card-stats">
+        <span title="Lượt xem">
+          <User size={11} aria-hidden="true" />
+          {(stats.view_count || 0).toLocaleString()}
+        </span>
+        <span title="Lượt chia sẻ">
+          <Send size={11} aria-hidden="true" />
+          {(stats.share_count || 0).toLocaleString()}
+        </span>
+        <span title="Lượt thích">
+          <Heart size={11} strokeWidth={2} aria-hidden="true" />
+          {(stats.like_count || 0).toLocaleString()}
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
@@ -188,6 +211,10 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [introModal, setIntroModal] = useState(null);
   const [fortuneStats, setFortuneStats] = useState({ view_count: 0, share_count: 0, like_count: 0 });
+  const [featureStats, setFeatureStats] = useState({
+    balance: { view_count: 0, share_count: 0, like_count: 0 },
+    roast: { view_count: 0, share_count: 0, like_count: 0 },
+  });
   const [dailyStreak, setDailyStreak] = useState({ streak: 0, best: 0 });
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
@@ -200,6 +227,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchFortuneStats().then(setFortuneStats).catch(console.error);
+    fetchAllFeatureStats().then(setFeatureStats).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -422,25 +450,30 @@ export default function Home() {
       )}
 
       <nav className="home-quick-chips" aria-label="Chơi nhanh">
-        <Link to="/fortune" className="home-fortune-card">
-          <span className="home-fortune-card-label">{FORTUNE_BRAND.emoji} {FORTUNE_BRAND.label}</span>
-          <div className="home-fortune-card-stats">
-            <span title="Lượt xem">
-              <User size={11} aria-hidden="true" />
-              {(fortuneStats.view_count || 0).toLocaleString()}
-            </span>
-            <span title="Lượt chia sẻ">
-              <Send size={11} aria-hidden="true" />
-              {(fortuneStats.share_count || 0).toLocaleString()}
-            </span>
-            <span title="Lượt thích">
-              <Heart size={11} strokeWidth={2} aria-hidden="true" />
-              {(fortuneStats.like_count || 0).toLocaleString()}
-            </span>
-          </div>
-        </Link>
-        <Link to="/balance" className="home-quick-chip balance">⚖️ Chọn 1 trong 2</Link>
-        <Link to="/roast-card" className="home-quick-chip roast">💳 Thẻ đen bóc phốt</Link>
+        <StatChipCard
+          to="/fortune"
+          label={`${FORTUNE_BRAND.emoji} Tình yêu hôm nay`}
+          stats={fortuneStats}
+          variant="fortune-today"
+        />
+        <StatChipCard
+          to="/fortune/tomorrow"
+          label="🔮 Tình yêu ngày mai"
+          stats={fortuneStats}
+          variant="fortune-tomorrow"
+        />
+        <StatChipCard
+          to="/balance"
+          label="⚖️ Chọn 1 trong 2"
+          stats={featureStats.balance}
+          variant="balance"
+        />
+        <StatChipCard
+          to="/roast-card"
+          label="💳 Thẻ đen bóc phốt"
+          stats={featureStats.roast}
+          variant="roast"
+        />
       </nav>
 
       <div className="sort-tabs">

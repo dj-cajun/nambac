@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Download, Share2 } from 'lucide-react';
@@ -10,6 +10,7 @@ import {
   parseRoastShareParams,
 } from '../../shared/roastData.js';
 import { buildRoastOgImageUrl } from '../lib/siteUrl';
+import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import './RoastCardPage.css';
 
 export default function RoastCardPage() {
@@ -31,6 +32,12 @@ export default function RoastCardPage() {
     ? `${displayName} vừa bị bóc phốt: ${currentTrait.title} 💳`
     : 'Thẻ đen bóc phốt bạn bè 💳 — nambac.xyz';
 
+  useEffect(() => {
+    if (trackFeatureViewOnce('roast')) {
+      incrementFeatureStat('roast', 'view').catch(() => {});
+    }
+  }, []);
+
   const handleDownload = async () => {
     if (!cardRef.current || !displayName) return;
     setIsGenerating(true);
@@ -45,6 +52,7 @@ export default function RoastCardPage() {
       link.download = `nambac_blacklist_${displayName}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      incrementFeatureStat('roast', 'like').catch(() => {});
     } catch {
       alert('Có lỗi xảy ra khi tạo ảnh — hãy thử chụp màn hình nhé!');
     } finally {
@@ -59,6 +67,7 @@ export default function RoastCardPage() {
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Thẻ đen bóc phốt — nambac.xyz', text, url });
+        incrementFeatureStat('roast', 'share').catch(() => {});
         return;
       } catch {
         /* cancelled */
@@ -66,6 +75,7 @@ export default function RoastCardPage() {
     }
     try {
       await navigator.clipboard.writeText(`${text}\n${url}`);
+      incrementFeatureStat('roast', 'share').catch(() => {});
       alert('Đã copy — tag bạn thân trên Zalo!');
     } catch {
       alert(url);

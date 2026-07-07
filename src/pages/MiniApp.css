@@ -377,3 +377,19 @@
 .home-quick-chip.roast {
   background: #fecaca;
 }
+
+.home-fortune-card.fortune-today {
+  background: #ddd6fe;
+}
+
+.home-fortune-card.fortune-tomorrow {
+  background: #c7d2fe;
+}
+
+.home-fortune-card.balance {
+  background: #fde68a;
+}
+
+.home-fortune-card.roast {
+  background: #fecaca;
+}

@@ -15,6 +15,7 @@ import {
 import { readLocalVotes, saveLocalVote, getVotedIds } from '../lib/balanceVotes';
 import { fetchBalanceSceneImage } from '../lib/balanceApi';
 import { buildBalanceOgImageUrl } from '../lib/siteUrl';
+import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import './BalancePage.css';
 
 const REVEAL_MS = 1400;
@@ -78,6 +79,12 @@ export default function BalancePage() {
   }, [resolveQuestionId, loadQuestion]);
 
   useEffect(() => {
+    if (trackFeatureViewOnce('balance')) {
+      incrementFeatureStat('balance', 'view').catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
     if (!question?.id) return undefined;
     let alive = true;
     setSceneSrc('');
@@ -127,6 +134,7 @@ export default function BalancePage() {
     if (nextStats) setStats(nextStats);
     setVoted(choice);
     setRevealing(false);
+    incrementFeatureStat('balance', 'like').catch(() => {});
   };
 
   const goNext = () => {
@@ -142,6 +150,7 @@ export default function BalancePage() {
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Chọn 1 trong 2 — nambac.xyz', text, url });
+        incrementFeatureStat('balance', 'share').catch(() => {});
         return;
       } catch {
         /* cancelled */
@@ -149,6 +158,7 @@ export default function BalancePage() {
     }
     try {
       await navigator.clipboard.writeText(`${text}\n${url}`);
+      incrementFeatureStat('balance', 'share').catch(() => {});
       alert('Đã copy link — gửi Zalo nhé!');
     } catch {
       alert(url);
