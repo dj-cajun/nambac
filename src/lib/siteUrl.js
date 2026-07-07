@@ -26,3 +26,22 @@ export function buildOgImageUrl(quizId, score = null) {
   }
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
+
+/** Fortune result OG — same handler pattern as quiz */
+export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel) {
+  const params = new URLSearchParams({
+    path: 'fortune-og',
+    name: String(name).trim(),
+    idx: String(fortuneIndex),
+    date: dateLabel,
+  });
+  if (import.meta.env.DEV) {
+    const devQ = new URLSearchParams({
+      name: String(name).trim(),
+      idx: String(fortuneIndex),
+      date: dateLabel,
+    });
+    return `${getSiteOrigin()}/api/fortune-og?${devQ}`;
+  }
+  return `${getSiteOrigin()}/api/handler?${params}`;
+}

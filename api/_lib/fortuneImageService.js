@@ -6,23 +6,28 @@ import { loadImageBuffer } from './composeOgImage.js';
 import { IMAGES_DIR, WEBP_MAX_SIZE, WEBP_QUALITY } from './saveQuizImage.js';
 import { getFortuneScenePrompt } from '../../shared/fortuneImagePrompts.js';
 
-export const FORTUNE_IMAGES_DIR = path.join(IMAGES_DIR, 'fortune');
+/** Same root as quiz images — `/images/*.webp` */
+const LEGACY_FORTUNE_DIR = path.join(IMAGES_DIR, 'fortune');
+
+function normalizeIdx(fortuneIndex) {
+  return ((Number(fortuneIndex) % 8) + 8) % 8;
+}
 
 function cacheFilename(dateStr, fortuneIndex) {
-  const idx = ((Number(fortuneIndex) % 8) + 8) % 8;
-  return `fortune_${dateStr}_idx${idx}.webp`;
+  return `fortune_${dateStr}_idx${normalizeIdx(fortuneIndex)}.webp`;
 }
 
 function cacheFilePath(dateStr, fortuneIndex) {
-  return path.join(FORTUNE_IMAGES_DIR, cacheFilename(dateStr, fortuneIndex));
+  return path.join(IMAGES_DIR, cacheFilename(dateStr, fortuneIndex));
 }
 
-function publicPath(dateStr, fortuneIndex) {
-  return `/images/fortune/${cacheFilename(dateStr, fortuneIndex)}`;
+function legacyCacheFilePath(dateStr, fortuneIndex) {
+  return path.join(LEGACY_FORTUNE_DIR, cacheFilename(dateStr, fortuneIndex));
 }
 
+/** Public path — flat under /images/ like quiz result art */
 export function getFortuneImagePublicPath(dateStr, fortuneIndex) {
-  return publicPath(dateStr, fortuneIndex);
+  return `/images/${cacheFilename(dateStr, fortuneIndex)}`;
 }
 
 export function getFortuneImageLocalPath(dateStr, fortuneIndex) {
@@ -43,34 +48,47 @@ async function webpFromB64(b64) {
     .toBuffer();
 }
 
-/** Disk (dev) → CDN static (prod deploy) — same asset the result page shows. */
+/** Disk → CDN — quiz OG와 동일한 /images/ 경로 (구 서브폴더 호환) */
 async function tryLoadFortuneSceneBuffer({ dateStr, idx, host }) {
-  const filePath = cacheFilePath(dateStr, idx);
-  if (fs.existsSync(filePath)) {
-    return { buffer: fs.readFileSync(filePath), source: 'disk' };
+  const diskPaths = [
+    cacheFilePath(dateStr, idx),
+    legacyCacheFilePath(dateStr, idx),
+  ];
+  for (const filePath of diskPaths) {
+    if (fs.existsSync(filePath)) {
+      return { buffer: fs.readFileSync(filePath), source: 'disk', image_url: getFortuneImagePublicPath(dateStr, idx) };
+    }
   }
 
-  try {
-    const buffer = await loadImageBuffer(publicPath(dateStr, idx), resolveFetchHost(host));
-    return { buffer, source: 'cdn' };
-  } catch {
-    return null;
+  const fetchHost = resolveFetchHost(host);
+  const urls = [
+    getFortuneImagePublicPath(dateStr, idx),
+    `/images/fortune/${cacheFilename(dateStr, idx)}`,
+  ];
+  for (const imageUrl of urls) {
+    try {
+      const buffer = await loadImageBuffer(imageUrl, fetchHost);
+      return { buffer, source: 'cdn', image_url: getFortuneImagePublicPath(dateStr, idx) };
+    } catch {
+      /* try next */
+    }
   }
+  return null;
 }
 
 /**
- * Daily fortune scene — one image per archetype per day.
- * Same source for result card + OG. Always materializes a WebP buffer when possible.
+ * Daily fortune scene — same pipeline as quiz result images:
+ * cached /images/*.webp → else AI generate → always returns image_url for OG.
  */
 export async function ensureFortuneSceneImage({ fortuneIndex, dateStr, host }) {
-  const idx = ((Number(fortuneIndex) % 8) + 8) % 8;
+  const idx = normalizeIdx(fortuneIndex);
   const filePath = cacheFilePath(dateStr, idx);
-  const url = publicPath(dateStr, idx);
+  const url = getFortuneImagePublicPath(dateStr, idx);
 
   const cached = await tryLoadFortuneSceneBuffer({ dateStr, idx, host });
   if (cached?.buffer) {
     return {
-      image_url: url,
+      image_url: cached.image_url || url,
       buffer: cached.buffer,
       cached: true,
       source: cached.source,
@@ -82,14 +100,15 @@ export async function ensureFortuneSceneImage({ fortuneIndex, dateStr, host }) {
   const buffer = await webpFromB64(b64);
 
   try {
-    if (!fs.existsSync(FORTUNE_IMAGES_DIR)) {
-      fs.mkdirSync(FORTUNE_IMAGES_DIR, { recursive: true });
+    if (!fs.existsSync(IMAGES_DIR)) {
+      fs.mkdirSync(IMAGES_DIR, { recursive: true });
     }
     await fs.promises.writeFile(filePath, buffer);
     return { image_url: url, buffer, cached: false, source: 'generated' };
   } catch (err) {
     console.warn('[fortune-image] disk cache failed, returning b64', err.message);
     return {
+      image_url: url,
       b64: buffer.toString('base64'),
       buffer,
       cached: false,
@@ -98,11 +117,11 @@ export async function ensureFortuneSceneImage({ fortuneIndex, dateStr, host }) {
   }
 }
 
-/** Guaranteed scene buffer for OG — never falls back to generic site OG. */
-export async function loadFortuneSceneForOg({ fortuneIndex, dateStr, host }) {
+/** Resolve scene for OG — same contract as quiz og-image (image_url + CDN fetch). */
+export async function resolveFortuneSceneForOg({ fortuneIndex, dateStr, host }) {
   const scene = await ensureFortuneSceneImage({ fortuneIndex, dateStr, host });
-  if (!scene.buffer) {
-    throw new Error(`Fortune scene buffer missing (idx=${fortuneIndex}, date=${dateStr})`);
+  if (!scene.image_url && !scene.buffer) {
+    throw new Error(`Fortune scene missing (idx=${fortuneIndex}, date=${dateStr})`);
   }
-  return scene.buffer;
+  return scene;
 }

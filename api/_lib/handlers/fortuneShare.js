@@ -1,17 +1,8 @@
 import { getFortuneByIndex } from '../../../shared/fortuneData.js';
 import { buildFortuneResultTitle, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
 import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
+import { buildFortuneOgImageApiUrl } from '../composeOgImage.js';
 import { isBot, ogHtml } from './og.js';
-
-function buildFortuneOgImageApiUrl(host, name, fortuneIndex, dateStr) {
-  const protocol = host.includes('localhost') ? 'http' : 'https';
-  const params = new URLSearchParams({
-    name: String(name).trim(),
-    idx: String(fortuneIndex),
-    date: dateStr,
-  });
-  return `${protocol}://${host}/api/fortune-og?${params}`;
-}
 
 export default async function handler(req, res) {
   try {
@@ -49,7 +40,7 @@ export default async function handler(req, res) {
     const html = ogHtml({
       title,
       description,
-      image: buildFortuneOgImageApiUrl(host, name, idx, dateStr),
+      image: buildFortuneOgImageApiUrl(host, { name, idx, date: dateStr }),
       url: fullShareUrl,
       redirectUrl,
     });

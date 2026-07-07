@@ -336,3 +336,17 @@ export function buildOgImageApiUrl(host, quizId, scoreCode = null) {
     : `/api/handler?${params}`;
   return `${protocol}://${host}${path}`;
 }
+
+/** Fortune result OG — same handler routing as quiz og-image */
+export function buildFortuneOgImageApiUrl(host, { name, idx, date }) {
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const query = new URLSearchParams({
+    name: String(name).trim(),
+    idx: String(idx),
+    date: String(date),
+  });
+  const path = host.includes('localhost')
+    ? `/api/fortune-og?${query}`
+    : `/api/handler?${new URLSearchParams({ path: 'fortune-og', name: String(name).trim(), idx: String(idx), date: String(date) })}`;
+  return `${protocol}://${host}${path}`;
+}

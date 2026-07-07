@@ -7,7 +7,6 @@ import html2canvas from 'html2canvas';
 import {
   calculateTodayFortune,
   buildFortuneShareUrl,
-  buildFortuneOgImageUrl,
   buildFortuneResultTitle,
   formatFortuneDateLong,
   formatFortuneDateShort,
@@ -17,6 +16,7 @@ import {
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import { fetchFortuneSceneImage } from '../lib/fortuneApi.js';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink.js';
+import { buildFortuneOgImageUrl } from '../lib/siteUrl.js';
 import CopyToast from '../components/CopyToast.jsx';
 import { useCopyToast } from '../hooks/useCopyToast.js';
 import TarotFortuneWheel from '../components/contents/TarotFortuneWheel.jsx';

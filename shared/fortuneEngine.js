@@ -96,13 +96,23 @@ export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel, origin) {
   if (!isValidFortuneDateLabel(dateLabel)) {
     throw new Error('buildFortuneOgImageUrl requires dateLabel (YYYY-MM-DD)');
   }
-  const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
-  const params = new URLSearchParams({
+  const base = (origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz')).replace(/\/$/, '');
+  const q = new URLSearchParams({
     name: String(name).trim(),
     idx: String(fortuneIndex),
     date: dateLabel,
   });
-  return `${base}/api/fortune-og?${params.toString()}`;
+  const isLocal = base.includes('localhost');
+  if (isLocal) {
+    return `${base}/api/fortune-og?${q}`;
+  }
+  const handlerQ = new URLSearchParams({
+    path: 'fortune-og',
+    name: String(name).trim(),
+    idx: String(fortuneIndex),
+    date: dateLabel,
+  });
+  return `${base}/api/handler?${handlerQ}`;
 }
 
 export function parseFortuneShareParams(searchParams) {
