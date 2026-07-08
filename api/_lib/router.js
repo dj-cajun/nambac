@@ -26,6 +26,8 @@ import roastOg from './handlers/roastOg.js';
 import roastShare from './handlers/roastShare.js';
 import roastImage from './handlers/roastImage.js';
 import brainImage from './handlers/brainImage.js';
+import brainOg from './handlers/brainOg.js';
+import brainShare from './handlers/brainShare.js';
 import featureStats from './handlers/featureStats.js';
 import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
@@ -125,10 +127,14 @@ export async function dispatch(req, res, segments = []) {
   }
   if (a === 'roast-share' && !b) return roastShare(req, res);
 
-  // ── Brain (What's in your head) scene image ──
+  // ── Brain (What's in your head) scene image + OG card + crawler share page ──
   if (a === 'brain-image' && !b && (method === 'GET' || method === 'OPTIONS')) {
     return brainImage(req, res);
   }
+  if (a === 'brain-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return brainOg(req, res);
+  }
+  if (a === 'brain-share' && !b) return brainShare(req, res);
 
   // ── Mini-app engagement stats (balance / roast) ──
   if (a === 'feature' && b === 'stats' && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {

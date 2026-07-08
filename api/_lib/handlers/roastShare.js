@@ -1,4 +1,4 @@
-import { getTraitById } from '../../../shared/roastData.js';
+import { getTraitById, personalizeRoastDescription } from '../../../shared/roastData.js';
 import { buildRoastOgImageApiUrl } from '../composeOgImage.js';
 import { isBot, ogHtml } from './og.js';
 
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     }
 
     const title = `${name} vừa bị bóc phốt: ${trait.title} 💳`;
-    const description = `${String(trait.description).slice(0, 150)}… Vào làm thẻ trả đũa trên nambac.xyz!`;
+    const description = `${personalizeRoastDescription(name, trait.description).slice(0, 150)}… Vào làm thẻ trả đũa trên nambac.xyz!`;
     const fullShareUrl = `${currentBase}/share-roast/${encodeURIComponent(name)}/${traitId}`;
 
     const html = ogHtml({

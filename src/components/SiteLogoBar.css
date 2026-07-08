@@ -37,6 +37,22 @@
   background: #f1f5f9;
 }
 
+.site-streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 2px solid #1e293b;
+  background: linear-gradient(135deg, #fff0f6, #fef3c7);
+  font-size: 12px;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.2;
+  box-shadow: 2px 2px 0 #1e293b;
+  flex-shrink: 0;
+}
+
 .site-logo-btn {
   background: none;
   border: none;

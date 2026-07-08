@@ -1,6 +1,6 @@
-import { composeRoastOgImage } from '../composeOgImage.js';
-import { getTraitById, personalizeRoastDescription } from '../../../shared/roastData.js';
-import { getRoastImagePublicPath, getRoastImageLocalPath } from '../roastImageService.js';
+import { composeBrainOgImage } from '../composeOgImage.js';
+import { getBrainResultById } from '../../../shared/brainData.js';
+import { getBrainImagePublicPath, getBrainImageLocalPath } from '../brainImageService.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,16 +10,16 @@ export default async function handler(req, res) {
 
   try {
     const name = String(req.query?.name || 'Bạn thân').trim().slice(0, 22);
-    const traitId = String(req.query?.trait || '').trim();
-    const trait = getTraitById(traitId);
+    const resultId = String(req.query?.result || '').trim();
+    const result = getBrainResultById(resultId);
     const host = req.headers.host || '';
 
-    const buffer = await composeRoastOgImage({
+    const buffer = await composeBrainOgImage({
       name,
-      traitTitle: trait.title,
-      description: personalizeRoastDescription(name, trait.description),
-      imagePath: getRoastImageLocalPath(trait.id),
-      imageUrl: getRoastImagePublicPath(trait.id),
+      resultTitle: result.title,
+      segments: result.segments,
+      imagePath: getBrainImageLocalPath(result.id),
+      imageUrl: getBrainImagePublicPath(result.id),
       host,
     });
 
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
     return res.status(200).send(buffer);
   } catch (err) {
-    console.error('GET /api/roast-og', err);
+    console.error('GET /api/brain-og', err);
     return res.status(500).json({ error: err.message || 'Tạo ảnh OG thất bại' });
   }
 }

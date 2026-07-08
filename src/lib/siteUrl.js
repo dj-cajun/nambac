@@ -50,9 +50,15 @@ export function buildBalanceOgImageUrl(questionId, choice = null) {
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
 
-/** Brain (What's in your head) OG — uses the pre-generated scene image directly */
-export function buildBrainOgImageUrl(resultId) {
-  return `${getSiteOrigin()}/images/brain_${resultId}.webp`;
+/** Brain (What's in your head) OG — scene image + "Não {name}" callout + result panel */
+export function buildBrainOgImageUrl(resultId, name = '') {
+  const who = String(name || '').trim();
+  if (import.meta.env.DEV) {
+    const devQ = new URLSearchParams({ name: who, result: resultId });
+    return `${getSiteOrigin()}/api/brain-og?${devQ}`;
+  }
+  const params = new URLSearchParams({ path: 'brain-og', name: who, result: resultId });
+  return `${getSiteOrigin()}/api/handler?${params}`;
 }
 
 /** Fortune result OG — same handler pattern as quiz */

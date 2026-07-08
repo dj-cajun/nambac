@@ -12,19 +12,6 @@
 }
 
 /* Daily streak */
-.home-streak-badge {
-    margin: 12px 20px 0;
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 2px solid #1e293b;
-    background: linear-gradient(135deg, #fff0f6, #fef3c7);
-    font-size: 13px;
-    font-weight: 900;
-    color: #1e293b;
-    text-align: center;
-    box-shadow: 3px 3px 0 #1e293b;
-}
-
 /* Hôm nay — daily habit hub */
 .home-today {
     margin: 14px 20px 8px;

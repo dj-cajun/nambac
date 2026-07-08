@@ -132,15 +132,6 @@ export function buildBrainAnswerParts(name, result) {
   };
 }
 
-export function buildBrainShareUrl(name, resultId, origin) {
-  const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
-  const params = new URLSearchParams({
-    name: String(name).trim(),
-    result: resultId,
-  });
-  return `${base}/brain?${params.toString()}`;
-}
-
 /** Crawler-friendly share link — bots get OG card, humans redirect to /brain */
 export function buildBrainShareLink(name, resultId, origin) {
   const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');

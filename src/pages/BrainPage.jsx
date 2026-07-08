@@ -8,7 +8,7 @@ import {
   getBrainResultById,
   pickRandomBrainResult,
   buildBrainAnswerParts,
-  buildBrainShareUrl,
+  buildBrainShareLink,
   parseBrainShareParams,
 } from '../../shared/brainData.js';
 import { buildBrainOgImageUrl } from '../lib/siteUrl';
@@ -45,8 +45,9 @@ export default function BrainPage() {
   const { intro: brainIntro, body: brainBody } = buildBrainAnswerParts(displayName, currentResult);
   const brainSceneLabel = displayName ? `Não ${displayName}` : '';
   const ogResultId = resultId || 'brain_01';
-  const ogImageUrl = buildBrainOgImageUrl(ogResultId);
-  const shareUrl = buildBrainShareUrl(displayName || 'Bạn thân', ogResultId);
+  const ogName = displayName || 'Bạn thân';
+  const ogImageUrl = buildBrainOgImageUrl(ogResultId, ogName);
+  const shareUrl = buildBrainShareLink(ogName, ogResultId);
   const ogTitle = displayName
     ? `Trong đầu ${displayName} đang nghĩ gì? 🧠`
     : 'Trong đầu bạn đang nghĩ gì? 🧠 — nambac.xyz';

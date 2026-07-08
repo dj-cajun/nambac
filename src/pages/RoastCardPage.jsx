@@ -10,6 +10,7 @@ import {
   buildRoastAnswerText,
   buildRoastShareLink,
   parseRoastShareParams,
+  personalizeRoastDescription,
 } from '../../shared/roastData.js';
 import { buildRoastOgImageUrl } from '../lib/siteUrl';
 import { fetchRoastSceneImage } from '../lib/roastApi';
@@ -149,7 +150,8 @@ export default function RoastCardPage() {
   const handleShare = async () => {
     if (!displayName) return;
     const url = buildRoastShareLink(displayName, ogTraitId);
-    const text = `💳 ${displayName} — ${currentTrait.emoji} ${currentTrait.title}\n${currentTrait.description.slice(0, 100)}…\nBạn vào làm thẻ trả đũa đi!`;
+    const crimeText = personalizeRoastDescription(displayName, currentTrait.description);
+    const text = `💳 ${displayName} — ${currentTrait.emoji} ${currentTrait.title}\n${crimeText.slice(0, 100)}…\nBạn vào làm thẻ trả đũa đi!`;
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Thẻ đen bóc phốt — nambac.xyz', text, url });

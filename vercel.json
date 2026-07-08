@@ -29,6 +29,10 @@
       "destination": "/api/handler?path=roast-share&name=:name&trait=:trait"
     },
     {
+      "source": "/share-brain/:name/:result",
+      "destination": "/api/handler?path=brain-share&name=:name&result=:result"
+    },
+    {
       "source": "/share/:id/:score",
       "destination": "/api/handler?path=og&id=:id&score=:score"
     },

@@ -452,38 +452,79 @@ export async function composeBalanceOgImage({
 
 const ROAST_OG_WIDTH = 1200;
 const ROAST_OG_HEIGHT = 630;
+const ROAST_IMAGE_HEIGHT = 372;
+const ROAST_PANEL_HEIGHT = ROAST_OG_HEIGHT - ROAST_IMAGE_HEIGHT;
 
-function buildRoastCardSvg({ name, traitTitle, description }) {
-  const who = truncate(stripEmoji(name || 'Bạn thân'), 22);
-  const crime = truncate(stripEmoji(traitTitle || 'Tội danh bí ẩn'), 46);
-  const descLines = wrapLines(stripEmoji(description), 64, 2);
-  const descSvg = descLines
-    .map((line, i) => `<tspan x="90" dy="${i === 0 ? 0 : 40}">${escapeXml(line)}</tspan>`)
-    .join('');
-
-  return Buffer.from(`<svg width="${ROAST_OG_WIDTH}" height="${ROAST_OG_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+/** Name callout burned onto the scene image (top-left), mirrors the in-app overlay. */
+function buildRoastNameOverlaySvg({ name }) {
+  const who = truncate(stripEmoji(name || 'Bạn thân'), 20);
+  const charW = 22;
+  const pillW = Math.min(560, Math.max(160, who.length * charW + 56));
+  return Buffer.from(`<svg width="${ROAST_OG_WIDTH}" height="${ROAST_IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs><style>${fontFaceCss()}</style></defs>
-  <rect width="100%" height="100%" fill="#140b16"/>
-  <rect x="40" y="40" width="${ROAST_OG_WIDTH - 80}" height="${ROAST_OG_HEIGHT - 80}" rx="28" fill="#1e1220" stroke="#ff2d55" stroke-width="4"/>
-  <rect x="${ROAST_OG_WIDTH - 260}" y="70" width="190" height="46" rx="23" fill="#ff2d55"/>
-  <text x="${ROAST_OG_WIDTH - 165}" y="101" fill="#fff" font-size="22" font-weight="700" text-anchor="middle">ĐỘC HẠI</text>
-  <text x="90" y="112" fill="#ff8fa3" font-size="22" font-weight="700">DANH SÁCH ĐEN SÀI GÒN</text>
-  <text x="90" y="180" fill="#fff" font-size="58" font-weight="700">THẺ ĐEN BÓC PHỐT</text>
-  <text x="90" y="270" fill="#8a7590" font-size="22" font-weight="700">ĐỐI TƯỢNG</text>
-  <text x="90" y="322" fill="#ffd166" font-size="48" font-weight="700">${escapeXml(who)}</text>
-  <text x="90" y="386" fill="#8a7590" font-size="22" font-weight="700">TỘI DANH CHÍNH</text>
-  <text x="90" y="430" fill="#ff6b81" font-size="30" font-weight="700">${escapeXml(crime)}</text>
-  ${descLines.length ? `<text x="90" y="478" fill="#d6c9de" font-size="24">${descSvg}</text>` : ''}
-  <text x="90" y="${ROAST_OG_HEIGHT - 70}" fill="#8a7590" font-size="20">nambac.xyz · Hệ tâm linh AI</text>
-  <text x="${ROAST_OG_WIDTH - 90}" y="${ROAST_OG_HEIGHT - 70}" fill="#8a7590" font-size="20" text-anchor="end">#SAIGON-GENZ-2026</text>
+  <g>
+    <rect x="48" y="40" width="${pillW}" height="62" rx="31" fill="#fde047" stroke="#0f172a" stroke-width="4"/>
+    <text x="${48 + pillW / 2}" y="82" fill="#0f172a" font-size="34" font-weight="700" text-anchor="middle">${escapeXml(who)}</text>
+    <path d="M${68} 108 C ${96} 150 ${118} 176 ${132} 214" stroke="#ff2d55" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M132 214 L112 194 M132 214 L150 196" stroke="#ff2d55" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
 </svg>`);
 }
 
-/** Roast blacklist OG — pure server-rendered dark card (no scene image). */
-export async function composeRoastOgImage({ name, traitTitle, description }) {
-  const cardSvg = buildRoastCardSvg({ name, traitTitle, description });
-  const cardPng = await renderPanelPng(cardSvg);
-  return sharp(cardPng).webp({ quality: 90 }).toBuffer();
+function buildRoastPanelSvg({ name, traitTitle, description }) {
+  const who = truncate(stripEmoji(name || 'Bạn thân'), 22);
+  const crime = truncate(stripEmoji(traitTitle || 'Tội danh bí ẩn'), 40);
+  const descLines = wrapLines(stripEmoji(description), 74, 2);
+  const descSvg = descLines
+    .map((line, i) => `<tspan x="60" dy="${i === 0 ? 0 : 34}">${escapeXml(line)}</tspan>`)
+    .join('');
+
+  return Buffer.from(`<svg width="${ROAST_OG_WIDTH}" height="${ROAST_PANEL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <defs><style>${fontFaceCss()}</style></defs>
+  <rect width="100%" height="100%" fill="#1e1220"/>
+  <rect width="100%" height="6" fill="#ff2d55"/>
+  <text x="60" y="52" fill="#ff8fa3" font-size="22" font-weight="700">THẺ ĐEN BÓC PHỐT · NAMBAC.XYZ</text>
+  <rect x="${ROAST_OG_WIDTH - 220}" y="26" width="160" height="42" rx="21" fill="#ff2d55"/>
+  <text x="${ROAST_OG_WIDTH - 140}" y="55" fill="#fff" font-size="20" font-weight="700" text-anchor="middle">ĐỘC HẠI</text>
+  <text x="60" y="104" fill="#ffd166" font-size="40" font-weight="700">${escapeXml(who)} — ${escapeXml(crime)}</text>
+  ${descLines.length ? `<text x="60" y="152" fill="#d6c9de" font-size="24">${descSvg}</text>` : ''}
+  <text x="60" y="${ROAST_PANEL_HEIGHT - 22}" fill="#8a7590" font-size="19">Vào làm thẻ trả đũa · nambac.xyz</text>
+  <text x="${ROAST_OG_WIDTH - 60}" y="${ROAST_PANEL_HEIGHT - 22}" fill="#8a7590" font-size="19" text-anchor="end">#SAIGON-GENZ-2026</text>
+</svg>`);
+}
+
+/** Roast blacklist OG — AI scene image + name callout + crime panel (matches app card). */
+export async function composeRoastOgImage({ name, traitTitle, description, imageUrl, imagePath, host }) {
+  let topImage;
+  try {
+    const imageBuffer = await loadImageBufferFromSources({ imageUrl, host, imagePath });
+    const sceneOnly = await sharp(imageBuffer)
+      .resize(ROAST_OG_WIDTH, ROAST_IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
+      .toBuffer();
+    const overlayPng = await renderPanelPng(buildRoastNameOverlaySvg({ name }));
+    topImage = await sharp(sceneOnly)
+      .composite([{ input: overlayPng, top: 0, left: 0 }])
+      .toBuffer();
+  } catch {
+    topImage = await renderPanelPng(buildRoastNameOverlaySvg({ name }));
+  }
+
+  const panelBuffer = await renderPanelPng(buildRoastPanelSvg({ name, traitTitle, description }));
+
+  return sharp({
+    create: {
+      width: ROAST_OG_WIDTH,
+      height: ROAST_OG_HEIGHT,
+      channels: 3,
+      background: '#1e1220',
+    },
+  })
+    .composite([
+      { input: topImage, top: 0, left: 0 },
+      { input: panelBuffer, top: ROAST_IMAGE_HEIGHT, left: 0 },
+    ])
+    .webp({ quality: 90 })
+    .toBuffer();
 }
 
 export function buildRoastOgImageApiUrl(host, { name, trait }) {
@@ -492,6 +533,94 @@ export function buildRoastOgImageApiUrl(host, { name, trait }) {
   const prodQuery = new URLSearchParams({ path: 'roast-og', name: String(name), trait: String(trait) });
   const path = host.includes('localhost')
     ? `/api/roast-og?${devQuery}`
+    : `/api/handler?${prodQuery}`;
+  return `${protocol}://${host}${path}`;
+}
+
+const BRAIN_OG_WIDTH = 1200;
+const BRAIN_OG_HEIGHT = 630;
+const BRAIN_IMAGE_HEIGHT = 372;
+const BRAIN_PANEL_HEIGHT = BRAIN_OG_HEIGHT - BRAIN_IMAGE_HEIGHT;
+
+/** "Não {name}" callout burned onto the scene image (top-left). */
+function buildBrainNameOverlaySvg({ label }) {
+  const who = truncate(stripEmoji(label || 'Não bạn'), 22);
+  const charW = 22;
+  const pillW = Math.min(620, Math.max(180, who.length * charW + 56));
+  return Buffer.from(`<svg width="${BRAIN_OG_WIDTH}" height="${BRAIN_IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <defs><style>${fontFaceCss()}</style></defs>
+  <g>
+    <rect x="48" y="40" width="${pillW}" height="62" rx="31" fill="#c4b5fd" stroke="#0f172a" stroke-width="4"/>
+    <text x="${48 + pillW / 2}" y="82" fill="#0f172a" font-size="34" font-weight="700" text-anchor="middle">${escapeXml(who)}</text>
+    <path d="M${68} 108 C ${96} 150 ${118} 176 ${132} 214" stroke="#7c3aed" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M132 214 L112 194 M132 214 L150 196" stroke="#7c3aed" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>`);
+}
+
+function buildBrainPanelSvg({ name, resultTitle, segments = [] }) {
+  const who = truncate(stripEmoji(name || 'Bạn thân'), 24);
+  const title = truncate(stripEmoji(resultTitle || 'Bộ não bí ẩn'), 40);
+  const segRow = segments
+    .slice(0, 3)
+    .map((s, i) => {
+      const label = truncate(stripEmoji(s.label || ''), 26);
+      return `<text x="60" y="${140 + i * 34}" fill="#ddd6fe" font-size="24" font-weight="700">${escapeXml(`${s.pct}%`)} <tspan fill="#c4b5fd" font-weight="400">${escapeXml(label)}</tspan></text>`;
+    })
+    .join('');
+
+  return Buffer.from(`<svg width="${BRAIN_OG_WIDTH}" height="${BRAIN_PANEL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <defs><style>${fontFaceCss()}</style></defs>
+  <rect width="100%" height="100%" fill="#241141"/>
+  <rect width="100%" height="6" fill="#7c3aed"/>
+  <text x="60" y="48" fill="#c4b5fd" font-size="21" font-weight="700">TRONG ĐẦU BẠN CÓ GÌ · NAMBAC.XYZ</text>
+  <text x="60" y="98" fill="#fde047" font-size="36" font-weight="700">${escapeXml(who)} — ${escapeXml(title)}</text>
+  ${segRow}
+  <text x="${BRAIN_OG_WIDTH - 60}" y="${BRAIN_PANEL_HEIGHT - 20}" fill="#a78bda" font-size="18" text-anchor="end">Quét sóng não bạn bè · #SAIGON-GENZ</text>
+</svg>`);
+}
+
+/** Brain OG — AI scene image + "Não {name}" callout + result panel (matches app card). */
+export async function composeBrainOgImage({ name, resultTitle, segments, imageUrl, imagePath, host }) {
+  const label = String(name || '').trim() ? `Não ${String(name).trim()}` : 'Não bạn';
+  let topImage;
+  try {
+    const imageBuffer = await loadImageBufferFromSources({ imageUrl, host, imagePath });
+    const sceneOnly = await sharp(imageBuffer)
+      .resize(BRAIN_OG_WIDTH, BRAIN_IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
+      .toBuffer();
+    const overlayPng = await renderPanelPng(buildBrainNameOverlaySvg({ label }));
+    topImage = await sharp(sceneOnly)
+      .composite([{ input: overlayPng, top: 0, left: 0 }])
+      .toBuffer();
+  } catch {
+    topImage = await renderPanelPng(buildBrainNameOverlaySvg({ label }));
+  }
+
+  const panelBuffer = await renderPanelPng(buildBrainPanelSvg({ name, resultTitle, segments }));
+
+  return sharp({
+    create: {
+      width: BRAIN_OG_WIDTH,
+      height: BRAIN_OG_HEIGHT,
+      channels: 3,
+      background: '#241141',
+    },
+  })
+    .composite([
+      { input: topImage, top: 0, left: 0 },
+      { input: panelBuffer, top: BRAIN_IMAGE_HEIGHT, left: 0 },
+    ])
+    .webp({ quality: 90 })
+    .toBuffer();
+}
+
+export function buildBrainOgImageApiUrl(host, { name, result }) {
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const devQuery = new URLSearchParams({ name: String(name), result: String(result) });
+  const prodQuery = new URLSearchParams({ path: 'brain-og', name: String(name), result: String(result) });
+  const path = host.includes('localhost')
+    ? `/api/brain-og?${devQuery}`
     : `/api/handler?${prodQuery}`;
   return `${protocol}://${host}${path}`;
 }

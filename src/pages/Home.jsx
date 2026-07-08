@@ -215,14 +215,13 @@ export default function Home() {
     balance: { view_count: 0, share_count: 0, like_count: 0 },
     roast: { view_count: 0, share_count: 0, like_count: 0 },
   });
-  const [dailyStreak, setDailyStreak] = useState({ streak: 0, best: 0 });
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
   const introBodyRef = useRef(null);
 
   useEffect(() => {
     scrollToTop();
-    setDailyStreak(recordDailyVisit());
+    recordDailyVisit();
   }, []);
 
   useEffect(() => {
@@ -371,13 +370,6 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      {dailyStreak.streak > 0 && (
-        <div className="home-streak-badge" aria-label="Chuỗi ngày liên tiếp">
-          🔥 {dailyStreak.streak} ngày liên tiếp
-          {dailyStreak.streak >= 3 ? ' — bạn đỉnh!' : ''}
-        </div>
-      )}
-
       <section className="home-today" aria-label="Hôm nay">
         <h2 className="home-today-title">Hôm nay · Chơi 90 giây ☕</h2>
         <p className="home-today-sub">Ở quán cf? Làm nhanh rồi khoe Zalo nhé</p>
