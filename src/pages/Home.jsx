@@ -10,7 +10,6 @@ import './MiniApp.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../shared/dailyPicks.js';
-import { recordDailyVisit } from '../lib/dailyStreak.js';
 import AdSenseUnit from '../components/AdSenseUnit';
 import QuizImage from '../components/QuizImage';
 import QuizCardStats from '../components/QuizCardStats';
@@ -221,7 +220,6 @@ export default function Home() {
 
   useEffect(() => {
     scrollToTop();
-    recordDailyVisit();
   }, []);
 
   useEffect(() => {
