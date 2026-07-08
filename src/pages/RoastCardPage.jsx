@@ -10,12 +10,12 @@ import {
   buildRoastAnswerText,
   buildRoastShareLink,
   parseRoastShareParams,
-  personalizeRoastDescription,
 } from '../../shared/roastData.js';
 import { buildRoastOgImageUrl } from '../lib/siteUrl';
 import { fetchRoastSceneImage } from '../lib/roastApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import { markTodayDone } from '../lib/todayDone';
+import { openZaloShare } from '../lib/zaloShare';
 import SceneNameOverlay from '../components/SceneNameOverlay';
 import './RoastCardPage.css';
 
@@ -149,27 +149,11 @@ export default function RoastCardPage() {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!displayName) return;
     const url = buildRoastShareLink(displayName, ogTraitId);
-    const crimeText = personalizeRoastDescription(displayName, currentTrait.description);
-    const text = `💳 ${displayName} — ${currentTrait.emoji} ${currentTrait.title}\n${crimeText.slice(0, 100)}…\nBạn vào làm thẻ trả đũa đi!`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Thẻ đen bóc phốt — nambac.xyz', text, url });
-        incrementFeatureStat('roast', 'share').catch(() => {});
-        return;
-      } catch {
-        /* cancelled */
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(`${text}\n${url}`);
-      incrementFeatureStat('roast', 'share').catch(() => {});
-      alert('Đã copy — tag bạn thân trên Zalo!');
-    } catch {
-      alert(url);
-    }
+    openZaloShare(url);
+    incrementFeatureStat('roast', 'share').catch(() => {});
   };
 
   return (

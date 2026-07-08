@@ -15,6 +15,7 @@ import { buildBrainOgImageUrl } from '../lib/siteUrl';
 import { fetchBrainSceneImage } from '../lib/brainApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import { markTodayDone } from '../lib/todayDone';
+import { openZaloShare } from '../lib/zaloShare';
 import SceneNameOverlay from '../components/SceneNameOverlay';
 import './BrainPage.css';
 
@@ -141,27 +142,10 @@ export default function BrainPage() {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!displayName) return;
-    const text = `🧠 Trong đầu ${displayName}: ${currentResult.segments
-      .map((s) => `${s.pct}% ${s.label}`)
-      .join(', ')}. Soi thử não bạn xem!`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Trong đầu bạn có gì? — nambac.xyz', text, url: shareUrl });
-        incrementFeatureStat('brain', 'share').catch(() => {});
-        return;
-      } catch {
-        /* cancelled */
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(`${text}\n${shareUrl}`);
-      incrementFeatureStat('brain', 'share').catch(() => {});
-      alert('Đã copy — gửi Zalo tag bạn bè nhé!');
-    } catch {
-      alert(shareUrl);
-    }
+    openZaloShare(shareUrl);
+    incrementFeatureStat('brain', 'share').catch(() => {});
   };
 
   return (

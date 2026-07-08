@@ -17,6 +17,7 @@ import { scrollToTop } from '../lib/scrollToTop';
 import { fetchBalanceSceneImage } from '../lib/balanceApi';
 import { buildBalanceOgImageUrl } from '../lib/siteUrl';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import { openZaloShare } from '../lib/zaloShare';
 import './BalancePage.css';
 
 const REVEAL_MS = 1400;
@@ -153,24 +154,8 @@ export default function BalancePage() {
   const shareResult = async () => {
     if (!question || !voted) return;
     const url = buildBalanceShareLink(question.id, voted);
-    const side = voted === 'a' ? 'A' : 'B';
-    const text = `⚖️ ${question.title.slice(0, 90)}… — Tôi chọn ${side}! Bạn chọn gì?`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Chọn 1 trong 2 — nambac.xyz', text, url });
-        incrementFeatureStat('balance', 'share').catch(() => {});
-        return;
-      } catch {
-        /* cancelled */
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(`${text}\n${url}`);
-      incrementFeatureStat('balance', 'share').catch(() => {});
-      alert('Đã copy link — gửi Zalo nhé!');
-    } catch {
-      alert(url);
-    }
+    openZaloShare(url);
+    incrementFeatureStat('balance', 'share').catch(() => {});
   };
 
   if (loading || !question) {
@@ -336,7 +321,7 @@ export default function BalancePage() {
               onClick={shareResult}
             >
               <Share2 size={18} />
-              Khoe với bạn bè
+              Chia sẻ Zalo
             </motion.button>
           )}
         </AnimatePresence>

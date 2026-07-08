@@ -15,6 +15,7 @@ import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
 import { markTodayDone } from '../lib/todayDone';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
 import CopyToast from '../components/CopyToast';
+import ZaloShareButton from '../components/ZaloShareButton';
 import { useCopyToast } from '../hooks/useCopyToast';
 
 const Result = () => {
@@ -102,6 +103,14 @@ const Result = () => {
         } catch (err) {
             console.error("Failed to download image", err);
             alert("Có lỗi xảy ra khi tải ảnh! Bạn hãy chụp màn hình kết quả nhé.");
+        }
+    };
+
+    const handleZaloShare = () => {
+        trackShare('zalo', quizIdParam, score);
+        if (!window.__sharedQuiz?.[quizIdParam]) {
+            incrementQuizStat(quizIdParam, 'share').catch(console.error);
+            window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
         }
     };
 
@@ -292,6 +301,7 @@ const Result = () => {
                         <button type="button" className="share-btn" onClick={handleShareLink} aria-label="Sao chép link chia sẻ">
                             <Share2 size={24} />
                         </button>
+                        <ZaloShareButton url={shareUrl} onShared={handleZaloShare} />
                     </div>
                 </div>
             </motion.div>

@@ -28,6 +28,7 @@ import { copyShareLinkWithFeedback } from '../lib/copyShareLink.js';
 import { buildFortuneOgImageUrl } from '../lib/siteUrl.js';
 import { markTodayDone } from '../lib/todayDone.js';
 import CopyToast from '../components/CopyToast.jsx';
+import ZaloShareButton from '../components/ZaloShareButton.jsx';
 import { useCopyToast } from '../hooks/useCopyToast.js';
 import TarotFortuneWheel from '../components/contents/TarotFortuneWheel.jsx';
 import './FortunePage.css';
@@ -194,6 +195,12 @@ export default function FortunePage({ dayOffset = 0 }) {
     } catch {
       alert('Có lỗi khi tải ảnh — thử chụp màn hình nhé!');
     }
+  };
+
+  const handleZaloShare = () => {
+    if (!result) return;
+    trackFortuneShare('zalo');
+    incrementFortuneStat('share').catch(console.error);
   };
 
   const handleShareLink = async () => {
@@ -404,6 +411,12 @@ export default function FortunePage({ dayOffset = 0 }) {
               >
                 <Share2 size={24} />
               </button>
+              {result && (
+                <ZaloShareButton
+                  url={buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)}
+                  onShared={handleZaloShare}
+                />
+              )}
             </div>
           </div>
         </motion.div>
