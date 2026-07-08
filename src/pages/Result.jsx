@@ -107,7 +107,7 @@ const Result = () => {
     };
 
     const handleZaloShare = () => {
-        trackShare('zalo', quizIdParam, score);
+        trackShare('tag_friends', quizIdParam, score);
         if (!window.__sharedQuiz?.[quizIdParam]) {
             incrementQuizStat(quizIdParam, 'share').catch(console.error);
             window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
@@ -122,31 +122,6 @@ const Result = () => {
             incrementQuizStat(quizIdParam, 'share').catch(console.error);
             window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
         }
-    };
-
-    const handleTagFriends = async () => {
-        const resultName = finalResult.type_name || finalResult.title || 'Kết quả';
-        const text = `Mình là "${resultName}" 🎯 Bạn là gì? Làm test 90 giây rồi tag 3 người nhé!\n${shareUrl}`;
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `${resultName} — nambac.xyz`,
-                    text,
-                    url: shareUrl,
-                });
-                trackShare('tag_friends', quizIdParam, score);
-                if (!window.__sharedQuiz?.[quizIdParam]) {
-                    incrementQuizStat(quizIdParam, 'share').catch(console.error);
-                    window.__sharedQuiz = { ...(window.__sharedQuiz || {}), [quizIdParam]: true };
-                }
-                return;
-            } catch {
-                /* cancelled */
-            }
-        }
-        const ok = await copyShareLinkWithFeedback(text, showToast);
-        if (!ok) return;
-        trackShare('tag_friends', quizIdParam, score);
     };
 
     const handleLike = async () => {
@@ -276,9 +251,10 @@ const Result = () => {
                         <span className="btn-label">CHƠI LẠI</span>
                     </button>
 
-                    <button type="button" className="tag-friends-btn" onClick={handleTagFriends}>
-                        <span className="btn-label">TAG 3 BẠN</span>
-                    </button>
+                    <div className="tag-friends-zalo-wrap" aria-label="Chia sẻ Zalo — tag 3 bạn">
+                        <span className="tag-friends-zalo-label">ZALO · TAG 3 BẠN</span>
+                        <ZaloShareButton url={shareUrl} onShared={handleZaloShare} />
+                    </div>
 
                     {/* Download Image Button */}
                     <button className="download-action-btn" onClick={handleDownloadImage}>
@@ -301,7 +277,6 @@ const Result = () => {
                         <button type="button" className="share-btn" onClick={handleShareLink} aria-label="Sao chép link chia sẻ">
                             <Share2 size={24} />
                         </button>
-                        <ZaloShareButton url={shareUrl} onShared={handleZaloShare} />
                     </div>
                 </div>
             </motion.div>

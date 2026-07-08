@@ -199,7 +199,7 @@ export default function FortunePage({ dayOffset = 0 }) {
 
   const handleZaloShare = () => {
     if (!result) return;
-    trackFortuneShare('zalo');
+    trackFortuneShare('tag_friends');
     incrementFortuneStat('share').catch(console.error);
   };
 
@@ -209,32 +209,6 @@ export default function FortunePage({ dayOffset = 0 }) {
     const ok = await copyShareLinkWithFeedback(url, showToast);
     if (ok) {
       trackFortuneShare('love');
-      incrementFortuneStat('share').catch(console.error);
-    }
-  };
-
-  const handleTagFriends = async () => {
-    if (!result) return;
-    const url = buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel);
-    const fortuneTitle = result.fortune?.title || 'Vận mệnh hôm nay';
-    const text = `Vận mệnh hôm nay của mình: "${fortuneTitle}" 🔮 Xem của bạn rồi tag 3 người nhé!\n${url}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${result.name} — ${FORTUNE_BRAND.label}`,
-          text,
-          url,
-        });
-        trackFortuneShare('tag_friends');
-        incrementFortuneStat('share').catch(console.error);
-        return;
-      } catch {
-        // fall through to clipboard
-      }
-    }
-    const ok = await copyShareLinkWithFeedback(text, showToast);
-    if (ok) {
-      trackFortuneShare('tag_friends');
       incrementFortuneStat('share').catch(console.error);
     }
   };
@@ -382,9 +356,15 @@ export default function FortunePage({ dayOffset = 0 }) {
               <span className="btn-label">XEM LẠI</span>
             </button>
 
-            <button type="button" className="tag-friends-btn" onClick={handleTagFriends}>
-              <span className="btn-label">TAG 3 BẠN</span>
-            </button>
+            <div className="tag-friends-zalo-wrap" aria-label="Chia sẻ Zalo — tag 3 bạn">
+              <span className="tag-friends-zalo-label">ZALO · TAG 3 BẠN</span>
+              {result && (
+                <ZaloShareButton
+                  url={buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)}
+                  onShared={handleZaloShare}
+                />
+              )}
+            </div>
 
             <button type="button" className="download-action-btn" onClick={handleDownload}>
               <Download size={20} />
@@ -411,12 +391,6 @@ export default function FortunePage({ dayOffset = 0 }) {
               >
                 <Share2 size={24} />
               </button>
-              {result && (
-                <ZaloShareButton
-                  url={buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)}
-                  onShared={handleZaloShare}
-                />
-              )}
             </div>
           </div>
         </motion.div>
