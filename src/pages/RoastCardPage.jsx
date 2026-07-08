@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Share2, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import {
   getTraitById,
@@ -15,7 +15,7 @@ import { buildRoastOgImageUrl } from '../lib/siteUrl';
 import { fetchRoastSceneImage } from '../lib/roastApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import { markTodayDone } from '../lib/todayDone';
-import { openZaloShare } from '../lib/zaloShare';
+import ZaloShareButton from '../components/ZaloShareButton';
 import SceneNameOverlay from '../components/SceneNameOverlay';
 import './RoastCardPage.css';
 
@@ -147,13 +147,6 @@ export default function RoastCardPage() {
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const handleShare = () => {
-    if (!displayName) return;
-    const url = buildRoastShareLink(displayName, ogTraitId);
-    openZaloShare(url);
-    incrementFeatureStat('roast', 'share').catch(() => {});
   };
 
   return (
@@ -302,15 +295,11 @@ export default function RoastCardPage() {
               {isGenerating ? 'Đang tạo ảnh…' : 'Tải ảnh dìm về máy'}
             </button>
 
-            <button
-              type="button"
-              className="roast-share-btn"
-              disabled={!displayName}
-              onClick={handleShare}
-            >
-              <Share2 size={18} />
-              Gửi Zalo — tag bạn thân
-            </button>
+            <ZaloShareButton
+              url={displayName ? sharePageUrl : ''}
+              className="zalo-share-wrap--block"
+              onShared={() => incrementFeatureStat('roast', 'share').catch(() => {})}
+            />
 
             <button type="button" className="roast-restart-btn" onClick={handleRetry}>
               Bóc phốt đứa khác

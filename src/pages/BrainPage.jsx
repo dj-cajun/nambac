@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Share2, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import {
   getBrainResultById,
@@ -15,7 +15,7 @@ import { buildBrainOgImageUrl } from '../lib/siteUrl';
 import { fetchBrainSceneImage } from '../lib/brainApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import { markTodayDone } from '../lib/todayDone';
-import { openZaloShare } from '../lib/zaloShare';
+import ZaloShareButton from '../components/ZaloShareButton';
 import SceneNameOverlay from '../components/SceneNameOverlay';
 import './BrainPage.css';
 
@@ -140,12 +140,6 @@ export default function BrainPage() {
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const handleShare = () => {
-    if (!displayName) return;
-    openZaloShare(shareUrl);
-    incrementFeatureStat('brain', 'share').catch(() => {});
   };
 
   return (
@@ -301,15 +295,11 @@ export default function BrainPage() {
               {isGenerating ? 'Đang tạo ảnh…' : 'Tải ảnh về máy'}
             </button>
 
-            <button
-              type="button"
-              className="brain-share-btn"
-              disabled={!displayName}
-              onClick={handleShare}
-            >
-              <Share2 size={18} />
-              Gửi Zalo — tag bạn bè
-            </button>
+            <ZaloShareButton
+              url={displayName ? shareUrl : ''}
+              className="zalo-share-wrap--block"
+              onShared={() => incrementFeatureStat('brain', 'share').catch(() => {})}
+            />
 
             <button type="button" className="brain-restart-btn" onClick={handleRetry}>
               Soi não đứa khác

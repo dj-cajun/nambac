@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Share2, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { apiUrl } from '../lib/apiConfig';
 import {
   getQuestionById,
@@ -17,7 +17,7 @@ import { scrollToTop } from '../lib/scrollToTop';
 import { fetchBalanceSceneImage } from '../lib/balanceApi';
 import { buildBalanceOgImageUrl } from '../lib/siteUrl';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
-import { openZaloShare } from '../lib/zaloShare';
+import ZaloShareButton from '../components/ZaloShareButton';
 import './BalancePage.css';
 
 const REVEAL_MS = 1400;
@@ -151,13 +151,6 @@ export default function BalancePage() {
     navigate(`/balance/${next.id}`, { replace: true });
   };
 
-  const shareResult = async () => {
-    if (!question || !voted) return;
-    const url = buildBalanceShareLink(question.id, voted);
-    openZaloShare(url);
-    incrementFeatureStat('balance', 'share').catch(() => {});
-  };
-
   if (loading || !question) {
     return (
       <div className="balance-game-page">
@@ -175,6 +168,7 @@ export default function BalancePage() {
   const ogTitle = question
     ? `${question.title.slice(0, 80)} — A hay B? ⚖️`
     : 'Chọn 1 trong 2 ⚖️ — nambac.xyz';
+  const balanceShareUrl = voted ? buildBalanceShareLink(question.id, voted) : '';
 
   return (
     <div className="balance-game-page">
@@ -311,18 +305,19 @@ export default function BalancePage() {
       <div className="balance-game-footer">
         <AnimatePresence>
           {voted && (
-            <motion.button
-              type="button"
-              className="balance-share-slide"
+            <motion.div
+              className="balance-zalo-share"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 12 }}
               transition={{ duration: 0.3, delay: 0.15 }}
-              onClick={shareResult}
             >
-              <Share2 size={18} />
-              Chia sẻ Zalo
-            </motion.button>
+              <ZaloShareButton
+                url={balanceShareUrl}
+                className="zalo-share-wrap--block"
+                onShared={() => incrementFeatureStat('balance', 'share').catch(() => {})}
+              />
+            </motion.div>
           )}
         </AnimatePresence>
 

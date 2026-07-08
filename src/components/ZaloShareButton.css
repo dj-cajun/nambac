@@ -1,56 +1,23 @@
-.zalo-share-btn {
+.zalo-share-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  border: 2px solid #0047b3;
-  background: #0068ff;
-  color: #0068ff;
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-  box-sizing: border-box;
-}
-
-.zalo-share-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.zalo-share-btn:not(:disabled):active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
-}
-
-.zalo-share-btn--icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  box-shadow: 2px 2px 0 #0047b3;
-  padding: 0;
-}
-
-.zalo-share-btn--pill {
   min-height: 48px;
-  padding: 0 14px;
-  border-radius: 999px;
-  box-shadow: 3px 3px 0 #0047b3;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #fff;
 }
 
-.zalo-share-icon {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
+/* Official widget renders an iframe; keep it centered in our action rows */
+.zalo-share-wrap .zalo-share-button {
+  display: inline-block;
+  line-height: 0;
 }
 
-.zalo-share-btn--pill .zalo-share-icon {
-  width: 20px;
-  height: 20px;
+.zalo-share-wrap--block {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
-.zalo-share-label {
-  line-height: 1;
-  white-space: nowrap;
+.zalo-share-wrap--block .zalo-share-button {
+  width: 100%;
+  max-width: 320px;
 }

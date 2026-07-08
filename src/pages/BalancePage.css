@@ -308,6 +308,12 @@
   gap: 10px;
 }
 
+.balance-zalo-share {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .balance-share-slide {
   width: 100%;
   padding: 15px 18px;
