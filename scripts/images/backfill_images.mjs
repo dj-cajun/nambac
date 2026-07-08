@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { PROJECT_ROOT } from '../_root.mjs';
+import { isPlaceholder, imagePathFromUrl, hydrateFromRemote } from './_imageSync.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -34,21 +35,6 @@ const delayMs = delayArg ? parseInt(delayArg.split('=')[1], 10) : 3500;
 const clearForceProgress = args.includes('--clear-force-progress');
 
 const PROGRESS_FILE = path.join(PROJECT_ROOT, '.backfill-force-progress.json');
-
-const PLACEHOLDER_PATTERNS = ['default_cover', 'grandma_roast', 'placeholder', 'img_177'];
-
-function isPlaceholder(url) {
-  if (!url) return true;
-  const lower = url.toLowerCase();
-  return PLACEHOLDER_PATTERNS.some((p) => lower.includes(p));
-}
-
-function imagePathFromUrl(url) {
-  if (!url) return null;
-  const filename = url.split('/').pop()?.split('?')[0];
-  if (!filename) return null;
-  return path.join(PROJECT_ROOT, 'public', 'images', filename);
-}
 
 function fileMissing(url) {
   const fp = imagePathFromUrl(url);
@@ -149,6 +135,17 @@ async function main() {
     ]);
     const questions = questionsRs.rows.map(rowToQuestion);
     const results = resultsRs.rows.map(rowToResult);
+
+    // Sync-first: if CI already generated an image (DB points at it) but the
+    // file just isn't pulled locally, download it instead of regenerating a
+    // brand-new one. Skipped under --force (explicit regen intent).
+    if (!force && !dryRun) {
+      await Promise.all([
+        hydrateFromRemote(quiz.image_url),
+        ...questions.map((q) => hydrateFromRemote(q.image_url)),
+        ...results.map((r) => hydrateFromRemote(r.image_url)),
+      ]);
+    }
 
     const coverNeeded = !resultsOnly && needsImage(quiz.image_url, force);
     const questionsNeeded = !resultsOnly && !coverOnly && !skipQuestions
