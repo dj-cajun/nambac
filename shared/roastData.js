@@ -224,6 +224,16 @@ export function pickRandomTrait(excludeId) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+/** Weave a friend's name into roast copy (replaces generic "bạn ấy"). */
+export function personalizeRoastDescription(name, description) {
+  const n = String(name || '').trim();
+  if (!n) return description;
+  const cap = n.charAt(0).toUpperCase() + n.slice(1);
+  return String(description)
+    .replace(/Bạn ấy/g, cap)
+    .replace(/bạn ấy/g, n);
+}
+
 export function buildRoastShareUrl(name, traitId, origin) {
   const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
   const params = new URLSearchParams({

@@ -188,30 +188,23 @@
   margin-bottom: 4px;
 }
 
-.roast-card-field-name {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #fff;
-  margin-bottom: 12px;
-  word-break: break-word;
-}
-
-.roast-card-field-title {
-  display: block;
-  font-size: 15px;
-  font-weight: 900;
-  line-height: 1.3;
-  color: #fde047;
-  margin-bottom: 6px;
-}
-
-.roast-card-field-crime {
-  display: block;
-  font-size: 12.5px;
+.roast-card-answer {
+  margin: 0;
+  font-size: 13.5px;
   font-weight: 700;
-  line-height: 1.45;
-  color: #fee2e2;
+  line-height: 1.55;
+  color: #fff;
+}
+
+.roast-card-answer-name {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fde047;
+}
+
+.roast-card-answer-trait {
+  font-weight: 900;
+  color: #fde047;
 }
 
 .roast-card-footer-row {

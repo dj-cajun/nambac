@@ -109,6 +109,24 @@ export function pickRandomBrainResult(excludeId) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+/** Weave a friend's name into brain-scan copy. */
+export function personalizeBrainDescription(name, description) {
+  const n = String(name || '').trim();
+  if (!n) return description;
+  const cap = n.charAt(0).toUpperCase() + n.slice(1);
+  return String(description)
+    .replace(/Trong đầu bạn/g, `Trong đầu ${n}`)
+    .replace(/Não bạn/g, `Não ${n}`)
+    .replace(/Đầu bạn/g, `Đầu ${n}`)
+    .replace(/Bạn không/g, `${cap} không`)
+    .replace(/bạn chỉ/g, `${n} chỉ`)
+    .replace(/bạn vẫn/g, `${n} vẫn`)
+    .replace(/bạn thì/g, `${n} thì`)
+    .replace(/của bạn/g, `của ${n}`)
+    .replace(/bạn là/g, `${n} là`)
+    .replace(/bạn ấy/g, n);
+}
+
 export function buildBrainShareUrl(name, resultId, origin) {
   const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
   const params = new URLSearchParams({

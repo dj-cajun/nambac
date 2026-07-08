@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import {
   getBrainResultById,
   pickRandomBrainResult,
+  personalizeBrainDescription,
   buildBrainShareUrl,
   parseBrainShareParams,
 } from '../../shared/brainData.js';
@@ -40,6 +41,9 @@ export default function BrainPage() {
 
   const currentResult = getBrainResultById(resultId);
   const displayName = friendName.trim();
+  const answerText = displayName
+    ? personalizeBrainDescription(displayName, currentResult.description)
+    : currentResult.description;
   const ogResultId = resultId || 'brain_01';
   const ogImageUrl = buildBrainOgImageUrl(ogResultId);
   const shareUrl = buildBrainShareUrl(displayName || 'Bạn thân', ogResultId);
@@ -249,9 +253,6 @@ export default function BrainPage() {
               <div ref={cardRef} className="brain-card">
                 <div>
                   <p className="brain-card-kicker">Bản đồ não bộ · nambac.xyz</p>
-                  <h2 className="brain-card-title">
-                    Trong đầu {displayName || '________'}
-                  </h2>
                 </div>
 
                 <div className="brain-card-scene">
@@ -264,8 +265,19 @@ export default function BrainPage() {
                   )}
                 </div>
 
-                <p className="brain-card-result-title">
-                  {currentResult.emoji} {currentResult.title}
+                <p className="brain-card-answer-lead">
+                  {displayName ? (
+                    <>
+                      Trong đầu <strong className="brain-card-answer-name">{displayName}</strong>
+                      {' '}đang chiếm chỗ:
+                    </>
+                  ) : (
+                    'Trong đầu bạn đang chiếm chỗ:'
+                  )}
+                  {' '}
+                  <span className="brain-card-answer-trait">
+                    {currentResult.emoji} {currentResult.title}
+                  </span>
                 </p>
 
                 <div className="brain-card-bars">
@@ -285,7 +297,7 @@ export default function BrainPage() {
                   ))}
                 </div>
 
-                <p className="brain-card-desc">{currentResult.description}</p>
+                <p className="brain-card-desc">{answerText}</p>
 
                 <div className="brain-card-footer">
                   <span>Nambac.xyz · Hệ tâm linh AI</span>

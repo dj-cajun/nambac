@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import {
   getTraitById,
   pickRandomTrait,
+  personalizeRoastDescription,
   buildRoastShareLink,
   parseRoastShareParams,
 } from '../../shared/roastData.js';
@@ -41,6 +42,9 @@ export default function RoastCardPage() {
 
   const currentTrait = getTraitById(traitId);
   const displayName = friendName.trim();
+  const answerText = displayName
+    ? personalizeRoastDescription(displayName, currentTrait.description)
+    : currentTrait.description;
 
   const ogName = displayName || 'Bạn thân';
   const ogTraitId = traitId || 'trait_01';
@@ -278,14 +282,25 @@ export default function RoastCardPage() {
                 </div>
 
                 <div className="roast-card-body-panel">
-                  <span className="roast-card-field-label">ĐỐI TƯỢNG</span>
-                  <span className="roast-card-field-name">{displayName || '__________'}</span>
-
-                  <span className="roast-card-field-label">TỘI DANH CHÍNH</span>
-                  <span className="roast-card-field-title">
-                    {currentTrait.emoji} {currentTrait.title}
-                  </span>
-                  <span className="roast-card-field-crime">{currentTrait.description}</span>
+                  <p className="roast-card-answer">
+                    {displayName ? (
+                      <>
+                        <strong className="roast-card-answer-name">{displayName}</strong>
+                        {' '}chính thức dính tội danh{' '}
+                        <span className="roast-card-answer-trait">
+                          {currentTrait.emoji} {currentTrait.title}
+                        </span>
+                        . {answerText}
+                      </>
+                    ) : (
+                      <>
+                        <span className="roast-card-answer-trait">
+                          {currentTrait.emoji} {currentTrait.title}
+                        </span>
+                        . {answerText}
+                      </>
+                    )}
+                  </p>
                 </div>
 
                 <div className="roast-card-footer-row">
