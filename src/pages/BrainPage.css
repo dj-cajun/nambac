@@ -213,6 +213,7 @@
 }
 
 .brain-card-scene {
+  position: relative;
   width: 100%;
   border-radius: 1rem;
   overflow: hidden;
@@ -228,6 +229,7 @@
 }
 
 .brain-card-scene-fallback {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;

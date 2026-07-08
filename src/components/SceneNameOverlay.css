@@ -1,0 +1,57 @@
+.scene-name-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.scene-name-callout {
+  position: absolute;
+  top: 7%;
+  left: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 78%;
+}
+
+.scene-name-text {
+  display: inline-block;
+  padding: 7px 16px;
+  border: 3px solid #0f172a;
+  border-radius: 999px;
+  font-size: clamp(15px, 4.8vw, 22px);
+  font-weight: 900;
+  color: #0f172a;
+  box-shadow: 3px 3px 0 #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.15;
+}
+
+.scene-name-overlay--roast .scene-name-text {
+  background: #fde047;
+}
+
+.scene-name-overlay--brain .scene-name-text {
+  background: #c4b5fd;
+}
+
+.scene-name-arrow {
+  width: clamp(40px, 14vw, 56px);
+  height: clamp(52px, 18vw, 72px);
+  margin-top: 2px;
+  margin-left: clamp(12px, 5vw, 24px);
+  color: #0f172a;
+  filter: drop-shadow(2px 2px 0 rgba(255, 255, 255, 0.85));
+}
+
+.scene-name-overlay--roast .scene-name-arrow {
+  color: #ff2d55;
+}
+
+.scene-name-overlay--brain .scene-name-arrow {
+  color: #7c3aed;
+}

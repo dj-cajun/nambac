@@ -14,6 +14,7 @@ import {
 import { buildBrainOgImageUrl } from '../lib/siteUrl';
 import { fetchBrainSceneImage } from '../lib/brainApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import SceneNameOverlay from '../components/SceneNameOverlay';
 import './BrainPage.css';
 
 const REVEAL_MS = 2600;
@@ -42,6 +43,7 @@ export default function BrainPage() {
   const currentResult = getBrainResultById(resultId);
   const displayName = friendName.trim();
   const { intro: brainIntro, body: brainBody } = buildBrainAnswerParts(displayName, currentResult);
+  const brainSceneLabel = displayName ? `Não ${displayName}` : '';
   const ogResultId = resultId || 'brain_01';
   const ogImageUrl = buildBrainOgImageUrl(ogResultId);
   const shareUrl = buildBrainShareUrl(displayName || 'Bạn thân', ogResultId);
@@ -255,10 +257,14 @@ export default function BrainPage() {
 
                 <div className="brain-card-scene">
                   {imageSrc ? (
-                    <img src={imageSrc} alt={currentResult.title} className="brain-card-scene-img" crossOrigin="anonymous" />
+                    <>
+                      <img src={imageSrc} alt={currentResult.title} className="brain-card-scene-img" crossOrigin="anonymous" />
+                      <SceneNameOverlay label={brainSceneLabel} variant="brain" />
+                    </>
                   ) : (
                     <div className={`brain-card-scene-fallback${imageLoading ? ' is-loading' : ''}`}>
                       <span>{currentResult.emoji}</span>
+                      <SceneNameOverlay label={brainSceneLabel} variant="brain" />
                     </div>
                   )}
                 </div>

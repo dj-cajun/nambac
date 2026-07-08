@@ -14,6 +14,7 @@ import {
 import { buildRoastOgImageUrl } from '../lib/siteUrl';
 import { fetchRoastSceneImage } from '../lib/roastApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import SceneNameOverlay from '../components/SceneNameOverlay';
 import './RoastCardPage.css';
 
 const REVEAL_MS = 2600;
@@ -271,10 +272,14 @@ export default function RoastCardPage() {
 
                 <div className="roast-card-scene">
                   {imageSrc ? (
-                    <img src={imageSrc} alt={currentTrait.title} className="roast-card-scene-img" crossOrigin="anonymous" />
+                    <>
+                      <img src={imageSrc} alt={currentTrait.title} className="roast-card-scene-img" crossOrigin="anonymous" />
+                      <SceneNameOverlay label={displayName} variant="roast" />
+                    </>
                   ) : (
                     <div className={`roast-card-scene-fallback${imageLoading ? ' is-loading' : ''}`}>
                       <span>{currentTrait.emoji}</span>
+                      <SceneNameOverlay label={displayName} variant="roast" />
                     </div>
                   )}
                 </div>
