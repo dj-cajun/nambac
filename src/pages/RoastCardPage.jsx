@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas';
 import {
   getTraitById,
   pickRandomTrait,
-  personalizeRoastDescription,
+  buildRoastAnswerText,
   buildRoastShareLink,
   parseRoastShareParams,
 } from '../../shared/roastData.js';
@@ -42,9 +42,7 @@ export default function RoastCardPage() {
 
   const currentTrait = getTraitById(traitId);
   const displayName = friendName.trim();
-  const answerText = displayName
-    ? personalizeRoastDescription(displayName, currentTrait.description)
-    : currentTrait.description;
+  const answerText = buildRoastAnswerText(displayName, currentTrait);
 
   const ogName = displayName || 'Bạn thân';
   const ogTraitId = traitId || 'trait_01';
@@ -282,25 +280,7 @@ export default function RoastCardPage() {
                 </div>
 
                 <div className="roast-card-body-panel">
-                  <p className="roast-card-answer">
-                    {displayName ? (
-                      <>
-                        <strong className="roast-card-answer-name">{displayName}</strong>
-                        {' '}chính thức dính tội danh{' '}
-                        <span className="roast-card-answer-trait">
-                          {currentTrait.emoji} {currentTrait.title}
-                        </span>
-                        . {answerText}
-                      </>
-                    ) : (
-                      <>
-                        <span className="roast-card-answer-trait">
-                          {currentTrait.emoji} {currentTrait.title}
-                        </span>
-                        . {answerText}
-                      </>
-                    )}
-                  </p>
+                  <p className="roast-card-answer">{answerText}</p>
                 </div>
 
                 <div className="roast-card-footer-row">

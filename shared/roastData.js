@@ -231,7 +231,21 @@ export function personalizeRoastDescription(name, description) {
   const cap = n.charAt(0).toUpperCase() + n.slice(1);
   return String(description)
     .replace(/Bạn ấy/g, cap)
-    .replace(/bạn ấy/g, n);
+    .replace(/bạn ấy/g, n)
+    .replace(/Buổi sáng của bạn/g, `Buổi sáng của ${n}`)
+    .replace(/Bạn vẫn/g, `${cap} vẫn`)
+    .replace(/bạn vẫn/g, `${n} vẫn`)
+    .replace(/bạn năm nào/g, `${n} năm nào`)
+    .replace(/riêng bạn /g, `riêng ${n} `)
+    .replace(/đây bạn ơi/g, `đây ${n} ơi`);
+}
+
+/** One flowing answer paragraph — same tone for name, trait and explanation. */
+export function buildRoastAnswerText(name, trait) {
+  const n = String(name || '').trim();
+  const body = personalizeRoastDescription(n, trait.description);
+  if (!n) return `${trait.emoji} ${trait.title}. ${body}`;
+  return `${n} chính thức dính tội danh ${trait.emoji} ${trait.title}. ${body}`;
 }
 
 export function buildRoastShareUrl(name, traitId, origin) {

@@ -117,14 +117,35 @@ export function personalizeBrainDescription(name, description) {
   return String(description)
     .replace(/Trong đầu bạn/g, `Trong đầu ${n}`)
     .replace(/Não bạn/g, `Não ${n}`)
+    .replace(/não bạn/g, `não ${n}`)
     .replace(/Đầu bạn/g, `Đầu ${n}`)
     .replace(/Bạn không/g, `${cap} không`)
+    .replace(/biến bạn thành/g, `biến ${n} thành`)
+    .replace(/bạn phải/g, `${n} phải`)
     .replace(/bạn chỉ/g, `${n} chỉ`)
     .replace(/bạn vẫn/g, `${n} vẫn`)
     .replace(/bạn thì/g, `${n} thì`)
     .replace(/của bạn/g, `của ${n}`)
+    .replace(/kiểu bạn là/g, `kiểu ${n} là`)
     .replace(/bạn là/g, `${n} là`)
+    .replace(/đều là bạn/g, `đều là ${n}`)
     .replace(/bạn ấy/g, n);
+}
+
+/** Intro + explanation as one story; bars sit between the two lines. */
+export function buildBrainAnswerParts(name, result) {
+  const n = String(name || '').trim();
+  const body = personalizeBrainDescription(n, result.description);
+  if (!n) {
+    return {
+      intro: `Kết quả quét não cho thấy ${result.emoji} ${result.title}.`,
+      body,
+    };
+  }
+  return {
+    intro: `Trong đầu ${n} đang chiếm chỗ chủ yếu là ${result.emoji} ${result.title}.`,
+    body,
+  };
 }
 
 export function buildBrainShareUrl(name, resultId, origin) {

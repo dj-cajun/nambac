@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas';
 import {
   getBrainResultById,
   pickRandomBrainResult,
-  personalizeBrainDescription,
+  buildBrainAnswerParts,
   buildBrainShareUrl,
   parseBrainShareParams,
 } from '../../shared/brainData.js';
@@ -41,9 +41,7 @@ export default function BrainPage() {
 
   const currentResult = getBrainResultById(resultId);
   const displayName = friendName.trim();
-  const answerText = displayName
-    ? personalizeBrainDescription(displayName, currentResult.description)
-    : currentResult.description;
+  const { intro: brainIntro, body: brainBody } = buildBrainAnswerParts(displayName, currentResult);
   const ogResultId = resultId || 'brain_01';
   const ogImageUrl = buildBrainOgImageUrl(ogResultId);
   const shareUrl = buildBrainShareUrl(displayName || 'Bạn thân', ogResultId);
@@ -265,39 +263,28 @@ export default function BrainPage() {
                   )}
                 </div>
 
-                <p className="brain-card-answer-lead">
-                  {displayName ? (
-                    <>
-                      Trong đầu <strong className="brain-card-answer-name">{displayName}</strong>
-                      {' '}đang chiếm chỗ:
-                    </>
-                  ) : (
-                    'Trong đầu bạn đang chiếm chỗ:'
-                  )}
-                  {' '}
-                  <span className="brain-card-answer-trait">
-                    {currentResult.emoji} {currentResult.title}
-                  </span>
-                </p>
+                <div className="brain-card-body-panel">
+                  <p className="brain-card-answer">{brainIntro}</p>
 
-                <div className="brain-card-bars">
-                  {currentResult.segments.map((seg, i) => (
-                    <div className="brain-bar-row" key={seg.label}>
-                      <div className="brain-bar-head">
-                        <span className="brain-bar-label">{seg.emoji} {seg.label}</span>
-                        <span className="brain-bar-pct">{seg.pct}%</span>
+                  <div className="brain-card-bars">
+                    {currentResult.segments.map((seg, i) => (
+                      <div className="brain-bar-row" key={seg.label}>
+                        <div className="brain-bar-head">
+                          <span className="brain-bar-label">{seg.emoji} {seg.label}</span>
+                          <span className="brain-bar-pct">{seg.pct}%</span>
+                        </div>
+                        <div className="brain-bar-track">
+                          <div
+                            className={`brain-bar-fill fill-${i % 3}`}
+                            style={{ width: `${seg.pct}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="brain-bar-track">
-                        <div
-                          className={`brain-bar-fill fill-${i % 3}`}
-                          style={{ width: `${seg.pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+
+                  <p className="brain-card-answer">{brainBody}</p>
                 </div>
-
-                <p className="brain-card-desc">{answerText}</p>
 
                 <div className="brain-card-footer">
                   <span>Nambac.xyz · Hệ tâm linh AI</span>
