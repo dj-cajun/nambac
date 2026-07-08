@@ -30,6 +30,14 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display), var(--font-primary), cursive;
 }
 
+/* Kill mobile double-tap-to-zoom (whole screen was subtly zooming when tapping
+   buttons/cards quickly). `manipulation` keeps scrolling + pinch-zoom intact and
+   only drops the legacy double-tap gesture — applied page-wide so it also covers
+   React onClick <div> cards, not just <button>/<a>. */
+html {
+  touch-action: manipulation;
+}
+
 #root {
   width: 100%;
   min-height: 100vh;

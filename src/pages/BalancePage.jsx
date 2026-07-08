@@ -13,6 +13,7 @@ import {
 } from '../../shared/balanceData.js';
 import { readLocalVotes, saveLocalVote, getVotedIds } from '../lib/balanceVotes';
 import { markTodayDone } from '../lib/todayDone';
+import { scrollToTop } from '../lib/scrollToTop';
 import { fetchBalanceSceneImage } from '../lib/balanceApi';
 import { buildBalanceOgImageUrl } from '../lib/siteUrl';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
@@ -77,6 +78,12 @@ export default function BalancePage() {
     const id = resolveQuestionId();
     loadQuestion(id);
   }, [resolveQuestionId, loadQuestion]);
+
+  // Reset scroll to top whenever the question changes (e.g. "Câu tiếp theo"),
+  // since the route param changes without unmounting the page.
+  useEffect(() => {
+    if (question?.id) scrollToTop();
+  }, [question?.id]);
 
   useEffect(() => {
     if (trackFeatureViewOnce('balance')) {
