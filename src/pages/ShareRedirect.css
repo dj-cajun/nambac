@@ -16,7 +16,7 @@
 
 .share-redirect-badge {
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: #94a3b8;
@@ -66,7 +66,7 @@
   border-radius: 999px;
   background: #ffe8f2;
   color: #ff2d85;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -80,8 +80,9 @@
 
 .share-redirect-title {
   margin: 0;
+  font-family: var(--font-quiz-title);
   font-size: 1.5rem;
-  font-weight: 900;
+  font-weight: 800;
   color: #5c4d72;
 }
 
@@ -100,7 +101,7 @@
 
 .share-redirect-note {
   margin: 8px 0 0;
-  font-size: 12px;
+  font-size: 14px;
   color: #94a3b8;
 }
 

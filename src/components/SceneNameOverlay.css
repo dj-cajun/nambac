@@ -17,18 +17,20 @@
 
 .scene-name-text {
   display: inline-block;
-  padding: 7px 16px;
+  padding: 7px 14px;
   border: 3px solid #0f172a;
   border-radius: 999px;
-  font-size: clamp(15px, 4.8vw, 22px);
-  font-weight: 900;
+  font-family: var(--font-primary);
+  font-size: clamp(14px, 4.2vw, 18px);
+  font-weight: 800;
   color: #0f172a;
   box-shadow: 3px 3px 0 #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
   max-width: 100%;
-  line-height: 1.15;
+  line-height: 1.25;
+  text-align: left;
 }
 
 .scene-name-overlay--roast .scene-name-text {

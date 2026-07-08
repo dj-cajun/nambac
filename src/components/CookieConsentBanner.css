@@ -63,7 +63,7 @@
 
 .cookie-consent-text {
   margin: 0 0 10px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.55;
   color: #475569;
@@ -71,7 +71,7 @@
 
 .cookie-consent-links {
   margin: 0 0 14px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -90,7 +90,7 @@
   padding: 11px 10px;
   border: 2px solid #1e293b;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.1s;

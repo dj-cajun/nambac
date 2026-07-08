@@ -15,7 +15,7 @@
     flex-direction: column;
     align-items: center;
     background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 50%, #f3e5f5 100%);
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-primary);
     color: var(--comic-charcoal);
     overflow-x: hidden;
 }
@@ -38,14 +38,15 @@
 
 .compat-badge {
     color: white;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 900;
     padding: 4px 12px;
     letter-spacing: 0.1em;
 }
 
 .compat-quiz-title {
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-quiz-title);
+    font-weight: 800;
     font-size: 22px;
     color: var(--comic-charcoal);
     margin: 10px 0 0 0;
@@ -83,7 +84,7 @@
 }
 
 .score-percentage {
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-primary);
     font-size: 38px;
     color: white;
     font-weight: 900;
@@ -91,7 +92,7 @@
 }
 
 .compat-score-title {
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-primary);
     font-size: 24px;
     color: var(--comic-charcoal);
     margin: 8px 0 0 0;
@@ -99,7 +100,7 @@
 }
 
 .compat-chemical {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 800;
     color: var(--primary-pink);
     padding: 3px 10px;
@@ -138,7 +139,7 @@
 }
 
 .person-label {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 900;
     color: white;
     background: var(--comic-charcoal);
@@ -148,7 +149,7 @@
 }
 
 .person-result-title {
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-primary);
     font-size: 14px;
     color: var(--comic-charcoal);
     margin: 0;
@@ -156,7 +157,7 @@
 }
 
 .compat-vs {
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-primary);
     font-size: 20px;
     color: white;
     width: 40px;
@@ -186,7 +187,7 @@
 }
 
 .roast-text {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.6;
     color: var(--comic-charcoal);

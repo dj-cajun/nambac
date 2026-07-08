@@ -41,7 +41,7 @@
     font-weight: 800;
     color: #1E293B;
     margin-bottom: 8px;
-    font-family: var(--font-primary), cursive;
+    font-family: var(--font-primary);
 }
 
 /* Glass Tube Progress Bar */
@@ -211,19 +211,21 @@
     padding: 6px 16px;
     border-radius: 20px;
     border: 2px solid #1E293B;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 900;
     text-transform: uppercase;
     box-shadow: 2px 2px 0px 0px #1E293B;
 }
 
 .question-text {
-    font-family: var(--font-primary), cursive;
-    font-size: 24px;
-    font-weight: 900;
+    font-family: var(--font-primary);
+    font-size: 1.25rem; /* 20px — readable, fits card */
+    font-weight: 800;
     color: #1E293B;
     line-height: 1.4;
     margin: 0;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
 }
 
 /* 3. Giant Answer Buttons */
@@ -238,14 +240,14 @@
 
 .glass-answer-btn {
     width: 100%;
-    padding: 24px 24px 24px 70px;
+    padding: 18px 18px 18px 70px;
     /* Left padding for letter circle */
-    min-height: 80px;
+    min-height: 72px;
     background: rgba(255, 255, 255, 0.4);
     border: 2px solid #1E293B;
     border-radius: 24px;
-    font-size: 19px;
-    font-weight: 800;
+    font-size: 1.0625rem; /* 17px */
+    font-weight: 700;
     color: #1E293B;
     cursor: pointer;
     box-shadow: 6px 6px 0px 0px #1E293B;
@@ -256,6 +258,11 @@
     /* Left align text */
     text-align: left;
     position: relative;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+    line-height: 1.35;
+    box-sizing: border-box;
 }
 
 .glass-answer-btn:active {
@@ -377,19 +384,22 @@
 
 .intro-overlay-title {
     margin: 0 0 8px;
-    font-family: var(--font-primary), cursive;
-    font-size: 1.35rem;
-    font-weight: 900;
-    line-height: 1.25;
+    font-family: var(--font-quiz-title);
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.3;
     color: #1E293B;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
 }
 
 .intro-overlay-desc {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.9375rem; /* 15px */
     line-height: 1.45;
     color: #475569;
     font-weight: 600;
+    overflow-wrap: anywhere;
 }
 
 .image-overlay-gradient-strong {
@@ -406,7 +416,7 @@
     padding: 6px 12px;
     border-radius: 12px;
     border: 2px solid #1E293B;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 900;
     box-shadow: 2px 2px 0px 0px #1E293B;
     z-index: 10;
@@ -427,9 +437,9 @@
 }
 
 .intro-title-overlay h1 {
-    font-family: var(--font-primary), cursive;
+    font-family: var(--font-quiz-title);
     font-size: 28px;
-    font-weight: 900;
+    font-weight: 800;
     line-height: 1.2;
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
 }
@@ -592,7 +602,7 @@
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.1s;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: #1E293B;
 }
@@ -636,9 +646,9 @@
     color: white;
     border: 2px solid #1E293B;
     border-radius: 30px;
-    padding: 16px 40px;
-    font-size: 20px;
-    font-weight: 900;
+    padding: 14px 28px;
+    font-size: 1.125rem;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -647,7 +657,11 @@
     cursor: pointer;
     transition: all 0.1s;
     z-index: 20;
-    white-space: nowrap;
+    white-space: normal;
+    max-width: calc(100% - 40px);
+    text-align: center;
+    line-height: 1.25;
+    box-sizing: border-box;
 }
 
 .start-overlay-btn:active {
@@ -791,9 +805,9 @@
 }
 
 .name-input-title {
-    font-family: var(--font-primary), cursive;
+    font-family: var(--font-quiz-title);
     font-size: 22px;
-    font-weight: 900;
+    font-weight: 800;
     color: #1E293B;
     margin: 0 0 8px 0;
 }
@@ -821,7 +835,7 @@
     color: #1E293B;
     box-shadow: 4px 4px 0px 0px #1E293B;
     outline: none;
-    font-family: var(--font-primary), cursive;
+    font-family: var(--font-primary);
     transition: all 0.2s;
 }
 
@@ -865,7 +879,7 @@
     color: #1E293B;
     padding: 3px 10px;
     border-radius: 8px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     border: 1.5px solid #1E293B;
 }

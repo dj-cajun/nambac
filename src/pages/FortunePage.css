@@ -21,7 +21,7 @@
   border: 2px solid #1e293b;
   border-radius: 999px;
   background: linear-gradient(135deg, #fce7f3, #ede9fe);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
   color: #7c3aed;
   box-shadow: 2px 2px 0 #1e293b;
@@ -36,7 +36,7 @@
 
 .fortune-hero p {
   margin: 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #64748b;
   line-height: 1.5;
@@ -63,7 +63,7 @@
 }
 
 .fortune-intro-card--single .fortune-intro-card-kicker {
-  font-size: 13px;
+  font-size: 15px;
   margin-bottom: 8px;
 }
 
@@ -77,7 +77,7 @@
 
 .fortune-intro-card-kicker {
   margin: 0 0 6px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   color: #7c3aed;
   text-transform: uppercase;
@@ -109,7 +109,7 @@
   background: linear-gradient(135deg, #fce7f3, #ede9fe);
   border: 2px solid #1e293b;
   border-radius: 14px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1.5;
   color: #1e293b;
@@ -209,10 +209,11 @@
 
 .fortune-result-body {
   margin: 0 0 16px;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 1.0625rem; /* 17px */
+  font-weight: 600;
   line-height: 1.65;
   color: #334155;
+  overflow-wrap: anywhere;
 }
 
 .fortune-remedy-box {
@@ -224,7 +225,7 @@
 
 .fortune-remedy-label {
   margin: 0 0 6px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.06em;
   color: #ff2d85;
@@ -233,7 +234,7 @@
 
 .fortune-remedy-text {
   margin: 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.55;
   color: #475569;
@@ -242,7 +243,7 @@
 .fortune-result-meta {
   margin-top: 16px;
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   color: #94a3b8;
 }
@@ -297,7 +298,7 @@
 .fortune-hint {
   margin-top: 20px;
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #94a3b8;
   line-height: 1.5;
@@ -352,7 +353,7 @@
 
 .fortune-remedy-in-panel-label {
   display: block;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.06em;
   color: #ff2d85;
@@ -362,7 +363,7 @@
 
 .fortune-remedy-in-panel-text {
   margin: 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.55;
   color: #475569;
@@ -371,7 +372,7 @@
 .fortune-result-date {
   margin: 4px 0 0;
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   color: #94a3b8;
 }
@@ -379,7 +380,7 @@
 .fortune-image-error {
   margin: 10px 0 0;
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: #f97316;
 }
@@ -399,7 +400,7 @@
 
 .fortune-shuffle-hint {
   margin: 14px 0 0;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: #94a3b8;
 }
@@ -464,7 +465,7 @@
 
 .fortune-shuffle-back-label {
   margin-top: 4px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.12em;
 }
@@ -485,14 +486,14 @@
 
 .fortune-compat-title {
   margin: 0 0 10px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   color: #0f172a;
 }
 
 .fortune-compat-line {
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
   color: #334155;
@@ -514,7 +515,7 @@
   margin: 10px 0 0;
   padding-top: 8px;
   border-top: 1px dashed #cbd5e1;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   color: #ff2d85;
   line-height: 1.45;
@@ -522,7 +523,8 @@
 
 .fortune-page .tag-friends-btn {
   flex: 1.1;
-  height: 48px;
+  min-height: 48px;
+  height: auto;
   background: #ff2d85;
   color: #fff;
   border: 2px solid #0f172a;
@@ -530,10 +532,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 6px;
+  padding: 6px;
   box-shadow: 2px 2px 0 0 #0f172a;
   cursor: pointer;
   transition: all 0.1s;
+  box-sizing: border-box;
 }
 
 .fortune-page .tag-friends-btn:active {
@@ -542,10 +545,12 @@
 }
 
 .fortune-page .tag-friends-btn .btn-label {
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .fortune-page .share-btn-wrap {
@@ -581,7 +586,7 @@
 }
 
 .fortune-like-count {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
   min-width: 1ch;
 }

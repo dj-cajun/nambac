@@ -47,7 +47,7 @@
   border-radius: 999px;
   border: 2px solid #1e293b;
   background: linear-gradient(135deg, #fff0f6, #fef3c7);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
   color: #1e293b;
   line-height: 1.2;
@@ -86,14 +86,14 @@
 }
 
 .streak-popup-text strong {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   color: #1e293b;
   line-height: 1.25;
 }
 
 .streak-popup-text span {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #64748b;
   line-height: 1.3;

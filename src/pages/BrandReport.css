@@ -41,7 +41,7 @@
 
 .brand-report-badge {
   display: inline-block;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.1em;
   padding: 6px 14px;
@@ -98,12 +98,12 @@
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .brand-report-meta {
-  font-size: 13px;
+  font-size: 15px;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 32px;
 }

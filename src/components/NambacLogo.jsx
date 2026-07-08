@@ -46,8 +46,8 @@ export default function NambacLogo({ className = '' }) {
       <text
         x="42"
         y="25"
-        fontFamily="'Patrick Hand', cursive"
-        fontSize="19"
+        fontFamily="Poppins, system-ui, sans-serif"
+        fontSize="17"
         fontWeight="800"
       >
         <tspan fill="#5C4D72">Nam</tspan>

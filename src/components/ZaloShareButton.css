@@ -33,7 +33,7 @@
   border-radius: 999px;
   background: #fff;
   color: #0068ff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   text-decoration: none;
   cursor: pointer;
@@ -54,7 +54,7 @@
   border-radius: 50%;
   background: #0068ff;
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   line-height: 1;
 }
@@ -93,11 +93,11 @@
 .tag-friends-zalo-wrap .zalo-share-link-icon {
   width: 18px;
   height: 18px;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .tag-friends-zalo-wrap .zalo-share-link-text {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.02em;
 }

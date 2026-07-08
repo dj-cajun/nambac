@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Patrick+Hand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,14 +10,34 @@
   --jelly-radius: 2rem;
   --comic-charcoal: #1e293b;
   --primary-pink: #ff85a1;
-  --font-primary: 'Patrick Hand', cursive;
-  --font-display: 'Caveat', cursive;
+  /* Single readable face site-wide (was Patrick Hand / Caveat) */
+  --font-primary: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-display: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-quiz-title: 'Poppins', system-ui, -apple-system, sans-serif;
+  --text-xs: 0.8125rem;   /* 13px — smallest UI label */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px — body default */
+  --text-md: 1.0625rem;   /* 17px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+}
+
+html {
+  font-size: 16px;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
 body {
   margin: 0;
-  font-family: var(--font-primary), cursive;
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(to bottom right, #fff9fc, #ffffff, #eef2ff);
@@ -27,16 +47,26 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display), var(--font-primary), cursive;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+p, span, li, label, button, a, input, textarea {
+  overflow-wrap: anywhere;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
 }
 
 /* Kill mobile double-tap-to-zoom (whole screen was subtly zooming when tapping
    buttons/cards quickly). `manipulation` keeps scrolling + pinch-zoom intact and
    only drops the legacy double-tap gesture — applied page-wide so it also covers
    React onClick <div> cards, not just <button>/<a>. */
-html {
-  touch-action: manipulation;
-}
 
 #root {
   width: 100%;
@@ -117,5 +147,5 @@ html {
 
 .tally-popup iframe {
   border-radius: 20px !important;
-  font-family: var(--font-primary), cursive !important;
+  font-family: var(--font-primary) !important;
 }

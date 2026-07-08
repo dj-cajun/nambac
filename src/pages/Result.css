@@ -27,7 +27,7 @@
     flex-direction: column;
     align-items: center;
     background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 50%, #f3e5f5 100%);
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-primary);
     color: var(--comic-charcoal);
     overflow-x: visible;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -184,7 +184,7 @@
     color: #b45309;
     padding: 4px 10px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     border: 1px solid rgba(30, 41, 59, 0.15);
     letter-spacing: 0.02em;
@@ -195,8 +195,8 @@
     width: 95%;
     max-width: 500px;
     margin-top: 20px;
-    padding-bottom: 100px;
-    /* Space for bottom bar */
+    padding-bottom: 120px;
+    /* Space for bottom bar (taller after font bump) */
 }
 
 .recommended-title {
@@ -237,7 +237,8 @@
 .recommended-card-title {
     display: block;
     padding: 10px 12px;
-    font-size: 12px;
+    font-family: var(--font-quiz-title);
+    font-size: 14px;
     font-weight: 700;
     color: var(--comic-charcoal);
     text-align: center;
@@ -296,7 +297,7 @@
 }
 
 .banner-label {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -397,7 +398,7 @@
 }
 
 .traits-header {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -413,7 +414,7 @@
     padding: 0.3rem 0.6rem;
     margin: 0.25rem;
     border-radius: 0.5rem;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 700;
     border: 1px solid var(--comic-charcoal);
 }
@@ -488,7 +489,7 @@
     color: var(--comic-charcoal);
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 700;
     border: 2px solid var(--comic-charcoal);
     box-shadow: 2px 2px 0px 0px var(--comic-charcoal);
@@ -680,30 +681,33 @@
     margin: 0 auto;
     width: 88%;
     max-width: 420px;
-    height: 70px;
+    min-height: 70px;
+    height: auto;
     background: white;
     border: 2px solid var(--comic-charcoal);
     border-radius: 20px;
     z-index: 20;
-    padding: 0 16px;
+    padding: 10px 12px;
     box-shadow: 6px 6px 0px 0px var(--comic-charcoal);
     display: flex;
     align-items: center;
     justify-content: space-between;
     overflow: visible;
+    box-sizing: border-box;
 }
 
 .bar-actions {
     width: 100%;
     display: flex;
-    gap: 12px;
-    align-items: center;
+    gap: 8px;
+    align-items: stretch;
     justify-content: space-between;
 }
 
 .restart-btn {
     flex: 1.2;
-    height: 48px;
+    min-height: 48px;
+    height: auto;
     background: white;
     border: 2px solid var(--comic-charcoal);
     border-radius: 12px;
@@ -711,10 +715,11 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 0 8px;
+    padding: 6px 8px;
     box-shadow: 2px 2px 0px 0px var(--comic-charcoal);
     cursor: pointer;
     transition: all 0.1s;
+    box-sizing: border-box;
 }
 
 .restart-btn:active {
@@ -730,22 +735,25 @@
     align-items: center;
     justify-content: center;
     gap: 2px;
-    padding: 4px 6px 2px;
+    padding: 6px 4px;
     background: #0068ff;
     border: 2px solid var(--comic-charcoal);
     border-radius: 12px;
     box-shadow: 2px 2px 0px 0px var(--comic-charcoal);
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .tag-friends-zalo-label {
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 0.03em;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
     color: #fff;
-    line-height: 1.1;
+    line-height: 1.15;
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .tag-friends-zalo-wrap .zalo-share-wrap {
@@ -762,7 +770,8 @@
 
 .tag-friends-btn {
     flex: 1.1;
-    height: 48px;
+    min-height: 48px;
+    height: auto;
     background: #ff2d85;
     color: #fff;
     border: 2px solid var(--comic-charcoal);
@@ -770,10 +779,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 6px;
+    padding: 6px;
     box-shadow: 2px 2px 0px 0px var(--comic-charcoal);
     cursor: pointer;
     transition: all 0.1s;
+    box-sizing: border-box;
 }
 
 .tag-friends-btn:active {
@@ -782,16 +792,22 @@
 }
 
 .tag-friends-btn .btn-label {
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
 }
 
 .restart-btn .btn-label {
-    font-size: 14px;
-    font-weight: 900;
+    font-size: 13px;
+    font-weight: 800;
     color: var(--comic-charcoal);
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
 }
 
 .restart-btn .btn-icon-circle {
@@ -800,7 +816,8 @@
 
 .download-action-btn {
     flex: 1.5;
-    height: 48px;
+    min-height: 48px;
+    height: auto;
     background: var(--success-green);
     border: 2px solid var(--comic-charcoal);
     border-radius: 12px;
@@ -808,11 +825,12 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 0 10px;
+    padding: 6px 8px;
     box-shadow: 2px 2px 0px 0px var(--comic-charcoal);
     cursor: pointer;
     color: white;
     transition: all 0.1s;
+    box-sizing: border-box;
 }
 
 .download-action-btn:active {
@@ -821,9 +839,12 @@
 }
 
 .download-action-btn .btn-label {
-    font-size: 14px;
-    font-weight: 900;
+    font-size: 13px;
+    font-weight: 800;
     color: white;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
 }
 
 .share-btn {
@@ -880,7 +901,7 @@
 }
 
 .result-like-count {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 900;
     min-width: 1ch;
 }
@@ -898,7 +919,7 @@
 
 .result-brand-cta-kicker {
     margin: 0 0 6px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -914,7 +935,7 @@
 
 .result-brand-cta p {
     margin: 0;
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.6;
     color: #334155;
 }
@@ -927,7 +948,7 @@
     border-radius: 12px;
     background: #fff;
     color: var(--comic-charcoal);
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 900;
     box-shadow: 2px 2px 0 var(--comic-charcoal);
     cursor: pointer;
@@ -981,7 +1002,7 @@
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.1s;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--comic-charcoal);
 }

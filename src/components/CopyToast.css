@@ -21,7 +21,7 @@
   border: 2px solid #1e293b;
   border-radius: 14px;
   box-shadow: 4px 4px 0 #1e293b;
-  font-family: var(--font-primary, 'Patrick Hand'), cursive;
+  font-family: var(--font-primary);
   font-size: 16px;
   font-weight: 800;
   color: #1e293b;
@@ -40,7 +40,7 @@
   padding: 6px 10px;
   gap: 6px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
   box-shadow: 2px 2px 0 #1e293b;
@@ -85,7 +85,7 @@
   width: 18px;
   height: 18px;
   border-radius: 6px;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .copy-toast--error .copy-toast-icon {

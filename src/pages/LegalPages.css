@@ -2,7 +2,7 @@
     padding: 24px 20px 80px;
     max-width: 100%;
     min-height: 100vh;
-    font-family: var(--font-primary, 'Patrick Hand'), cursive;
+    font-family: var(--font-primary);
     color: #4a148c;
     display: flex;
     align-items: center;

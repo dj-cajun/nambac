@@ -42,7 +42,7 @@
 
 .tarot-wheel-kicker {
   margin: 0;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -201,7 +201,7 @@
 }
 
 .tarot-wheel-comic-logo {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   color: #2563eb;
   letter-spacing: -0.04em;
@@ -307,7 +307,7 @@
 
 .tarot-wheel-comic-fortune-title {
   margin: 0;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 900;
   line-height: 1.35;
   color: #1e40af;
@@ -348,7 +348,7 @@
   right: 16px;
   margin: 0;
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #c4b5fd;
   line-height: 1.45;
@@ -357,7 +357,7 @@
 }
 
 .tarot-wheel-hint--cta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   color: #fde047;
   text-shadow: 1px 1px 0 #000;
