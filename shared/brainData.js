@@ -1,5 +1,7 @@
 /** "Trong đầu bạn đang nghĩ gì?" — brain-composition mini-app (shared client) */
 
+import { interpolateName } from './nameInterpolate.js';
+
 export const BRAIN_RESULTS = [
   {
     id: 'brain_01',
@@ -10,7 +12,7 @@ export const BRAIN_RESULTS = [
       { emoji: '📚', label: 'Việc học', pct: 10 },
     ],
     description:
-      'Não bạn 90% là hình bóng crush: tưởng tượng cảnh tỏ tình, soạn tin nhắn rồi xoá, canh me story để thả tim lúc 2h sáng. 10% còn lại mang tiếng là dành cho việc học, nhưng thật ra là học cách thả thính sao cho mượt hơn. Học hành gì nữa trời!',
+      '90% não của {name} là hình bóng crush: tưởng tượng cảnh tỏ tình, soạn tin nhắn rồi xoá, canh me story để thả tim lúc 2h sáng. 10% còn lại mang tiếng là việc học, nhưng thật ra {name} chỉ học cách thả thính cho mượt. Học hành gì nữa trời!',
   },
   {
     id: 'brain_02',
@@ -22,7 +24,7 @@ export const BRAIN_RESULTS = [
       { emoji: '💸', label: 'Ví tiền', pct: 10 },
     ],
     description:
-      'Trong đầu bạn là một cái menu khổng lồ cuộn 24/7: trà sữa full topping, bánh tráng trộn, lẩu cay tê lưỡi. Vừa ăn xong miếng cuối đã bắt đầu nghĩ tới bữa tiếp theo. 25% mơ màng chuyện ngủ nướng, 10% giật mình vì ví sắp cạn — rồi lại quay về nghĩ tới đồ ăn.',
+      'Trong đầu {name} là menu khổng lồ cuộn 24/7: trà sữa full topping, bánh tráng trộn, lẩu cay tê lưỡi. {Name} vừa ăn xong đã nghĩ tới bữa tiếp theo. 25% mơ màng ngủ nướng, 10% giật mình vì ví sắp cạn — rồi lại quay về nghĩ đồ ăn.',
   },
   {
     id: 'brain_03',
@@ -34,7 +36,7 @@ export const BRAIN_RESULTS = [
       { emoji: '😭', label: 'Hối hận', pct: 10 },
     ],
     description:
-      'Đầu bạn có một cái giỏ hàng Shopee không bao giờ đóng: canh sale 12h đêm, thêm vào giỏ 5 triệu rồi checkout bằng niềm tin. 35% não gào lên "tiền đâu ra?", 10% ngồi hối hận. Nhưng chỉ cần thấy mã freeship là mọi lý trí lại bay màu ngay lập tức.',
+      'Trong đầu {name} có giỏ hàng Shopee không bao giờ đóng: canh sale 12h đêm, thêm vào giỏ 5 triệu rồi checkout bằng niềm tin. 35% não gào "tiền đâu ra?", 10% ngồi hối hận. Chỉ cần thấy mã freeship là mọi lý trí của {name} bay màu ngay.',
   },
   {
     id: 'brain_04',
@@ -46,7 +48,7 @@ export const BRAIN_RESULTS = [
       { emoji: '🤐', label: 'Giả vờ không biết', pct: 10 },
     ],
     description:
-      'Não bạn là một toà soạn báo lá cải hoạt động hết công suất: drama vừa nhú lên là radar hú inh ỏi. 20% dành cho việc chụp màn hình lưu bằng chứng, 10% giả vờ ngây thơ "ủa có chuyện gì hả?". Bạn không tạo drama, bạn chỉ là khán giả trung thành nhất thôi mà.',
+      'Não {name} hoạt động như toà soạn báo lá cải: drama vừa nhú lên là radar hú inh ỏi. 20% dành cho chụp màn hình lưu bằng chứng, 10% giả vờ ngây thơ "ủa có chuyện gì hả?". {Name} không tạo drama, chỉ là khán giả trung thành nhất thôi mà.',
   },
   {
     id: 'brain_05',
@@ -58,7 +60,7 @@ export const BRAIN_RESULTS = [
       { emoji: '☕', label: 'Cà phê cứu vớt', pct: 10 },
     ],
     description:
-      'Deadline dí sát nút nhưng 60% não vẫn bình thản lướt TikTok, xem "1 video cuối" lần thứ 47. 30% lo sốt vó nhưng tay thì không chịu mở laptop. 10% tin rằng một ly cà phê đậm sẽ biến bạn thành thiên tài lúc 3h sáng. Spoiler: nó không cứu được đâu.',
+      'Deadline dí sát nút nhưng 60% não của {name} vẫn bình thản lướt TikTok, xem "1 video cuối" lần thứ 47. 30% lo sốt vó nhưng tay {name} không chịu mở laptop. 10% tin rằng một ly cà phê đậm sẽ biến {name} thành thiên tài lúc 3h sáng — spoiler: không cứu được đâu.',
   },
   {
     id: 'brain_06',
@@ -70,7 +72,7 @@ export const BRAIN_RESULTS = [
       { emoji: '🌍', label: 'Thực tại', pct: 10 },
     ],
     description:
-      '75% não bạn đang ở một vũ trụ khác: rank chưa lên, idol vừa comeback, bạn phải cày view và leo hạng gấp. 15% dành cho việc lướt TikTok tới 2h sáng. Chỉ 10% ít ỏi kết nối với thực tại — thường là lúc mẹ gọi ăn cơm hoặc hết pin điện thoại.',
+      '75% não của {name} đang ở vũ trụ khác: rank chưa lên, idol vừa comeback, {name} phải cày view và leo hạng gấp. 15% lướt TikTok tới 2h sáng. Chỉ 10% kết nối thực tại — thường lúc mẹ gọi ăn cơm hoặc hết pin điện thoại.',
   },
   {
     id: 'brain_07',
@@ -82,7 +84,7 @@ export const BRAIN_RESULTS = [
       { emoji: '🤔', label: 'Bình thường', pct: 10 },
     ],
     description:
-      'Não bạn là một chiếc tàu lượn cảm xúc: 45% thì thầm "mình chả làm được gì", 5 phút sau 45% khác lại gào "vũ trụ này là của tôi!". Chỉ 10% giữ được sự bình thường hiếm hoi. Buổi sáng là CEO, buổi tối là một cục bông mít ướt — và cả hai đều là bạn.',
+      'Não {name} là tàu lượn cảm xúc: 45% thì thầm "mình chả làm được gì", 5 phút sau 45% khác gào "vũ trụ này là của tôi!". Chỉ 10% bình thường hiếm hoi. Buổi sáng {name} là CEO, buổi tối là cục bông mít ướt — cả hai đều chính là {name}.',
   },
   {
     id: 'brain_08',
@@ -94,7 +96,7 @@ export const BRAIN_RESULTS = [
       { emoji: '😌', label: 'An yên thật sự', pct: 10 },
     ],
     description:
-      '55% não hô hào "phải đi chữa lành thôi", đặt vé Đà Lạt, mua nến thơm, tải app thiền. Nhưng 35% lại nằm overthinking lúc 1h sáng về câu nói vu vơ hồi lớp 6. Chỉ 10% thật sự an yên. Chữa lành kiểu bạn là healing xong về nhà lại tiếp tục nghĩ nhiều.',
+      '55% não của {name} hô hào "phải đi chữa lành thôi" — đặt vé Đà Lạt, mua nến thơm, tải app thiền. 35% overthinking lúc 1h sáng về câu nói vu vơ hồi lớp 6. Chỉ 10% thật sự an yên. Chữa lành kiểu {name} là healing xong về nhà lại nghĩ tiếp.',
   },
 ];
 
@@ -109,33 +111,15 @@ export function pickRandomBrainResult(excludeId) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
-/** Weave a friend's name into brain-scan copy. */
+/** Weave a friend's name into brain-scan copy via {name}/{Name} placeholders. */
 export function personalizeBrainDescription(name, description) {
-  const n = String(name || '').trim();
-  if (!n) return description;
-  const cap = n.charAt(0).toUpperCase() + n.slice(1);
-  return String(description)
-    .replace(/Trong đầu bạn/g, `Trong đầu ${n}`)
-    .replace(/Não bạn/g, `Não ${n}`)
-    .replace(/não bạn/g, `não ${n}`)
-    .replace(/Đầu bạn/g, `Đầu ${n}`)
-    .replace(/Bạn không/g, `${cap} không`)
-    .replace(/biến bạn thành/g, `biến ${n} thành`)
-    .replace(/bạn phải/g, `${n} phải`)
-    .replace(/bạn chỉ/g, `${n} chỉ`)
-    .replace(/bạn vẫn/g, `${n} vẫn`)
-    .replace(/bạn thì/g, `${n} thì`)
-    .replace(/của bạn/g, `của ${n}`)
-    .replace(/kiểu bạn là/g, `kiểu ${n} là`)
-    .replace(/bạn là/g, `${n} là`)
-    .replace(/đều là bạn/g, `đều là ${n}`)
-    .replace(/bạn ấy/g, n);
+  return interpolateName(description, name);
 }
 
 /** Intro + explanation as one story; bars sit between the two lines. */
 export function buildBrainAnswerParts(name, result) {
   const n = String(name || '').trim();
-  const body = personalizeBrainDescription(n, result.description);
+  const body = interpolateName(result.description, n);
   if (!n) {
     return {
       intro: `Kết quả quét não cho thấy ${result.emoji} ${result.title}.`,
@@ -143,7 +127,7 @@ export function buildBrainAnswerParts(name, result) {
     };
   }
   return {
-    intro: `Trong đầu ${n} đang chiếm chỗ chủ yếu là ${result.emoji} ${result.title}.`,
+    intro: `Theo sóng não, ${n} thuộc kiểu ${result.emoji} ${result.title}.`,
     body,
   };
 }
