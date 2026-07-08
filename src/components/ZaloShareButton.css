@@ -2,10 +2,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
+  min-height: 36px;
 }
 
-/* Official widget renders an iframe; keep it centered in our action rows */
 .zalo-share-wrap .zalo-share-button {
   display: inline-block;
   line-height: 0;
@@ -20,4 +19,61 @@
 .zalo-share-wrap--block .zalo-share-button {
   width: 100%;
   max-width: 320px;
+}
+
+/* Fallback when VITE_ZALO_OA_ID is not set — official widget requires OA ID */
+.zalo-share-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: #0068ff;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.zalo-share-fallback:active {
+  opacity: 0.85;
+}
+
+.zalo-share-fallback-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0068ff;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.zalo-share-fallback-text {
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.zalo-share-fallback.zalo-share-wrap--block {
+  width: 100%;
+  max-width: 320px;
+  min-height: 48px;
+  background: #0068ff;
+  color: #fff;
+  border: 2.5px solid #1e293b;
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0 #1e293b;
+}
+
+.zalo-share-fallback.zalo-share-wrap--block .zalo-share-fallback-icon {
+  background: #fff;
+  color: #0068ff;
 }

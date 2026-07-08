@@ -361,6 +361,7 @@ export default function FortunePage({ dayOffset = 0 }) {
               {result && (
                 <ZaloShareButton
                   url={buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)}
+                  label="Chia sẻ Zalo"
                   onShared={handleZaloShare}
                 />
               )}

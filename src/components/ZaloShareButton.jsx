@@ -1,50 +1,86 @@
 import { useEffect } from 'react';
 import { ensureZaloSdk, reloadZaloShareButtons } from '../lib/zaloSdk';
+import { getZaloOaId, openZaloShare } from '../lib/zaloShare';
 import './ZaloShareButton.css';
 
 /**
- * Official Zalo "Chia sẻ" widget (icon + text).
- * Requires og:* meta on data-href URL for preview card.
+ * Zalo share control.
+ * - With VITE_ZALO_OA_ID: official "Chia sẻ" iframe widget
+ * - Without OA ID: blue "Chia sẻ Zalo" button → share_external picker
  *
  * @param {object} props
  * @param {string} props.url
- * @param {() => void} [props.onShared] — best-effort tap on wrapper (iframe may not bubble)
+ * @param {() => void} [props.onShared]
  * @param {string} [props.className]
+ * @param {string} [props.label]
  */
-export default function ZaloShareButton({ url, onShared, className = '' }) {
+export default function ZaloShareButton({
+  url,
+  onShared,
+  className = '',
+  label = 'Chia sẻ Zalo',
+}) {
+  const oaId = getZaloOaId();
+  const useOfficialWidget = Boolean(oaId && url);
+
   useEffect(() => {
-    if (!url) return undefined;
+    if (!useOfficialWidget) return undefined;
     let alive = true;
+    let retryTimer = 0;
 
     ensureZaloSdk()
       .then(() => {
         if (!alive) return;
-        // SDK scans DOM on load; re-scan after React paints the widget node.
         requestAnimationFrame(() => reloadZaloShareButtons());
+        // SPA: SDK often loads before the button mounts — retry once.
+        retryTimer = window.setTimeout(() => {
+          if (alive) reloadZaloShareButtons();
+        }, 400);
       })
       .catch(() => {});
 
     return () => {
       alive = false;
+      if (retryTimer) window.clearTimeout(retryTimer);
     };
-  }, [url]);
+  }, [useOfficialWidget, url, oaId]);
 
   if (!url) return null;
 
-  return (
-    <div
-      className={`zalo-share-wrap${className ? ` ${className}` : ''}`}
-      onClick={onShared}
-      role="presentation"
-    >
+  if (useOfficialWidget) {
+    return (
       <div
-        key={url}
-        className="zalo-share-button"
-        data-href={url}
-        data-layout="2"
-        data-color="blue"
-        data-customize="false"
-      />
-    </div>
+        className={`zalo-share-wrap${className ? ` ${className}` : ''}`}
+        onClick={onShared}
+        role="presentation"
+      >
+        <div
+          key={`${oaId}-${url}`}
+          className="zalo-share-button"
+          data-href={url}
+          data-oaid={oaId}
+          data-layout="2"
+          data-color="blue"
+          data-customize="false"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className={`zalo-share-fallback${className ? ` ${className}` : ''}`}
+      onClick={() => {
+        openZaloShare(url);
+        onShared?.();
+      }}
+      aria-label={label}
+    >
+      <span className="zalo-share-fallback-icon" aria-hidden="true">
+        Z
+      </span>
+      <span className="zalo-share-fallback-text">{label}</span>
+    </button>
   );
 }

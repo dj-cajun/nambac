@@ -253,7 +253,7 @@ const Result = () => {
 
                     <div className="tag-friends-zalo-wrap" aria-label="Chia sẻ Zalo — tag 3 bạn">
                         <span className="tag-friends-zalo-label">ZALO · TAG 3 BẠN</span>
-                        <ZaloShareButton url={shareUrl} onShared={handleZaloShare} />
+                        <ZaloShareButton url={shareUrl} label="Chia sẻ Zalo" onShared={handleZaloShare} />
                     </div>
 
                     {/* Download Image Button */}
