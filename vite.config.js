@@ -38,6 +38,12 @@ export default defineConfig({
             req.url = `/api/roast-share?name=${encodeURIComponent(decodeURIComponent(rname))}&trait=${encodeURIComponent(rtrait)}`;
             return next();
           }
+          const brainShareMatch = pathname.match(/^\/share-brain\/([^/]+)\/([^/]+)$/);
+          if (brainShareMatch) {
+            const [, bname, bresult] = brainShareMatch;
+            req.url = `/api/brain-share?name=${encodeURIComponent(decodeURIComponent(bname))}&result=${encodeURIComponent(bresult)}`;
+            return next();
+          }
           const scoreMatch = pathname.match(/^\/share\/([^/]+)\/(\d+)$/);
           const quizMatch = pathname.match(/^\/share\/([^/]+)$/);
           if (scoreMatch) {
