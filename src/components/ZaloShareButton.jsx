@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { ensureZaloSdk, reloadZaloShareButtons } from '../lib/zaloSdk';
-import { getZaloOaId, openZaloShare } from '../lib/zaloShare';
+import { buildZaloShareExternalUrl, getZaloOaId } from '../lib/zaloShare';
 import './ZaloShareButton.css';
 
 /**
  * Zalo share control.
- * - With VITE_ZALO_OA_ID: official "Chia sẻ" iframe widget
- * - Without OA ID: blue "Chia sẻ Zalo" button → share_external picker
+ * - With VITE_ZALO_OA_ID: official SDK "Chia sẻ" iframe widget
+ * - Without OA: <a href> to share_external (works on mobile; no popup blocker)
  *
  * @param {object} props
  * @param {string} props.url
@@ -22,6 +22,7 @@ export default function ZaloShareButton({
 }) {
   const oaId = getZaloOaId();
   const useOfficialWidget = Boolean(oaId && url);
+  const shareHref = url ? buildZaloShareExternalUrl(url) : '';
 
   useEffect(() => {
     if (!useOfficialWidget) return undefined;
@@ -32,7 +33,6 @@ export default function ZaloShareButton({
       .then(() => {
         if (!alive) return;
         requestAnimationFrame(() => reloadZaloShareButtons());
-        // SPA: SDK often loads before the button mounts — retry once.
         retryTimer = window.setTimeout(() => {
           if (alive) reloadZaloShareButtons();
         }, 400);
@@ -68,19 +68,18 @@ export default function ZaloShareButton({
   }
 
   return (
-    <button
-      type="button"
-      className={`zalo-share-fallback${className ? ` ${className}` : ''}`}
-      onClick={() => {
-        openZaloShare(url);
-        onShared?.();
-      }}
+    <a
+      href={shareHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`zalo-share-link${className ? ` ${className}` : ''}`}
+      onClick={() => onShared?.()}
       aria-label={label}
     >
-      <span className="zalo-share-fallback-icon" aria-hidden="true">
+      <span className="zalo-share-link-icon" aria-hidden="true">
         Z
       </span>
-      <span className="zalo-share-fallback-text">{label}</span>
-    </button>
+      <span className="zalo-share-link-text">{label}</span>
+    </a>
   );
 }

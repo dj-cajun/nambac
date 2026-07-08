@@ -21,8 +21,8 @@
   max-width: 320px;
 }
 
-/* Fallback when VITE_ZALO_OA_ID is not set — official widget requires OA ID */
-.zalo-share-fallback {
+/* No OA — real link navigation (mobile-safe, unlike window.open) */
+.zalo-share-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -35,15 +35,17 @@
   color: #0068ff;
   font-size: 13px;
   font-weight: 900;
+  text-decoration: none;
   cursor: pointer;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.zalo-share-fallback:active {
+.zalo-share-link:active {
   opacity: 0.85;
 }
 
-.zalo-share-fallback-icon {
+.zalo-share-link-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -57,12 +59,12 @@
   line-height: 1;
 }
 
-.zalo-share-fallback-text {
+.zalo-share-link-text {
   line-height: 1;
   white-space: nowrap;
 }
 
-.zalo-share-fallback.zalo-share-wrap--block {
+.zalo-share-link.zalo-share-wrap--block {
   width: 100%;
   max-width: 320px;
   min-height: 48px;
@@ -73,7 +75,29 @@
   box-shadow: 4px 4px 0 #1e293b;
 }
 
-.zalo-share-fallback.zalo-share-wrap--block .zalo-share-fallback-icon {
+.zalo-share-link.zalo-share-wrap--block .zalo-share-link-icon {
   background: #fff;
   color: #0068ff;
+}
+
+/* Inside tag-friends bar on result pages */
+.tag-friends-zalo-wrap .zalo-share-link {
+  background: transparent;
+  color: #fff;
+  min-height: 28px;
+  padding: 0 4px;
+  box-shadow: none;
+  border: none;
+}
+
+.tag-friends-zalo-wrap .zalo-share-link-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+}
+
+.tag-friends-zalo-wrap .zalo-share-link-text {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
 }

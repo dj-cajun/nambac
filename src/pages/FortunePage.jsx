@@ -65,11 +65,14 @@ export default function FortunePage({ dayOffset = 0 }) {
     return d;
   }, [dayOffset]);
 
+  // Prefill only when starting a normal visit with own saved name.
+  // Friend share links always start blank — never show someone else's name in the input.
   const [name, setName] = useState(() => {
+    if (friendShare) return '';
     try {
-      return localStorage.getItem(NAME_KEY) || friendShare?.friendName || '';
+      return localStorage.getItem(NAME_KEY) || '';
     } catch {
-      return friendShare?.friendName || '';
+      return '';
     }
   });
   const [phase, setPhase] = useState('form'); // form | ritual | done

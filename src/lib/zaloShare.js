@@ -1,17 +1,15 @@
 /**
  * Zalo share helpers.
  *
- * Official social share widget REQUIRES data-oaid (Official Account ID).
- * Without it, ZaloSocialSDK silently skips rendering (see sdk.js validate()).
- *
- * Fallback (no OA): open Zalo's share_external web picker with a base64 payload.
+ * Official SDK widget requires data-oaid (Official Account ID).
+ * Without OA: use <a href> to button-share.zalo.me (window.open is blocked on mobile).
  */
 
 export function getZaloOaId() {
   return String(import.meta.env.VITE_ZALO_OA_ID || '').trim();
 }
 
-/** Encode share payload for button-share.zalo.me (unicode-safe). */
+/** Encode share payload for button-share.zalo.me (unicode-safe, compact JSON). */
 export function encodeZaloSharePayload(pageUrl) {
   const json = JSON.stringify({ url: String(pageUrl || '').trim() });
   const bytes = new TextEncoder().encode(json);
@@ -22,14 +20,25 @@ export function encodeZaloSharePayload(pageUrl) {
   return btoa(binary);
 }
 
-/** Web share picker URL — works without Official Account registration. */
+/** Web share picker — no Official Account required. */
 export function buildZaloShareExternalUrl(pageUrl) {
   const d = encodeZaloSharePayload(pageUrl);
   return `https://button-share.zalo.me/share_external?d=${encodeURIComponent(d)}`;
 }
 
+/**
+ * Open Zalo share picker. Prefer real navigation over window.open (popup blockers).
+ * Returns true when navigation was triggered.
+ */
 export function openZaloShare(pageUrl) {
-  if (!pageUrl) return;
+  if (!pageUrl || typeof window === 'undefined') return false;
   const href = buildZaloShareExternalUrl(pageUrl);
-  window.open(href, '_blank', 'noopener,noreferrer');
+
+  // Desktop: try sized popup first.
+  const popup = window.open(href, '_blank', 'noopener,noreferrer,width=600,height=520');
+  if (popup) return true;
+
+  // Mobile / blocked popup: same-tab navigation (reliable on iOS & in-app browsers).
+  window.location.assign(href);
+  return true;
 }

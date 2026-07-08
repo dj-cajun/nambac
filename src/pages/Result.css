@@ -754,6 +754,12 @@
     transform-origin: center top;
 }
 
+.tag-friends-zalo-wrap .zalo-share-link {
+    min-height: 0;
+    transform: scale(0.95);
+    transform-origin: center top;
+}
+
 .tag-friends-btn {
     flex: 1.1;
     height: 48px;
