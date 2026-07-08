@@ -12,6 +12,7 @@ import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizResults, fetchQuizzes as loadQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { hasQuizLikedThisSession, trackQuizLikeOnce } from '../lib/quizRanking';
 import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
+import { markTodayDone } from '../lib/todayDone';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
 import CopyToast from '../components/CopyToast';
 import { useCopyToast } from '../hooks/useCopyToast';
@@ -53,6 +54,7 @@ const Result = () => {
                 if (quizIdParam && !Number.isNaN(score)) {
                     trackQuizComplete(quizIdParam, score);
                 }
+                markTodayDone('quiz');
             }
         }
     }, [score, results, quizIdParam]);

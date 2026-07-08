@@ -9,10 +9,10 @@ import {
   pickNextUnvoted,
   getQuestionProgress,
   parseSharedChoice,
-  buildShareUrl,
   buildBalanceShareLink,
 } from '../../shared/balanceData.js';
 import { readLocalVotes, saveLocalVote, getVotedIds } from '../lib/balanceVotes';
+import { markTodayDone } from '../lib/todayDone';
 import { fetchBalanceSceneImage } from '../lib/balanceApi';
 import { buildBalanceOgImageUrl } from '../lib/siteUrl';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
@@ -135,6 +135,7 @@ export default function BalancePage() {
     setVoted(choice);
     setRevealing(false);
     incrementFeatureStat('balance', 'like').catch(() => {});
+    markTodayDone('balance');
   };
 
   const goNext = () => {

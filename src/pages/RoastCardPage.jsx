@@ -15,6 +15,7 @@ import {
 import { buildRoastOgImageUrl } from '../lib/siteUrl';
 import { fetchRoastSceneImage } from '../lib/roastApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import { markTodayDone } from '../lib/todayDone';
 import SceneNameOverlay from '../components/SceneNameOverlay';
 import './RoastCardPage.css';
 
@@ -109,6 +110,7 @@ export default function RoastCardPage() {
     setImageError(false);
     setPhase('loading');
     incrementFeatureStat('roast', 'like').catch(() => {});
+    markTodayDone('roast');
   };
 
   const handleRetry = () => {

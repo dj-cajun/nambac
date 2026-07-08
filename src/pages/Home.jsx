@@ -14,6 +14,7 @@ import AdSenseUnit from '../components/AdSenseUnit';
 import QuizImage from '../components/QuizImage';
 import QuizCardStats from '../components/QuizCardStats';
 import { AD_SLOTS } from '../lib/adsConfig';
+import { readTodayDone } from '../lib/todayDone';
 
 const SORT_OPTIONS = [
   { id: 'trending', label: '🔥 Hot', sortFn: (a, b) => (b.view_count || 0) - (a.view_count || 0) },
@@ -214,12 +215,23 @@ export default function Home() {
     balance: { view_count: 0, share_count: 0, like_count: 0 },
     roast: { view_count: 0, share_count: 0, like_count: 0 },
   });
+  const [doneToday, setDoneToday] = useState(() => readTodayDone());
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
   const introBodyRef = useRef(null);
 
   useEffect(() => {
     scrollToTop();
+  }, []);
+
+  useEffect(() => {
+    const refresh = () => setDoneToday(readTodayDone());
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
   }, []);
 
   useEffect(() => {
@@ -375,26 +387,43 @@ export default function Home() {
           {todayQuiz && (
             <button
               type="button"
-              className="home-today-card home-today-quiz"
+              className={`home-today-card home-today-quiz${doneToday.has('quiz') ? ' is-done' : ''}`}
               onClick={() => handleQuizClick(todayQuiz.id)}
             >
+              {doneToday.has('quiz') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
               <span className="home-today-emoji">🎯</span>
               <span className="home-today-label">Quiz</span>
             </button>
           )}
-          <Link to="/fortune" className="home-today-card home-today-fortune">
+          <Link
+            to="/fortune"
+            className={`home-today-card home-today-fortune${doneToday.has('fortune') ? ' is-done' : ''}`}
+          >
+            {doneToday.has('fortune') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
             <span className="home-today-emoji">{FORTUNE_BRAND.emoji}</span>
             <span className="home-today-label">Tử vi</span>
           </Link>
-          <Link to={`/balance/${todayBalance.id}`} className="home-today-card home-today-balance">
+          <Link
+            to={`/balance/${todayBalance.id}`}
+            className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
+          >
+            {doneToday.has('balance') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
             <span className="home-today-emoji">{todayBalance.emoji || '⚖️'}</span>
             <span className="home-today-label">1 trong 2</span>
           </Link>
-          <Link to="/roast-card" className="home-today-card home-today-roast">
+          <Link
+            to="/roast-card"
+            className={`home-today-card home-today-roast${doneToday.has('roast') ? ' is-done' : ''}`}
+          >
+            {doneToday.has('roast') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
             <span className="home-today-emoji">💳</span>
             <span className="home-today-label">Bóc phốt</span>
           </Link>
-          <Link to="/brain" className="home-today-card home-today-brain">
+          <Link
+            to="/brain"
+            className={`home-today-card home-today-brain${doneToday.has('brain') ? ' is-done' : ''}`}
+          >
+            {doneToday.has('brain') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
             <span className="home-today-emoji">🧠</span>
             <span className="home-today-label">Não bạn</span>
           </Link>

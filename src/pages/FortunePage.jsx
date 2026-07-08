@@ -26,6 +26,7 @@ import {
 } from '../lib/analytics.js';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink.js';
 import { buildFortuneOgImageUrl } from '../lib/siteUrl.js';
+import { markTodayDone } from '../lib/todayDone.js';
 import CopyToast from '../components/CopyToast.jsx';
 import { useCopyToast } from '../hooks/useCopyToast.js';
 import TarotFortuneWheel from '../components/contents/TarotFortuneWheel.jsx';
@@ -108,6 +109,7 @@ export default function FortunePage({ dayOffset = 0 }) {
   const handleRitualComplete = () => {
     setPhase('done');
     setShowActions(true);
+    if (dayOffset === 0) markTodayDone('fortune');
   };
 
   const handleRetry = () => {

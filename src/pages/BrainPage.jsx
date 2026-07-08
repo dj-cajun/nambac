@@ -14,6 +14,7 @@ import {
 import { buildBrainOgImageUrl } from '../lib/siteUrl';
 import { fetchBrainSceneImage } from '../lib/brainApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import { markTodayDone } from '../lib/todayDone';
 import SceneNameOverlay from '../components/SceneNameOverlay';
 import './BrainPage.css';
 
@@ -103,6 +104,7 @@ export default function BrainPage() {
     setImageSrc('');
     setPhase('loading');
     incrementFeatureStat('brain', 'like').catch(() => {});
+    markTodayDone('brain');
   };
 
   const handleReroll = () => {
