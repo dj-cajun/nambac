@@ -39,18 +39,22 @@
 }
 
 .home-today-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 7px;
 }
 
 .home-today-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     width: 100%;
-    text-align: left;
-    padding: 14px 16px;
+    text-align: center;
+    padding: 10px 4px;
     border: 2px solid #e2e8f0;
-    border-radius: 1rem;
+    border-radius: 0.85rem;
     background: #f8fafc;
     cursor: pointer;
     text-decoration: none;
@@ -86,6 +90,21 @@
 .home-today-brain {
     border-color: #7c3aed;
     background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+}
+
+.home-today-emoji {
+    display: block;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.home-today-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #1e293b;
+    white-space: nowrap;
 }
 
 .home-today-kicker {

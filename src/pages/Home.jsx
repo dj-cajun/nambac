@@ -378,25 +378,25 @@ export default function Home() {
               className="home-today-card home-today-quiz"
               onClick={() => handleQuizClick(todayQuiz.id)}
             >
-              <span className="home-today-kicker">Quiz hôm nay</span>
-              <span className="home-today-card-title">{todayQuiz.title}</span>
+              <span className="home-today-emoji">🎯</span>
+              <span className="home-today-label">Quiz</span>
             </button>
           )}
           <Link to="/fortune" className="home-today-card home-today-fortune">
-            <span className="home-today-kicker">{FORTUNE_BRAND.emoji} Tử vi tình yêu</span>
-            <span className="home-today-card-title">Xem vận may hôm nay</span>
+            <span className="home-today-emoji">{FORTUNE_BRAND.emoji}</span>
+            <span className="home-today-label">Tử vi</span>
           </Link>
           <Link to={`/balance/${todayBalance.id}`} className="home-today-card home-today-balance">
-            <span className="home-today-kicker">{todayBalance.emoji || '⚖️'} Chọn 1 trong 2</span>
-            <span className="home-today-card-title">{todayBalance.title}</span>
+            <span className="home-today-emoji">{todayBalance.emoji || '⚖️'}</span>
+            <span className="home-today-label">1 trong 2</span>
           </Link>
           <Link to="/roast-card" className="home-today-card home-today-roast">
-            <span className="home-today-kicker">💳 Thẻ đen bóc phốt</span>
-            <span className="home-today-card-title">Bóc phốt đứa bạn hay trễ hẹn, ghost Zalo</span>
+            <span className="home-today-emoji">💳</span>
+            <span className="home-today-label">Bóc phốt</span>
           </Link>
           <Link to="/brain" className="home-today-card home-today-brain">
-            <span className="home-today-kicker">🧠 Trong đầu bạn có gì</span>
-            <span className="home-today-card-title">Quét sóng não — xem % suy nghĩ thầm kín</span>
+            <span className="home-today-emoji">🧠</span>
+            <span className="home-today-label">Não bạn</span>
           </Link>
         </div>
       </section>
