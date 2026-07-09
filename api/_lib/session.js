@@ -64,6 +64,7 @@ export function setSessionCookie(res, payload) {
     `Max-Age=${MAX_AGE_SEC}`,
   ];
   if (secure) parts.push('Secure');
+  if (process.env.VERCEL) parts.push('Domain=.nambac.xyz');
   res.setHeader('Set-Cookie', parts.join('; '));
 }
 
@@ -77,6 +78,7 @@ export function clearSessionCookie(res) {
     'Max-Age=0',
   ];
   if (secure) parts.push('Secure');
+  if (process.env.VERCEL) parts.push('Domain=.nambac.xyz');
   res.setHeader('Set-Cookie', parts.join('; '));
 }
 

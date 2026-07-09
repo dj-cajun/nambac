@@ -1,7 +1,7 @@
 import {
   buildGoogleAuthUrl,
   exchangeGoogleCode,
-  getGoogleOAuthConfig,
+  getPostLoginOrigin,
   isGoogleOAuthConfigured,
 } from '../googleOAuth.js';
 import { upsertUserFromGoogle } from '../userDb.js';
@@ -12,7 +12,7 @@ import {
 } from '../session.js';
 
 function siteOrigin(req) {
-  return getGoogleOAuthConfig(req).siteUrl;
+  return getPostLoginOrigin(req);
 }
 
 function redirectWithError(req, res, message) {

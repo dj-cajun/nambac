@@ -1,3 +1,11 @@
+const NAMBAC_OAUTH_ORIGIN = 'https://nambac.xyz';
+
+function normalizeNambacOrigin(siteUrl) {
+  return String(siteUrl || '')
+    .replace(/\/$/, '')
+    .replace('://www.nambac.xyz', '://nambac.xyz');
+}
+
 function resolveSiteUrl(req) {
   const explicitRedirect = (process.env.GOOGLE_REDIRECT_URI || '').trim();
   if (explicitRedirect) {
@@ -8,20 +16,21 @@ function resolveSiteUrl(req) {
     };
   }
 
+  if (process.env.VERCEL) {
+    const siteUrl = normalizeNambacOrigin(process.env.VITE_SITE_URL || NAMBAC_OAUTH_ORIGIN);
+    return {
+      siteUrl,
+      redirectUri: `${siteUrl}/api/auth/google/callback`,
+    };
+  }
+
   let siteUrl = (process.env.VITE_SITE_URL || 'http://localhost:5173').replace(/\/$/, '');
 
   if (req) {
     const host = req.headers?.['x-forwarded-host'] || req.headers?.host;
-    if (host) {
-      const isLocal = host.startsWith('localhost') || host.startsWith('127.0.0.1');
-      const isVercel = Boolean(process.env.VERCEL);
-      if (isLocal && !isVercel) {
-        const proto = req.headers?.['x-forwarded-proto'] || 'http';
-        siteUrl = `${proto}://${host}`.replace(/\/$/, '');
-      } else if (isVercel && !host.includes('localhost')) {
-        const proto = req.headers?.['x-forwarded-proto'] || 'https';
-        siteUrl = `${proto}://${host}`.replace(/\/$/, '');
-      }
+    if (host && (host.startsWith('localhost') || host.startsWith('127.0.0.1'))) {
+      const proto = req.headers?.['x-forwarded-proto'] || 'http';
+      siteUrl = `${proto}://${host}`.replace(/\/$/, '');
     }
   }
 
@@ -29,6 +38,14 @@ function resolveSiteUrl(req) {
     siteUrl,
     redirectUri: `${siteUrl}/api/auth/google/callback`,
   };
+}
+
+/** Where to send the user after OAuth (pretty URL). */
+export function getPostLoginOrigin(req) {
+  if (process.env.VERCEL) {
+    return 'https://www.nambac.xyz';
+  }
+  return getGoogleOAuthConfig(req).siteUrl;
 }
 
 export function getGoogleOAuthConfig(req) {
