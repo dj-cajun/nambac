@@ -1,11 +1,5 @@
 const NAMBAC_OAUTH_ORIGIN = 'https://nambac.xyz';
 
-function normalizeNambacOrigin(siteUrl) {
-  return String(siteUrl || '')
-    .replace(/\/$/, '')
-    .replace('://www.nambac.xyz', '://nambac.xyz');
-}
-
 function resolveSiteUrl(req) {
   const explicitRedirect = (process.env.GOOGLE_REDIRECT_URI || '').trim();
   if (explicitRedirect) {
@@ -17,10 +11,9 @@ function resolveSiteUrl(req) {
   }
 
   if (process.env.VERCEL) {
-    const siteUrl = normalizeNambacOrigin(process.env.VITE_SITE_URL || NAMBAC_OAUTH_ORIGIN);
     return {
-      siteUrl,
-      redirectUri: `${siteUrl}/api/auth/google/callback`,
+      siteUrl: NAMBAC_OAUTH_ORIGIN,
+      redirectUri: `${NAMBAC_OAUTH_ORIGIN}/api/auth/google/callback`,
     };
   }
 
