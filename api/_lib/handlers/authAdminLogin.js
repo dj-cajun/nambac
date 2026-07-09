@@ -33,7 +33,7 @@ export default async function handler(req, res) {
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const username = String(body.username || '').trim();
-    const password = String(body.password || '');
+    const password = String(body.password || '').trim();
 
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password required' });

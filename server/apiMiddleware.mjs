@@ -14,8 +14,8 @@ let envLoaded = false;
 
 export function loadDevEnv() {
   if (envLoaded) return;
-  dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local') });
   dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
+  dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
   envLoaded = true;
 }
 

@@ -10,7 +10,7 @@ function timingSafeEqual(a, b) {
 export function getAdminCredentials() {
   return {
     username: (process.env.ADMIN_USERNAME || '').trim(),
-    password: process.env.ADMIN_PASSWORD || '',
+    password: (process.env.ADMIN_PASSWORD || '').trim(),
   };
 }
 
