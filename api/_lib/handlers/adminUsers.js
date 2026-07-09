@@ -1,5 +1,5 @@
 import { requireAdmin } from '../adminAuth.js';
-import { listUsers, updateUserRole } from '../userDb.js';
+import { listUsers, updateUser } from '../userDb.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,14 +17,22 @@ export default async function handler(req, res) {
       const data = await listUsers({
         limit: req.query?.limit,
         offset: req.query?.offset,
+        search: req.query?.search,
+        role: req.query?.role,
       });
       return res.status(200).json(data);
     }
 
     if (req.method === 'PATCH') {
       if (!userId) return res.status(400).json({ error: 'User id required' });
-      if (!body.role) return res.status(400).json({ error: 'role required' });
-      const user = await updateUserRole(userId, body.role);
+      const patch = {};
+      if (body.role !== undefined) patch.role = body.role;
+      if (body.email_opt_in !== undefined) patch.email_opt_in = Boolean(body.email_opt_in);
+      if (body.admin_note !== undefined) patch.admin_note = body.admin_note;
+      if (Object.keys(patch).length === 0) {
+        return res.status(400).json({ error: 'No fields to update' });
+      }
+      const user = await updateUser(userId, patch);
       return res.status(200).json({ user });
     }
 

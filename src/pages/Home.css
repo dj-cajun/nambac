@@ -319,7 +319,8 @@
 /* 3. Hero Carousel */
 .hero-carousel-outer {
     overflow: visible;
-    padding: 0 6px 0 2px;
+    padding: 0 6px 0.5rem 2px;
+    margin-bottom: 0.25rem;
 }
 
 .hero-carousel-wrapper {
@@ -413,8 +414,10 @@
 .carousel-dots {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 16px;
+    gap: 8px;
+    margin-top: 14px;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
 }
 
 .dot {
@@ -562,32 +565,69 @@
 
 .sort-tabs {
     display: flex;
-    gap: 8px;
-    padding: 0 20px 8px;
+    gap: 10px;
+    padding: 0;
+}
+
+.home-sort-bar {
+    margin-top: 1.25rem;
+    padding: 0 20px 0.5rem;
 }
 
 .sort-tab {
-    padding: 6px 14px;
-    border-radius: 50px;
-    border: 2px solid #000;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 42px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 2px solid #0f172a;
     font-family: var(--font-display);
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    color: #0f172a;
     background: #fff;
-    box-shadow: 2px 2px 0px 0px #000;
-    transition: all 0.1s;
+    box-shadow: 3px 3px 0 #0f172a;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.sort-tab:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+.sort-tab-emoji {
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.sort-tab-label {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .sort-tab.active {
     background: #FF2D85;
     color: #fff;
+    box-shadow: 3px 3px 0 #0f172a;
 }
 
 /* 5. List Style */
 .glass-section-title {
     padding: 0 20px;
     font-family: var(--font-display);
-    font-size: 20px;
-    color: #000;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 1rem;
     margin-bottom: 12px;
 }
 

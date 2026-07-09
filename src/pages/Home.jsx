@@ -22,9 +22,9 @@ import { AD_SLOTS } from '../lib/adsConfig';
 import { readTodayDone } from '../lib/todayDone';
 
 const SORT_OPTIONS = [
-  { id: 'trending', label: '🔥 Hot', sortFn: (a, b) => (b.view_count || 0) - (a.view_count || 0) },
-  { id: 'viral', label: '📤 Viral', sortFn: (a, b) => getViralScore(b) - getViralScore(a) },
-  { id: 'new', label: '✨ Mới', sortFn: (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0) },
+  { id: 'trending', emoji: '🔥', label: 'Hot', sortFn: (a, b) => (b.view_count || 0) - (a.view_count || 0) },
+  { id: 'viral', emoji: '📤', label: 'Viral', sortFn: (a, b) => getViralScore(b) - getViralScore(a) },
+  { id: 'new', emoji: '✨', label: 'Mới', sortFn: (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0) },
 ];
 
 const SECTION_TITLES = {
@@ -541,17 +541,22 @@ export default function Home() {
         </div>
       )}
 
-      <div className="sort-tabs">
-        {SORT_OPTIONS.map((opt) => (
-          <button
-            key={opt.id}
-            type="button"
-            className={`sort-tab ${sortMode === opt.id ? 'active' : ''}`}
-            onClick={() => setSortMode(opt.id)}
-          >
-            {opt.label}
-          </button>
-        ))}
+      <div className="home-sort-bar">
+        <div className="sort-tabs" role="tablist" aria-label="Sắp xếp quiz">
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              role="tab"
+              aria-selected={sortMode === opt.id}
+              className={`sort-tab ${sortMode === opt.id ? 'active' : ''}`}
+              onClick={() => setSortMode(opt.id)}
+            >
+              <span className="sort-tab-emoji" aria-hidden="true">{opt.emoji}</span>
+              <span className="sort-tab-label">{opt.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mt-6">

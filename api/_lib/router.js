@@ -36,6 +36,7 @@ import fortuneStats from './handlers/fortuneStats.js';
 import { authGoogleStart, authGoogleCallback } from './handlers/authGoogle.js';
 import authSession, { authLogout } from './handlers/authSession.js';
 import adminUsers from './handlers/adminUsers.js';
+import siteVisit from './handlers/siteVisit.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -64,6 +65,9 @@ export async function dispatch(req, res, segments = []) {
 
   // ── B2B inquiries ──
   if (a === 'brand-inquiries' && !b && method === 'POST') return brandInquiries(req, res);
+
+  // ── Site visit (daily unique visitors) ──
+  if (a === 'visit' && !b && method === 'POST') return siteVisit(req, res);
 
   // ── Google OAuth / session ──
   if (a === 'auth' && b === 'google' && c === 'callback' && method === 'GET') {

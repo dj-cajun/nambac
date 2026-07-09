@@ -108,16 +108,26 @@ export function createAdminApi(adminKey = '') {
       return adminFetch(apiUrl('/admin/analytics'), adminKey);
     },
 
-    async fetchUsers() {
-      return adminFetch(apiUrl('/admin/users'), adminKey);
+    async fetchUsers({ search = '', role = 'all', limit, offset } = {}) {
+      const params = new URLSearchParams();
+      if (search) params.set('search', search);
+      if (role && role !== 'all') params.set('role', role);
+      if (limit) params.set('limit', String(limit));
+      if (offset) params.set('offset', String(offset));
+      const qs = params.toString();
+      return adminFetch(apiUrl(`/admin/users${qs ? `?${qs}` : ''}`), adminKey);
+    },
+
+    async updateUser(userId, patch) {
+      const data = await adminFetch(apiUrl('/admin/users'), adminKey, {
+        method: 'PATCH',
+        body: JSON.stringify({ id: userId, ...patch }),
+      });
+      return data.user;
     },
 
     async updateUserRole(userId, role) {
-      const data = await adminFetch(apiUrl('/admin/users'), adminKey, {
-        method: 'PATCH',
-        body: JSON.stringify({ id: userId, role }),
-      });
-      return data.user;
+      return this.updateUser(userId, { role });
     },
   };
 }

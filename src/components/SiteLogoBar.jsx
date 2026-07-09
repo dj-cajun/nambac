@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDrawer } from './shell/DrawerContext';
 import { scrollToTop } from '../lib/scrollToTop';
 import { recordDailyVisit } from '../lib/dailyStreak';
+import { recordSiteVisit } from '../lib/siteVisit';
 import './SiteLogoBar.css';
 
 const POPUP_SESSION_KEY = 'nambac_streak_popup_shown';
@@ -20,6 +21,7 @@ export default function SiteLogoBar() {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
+    recordSiteVisit();
     const { streak: current } = recordDailyVisit();
     setStreak(current);
     if (current <= 0) return undefined;

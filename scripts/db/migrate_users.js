@@ -8,14 +8,20 @@ dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 
 async function main() {
-  const sql = fs.readFileSync(path.join(PROJECT_ROOT, 'turso/migrations/004_users.sql'), 'utf-8');
   const db = getTurso();
 
-  for (const statement of sql.split(';').map((s) => s.trim()).filter(Boolean)) {
-    await db.execute(statement);
+  for (const file of ['004_users.sql', '005_users_admin.sql', '006_site_visitors.sql']) {
+    const sql = fs.readFileSync(path.join(PROJECT_ROOT, `turso/migrations/${file}`), 'utf-8');
+    for (const statement of sql.split(';').map((s) => s.trim()).filter(Boolean)) {
+      try {
+        await db.execute(statement);
+      } catch (err) {
+        if (!String(err.message).includes('duplicate column')) throw err;
+      }
+    }
   }
 
-  console.log('✅ Users migration applied');
+  console.log('✅ Users migrations applied');
 }
 
 main().catch((err) => {
