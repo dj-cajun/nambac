@@ -13,7 +13,9 @@
 | `VITE_API_URL` | `/api` | 프론트 → API |
 | `GEMINI_API_KEY` | `AIza...` | AI 퀴즈 텍스트 (서버) |
 | `OPENROUTER_API_KEY` | `sk-or-...` | AI 이미지 (서버) |
-| `ADMIN_API_KEY` | 랜덤 문자열 | Admin API — Production 필수 |
+| `ADMIN_API_KEY` | 랜덤 문자열 | Admin API (스크립트·레거시) |
+| `ADMIN_USERNAME` | `admin` | 어드민 페이지 로그인 아이디 |
+| `ADMIN_PASSWORD` | 랜덤 문자열 | 어드민 페이지 로그인 비밀번호 |
 | `GOOGLE_CLIENT_ID` | `....apps.googleusercontent.com` | Google 로그인 |
 | `GOOGLE_CLIENT_SECRET` | `GOCSPX-...` | Google 로그인 (서버 전용) |
 | `SESSION_SECRET` | 랜덤 문자열 | 로그인 세션 쿠키 서명 |
@@ -76,4 +78,4 @@ curl -s -X POST https://nambac.vercel.app/api/cron/daily-quiz \
   -H "Content-Type: application/json" -d '{"notify":false}'
 ```
 
-Admin: `/admin` → `ADMIN_API_KEY` 입력 unlock
+Admin: `/admin` → `ADMIN_USERNAME` / `ADMIN_PASSWORD` 로그인

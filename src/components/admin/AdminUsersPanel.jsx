@@ -24,8 +24,8 @@ function downloadText(filename, text) {
   URL.revokeObjectURL(url);
 }
 
-export default function AdminUsersPanel({ adminKey, showToast }) {
-  const api = useMemo(() => createAdminApi(adminKey), [adminKey]);
+export default function AdminUsersPanel({ showToast }) {
+  const api = useMemo(() => createAdminApi(), []);
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState(null);
   const [total, setTotal] = useState(0);

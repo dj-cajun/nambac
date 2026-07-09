@@ -35,6 +35,7 @@ import fortuneShare from './handlers/fortuneShare.js';
 import fortuneStats from './handlers/fortuneStats.js';
 import { authGoogleStart, authGoogleCallback } from './handlers/authGoogle.js';
 import authSession, { authLogout } from './handlers/authSession.js';
+import authAdminLogin from './handlers/authAdminLogin.js';
 import adminUsers from './handlers/adminUsers.js';
 import siteVisit from './handlers/siteVisit.js';
 
@@ -76,6 +77,7 @@ export async function dispatch(req, res, segments = []) {
   if (a === 'auth' && b === 'google' && !c && method === 'GET') return authGoogleStart(req, res);
   if (a === 'auth' && b === 'me' && !c && method === 'GET') return authSession(req, res);
   if (a === 'auth' && b === 'logout' && !c && method === 'POST') return authLogout(req, res);
+  if (a === 'auth' && b === 'admin' && c === 'login' && method === 'POST') return authAdminLogin(req, res);
 
   // ── Image generation ──
   if (a === 'generate-image' && !b && method === 'POST') return generateImage(req, res);

@@ -2,9 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { QUIZ_CATEGORIES, getFilterTypes, getCategoryLabel, matchesCategory, normalizeCategory } from '../constants/categories';
 import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi } from '../lib/adminApi';
-import { getAdminKey, setAdminKey } from '../lib/adminKey';
 import { getArchetypesByGroup } from '../../shared/personalityArchetypes.js';
-import GoogleLoginButton from '../components/GoogleLoginButton';
 import AdminUsersPanel from '../components/admin/AdminUsersPanel';
 import { useAuth } from '../context/AuthContext';
 import './Admin.css';
@@ -16,13 +14,13 @@ const getAdminCategoryLabel = (type) => {
 };
 
 const Admin = () => {
-    const { isAdmin: isGoogleAdmin } = useAuth();
-    const [adminKey, setAdminKeyState] = useState(() => getAdminKey());
-    const isAdminAuthed = Boolean(adminKey) || isGoogleAdmin;
-    const [unlockInput, setUnlockInput] = useState('');
-    const [unlockError, setUnlockError] = useState('');
-    const [unlockLoading, setUnlockLoading] = useState(false);
-    const api = useMemo(() => createAdminApi(adminKey), [adminKey]);
+    const { isPasswordAdmin, loading: authLoading, loginWithAdminPassword } = useAuth();
+    const isAdminAuthed = isPasswordAdmin;
+    const api = useMemo(() => createAdminApi(), []);
+    const [usernameInput, setUsernameInput] = useState('');
+    const [passwordInput, setPasswordInput] = useState('');
+    const [loginError, setLoginError] = useState('');
+    const [loginLoading, setLoginLoading] = useState(false);
 
     const [quizzes, setQuizzes] = useState([]);
     const [showEditor, setShowEditor] = useState(false);
@@ -61,22 +59,22 @@ const Admin = () => {
         window.setTimeout(() => setToast(null), 3200);
     }, []);
 
-    const handleUnlock = async (e) => {
+    const handleAdminLogin = async (e) => {
         e.preventDefault();
-        const key = unlockInput.trim();
-        if (!key) return;
-        setUnlockLoading(true);
-        setUnlockError('');
+        const username = usernameInput.trim();
+        const password = passwordInput;
+        if (!username || !password) return;
+        setLoginLoading(true);
+        setLoginError('');
         try {
-            const testApi = createAdminApi(key);
-            await testApi.fetchAllQuizzes();
-            setAdminKey(key);
-            setAdminKeyState(key);
-            setUnlockInput('');
-        } catch {
-            setUnlockError('Admin key가 올바르지 않습니다.');
+            await loginWithAdminPassword(username, password);
+            setPasswordInput('');
+        } catch (error) {
+            setLoginError(error.message === 'Invalid credentials'
+                ? '아이디 또는 비밀번호가 올바르지 않습니다.'
+                : '로그인에 실패했습니다.');
         } finally {
-            setUnlockLoading(false);
+            setLoginLoading(false);
         }
     };
 
@@ -410,27 +408,37 @@ const Admin = () => {
             <div className="min-h-screen flex items-center justify-center p-6">
                 <div className="w-full max-w-sm space-y-4 border-[3px] border-black rounded-lg p-8 bg-white shadow-md">
                     <h1 className="text-xl font-black">Admin</h1>
-                    <p className="text-sm text-gray-600">Google 계정 또는 Admin API key로 로그인하세요.</p>
-                    <GoogleLoginButton returnTo="/admin" label="Google로 로그인" />
-                    <div className="text-center text-xs font-bold text-gray-400">또는</div>
-                    <form onSubmit={handleUnlock} className="space-y-4">
-                    <input
-                        type="password"
-                        value={unlockInput}
-                        onChange={(e) => setUnlockInput(e.target.value)}
-                        className="w-full border-2 border-black rounded px-3 py-2"
-                        placeholder="ADMIN_API_KEY"
-                        autoComplete="off"
-                    />
-                    {unlockError && <p className="text-sm text-red-600 font-bold">{unlockError}</p>}
-                    <button
-                        type="submit"
-                        disabled={unlockLoading}
-                        className="w-full py-2 bg-[#FF2D85] text-white font-black rounded border-2 border-black disabled:opacity-50"
-                    >
-                        {unlockLoading ? '확인 중…' : 'Unlock'}
-                    </button>
-                    </form>
+                    {authLoading ? (
+                        <p className="text-sm text-gray-600">세션 확인 중…</p>
+                    ) : (
+                        <form onSubmit={handleAdminLogin} className="space-y-4">
+                            <p className="text-sm text-gray-600">관리자 아이디와 비밀번호로 로그인하세요.</p>
+                            <input
+                                type="text"
+                                value={usernameInput}
+                                onChange={(e) => setUsernameInput(e.target.value)}
+                                className="w-full border-2 border-black rounded px-3 py-2"
+                                placeholder="아이디"
+                                autoComplete="username"
+                            />
+                            <input
+                                type="password"
+                                value={passwordInput}
+                                onChange={(e) => setPasswordInput(e.target.value)}
+                                className="w-full border-2 border-black rounded px-3 py-2"
+                                placeholder="비밀번호"
+                                autoComplete="current-password"
+                            />
+                            {loginError && <p className="text-sm text-red-600 font-bold">{loginError}</p>}
+                            <button
+                                type="submit"
+                                disabled={loginLoading}
+                                className="w-full py-2 bg-[#FF2D85] text-white font-black rounded border-2 border-black disabled:opacity-50"
+                            >
+                                {loginLoading ? '로그인 중…' : '로그인'}
+                            </button>
+                        </form>
+                    )}
                 </div>
             </div>
         ) : (
@@ -573,7 +581,7 @@ const Admin = () => {
                                 >
                                     ← 목록으로
                                 </button>
-                                <QuizEditor embedded={true} initialAuth={true} adminKey={adminKey} />
+                                <QuizEditor embedded={true} initialAuth={true} />
                             </div>
                         ) : (
                             <>
@@ -841,7 +849,7 @@ const Admin = () => {
                                             )}
                                         </>
                                     ) : adminTab === 'users' ? (
-                                        <AdminUsersPanel adminKey={adminKey} showToast={showToast} />
+                                        <AdminUsersPanel showToast={showToast} />
                                     ) : (
                                         <>
                                             {analyticsLoading ? (

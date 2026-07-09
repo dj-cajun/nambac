@@ -19,3 +19,15 @@ export async function logoutUser() {
   if (!res.ok) throw new Error('Logout failed');
   return true;
 }
+
+export async function loginAdmin(username, password) {
+  const res = await fetch(apiUrl('/auth/admin/login'), {
+    ...fetchOpts,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Login failed');
+  return data.user || null;
+}

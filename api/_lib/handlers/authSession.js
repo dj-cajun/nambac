@@ -1,5 +1,6 @@
 import { clearSessionCookie, getSession, setSessionCookie } from '../session.js';
 import { getUserById } from '../userDb.js';
+import { isPasswordAdminSession, publicPasswordAdminUser } from './authAdminLogin.js';
 
 function publicUser(user) {
   if (!user) return null;
@@ -9,6 +10,7 @@ function publicUser(user) {
     name: user.name,
     picture_url: user.picture_url,
     role: user.role,
+    auth_kind: user.auth_kind || 'google',
     last_login_at: user.last_login_at,
     created_at: user.created_at,
   };
@@ -26,6 +28,10 @@ export default async function handler(req, res) {
     const session = getSession(req);
     if (!session?.userId) {
       return res.status(200).json({ user: null });
+    }
+
+    if (isPasswordAdminSession(session)) {
+      return res.status(200).json({ user: publicPasswordAdminUser(session.email) });
     }
 
     const user = await getUserById(session.userId);

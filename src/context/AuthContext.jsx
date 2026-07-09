@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { fetchCurrentUser, googleLoginUrl, logoutUser } from '../lib/authApi';
+import { fetchCurrentUser, googleLoginUrl, loginAdmin, logoutUser } from '../lib/authApi';
 
 const AuthContext = createContext(null);
 
@@ -35,6 +35,12 @@ export function AuthProvider({ children }) {
     window.location.href = googleLoginUrl(returnTo);
   }, []);
 
+  const loginWithAdminPassword = useCallback(async (username, password) => {
+    const adminUser = await loginAdmin(username, password);
+    setUser(adminUser);
+    return adminUser;
+  }, []);
+
   const logout = useCallback(async () => {
     await logoutUser();
     setUser(null);
@@ -45,10 +51,12 @@ export function AuthProvider({ children }) {
     loading,
     isLoggedIn: Boolean(user),
     isAdmin: user?.role === 'admin',
+    isPasswordAdmin: user?.auth_kind === 'admin_password',
     loginWithGoogle,
+    loginWithAdminPassword,
     logout,
     refreshUser,
-  }), [user, loading, loginWithGoogle, logout, refreshUser]);
+  }), [user, loading, loginWithGoogle, loginWithAdminPassword, logout, refreshUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
