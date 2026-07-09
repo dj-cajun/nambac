@@ -21,7 +21,12 @@
   max-width: 320px;
 }
 
-/* No OA — real link navigation (mobile-safe, unlike window.open) */
+.zalo-share-wrap--fill {
+  width: 100%;
+  min-height: 100%;
+}
+
+/* No OA — clickable control (Web Share → Zalo URL → copy) */
 .zalo-share-link {
   display: inline-flex;
   align-items: center;
@@ -34,14 +39,16 @@
   background: #fff;
   color: #0068ff;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 800;
   text-decoration: none;
   cursor: pointer;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-.zalo-share-link:active {
+.zalo-share-link:active,
+.zalo-share-link.is-busy {
   opacity: 0.85;
 }
 
@@ -57,10 +64,11 @@
   font-size: 13px;
   font-weight: 900;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .zalo-share-link-text {
-  line-height: 1;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
@@ -80,8 +88,47 @@
   color: #0068ff;
 }
 
+/* Fill the blue TAG bar — whole area is tappable */
+.zalo-share-link--fill {
+  width: 100%;
+  min-height: 100%;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 2px;
+  background: transparent;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.zalo-share-link--fill .zalo-share-link-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  background: #fff;
+  color: #0068ff;
+}
+
+.zalo-share-link--fill .zalo-share-link-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.15;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 /* Inside tag-friends bar on result pages */
-.tag-friends-zalo-wrap .zalo-share-link {
+.tag-friends-zalo-wrap {
+  position: relative;
+  cursor: pointer;
+}
+
+.tag-friends-zalo-wrap .zalo-share-link:not(.zalo-share-link--fill) {
   background: transparent;
   color: #fff;
   min-height: 28px;
@@ -90,14 +137,14 @@
   border: none;
 }
 
-.tag-friends-zalo-wrap .zalo-share-link-icon {
+.tag-friends-zalo-wrap .zalo-share-link:not(.zalo-share-link--fill) .zalo-share-link-icon {
   width: 18px;
   height: 18px;
   font-size: 13px;
 }
 
-.tag-friends-zalo-wrap .zalo-share-link-text {
+.tag-friends-zalo-wrap .zalo-share-link:not(.zalo-share-link--fill) .zalo-share-link-text {
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.02em;
 }

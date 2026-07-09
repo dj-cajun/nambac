@@ -298,6 +298,8 @@ export default function BrainPage() {
             <ZaloShareButton
               url={displayName ? shareUrl : ''}
               className="zalo-share-wrap--block"
+              title="Soi não — nambac"
+              text="Xem kết quả soi não trên nambac!"
               onShared={() => incrementFeatureStat('brain', 'share').catch(() => {})}
             />
 

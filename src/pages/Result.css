@@ -732,10 +732,10 @@
     min-height: 48px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    padding: 6px 4px;
+    align-items: stretch;
+    justify-content: stretch;
+    gap: 0;
+    padding: 0;
     background: #0068ff;
     border: 2px solid var(--comic-charcoal);
     border-radius: 12px;
@@ -744,28 +744,20 @@
     overflow: hidden;
 }
 
+.tag-friends-zalo-wrap:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--comic-charcoal);
+}
+
 .tag-friends-zalo-label {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    color: #fff;
-    line-height: 1.15;
-    text-align: center;
-    white-space: normal;
-    max-width: 100%;
-    overflow-wrap: anywhere;
+    display: none;
 }
 
-.tag-friends-zalo-wrap .zalo-share-wrap {
-    min-height: 0;
-    transform: scale(0.92);
-    transform-origin: center top;
-}
-
+.tag-friends-zalo-wrap .zalo-share-wrap,
 .tag-friends-zalo-wrap .zalo-share-link {
-    min-height: 0;
-    transform: scale(0.95);
-    transform-origin: center top;
+    min-height: 48px;
+    width: 100%;
+    flex: 1;
 }
 
 .tag-friends-btn {

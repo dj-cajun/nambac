@@ -315,6 +315,8 @@ export default function BalancePage() {
               <ZaloShareButton
                 url={balanceShareUrl}
                 className="zalo-share-wrap--block"
+                title="This or That — nambac"
+                text="Vote cùng mình trên nambac!"
                 onShared={() => incrementFeatureStat('balance', 'share').catch(() => {})}
               />
             </motion.div>

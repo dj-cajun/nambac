@@ -360,12 +360,15 @@ export default function FortunePage({ dayOffset = 0 }) {
             </button>
 
             <div className="tag-friends-zalo-wrap" aria-label="Chia sẻ Zalo — tag 3 bạn">
-              <span className="tag-friends-zalo-label">ZALO · TAG 3 BẠN</span>
               {result && (
                 <ZaloShareButton
+                  fillParent
                   url={buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)}
-                  label="Chia sẻ Zalo"
+                  label="TAG 3 BẠN"
+                  title="Tử vi tình yêu — nambac"
+                  text="Xem tử vi này trên nambac — tag 3 bạn ngay!"
                   onShared={handleZaloShare}
+                  onToast={showToast}
                 />
               )}
             </div>

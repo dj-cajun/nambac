@@ -298,6 +298,8 @@ export default function RoastCardPage() {
             <ZaloShareButton
               url={displayName ? sharePageUrl : ''}
               className="zalo-share-wrap--block"
+              title="Thẻ đen bóc phốt — nambac"
+              text="Xem thẻ đen này trên nambac!"
               onShared={() => incrementFeatureStat('roast', 'share').catch(() => {})}
             />
 

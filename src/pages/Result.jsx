@@ -252,8 +252,15 @@ const Result = () => {
                     </button>
 
                     <div className="tag-friends-zalo-wrap" aria-label="Chia sẻ Zalo — tag 3 bạn">
-                        <span className="tag-friends-zalo-label">ZALO · TAG 3 BẠN</span>
-                        <ZaloShareButton url={shareUrl} label="Chia sẻ Zalo" onShared={handleZaloShare} />
+                        <ZaloShareButton
+                            fillParent
+                            url={shareUrl}
+                            label="TAG 3 BẠN"
+                            title="nambac.xyz"
+                            text="Xem kết quả này trên nambac — tag 3 bạn ngay!"
+                            onShared={handleZaloShare}
+                            onToast={showToast}
+                        />
                     </div>
 
                     {/* Download Image Button */}
