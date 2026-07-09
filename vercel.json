@@ -9,6 +9,10 @@
   },
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/handler?path=sitemap"
+    },
+    {
       "source": "/share-fortune/:name/:idx/:date",
       "destination": "/api/handler?path=fortune-share&name=:name&idx=:idx&date=:date"
     },

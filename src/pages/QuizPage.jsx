@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { calculateScore } from '../logic/scoring';
-import MBTIQuiz from './MBTIQuiz';
-import CustomQuiz from './CustomQuiz';
-import NameInputQuiz from './NameInputQuiz';
 import './QuizPage.css';
+
+const MBTIQuiz = lazy(() => import('./MBTIQuiz'));
+const CustomQuiz = lazy(() => import('./CustomQuiz'));
+const NameInputQuiz = lazy(() => import('./NameInputQuiz'));
 import { getImageUrl } from '../lib/apiConfig';
 import { getCategoryLabel } from '../constants/categories';
 import { fetchQuizBundle, incrementQuizStat } from '../lib/quizApi';
@@ -135,15 +136,27 @@ export default function QuizPage({ quizIdProp }) {
     const quizType = quizInfo.quiz_type || 'binary_5q';
 
     if (quizType === 'name_input') {
-        return <NameInputQuiz quizInfo={quizInfo} results={results} />;
+        return (
+            <Suspense fallback={<div className="quiz-loading">Đang tải...</div>}>
+                <NameInputQuiz quizInfo={quizInfo} results={results} />
+            </Suspense>
+        );
     }
 
     if (quizType === 'mbti_12q') {
-        return <MBTIQuiz quizInfo={quizInfo} questions={questions} results={results} />;
+        return (
+            <Suspense fallback={<div className="quiz-loading">Đang tải...</div>}>
+                <MBTIQuiz quizInfo={quizInfo} questions={questions} results={results} />
+            </Suspense>
+        );
     }
 
     if (quizType === 'sponsor' || quizType === 'full_custom') {
-        return <CustomQuiz quizInfo={quizInfo} questions={questions} results={results} />;
+        return (
+            <Suspense fallback={<div className="quiz-loading">Đang tải...</div>}>
+                <CustomQuiz quizInfo={quizInfo} questions={questions} results={results} />
+            </Suspense>
+        );
     }
 
     if (showResult) {

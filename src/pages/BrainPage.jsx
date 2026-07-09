@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, RefreshCw } from 'lucide-react';
-import html2canvas from 'html2canvas';
 import {
   getBrainResultById,
   pickRandomBrainResult,
@@ -137,6 +136,7 @@ export default function BrainPage() {
     if (!cardRef.current || !displayName) return;
     setIsGenerating(true);
     try {
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(cardRef.current, {
         scale: 2,
         useCORS: true,

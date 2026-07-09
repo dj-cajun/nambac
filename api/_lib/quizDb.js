@@ -2,15 +2,26 @@ import { randomUUID } from 'crypto';
 import { getTurso, rowToQuiz, rowToQuestion, rowToResult } from './turso.js';
 import { normalizeCategory } from '../../shared/categories.js';
 
+const QUIZ_LIST_COLUMNS = `id, title, description, category, quiz_type, image_url,
+  view_count, share_count, like_count, participant_count, created_at,
+  is_active, status`;
+
 export async function listActiveQuizzes() {
   await ensureQuizLikeColumn();
   const db = getTurso();
   const rs = await db.execute({
-    sql: `SELECT * FROM quizzes
+    sql: `SELECT ${QUIZ_LIST_COLUMNS}
+          FROM quizzes
           WHERE is_active = 1 AND (status IS NULL OR status != 'hidden')
           ORDER BY datetime(created_at) DESC`,
   });
-  return rs.rows.map(rowToQuiz);
+  // List payloads omit heavy config/design JSON — detail routes still SELECT *.
+  return rs.rows.map((row) => ({
+    ...row,
+    is_active: row.is_active === 1 || row.is_active === true,
+    config: null,
+    design: null,
+  }));
 }
 
 export async function getQuizById(quizId) {
@@ -72,15 +83,22 @@ const STAT_FIELDS = {
   like: 'like_count',
 };
 
+let likeColumnReady = null;
+
 async function ensureQuizLikeColumn() {
-  const db = getTurso();
-  try {
-    await db.execute({ sql: 'ALTER TABLE quizzes ADD COLUMN like_count INTEGER DEFAULT 0' });
-  } catch (err) {
-    if (!String(err.message).toLowerCase().includes('duplicate column')) {
-      throw err;
+  if (likeColumnReady) return likeColumnReady;
+  likeColumnReady = (async () => {
+    const db = getTurso();
+    try {
+      await db.execute({ sql: 'ALTER TABLE quizzes ADD COLUMN like_count INTEGER DEFAULT 0' });
+    } catch (err) {
+      if (!String(err.message).toLowerCase().includes('duplicate column')) {
+        likeColumnReady = null;
+        throw err;
+      }
     }
-  }
+  })();
+  return likeColumnReady;
 }
 
 export function quizPublicStats(quiz) {

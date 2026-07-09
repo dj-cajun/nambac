@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://nambac.xyz/sitemap.xml
+Sitemap: https://www.nambac.xyz/sitemap.xml

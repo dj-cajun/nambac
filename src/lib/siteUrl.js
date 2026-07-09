@@ -1,12 +1,15 @@
-/** Site origin for share links — works on vercel.app until nambac.xyz is restored */
+import { CANONICAL_SITE_ORIGIN, normalizeSiteOrigin } from '../../shared/siteOrigin.js';
 
-const FALLBACK_ORIGIN = import.meta.env.VITE_SITE_URL || 'https://nambac.vercel.app';
+/** Site origin for share links — prefer live window origin, else canonical www. */
+const FALLBACK_ORIGIN = normalizeSiteOrigin(
+  import.meta.env.VITE_SITE_URL || CANONICAL_SITE_ORIGIN,
+);
 
 export function getSiteOrigin() {
   if (typeof window !== 'undefined' && window.location?.origin) {
     return window.location.origin;
   }
-  return FALLBACK_ORIGIN.replace(/\/$/, '');
+  return FALLBACK_ORIGIN;
 }
 
 export function buildShareUrl(path) {

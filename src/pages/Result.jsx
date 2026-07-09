@@ -3,7 +3,6 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Download, Share2, Heart } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import html2canvas from 'html2canvas';
 import AdSenseUnit from '../components/AdSenseUnit';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { trackQuizComplete, trackShare } from '../lib/analytics';
@@ -98,6 +97,7 @@ const Result = () => {
     const handleDownloadImage = async () => {
         if (!cardRef.current) return;
         try {
+            const { default: html2canvas } = await import('html2canvas');
             const canvas = await html2canvas(cardRef.current, {
                 useCORS: true,
                 scale: 2, // High resolution

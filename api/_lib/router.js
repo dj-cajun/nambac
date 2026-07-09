@@ -39,6 +39,7 @@ import authAdminLogin from './handlers/authAdminLogin.js';
 import adminUsers from './handlers/adminUsers.js';
 import siteVisit from './handlers/siteVisit.js';
 import { playerGradeGet, playerGradeComplete } from './handlers/playerGrade.js';
+import sitemap from './handlers/sitemap.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -74,6 +75,9 @@ export async function dispatch(req, res, segments = []) {
   // ── Player grade (quiz completion tiers) ──
   if (a === 'player' && b === 'grade' && !c && method === 'GET') return playerGradeGet(req, res);
   if (a === 'player' && b === 'complete' && !c && method === 'POST') return playerGradeComplete(req, res);
+
+  // ── Dynamic sitemap (static pages + categories + quizzes) ──
+  if (a === 'sitemap' && !b && method === 'GET') return sitemap(req, res);
 
   // ── Google OAuth / session ──
   if (a === 'auth' && b === 'google' && c === 'callback' && method === 'GET') {

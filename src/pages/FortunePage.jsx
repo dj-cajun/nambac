@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Download, Share2, Heart } from 'lucide-react';
-import html2canvas from 'html2canvas';
 import {
   calculateTodayFortune,
   getDateStr,
@@ -198,6 +197,7 @@ export default function FortunePage({ dayOffset = 0 }) {
   const handleDownload = async () => {
     if (!cardRef.current) return;
     try {
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(cardRef.current, {
         useCORS: true,
         scale: 2,

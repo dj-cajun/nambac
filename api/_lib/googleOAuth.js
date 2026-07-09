@@ -1,4 +1,8 @@
+import { CANONICAL_SITE_ORIGIN } from '../../shared/siteOrigin.js';
+
+/** OAuth callback stays on apex (Google console); users land on www after login. */
 const NAMBAC_OAUTH_ORIGIN = 'https://nambac.xyz';
+const NAMBAC_POST_LOGIN_ORIGIN = CANONICAL_SITE_ORIGIN;
 
 function resolveSiteUrl(req) {
   const explicitRedirect = (process.env.GOOGLE_REDIRECT_URI || '').trim();
@@ -36,7 +40,7 @@ function resolveSiteUrl(req) {
 /** Where to send the user after OAuth (pretty URL). */
 export function getPostLoginOrigin(req) {
   if (process.env.VERCEL) {
-    return 'https://www.nambac.xyz';
+    return NAMBAC_POST_LOGIN_ORIGIN;
   }
   return getGoogleOAuthConfig(req).siteUrl;
 }

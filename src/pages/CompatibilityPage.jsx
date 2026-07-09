@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Home, Share2, Download, Zap } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import html2canvas from 'html2canvas';
 import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizBundle } from '../lib/quizApi';
 import { trackCompatStart, trackShare } from '../lib/analytics';
@@ -98,6 +97,7 @@ const CompatibilityPage = () => {
     const handleDownload = async () => {
         if (!pageRef.current) return;
         try {
+            const { default: html2canvas } = await import('html2canvas');
             const canvas = await html2canvas(pageRef.current, {
                 useCORS: true,
                 scale: 2,

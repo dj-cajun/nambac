@@ -3,20 +3,24 @@
   "short_name": "Nambac",
   "description": "Khám phá tính cách AI dành cho thế hệ MZ tại Sài Gòn",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#fff9fc",
   "theme_color": "#FF2D85",
   "orientation": "portrait",
+  "lang": "vi",
   "icons": [
     {
       "src": "/images/logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/images/logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

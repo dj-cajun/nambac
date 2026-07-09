@@ -17,3 +17,21 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+
+  prod-smoke:
+    runs-on: ubuntu-latest
+    needs: lint
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Wait for Vercel production
+        run: sleep 90
+      - name: Production API smoke
+        env:
+          TEST_API_URL: https://www.nambac.xyz/api
+        run: npm run verify:api

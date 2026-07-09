@@ -1,5 +1,9 @@
 import { apiUrl } from './apiConfig';
 
+const QUIZ_LIST_TTL_MS = 45_000;
+let quizListCache = null;
+let quizListInflight = null;
+
 async function parseJson(res) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
@@ -8,9 +12,25 @@ async function parseJson(res) {
   return data;
 }
 
-export async function fetchQuizzes() {
-  const data = await parseJson(await fetch(apiUrl('/quizzes')));
-  return data.quizzes || [];
+export async function fetchQuizzes({ force = false } = {}) {
+  const now = Date.now();
+  if (!force && quizListCache && now - quizListCache.at < QUIZ_LIST_TTL_MS) {
+    return quizListCache.quizzes;
+  }
+  if (!force && quizListInflight) return quizListInflight;
+
+  quizListInflight = (async () => {
+    const data = await parseJson(await fetch(apiUrl('/quizzes')));
+    const quizzes = data.quizzes || [];
+    quizListCache = { quizzes, at: Date.now() };
+    return quizzes;
+  })();
+
+  try {
+    return await quizListInflight;
+  } finally {
+    quizListInflight = null;
+  }
 }
 
 export async function fetchQuizBundle(quizId) {
@@ -40,7 +60,7 @@ export async function submitBrandInquiry(payload) {
 
 export async function checkTursoConnection() {
   try {
-    await fetchQuizzes();
+    await fetchQuizzes({ force: true });
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err.message };
