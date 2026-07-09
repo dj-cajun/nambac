@@ -1,8 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi, uploadQuizImage } from '../lib/adminApi';
-import { getAdminKey } from '../lib/adminKey';
 import { QUIZ_CATEGORIES, DEFAULT_QUIZ_CATEGORY, normalizeCategory, getPersonas } from '../constants/categories';
 import { QUIZ_TEMPLATES } from '../../shared/quizTemplates.js';
 import './QuizEditor.css';
@@ -50,16 +49,15 @@ const BINARY_SCORES = [
     [0, 4], [0, 2], [0, 1], [0, 0], [0, 0] // Q1=4, Q2=2, Q3=1, Q4/Q5=0
 ];
 
-export default function QuizEditor({ embedded = false, initialAuth = false, adminKey: adminKeyProp }) {
+export default function QuizEditor({ embedded = false, onClose }) {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const zipInputRef = useRef(null);
-    const adminKey = adminKeyProp ?? getAdminKey();
-    const api = createAdminApi(adminKey);
+    const api = useMemo(() => createAdminApi(), []);
 
     const saveImageFile = async (file) => {
         try {
-            return await uploadQuizImage(file, adminKey);
+            return await uploadQuizImage(file);
         } catch (err) {
             console.warn('Image upload failed:', err.message);
             return `/images/${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
@@ -67,6 +65,14 @@ export default function QuizEditor({ embedded = false, initialAuth = false, admi
     };
 
     const [isAuth, setIsAuth] = useState(true);
+
+    const exitEditor = () => {
+        if (embedded && onClose) {
+            onClose();
+            return;
+        }
+        navigate('/admin');
+    };
 
     // Editor state
     const [step, setStep] = useState(1); // 1=type, 2=info, 3=questions, 4=results, 5=preview
@@ -251,7 +257,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false, admi
                     });
 
                     alert('🎉 Quiz AI đã tạo và lưu thành công!');
-                    navigate('/admin');
+                    exitEditor();
                 } catch (saveErr) {
                     console.error('Auto-save Error:', saveErr);
                     alert(`❌ Lưu thất bại: ${saveErr.message}\nNội dung vẫn còn trong editor.`);
@@ -801,7 +807,7 @@ export default function QuizEditor({ embedded = false, initialAuth = false, admi
                         )}
 
                         <div className="flex flex-col gap-4">
-                            <button className="editor-btn primary w-full text-lg py-5" onClick={() => navigate('/admin')}>
+                            <button className="editor-btn primary w-full text-lg py-5" onClick={exitEditor}>
                                 Go to Admin Dashboard
                             </button>
                             <button className="text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-[#FF2D85] transition-colors" onClick={() => {

@@ -4,6 +4,7 @@ import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi } from '../lib/adminApi';
 import { getArchetypesByGroup } from '../../shared/personalityArchetypes.js';
 import AdminUsersPanel from '../components/admin/AdminUsersPanel';
+import QuizEditor from './QuizEditor';
 import { useAuth } from '../context/AuthContext';
 import './Admin.css';
 
@@ -573,15 +574,21 @@ const Admin = () => {
 
                     <section className="admin-panel">
                         {showEditor ? (
-                            <div className="p-0 bg-gray-50 relative">
+                            <div className="admin-editor-wrap">
                                 <button
                                     type="button"
                                     onClick={() => setShowEditor(false)}
-                                    className="absolute top-4 right-4 z-10 bg-white px-4 py-2 rounded-lg font-bold text-sm text-gray-600 hover:bg-gray-100 shadow-sm border border-gray-200"
+                                    className="admin-editor-back"
                                 >
                                     ← 목록으로
                                 </button>
-                                <QuizEditor embedded={true} initialAuth={true} />
+                                <QuizEditor
+                                    embedded
+                                    onClose={() => {
+                                        setShowEditor(false);
+                                        fetchQuizzes();
+                                    }}
+                                />
                             </div>
                         ) : (
                             <>
