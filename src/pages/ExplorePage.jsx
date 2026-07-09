@@ -5,6 +5,7 @@ import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import QuizImage from '../components/QuizImage';
+import QuizCardTitle from '../components/QuizCardTitle';
 import QuizCardStats from '../components/QuizCardStats';
 
 export default function ExplorePage() {
@@ -57,7 +58,7 @@ export default function ExplorePage() {
                 <QuizImage src={quiz.image_url} alt="thumb" seed={quiz.id} />
               </div>
               <div className="glass-card-info-bottom">
-                <h4 className="info-title-sm line-clamp-2">{quiz.title}</h4>
+                <QuizCardTitle title={quiz.title} />
                 <QuizCardStats quiz={quiz} />
               </div>
             </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Send, X, Heart } from 'lucide-react';
+import { X } from 'lucide-react';
 import { scrollToTop } from '../lib/scrollToTop';
 import { fetchFortuneStats } from '../lib/fortuneApi';
 import { fetchAllFeatureStats } from '../lib/featureStats';
@@ -8,11 +8,16 @@ import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import './Home.css';
 import './MiniApp.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
-import { getViralScore, sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
+import { trackQuizViewOnce } from '../lib/quizRanking';
+import { buildFeatureFeedItems, buildHomeFeed, pickHeroSlides } from '../lib/homeFeed';
 import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../shared/dailyPicks.js';
+import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import AdSenseUnit from '../components/AdSenseUnit';
 import QuizImage from '../components/QuizImage';
+import QuizCardTitle from '../components/QuizCardTitle';
 import QuizCardStats from '../components/QuizCardStats';
+import FeatureThumbCard from '../components/FeatureThumbCard';
+import { useHomeFeatureThumbs } from '../hooks/useHomeFeatureThumbs';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { readTodayDone } from '../lib/todayDone';
 
@@ -181,25 +186,42 @@ function IntroModalBody({ sectionId }) {
   return null;
 }
 
-function StatChipCard({ to, label, stats, variant }) {
+function TodayThumbCard({
+  className,
+  done,
+  onClick,
+  to,
+  imageSrc,
+  imageSeed,
+  label,
+  emoji,
+}) {
+  const content = (
+    <>
+      {done && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
+      {imageSrc ? (
+        <div className="home-today-card-thumb">
+          <QuizImage src={imageSrc} alt="" seed={imageSeed} />
+        </div>
+      ) : (
+        <span className="home-today-emoji">{emoji}</span>
+      )}
+      <span className="home-today-label">{label}</span>
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
   return (
-    <Link to={to} className={`home-fortune-card${variant ? ` ${variant}` : ''}`}>
-      <span className="home-fortune-card-label">{label}</span>
-      <div className="home-fortune-card-stats">
-        <span title="Lượt xem">
-          <User size={11} aria-hidden="true" />
-          {(stats.view_count || 0).toLocaleString()}
-        </span>
-        <span title="Lượt chia sẻ">
-          <Send size={11} aria-hidden="true" />
-          {(stats.share_count || 0).toLocaleString()}
-        </span>
-        <span title="Lượt thích">
-          <Heart size={11} strokeWidth={2} aria-hidden="true" />
-          {(stats.like_count || 0).toLocaleString()}
-        </span>
-      </div>
-    </Link>
+    <button type="button" className={className} onClick={onClick}>
+      {content}
+    </button>
   );
 }
 
@@ -214,8 +236,10 @@ export default function Home() {
   const [featureStats, setFeatureStats] = useState({
     balance: { view_count: 0, share_count: 0, like_count: 0 },
     roast: { view_count: 0, share_count: 0, like_count: 0 },
+    brain: { view_count: 0, share_count: 0, like_count: 0 },
   });
   const [doneToday, setDoneToday] = useState(() => readTodayDone());
+  const [todayOpen, setTodayOpen] = useState(false);
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
   const introBodyRef = useRef(null);
@@ -260,22 +284,24 @@ export default function Home() {
 
   const closeIntroSection = () => setIntroModal(null);
 
-  const sortFn = SORT_OPTIONS.find((s) => s.id === sortMode)?.sortFn || SORT_OPTIONS[0].sortFn;
-
-  const sortedQuizzes = useMemo(
-    () => [...quizzes].sort(sortFn),
-    [quizzes, sortFn],
-  );
-
-  const filteredQuizzes = sortedQuizzes;
-
-  const heroQuizzes = useMemo(
-    () => sortByViralScore(quizzes).slice(0, 3),
-    [quizzes],
-  );
-
   const todayQuiz = useMemo(() => pickDailyQuiz(quizzes), [quizzes]);
   const todayBalance = useMemo(() => pickDailyBalanceQuestion(), []);
+  const featureThumbs = useHomeFeatureThumbs();
+
+  const featureFeedItems = useMemo(
+    () => buildFeatureFeedItems({ fortuneStats, featureStats, featureThumbs }),
+    [fortuneStats, featureStats, featureThumbs],
+  );
+
+  const heroSlides = useMemo(
+    () => pickHeroSlides(quizzes, featureFeedItems, 6),
+    [quizzes, featureFeedItems],
+  );
+
+  const feedItems = useMemo(
+    () => buildHomeFeed(quizzes, featureFeedItems, sortMode),
+    [quizzes, featureFeedItems, sortMode],
+  );
 
   const getCarouselStep = () => {
     const el = carouselRef.current;
@@ -299,10 +325,10 @@ export default function Home() {
   const [scrollLeftState, setScrollLeftState] = useState(0);
 
   useEffect(() => {
-    if (isDragging || heroQuizzes.length <= 1) return;
+    if (isDragging || heroSlides.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => {
-        const nextSlide = (prev + 1) % heroQuizzes.length;
+        const nextSlide = (prev + 1) % heroSlides.length;
         if (carouselRef.current) {
           carouselRef.current.scrollTo({
             left: nextSlide * getCarouselStep(),
@@ -313,7 +339,14 @@ export default function Home() {
       });
     }, 5000);
     return () => clearInterval(interval);
-  }, [heroQuizzes.length, isDragging]);
+  }, [heroSlides.length, isDragging]);
+
+  useEffect(() => {
+    setCurrentSlide(0);
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({ left: 0, behavior: 'auto' });
+    }
+  }, [heroSlides.length]);
 
   const handleScroll = () => {
     if (carouselRef.current && !isDragging) {
@@ -321,7 +354,7 @@ export default function Home() {
       const step = getCarouselStep();
       if (!step) return;
       const newIndex = Math.round(scrollLeft / step);
-      if (newIndex >= 0 && newIndex < heroQuizzes.length && newIndex !== currentSlide) {
+      if (newIndex >= 0 && newIndex < heroSlides.length && newIndex !== currentSlide) {
         setCurrentSlide(newIndex);
       }
     }
@@ -370,6 +403,23 @@ export default function Home() {
     navigate(`/quiz/${quizId}`);
   };
 
+  const handleFeedItemClick = (item) => {
+    if (item.kind === 'quiz') {
+      handleQuizClick(item.quizId);
+      return;
+    }
+    if (item.kind === 'roast' || item.kind === 'brain') {
+      if (trackFeatureViewOnce(item.kind)) {
+        incrementFeatureStat(item.kind, 'view').catch(console.error);
+      }
+    }
+    navigate(item.to);
+  };
+
+  const toggleTodaySection = () => {
+    setTodayOpen((prev) => !prev);
+  };
+
   if (loading) {
     return (
       <div className="home-container flex items-center justify-center">
@@ -380,57 +430,74 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <section className="home-today" aria-label="Hôm nay">
-        <h2 className="home-today-title">Hôm nay · Chơi 90 giây ☕</h2>
-        <p className="home-today-sub">Ở quán cf? Làm nhanh rồi khoe Zalo nhé</p>
-        <div className="home-today-grid">
-          {todayQuiz && (
-            <button
-              type="button"
-              className={`home-today-card home-today-quiz${doneToday.has('quiz') ? ' is-done' : ''}`}
-              onClick={() => handleQuizClick(todayQuiz.id)}
-            >
-              {doneToday.has('quiz') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
-              <span className="home-today-emoji">🎯</span>
-              <span className="home-today-label">Quiz</span>
-            </button>
-          )}
-          <Link
-            to="/fortune"
-            className={`home-today-card home-today-fortune${doneToday.has('fortune') ? ' is-done' : ''}`}
-          >
-            {doneToday.has('fortune') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
-            <span className="home-today-emoji">{FORTUNE_BRAND.emoji}</span>
-            <span className="home-today-label">Tử vi</span>
-          </Link>
-          <Link
-            to={`/balance/${todayBalance.id}`}
-            className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
-          >
-            {doneToday.has('balance') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
-            <span className="home-today-emoji">{todayBalance.emoji || '⚖️'}</span>
-            <span className="home-today-label">1 trong 2</span>
-          </Link>
-          <Link
-            to="/roast-card"
-            className={`home-today-card home-today-roast${doneToday.has('roast') ? ' is-done' : ''}`}
-          >
-            {doneToday.has('roast') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
-            <span className="home-today-emoji">💳</span>
-            <span className="home-today-label">Bóc phốt</span>
-          </Link>
-          <Link
-            to="/brain"
-            className={`home-today-card home-today-brain${doneToday.has('brain') ? ' is-done' : ''}`}
-          >
-            {doneToday.has('brain') && <span className="home-today-done" aria-label="Đã chơi">✓</span>}
-            <span className="home-today-emoji">🧠</span>
-            <span className="home-today-label">Não bạn</span>
-          </Link>
+      <section className={`home-today${todayOpen ? ' is-open' : ''}`} aria-label="Hôm nay">
+        <button
+          type="button"
+          className="home-today-header"
+          onClick={toggleTodaySection}
+          aria-expanded={todayOpen}
+        >
+          <div className="home-today-header-text">
+            <h2 className="home-today-title">Hôm nay · Chơi 90 giây ☕</h2>
+            <p className="home-today-sub">Ở quán cf? Làm nhanh rồi khoe Zalo nhé</p>
+          </div>
+          <span className="home-today-chevron" aria-hidden="true">{todayOpen ? '▲' : '▼'}</span>
+        </button>
+
+        <div className={`home-today-body-wrap${todayOpen ? ' is-open' : ''}`} aria-hidden={!todayOpen}>
+          <div className="home-today-body">
+            <div className="home-today-grid">
+              {todayQuiz && (
+                <TodayThumbCard
+                  className={`home-today-card home-today-quiz${doneToday.has('quiz') ? ' is-done' : ''}`}
+                  done={doneToday.has('quiz')}
+                  onClick={() => handleQuizClick(todayQuiz.id)}
+                  imageSrc={todayQuiz.image_url}
+                  imageSeed={todayQuiz.id}
+                  label="Quiz"
+                  emoji="🎯"
+                />
+              )}
+              <TodayThumbCard
+                className={`home-today-card home-today-fortune${doneToday.has('fortune') ? ' is-done' : ''}`}
+                done={doneToday.has('fortune')}
+                to="/fortune"
+                imageSrc={featureThumbs.fortuneToday.src}
+                imageSeed={featureThumbs.fortuneToday.seed}
+                label="Tử vi"
+                emoji={FORTUNE_BRAND.emoji}
+              />
+              <TodayThumbCard
+                className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
+                done={doneToday.has('balance')}
+                to={`/balance/${todayBalance.id}`}
+                label="1 trong 2"
+                emoji={todayBalance.emoji || '⚖️'}
+              />
+              <TodayThumbCard
+                className={`home-today-card home-today-roast${doneToday.has('roast') ? ' is-done' : ''}`}
+                done={doneToday.has('roast')}
+                to="/roast-card"
+                imageSrc={featureThumbs.roast.src}
+                imageSeed={featureThumbs.roast.seed}
+                label="Bóc phốt"
+                emoji="💳"
+              />
+              <TodayThumbCard
+                className={`home-today-card home-today-brain${doneToday.has('brain') ? ' is-done' : ''}`}
+                done={doneToday.has('brain')}
+                to="/brain"
+                imageSrc={featureThumbs.brain.src}
+                imageSeed={featureThumbs.brain.seed}
+                label="Não bạn"
+                emoji="🧠"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
-      {heroQuizzes.length > 0 && (
+      {heroSlides.length > 0 && (
         <div className="hero-carousel-outer">
           <div className="hero-carousel-wrapper">
             <div
@@ -442,23 +509,28 @@ export default function Home() {
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
             >
-              {heroQuizzes.map((quiz) => (
-                <div key={quiz.id} className="hero-slide" onClick={() => handleQuizClick(quiz.id)}>
+              {heroSlides.map((item) => (
+                <div
+                  key={`${item.kind}-${item.id}`}
+                  className="hero-slide"
+                  onClick={() => handleFeedItemClick(item)}
+                >
                   <div className="hero-image-bg">
-                    <QuizImage src={quiz.image_url} alt={quiz.title} seed={quiz.id} />
+                    <QuizImage src={item.image_url} alt={item.title} seed={item.imageSeed} />
                   </div>
                   <div className="hero-overlay-gradient" />
                   <div className="hero-content">
-                    <h2 className="hero-title">{quiz.title}</h2>
+                    <span className="trending-badge">{item.typeLabel}</span>
+                    <h2 className="hero-title">{item.title}</h2>
                   </div>
                 </div>
               ))}
             </div>
           </div>
           <div className="carousel-dots">
-            {heroQuizzes.map((_, index) => (
+            {heroSlides.map((item, index) => (
               <button
-                key={index}
+                key={`${item.kind}-${item.id}-dot`}
                 className={`dot ${currentSlide === index ? 'active' : ''}`}
                 onClick={() => goToSlide(index)}
                 aria-label={`Slide ${index + 1}`}
@@ -469,29 +541,37 @@ export default function Home() {
       )}
 
       <nav className="home-quick-chips" aria-label="Chơi nhanh">
-        <StatChipCard
+        <FeatureThumbCard
           to="/fortune"
+          typeLabel="Tử vi"
           label={`${FORTUNE_BRAND.emoji} Tình yêu hôm nay`}
+          imageSrc={featureThumbs.fortuneToday.src}
+          imageSeed={featureThumbs.fortuneToday.seed}
           stats={fortuneStats}
-          variant="fortune-today"
         />
-        <StatChipCard
+        <FeatureThumbCard
           to="/fortune/tomorrow"
+          typeLabel="Tử vi"
           label="🔮 Tình yêu ngày mai"
+          imageSrc={featureThumbs.fortuneTomorrow.src}
+          imageSeed={featureThumbs.fortuneTomorrow.seed}
           stats={fortuneStats}
-          variant="fortune-tomorrow"
         />
-        <StatChipCard
-          to="/balance"
-          label="⚖️ Chọn 1 trong 2"
-          stats={featureStats.balance}
-          variant="balance"
-        />
-        <StatChipCard
+        <FeatureThumbCard
           to="/roast-card"
+          typeLabel="Bóc phốt"
           label="💳 Thẻ đen bóc phốt"
+          imageSrc={featureThumbs.roast.src}
+          imageSeed={featureThumbs.roast.seed}
           stats={featureStats.roast}
-          variant="roast"
+        />
+        <FeatureThumbCard
+          to="/brain"
+          typeLabel="Não"
+          label="🧠 Trong đầu bạn có gì?"
+          imageSrc={featureThumbs.brain.src}
+          imageSeed={featureThumbs.brain.seed}
+          stats={featureStats.brain}
         />
       </nav>
 
@@ -511,17 +591,21 @@ export default function Home() {
       <div className="mt-6">
         <h3 className="glass-section-title">{SECTION_TITLES[sortMode]}</h3>
         <div className="glass-list grid-cols-2">
-          {filteredQuizzes.length === 0 ? (
+          {feedItems.length === 0 ? (
             <div className="text-center p-8 text-gray-500 font-bold col-span-2">Chưa có quiz nào hết trơn á! 🕸️</div>
           ) : (
-            filteredQuizzes.map((quiz) => (
-              <div key={quiz.id} className="glass-card square-card" onClick={() => handleQuizClick(quiz.id)}>
+            feedItems.map((item) => (
+              <div
+                key={`${item.kind}-${item.id}`}
+                className="glass-card square-card"
+                onClick={() => handleFeedItemClick(item)}
+              >
                 <div className="glass-card-thumb-large">
-                  <QuizImage src={quiz.image_url} alt="thumb" seed={quiz.id} />
+                  <QuizImage src={item.image_url} alt="thumb" seed={item.imageSeed} />
                 </div>
                 <div className="glass-card-info-bottom">
-                  <h4 className="info-title-sm line-clamp-2">{quiz.title}</h4>
-                  <QuizCardStats quiz={quiz} />
+                  <QuizCardTitle title={item.title} typeLabel={item.typeLabel} />
+                  <QuizCardStats quiz={item} />
                 </div>
               </div>
             ))

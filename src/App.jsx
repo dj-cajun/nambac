@@ -21,6 +21,7 @@ import BottomNav from './components/BottomNav';
 import BrandsLanding from './pages/BrandsLanding';
 import BrandReport from './pages/BrandReport';
 import ExplorePage from './pages/ExplorePage';
+import CategoryPage from './pages/CategoryPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import BlogIndex from './pages/BlogIndex';
 import BlogPost from './pages/BlogPost';
@@ -82,6 +83,7 @@ function AppContent() {
         <Route path="/brands" element={<BrandsLanding />} />
         <Route path="/brands/report/:quizId/:token" element={<BrandReport />} />
         <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/blog/saigon-genz-mobile" element={<Navigate to="/blog/xu-huong-di-dong-gen-z-sai-gon" replace />} />

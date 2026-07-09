@@ -21,12 +21,14 @@
   width: min(57vw, 227px);
   height: 100%;
   max-height: 100dvh;
+  min-height: 0;
   background: #fff;
   border-right: 1px solid #e2e8f0;
   box-shadow: 4px 0 24px rgba(15, 23, 42, 0.12);
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .drawer-header {
@@ -84,12 +86,25 @@
 
 .drawer-scroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 16px 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.drawer-scroll--hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.drawer-scroll--hidden::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .drawer-section {
@@ -165,15 +180,125 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 360px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .drawer-category {
   border-radius: 8px;
   background: #f8fafc;
   overflow: hidden;
+}
+
+.drawer-category--empty {
+  padding: 9px 12px;
+}
+
+.drawer-category--empty .drawer-category-label {
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.drawer-category--today {
+  border: 1.5px solid #fbcfe8;
+  background: linear-gradient(135deg, #fff0f6, #fff);
+}
+
+.drawer-category--today .drawer-category-label {
+  color: #be185d;
+}
+
+.drawer-category--fortune {
+  border: 1.5px solid #c4b5fd;
+  background: linear-gradient(135deg, #ede9fe, #fff);
+}
+
+.drawer-category--fortune .drawer-category-label {
+  color: #6d28d9;
+}
+
+.drawer-category--miniapps {
+  border: 1.5px solid #fcd34d;
+  background: linear-gradient(135deg, #fffbeb, #fff);
+}
+
+.drawer-category--miniapps .drawer-category-label {
+  color: #b45309;
+}
+
+.drawer-quiz-list-box {
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.drawer-quiz-list-heading {
+  padding: 9px 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.drawer-quiz-list-lines {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-quiz-list-line {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  text-decoration: none;
+  border-bottom: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1.35;
+}
+
+.drawer-quiz-list-line:last-child {
+  border-bottom: none;
+}
+
+.drawer-quiz-list-line:hover,
+.drawer-quiz-list-line.active {
+  background: #fff;
+  color: #0f172a;
+}
+
+.drawer-link--lined {
+  border-radius: 0;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 9px 12px 9px 16px;
+}
+
+.drawer-category-links .drawer-link--lined:last-child {
+  border-bottom: none;
+}
+
+.drawer-category-page-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  font-size: 14px;
+  font-weight: 800;
+  color: #475569;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  box-sizing: border-box;
+}
+
+.drawer-category-page-link:hover,
+.drawer-category-page-link.active {
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 .drawer-category-toggle {
@@ -202,21 +327,9 @@
   align-items: center;
   gap: 6px;
   min-width: 0;
-}
-
-.drawer-category-count {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #e2e8f0;
-  color: #64748b;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  color: #475569;
 }
 
 .drawer-chevron--sm {
@@ -247,20 +360,6 @@
 .drawer-link--nested:hover,
 .drawer-link--nested.active {
   color: #0f172a;
-}
-
-.drawer-section-count {
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: #f1f5f9;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .drawer-link--muted {

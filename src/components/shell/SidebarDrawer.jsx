@@ -4,49 +4,73 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown } from 'lucide-react';
 import { useDrawer } from './DrawerContext';
-import { SIDEBAR_SECTIONS } from './sidebarNav';
 import { fetchQuizzes } from '../../lib/quizApi';
-import { QUIZ_CATEGORIES, normalizeCategory } from '../../constants/categories';
+import { QUIZ_CATEGORIES } from '../../constants/categories';
+import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../../shared/dailyPicks.js';
+import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
 import { scrollToTop } from '../../lib/scrollToTop';
 import './SidebarDrawer.css';
 
-function groupQuizzesByCategory(quizzes) {
-  const buckets = new Map();
-  for (const cat of QUIZ_CATEGORIES) {
-    buckets.set(cat.id, []);
-  }
+function buildTodayCategoryGroup(todayQuiz) {
+  if (!todayQuiz) return null;
 
-  for (const q of quizzes || []) {
-    if (!q?.id || !q?.title) continue;
-    const catId = normalizeCategory(q.category);
-    if (!buckets.has(catId)) buckets.set(catId, []);
-    buckets.get(catId).push({ to: `/quiz/${q.id}`, label: q.title });
-  }
-
-  return QUIZ_CATEGORIES
-    .map((cat) => ({
-      id: cat.id,
-      label: cat.label,
-      emoji: cat.emoji,
-      links: buckets.get(cat.id) || [],
-    }))
-    .filter((group) => group.links.length > 0);
+  return {
+    id: 'today',
+    label: 'Quiz hôm nay ☕',
+    variant: 'today',
+    links: [{ to: `/quiz/${todayQuiz.id}`, label: '🎯 Quiz' }],
+  };
 }
 
-function DrawerLink({ link, closeDrawer, nested = false }) {
+function buildFortuneGroup() {
+  return {
+    id: 'fortune',
+    label: `${FORTUNE_BRAND.emoji} ${FORTUNE_BRAND.label}`,
+    variant: 'fortune',
+    links: [
+      { to: '/fortune', label: 'Hôm nay', exact: true },
+      { to: '/fortune/tomorrow', label: 'Ngày mai', exact: true },
+    ],
+  };
+}
+
+function buildMiniAppsGroup(todayBalance) {
+  return {
+    id: 'miniapps',
+    label: '🎮 Chơi nhanh',
+    variant: 'miniapps',
+    links: [
+      { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} 1 trong 2` },
+      { to: '/roast-card', label: '💳 Bóc phốt' },
+      { to: '/brain', label: '🧠 Não bạn' },
+    ],
+  };
+}
+
+function isDrawerLinkActive(pathname, link) {
+  if (link.exact) return pathname === link.to;
+  if (link.to === '/') return pathname === '/';
+  return pathname === link.to || pathname.startsWith(`${link.to}/`);
+}
+
+function isMiniAppRoute(pathname) {
+  return pathname.startsWith('/balance')
+    || pathname.startsWith('/roast-card')
+    || pathname === '/brain';
+}
+
+function DrawerLink({ link, closeDrawer, nested = false, lined = false }) {
   const location = useLocation();
-  const active = link.to === '/'
-    ? location.pathname === '/'
-    : location.pathname.startsWith(link.to);
+  const active = isDrawerLinkActive(location.pathname, link);
 
   return (
     <Link
       to={link.to}
       onClick={() => {
-        if (link.to === '/') scrollToTop();
+        scrollToTop();
         closeDrawer();
       }}
-      className={`drawer-link${nested ? ' drawer-link--nested' : ''}${active ? ' active' : ''}`}
+      className={`drawer-link${nested ? ' drawer-link--nested' : ''}${lined ? ' drawer-link--lined' : ''}${active ? ' active' : ''}`}
     >
       {link.label}
     </Link>
@@ -55,21 +79,22 @@ function DrawerLink({ link, closeDrawer, nested = false }) {
 
 function DrawerCategoryGroup({ group, closeDrawer }) {
   const location = useLocation();
-  const hasActive = group.links.some((l) => location.pathname.startsWith(l.to));
-  const [isOpen, setIsOpen] = useState(hasActive);
+  const routeActive = group.links?.some((link) => isDrawerLinkActive(location.pathname, link))
+    || (group.id === 'miniapps' && isMiniAppRoute(location.pathname));
+  const defaultOpen = group.id === 'today' || group.id === 'fortune' || group.id === 'miniapps';
+  const [isOpen, setIsOpen] = useState(defaultOpen || routeActive);
+
+  const variantClass = group.variant ? ` drawer-category--${group.variant}` : '';
 
   return (
-    <div className="drawer-category">
+    <div className={`drawer-category${variantClass}`}>
       <button
         type="button"
         className="drawer-category-toggle"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((v) => !v)}
       >
-        <span className="drawer-category-label">
-          {group.label}
-          <span className="drawer-category-count">{group.links.length}</span>
-        </span>
+        <span className="drawer-category-label">{group.label}</span>
         <ChevronDown size={14} className={`drawer-chevron drawer-chevron--sm${isOpen ? ' open' : ''}`} />
       </button>
 
@@ -84,7 +109,7 @@ function DrawerCategoryGroup({ group, closeDrawer }) {
           >
             <div className="drawer-category-links">
               {group.links.map((link) => (
-                <DrawerLink key={link.to} link={link} closeDrawer={closeDrawer} nested />
+                <DrawerLink key={link.to} link={link} closeDrawer={closeDrawer} nested lined />
               ))}
             </div>
           </motion.div>
@@ -94,84 +119,58 @@ function DrawerCategoryGroup({ group, closeDrawer }) {
   );
 }
 
-function DrawerAccordion({ section, closeDrawer, quizGroups, isLoading }) {
-  const [isOpen, setIsOpen] = useState(section.defaultOpen ?? false);
-  const isQuizSection = section.dynamic === 'quizzes';
-  const links = section.links || [];
-  const totalQuizzes = useMemo(
-    () => (isQuizSection ? quizGroups.reduce((n, g) => n + g.links.length, 0) : 0),
-    [isQuizSection, quizGroups],
-  );
+function DrawerQuizCategoriesBox({ closeDrawer }) {
+  const location = useLocation();
 
   return (
-    <div className="drawer-section">
-      <button
-        type="button"
-        className="drawer-section-toggle"
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((v) => !v)}
-      >
-        <span className="drawer-section-title">
-          <span className="drawer-section-icon" aria-hidden="true">{section.icon}</span>
-          {section.title}
-          {isQuizSection && totalQuizzes > 0 && (
-            <span className="drawer-section-count">{totalQuizzes}</span>
-          )}
-        </span>
-        <ChevronDown size={16} className={`drawer-chevron${isOpen ? ' open' : ''}`} />
-      </button>
+    <div className="drawer-quiz-list-box">
+      <div className="drawer-quiz-list-heading">Trắc nghiệm</div>
+      <div className="drawer-quiz-list-lines">
+        {QUIZ_CATEGORIES.map((category) => {
+          const to = `/category/${category.id}`;
+          const active = location.pathname === to;
 
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="drawer-links-wrap"
-          >
-            {isQuizSection ? (
-              <div className="drawer-quiz-groups">
-                {isLoading && quizGroups.length === 0 && (
-                  <span className="drawer-link drawer-link--muted">Đang tải quiz…</span>
-                )}
-                {!isLoading && quizGroups.length === 0 && (
-                  <span className="drawer-link drawer-link--muted">Chưa có quiz nào</span>
-                )}
-                {quizGroups.map((group) => (
-                  <DrawerCategoryGroup key={group.id} group={group} closeDrawer={closeDrawer} />
-                ))}
-              </div>
-            ) : (
-              <div className="drawer-links">
-                {links.map((link) => (
-                  <DrawerLink key={link.to + link.label} link={link} closeDrawer={closeDrawer} />
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          return (
+            <Link
+              key={category.id}
+              to={to}
+              onClick={() => {
+                scrollToTop();
+                closeDrawer();
+              }}
+              className={`drawer-quiz-list-line${active ? ' active' : ''}`}
+            >
+              {category.label}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
 export default function SidebarDrawer() {
   const { open, closeDrawer } = useDrawer();
-  const [quizGroups, setQuizGroups] = useState([]);
-  const [quizzesLoading, setQuizzesLoading] = useState(false);
+  const [quizzes, setQuizzes] = useState([]);
   const [quizzesLoaded, setQuizzesLoaded] = useState(false);
+
+  const todayQuiz = useMemo(() => pickDailyQuiz(quizzes), [quizzes]);
+  const todayBalance = useMemo(() => pickDailyBalanceQuestion(), []);
+  const todayGroup = useMemo(() => buildTodayCategoryGroup(todayQuiz), [todayQuiz]);
+  const fortuneGroup = useMemo(() => buildFortuneGroup(), []);
+  const miniAppsGroup = useMemo(
+    () => buildMiniAppsGroup(todayBalance),
+    [todayBalance],
+  );
 
   useEffect(() => {
     if (!open || quizzesLoaded) return;
-    setQuizzesLoading(true);
     fetchQuizzes()
-      .then((quizzes) => {
-        setQuizGroups(groupQuizzesByCategory(quizzes));
+      .then((list) => {
+        setQuizzes(list);
         setQuizzesLoaded(true);
       })
-      .catch(console.error)
-      .finally(() => setQuizzesLoading(false));
+      .catch(console.error);
   }, [open, quizzesLoaded]);
 
   if (typeof document === 'undefined') return null;
@@ -225,16 +224,15 @@ export default function SidebarDrawer() {
               </button>
             </div>
 
-            <div className="drawer-scroll">
-              {SIDEBAR_SECTIONS.map((section) => (
-                <DrawerAccordion
-                  key={section.id}
-                  section={section}
-                  closeDrawer={closeDrawer}
-                  quizGroups={quizGroups}
-                  isLoading={section.dynamic === 'quizzes' ? quizzesLoading : false}
-                />
-              ))}
+            <div className="drawer-scroll drawer-scroll--hidden">
+              <div className="drawer-quiz-groups">
+                {todayGroup && (
+                  <DrawerCategoryGroup group={todayGroup} closeDrawer={closeDrawer} />
+                )}
+                <DrawerCategoryGroup group={fortuneGroup} closeDrawer={closeDrawer} />
+                <DrawerCategoryGroup group={miniAppsGroup} closeDrawer={closeDrawer} />
+                <DrawerQuizCategoriesBox closeDrawer={closeDrawer} />
+              </div>
             </div>
 
             <div className="drawer-footer">

@@ -39,6 +39,12 @@ export const getCategoryLabel = (id) => {
   return cat ? cat.label : canonical;
 };
 
+export function getCategoryMeta(id) {
+  if (!id) return null;
+  const canonical = normalizeCategory(id);
+  return QUIZ_CATEGORIES.find((c) => c.id === canonical) || null;
+}
+
 export const getPersonas = () => QUIZ_CATEGORIES.map((cat) => ({
   name: cat.id,
   prompt: cat.prompt,

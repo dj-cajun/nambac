@@ -15,7 +15,7 @@ export async function fetchAllFeatureStats() {
   try {
     return await parseJson(await fetch(apiUrl('feature/stats?kind=all')));
   } catch {
-    return { balance: { kind: 'balance', ...DEFAULT }, roast: { kind: 'roast', ...DEFAULT } };
+    return { balance: { kind: 'balance', ...DEFAULT }, roast: { kind: 'roast', ...DEFAULT }, brain: { kind: 'brain', ...DEFAULT } };
   }
 }
 

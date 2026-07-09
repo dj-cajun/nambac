@@ -6,7 +6,7 @@ export function getIctDateString(date = new Date()) {
   return ict.toISOString().slice(0, 10);
 }
 
-function hashString(str) {
+export function hashString(str) {
   let hash = 5381;
   for (let i = 0; i < str.length; i += 1) {
     hash = (hash * 33) ^ str.charCodeAt(i);

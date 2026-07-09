@@ -14,8 +14,8 @@ import {
   parseFortuneShareParams,
   buildFortuneResultFromShare,
 } from '../../shared/fortuneEngine.js';
-import { FORTUNE_COUNT } from '../../shared/fortuneData.js';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
+import { introFortuneIndexFromDate } from '../../shared/featureThumbnails.js';
 import { fetchFortuneSceneImage, fetchFortuneStats, incrementFortuneStat } from '../lib/fortuneApi.js';
 import { trackFortuneViewOnce, trackFortuneLikeOnce, hasFortuneLikedThisSession } from '../lib/fortuneStats.js';
 import {
@@ -41,15 +41,6 @@ function addDays(dateLabel, days) {
   const d = new Date(`${dateLabel}T00:00:00`);
   d.setDate(d.getDate() + days);
   return getDateStr(d);
-}
-
-function introIndexFromDate(dateLabel) {
-  let hash = 2166136261;
-  for (let i = 0; i < dateLabel.length; i += 1) {
-    hash ^= dateLabel.charCodeAt(i);
-    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
-  }
-  return Math.abs(hash) % FORTUNE_COUNT;
 }
 
 export default function FortunePage({ dayOffset = 0 }) {
@@ -160,8 +151,8 @@ export default function FortunePage({ dayOffset = 0 }) {
   useEffect(() => {
     const today = getDateStr();
     const tomorrow = addDays(today, 1);
-    const todayIdx = introIndexFromDate(today);
-    const tomorrowIdx = introIndexFromDate(tomorrow);
+    const todayIdx = introFortuneIndexFromDate(today);
+    const tomorrowIdx = introFortuneIndexFromDate(tomorrow);
     let cancelled = false;
 
     Promise.allSettled([

@@ -290,8 +290,8 @@
 
 .home-quick-chips {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
   padding: 4px 20px 12px;
   margin: 8px 0 4px;
   width: 100%;
