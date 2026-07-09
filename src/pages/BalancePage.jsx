@@ -17,6 +17,7 @@ import { scrollToTop } from '../lib/scrollToTop';
 import { fetchBalanceSceneImage } from '../lib/balanceApi';
 import { buildBalanceOgImageUrl } from '../lib/siteUrl';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import { trackFeatureEngage, trackFeatureShare, trackFeatureView } from '../lib/analytics';
 import ZaloShareButton from '../components/ZaloShareButton';
 import './BalancePage.css';
 
@@ -88,6 +89,7 @@ export default function BalancePage() {
 
   useEffect(() => {
     if (trackFeatureViewOnce('balance')) {
+      trackFeatureView('balance');
       incrementFeatureStat('balance', 'view').catch(() => {});
     }
   }, []);
@@ -142,6 +144,7 @@ export default function BalancePage() {
     if (nextStats) setStats(nextStats);
     setVoted(choice);
     setRevealing(false);
+    trackFeatureEngage('balance', 'vote');
     incrementFeatureStat('balance', 'like').catch(() => {});
     markTodayDone('balance');
   };
@@ -317,7 +320,10 @@ export default function BalancePage() {
                 className="zalo-share-wrap--block"
                 title="This or That — nambac"
                 text="Vote cùng mình trên nambac!"
-                onShared={() => incrementFeatureStat('balance', 'share').catch(() => {})}
+                onShared={() => {
+                  trackFeatureShare('balance');
+                  incrementFeatureStat('balance', 'share').catch(() => {});
+                }}
               />
             </motion.div>
           )}

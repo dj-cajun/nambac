@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Bell, X } from 'lucide-react';
 import { isPushSupported, isPushSubscribed, subscribeToPush } from '../lib/pushNotifications';
+import { trackPushPrompt } from '../lib/analytics';
 import './PushPrompt.css';
 
 const DISMISS_KEY = 'nambac_push_dismissed';
@@ -20,16 +21,20 @@ export default function PushPrompt() {
 
   const dismiss = () => {
     try { localStorage.setItem(DISMISS_KEY, '1'); } catch { /* ignore */ }
+    trackPushPrompt('dismiss');
     setVisible(false);
   };
 
   const handleSubscribe = async () => {
     setLoading(true);
+    trackPushPrompt('click');
     try {
       await subscribeToPush();
+      trackPushPrompt('subscribed');
       setVisible(false);
     } catch (err) {
       console.warn(err);
+      trackPushPrompt('error');
       dismiss();
     } finally {
       setLoading(false);

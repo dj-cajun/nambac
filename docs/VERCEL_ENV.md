@@ -29,21 +29,26 @@
 | `VITE_GEMINI_API_KEY` | 브라우저 Gemini 제거 — 서버 `GEMINI_API_KEY`만 사용 |
 | `VITE_ADMIN_API_KEY` | Admin unlock은 sessionStorage — 번들 노출 불필요 |
 
-## Push 알림 (선택)
+## Push 알림 (Production에 등록 필요)
 
 | Key | 생성 |
 |-----|------|
-| `VAPID_PUBLIC_KEY` | `npm run vapid:generate` |
+| `VAPID_PUBLIC_KEY` | 로컬 `.env.local` / `npm run vapid:generate` |
 | `VAPID_PRIVATE_KEY` | ↑ |
 | `VAPID_SUBJECT` | `mailto:nam@nambac.xyz` |
+
+GitHub Actions secrets에도 동일 키가 있어야 daily-quiz 푸시가 동작합니다.  
+**Vercel Production에도 같은 3개를 넣고 Redeploy** — 없으면 `GET /api/push/subscribe`의 `publicKey`가 비어 있습니다.
 
 ## AdSense (기본 OFF — `docs/ADSENSE_SETUP.md`)
 
 | Key | |
 |-----|--|
-| `VITE_ADSENSE_ENABLED` | `true` 로 켜기 |
-| `VITE_ADSENSE_PUB_ID` | ca-pub-... |
-| `VITE_ADSENSE_SLOT_*` | 4개 슬롯 |
+| `VITE_ADSENSE_ENABLED` | `true` (슬롯 준비 후) |
+| `VITE_ADSENSE_PUB_ID` | `ca-pub-7386903584540643` |
+| `VITE_ADSENSE_SLOT_*` | AdSense에서 만든 4개 슬롯 ID |
+
+Vite 변수는 **빌드 타임**에 박히므로 env 변경 후 반드시 Redeploy.
 
 ## 기타
 

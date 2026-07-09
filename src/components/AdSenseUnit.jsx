@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { isAdFree } from '../lib/premium';
 import { isAdsEnabled, loadAdSenseScript, AD_PUB_ID } from '../lib/adsConfig';
+import { trackAdImpression } from '../lib/analytics';
 
 const AdSenseUnit = ({
   adSlot,
@@ -8,6 +9,7 @@ const AdSenseUnit = ({
   fullWidthResponsive = 'true',
   style = { display: 'block' },
   className = '',
+  location = '',
 }) => {
   const adFree = isAdFree();
 
@@ -16,10 +18,11 @@ const AdSenseUnit = ({
     loadAdSenseScript();
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
+      trackAdImpression(location, adSlot);
     } catch (e) {
       console.error('AdSense push failed', e);
     }
-  }, [adSlot, adFree]);
+  }, [adSlot, adFree, location]);
 
   if (adFree || !isAdsEnabled() || !adSlot) return null;
 

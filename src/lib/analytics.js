@@ -104,3 +104,24 @@ export function trackFortuneLike(kind = 'love') {
 export function trackFortuneDownload(kind = 'love') {
   trackEvent('fortune_download', { fortune_kind: kind });
 }
+
+/** Mini-app engagement (balance / roast / brain) */
+export function trackFeatureView(kind) {
+  trackEvent('feature_view', { feature_kind: kind });
+}
+
+export function trackFeatureEngage(kind, action) {
+  trackEvent('feature_engage', { feature_kind: kind, feature_action: action });
+}
+
+export function trackFeatureShare(kind, platform = 'share') {
+  trackEvent('feature_share', { feature_kind: kind, share_platform: platform });
+}
+
+export function trackPushPrompt(action) {
+  trackEvent('push_prompt', { push_action: action });
+}
+
+export function trackAdImpression(location, slot) {
+  trackEvent('ad_impression', { ad_location: location || '', ad_slot: slot || '' });
+}

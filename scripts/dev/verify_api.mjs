@@ -31,8 +31,20 @@ const checks = [
       return `quizzes=${quizzes.length} cache=${(cdn || cache).slice(0, 48)}`;
     },
   },
-  { name: 'GET /api/push/subscribe', url: `${base}/push/subscribe` },
+  {
+    name: 'GET /api/push/subscribe',
+    url: `${base}/push/subscribe`,
+    assert: async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (process.env.REQUIRE_VAPID === '1' && !data.publicKey) {
+        throw new Error('missing VAPID publicKey (set VAPID_* on host env)');
+      }
+      return data.publicKey ? 'vapid=set' : 'vapid=missing';
+    },
+  },
   { name: 'GET /api/balance', url: `${base}/balance` },
+  { name: 'GET /api/fortune/stats', url: `${base}/fortune/stats` },
+  { name: 'GET /api/feature/stats?kind=roast', url: `${base}/feature/stats?kind=roast` },
   { name: 'GET /api/player/grade', url: `${base}/player/grade?visitorId=smoke-guest` },
   {
     name: 'GET /sitemap.xml',

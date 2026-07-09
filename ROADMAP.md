@@ -12,8 +12,8 @@
 - [x] Result 9:16 Story download
 - [x] Android PWA install prompt
 - [x] Image backfill script + GTM guide
-- [ ] AdSense — `VITE_ADSENSE_ENABLED=true` + 슬롯 ID (`docs/ADSENSE_SETUP.md`)
-- [ ] GTM triggers — `docs/GTM_SETUP.md` 대시보드 설정 (코드 준비됨)
+- [x] AdSense plumbing — pub ID + units + consent + `ad_impression` (`docs/ADSENSE_SETUP.md`; enable on Vercel after slot IDs)
+- [x] GTM event map — quiz/fortune/feature/push (`docs/GTM_SETUP.md`; publish container in dashboard)
 
 ## Phase 2 — Viral ✅ (code)
 
@@ -41,7 +41,7 @@
 ## Ops checklist
 
 1. ✅ `CRON_SECRET` + Gemini — Vercel 등록됨 (배포 한도 해제 후 자동 반영)
-2. `VAPID_*` 3개 — Vercel env (`docs/VERCEL_ENV.md`, 로컬 `.env.local` 완료)
+2. ✅ `VAPID_*` — local + GitHub Actions secrets; **add same 3 keys on Vercel Production** then Redeploy (`docs/PUSH_SETUP.md`)
 3. ✅ Turso migrate (`npm run db:migrate-phase2`)
 4. GTM 4 events — `docs/GTM_SETUP.md` (대시보드)
 5. AdSense — `docs/ADSENSE_SETUP.md` (지금 OFF)

@@ -1,44 +1,59 @@
-# Web Push 설정 (Phase 2)
+# Web Push 설정
 
-## 1. VAPID 키 생성
+## 1. VAPID 키
+
+로컬에 키가 있으면:
 
 ```bash
+# already generated → keep in .env.local
+# regenerate only if rotating:
 npm run vapid:generate
 ```
 
-출력된 값을 `.env.local` 및 Vercel에 추가:
+Required keys:
 
-```
+```env
 VAPID_PUBLIC_KEY=...
 VAPID_PRIVATE_KEY=...
 VAPID_SUBJECT=mailto:nam@nambac.xyz
 ```
 
-## 2. DB 마이그레이션
+## 2. Where to register
+
+| Target | Status / action |
+|--------|-----------------|
+| `.env.local` | Local keys (for `npm run dev`) |
+| **GitHub Actions secrets** | Synced for daily-quiz push notify |
+| **Vercel Production env** | **Required** for `GET /api/push/subscribe` on www |
+
+Vercel dashboard → Project → Settings → Environment Variables → add the 3 `VAPID_*` keys for **Production** → **Redeploy**.
+
+Without Vercel env, the site still works but push subscribe returns an empty `publicKey`.
+
+## 3. DB
 
 ```bash
 npm run db:migrate-phase2
 ```
 
-`push_subscriptions` 테이블 생성.
+Creates `push_subscriptions`.
 
-## 3. 동작
+## 4. App behavior
 
-- `public/sw.js` — 푸시 수신 + 클릭 시 퀴즈 URL 열기
-- `PushPrompt` — 홈/퀴즈 하단 구독 배너
-- `POST /api/push/subscribe` — 구독 저장
-- `POST /api/push/notify` — Admin 전체 발송 (X-Admin-Key)
+- `public/sw.js` — receive + open URL
+- `PushPrompt` — subscribe banner (`push_prompt` GTM events)
+- `GET /api/push/subscribe` — returns `{ publicKey }`
+- `POST /api/push/subscribe` — store subscription
+- `POST /api/push/notify` — admin broadcast
 
-## 4. Admin 테스트 발송
+## 5. Verify
 
 ```bash
-curl -X POST https://nambac.vercel.app/api/push/notify \
-  -H "Content-Type: application/json" \
-  -H "X-Admin-Key: YOUR_ADMIN_KEY" \
-  -d '{"title":"nambac","body":"Quiz mới!","url":"/"}'
+npm run verify:ops
+curl -s https://www.nambac.xyz/api/push/subscribe
+# expect: {"publicKey":"..."}  (non-empty after Vercel env + redeploy)
 ```
 
-## 5. Premium (광고 제거)
+## 6. Premium (ad-free)
 
-URL: `?premium=nambac-vip` 또는 env `VITE_PREMIUM_CODE`  
-localStorage에 저장되어 AdSense 숨김.
+`?premium=nambac-vip` or `VITE_PREMIUM_CODE` — hides AdSense.

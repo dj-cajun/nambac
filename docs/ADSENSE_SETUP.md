@@ -1,35 +1,58 @@
-# AdSense — 나중에 켜기
+# AdSense setup
 
-현재 **광고는 전부 숨김** 상태입니다. placeholder 박스도 표시되지 않습니다.
+Publisher ID (already in `index.html` + `public/ads.txt`):
 
-## 켜는 방법 (승인 + 슬롯 준비 후)
+```text
+ca-pub-7386903584540643
+```
 
-Vercel / `.env.local`에 아래를 설정하고 **Redeploy**:
+Ads stay **hidden** until all of these are true:
+1. AdSense account approved for the site
+2. Four ad units created
+3. Vercel env set + Redeploy
+
+## 1. Create ad units (AdSense)
+
+[AdSense](https://adsense.google.com) → Ads → By ad unit → Display ads
+
+| Env key | Suggested name | Placement |
+|---------|----------------|-----------|
+| `VITE_ADSENSE_SLOT_HOME` | nambac-home | Home mid-feed |
+| `VITE_ADSENSE_SLOT_QUIZ` | nambac-quiz | Quiz bottom |
+| `VITE_ADSENSE_SLOT_RESULT_1` | nambac-result-1 | Result #1 |
+| `VITE_ADSENSE_SLOT_RESULT_2` | nambac-result-2 | Result #2 |
+
+Copy each **Data ad slot** ID (numbers only).
+
+## 2. Vercel Production env
 
 ```env
 VITE_ADSENSE_ENABLED=true
 VITE_ADSENSE_PUB_ID=ca-pub-7386903584540643
-VITE_ADSENSE_SLOT_HOME=1234567890
-VITE_ADSENSE_SLOT_QUIZ=1234567890
-VITE_ADSENSE_SLOT_RESULT_1=1234567890
-VITE_ADSENSE_SLOT_RESULT_2=1234567890
+VITE_ADSENSE_SLOT_HOME=##########
+VITE_ADSENSE_SLOT_QUIZ=##########
+VITE_ADSENSE_SLOT_RESULT_1=##########
+VITE_ADSENSE_SLOT_RESULT_2=##########
 ```
 
-| 슬롯 env | 페이지 |
-|----------|--------|
-| `VITE_ADSENSE_SLOT_HOME` | 홈 중간 |
-| `VITE_ADSENSE_SLOT_QUIZ` | 퀴즈 하단 |
-| `VITE_ADSENSE_SLOT_RESULT_1` | 결과 1 |
-| `VITE_ADSENSE_SLOT_RESULT_2` | 결과 2 |
+Redeploy after saving (Vite embeds these at build time).
 
-슬롯 ID는 [AdSense](https://adsense.google.com) → 광고 단위에서 복사.
+## 3. Local (optional)
 
-## 동작
+Same keys in `.env.local`, then `npm run dev`.
 
-- `VITE_ADSENSE_ENABLED`가 `true`가 **아니면** → 광고·placeholder 모두 미표시
-- `true` + pub ID + 슬롯 ID → `adsbygoogle.js` 동적 로드 후 표시
-- `?premium=nambac-vip` → 광고 제거 (프리미엄)
+## Behavior
 
-## 검증
+- `VITE_ADSENSE_ENABLED` ≠ `true` → no ads, no placeholders
+- `true` + pub + slot → loads `adsbygoogle.js` after cookie consent
+- Placeholder slot IDs (`1234567890` …) are ignored
+- `?premium=CODE` / `VITE_PREMIUM_CODE` hides ads
+- `ad_impression` is pushed to GTM when a unit mounts
 
-`index.html`의 `google-adsense-account` 메타는 계정 연결용으로 유지됩니다.
+## Verify
+
+```bash
+npm run verify:ops
+```
+
+Then open www → accept cookies → confirm ad units render (or AdSense “Getting started” shows requests).

@@ -13,6 +13,7 @@ import {
 import { buildRoastOgImageUrl } from '../lib/siteUrl';
 import { fetchRoastSceneImage } from '../lib/roastApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import { trackFeatureEngage, trackFeatureShare, trackFeatureView } from '../lib/analytics';
 import { markTodayDone } from '../lib/todayDone';
 import ZaloShareButton from '../components/ZaloShareButton';
 import SceneNameOverlay from '../components/SceneNameOverlay';
@@ -57,6 +58,7 @@ export default function RoastCardPage() {
 
   useEffect(() => {
     if (trackFeatureViewOnce('roast')) {
+      trackFeatureView('roast');
       incrementFeatureStat('roast', 'view').catch(() => {});
     }
   }, []);
@@ -117,6 +119,7 @@ export default function RoastCardPage() {
     setImageSrc('');
     setImageError(false);
     setPhase('loading');
+    trackFeatureEngage('roast', 'generate');
     incrementFeatureStat('roast', 'like').catch(() => {});
     markTodayDone('roast');
   };
@@ -316,7 +319,10 @@ export default function RoastCardPage() {
               className="zalo-share-wrap--block"
               title="Thẻ đen bóc phốt — nambac"
               text="Xem thẻ đen này trên nambac!"
-              onShared={() => incrementFeatureStat('roast', 'share').catch(() => {})}
+              onShared={() => {
+                trackFeatureShare('roast');
+                incrementFeatureStat('roast', 'share').catch(() => {});
+              }}
             />
 
             <button type="button" className="roast-restart-btn" onClick={handleRetry}>

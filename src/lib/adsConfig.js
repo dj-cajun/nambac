@@ -8,10 +8,12 @@ function resolveSlot(raw) {
   return slot;
 }
 
-/** Set VITE_ADSENSE_ENABLED=true + pub ID + slot IDs to show ads later */
+/** Set VITE_ADSENSE_ENABLED=true + slot IDs to show ads (pub ID has a safe default). */
 export const ADS_ENABLED = import.meta.env.VITE_ADSENSE_ENABLED === 'true';
 
-export const AD_PUB_ID = String(import.meta.env.VITE_ADSENSE_PUB_ID || '').trim();
+export const AD_PUB_ID = String(
+  import.meta.env.VITE_ADSENSE_PUB_ID || 'ca-pub-7386903584540643',
+).trim();
 
 export const AD_SLOTS = {
   home: resolveSlot(import.meta.env.VITE_ADSENSE_SLOT_HOME),

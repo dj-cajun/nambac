@@ -13,6 +13,7 @@ import {
 import { buildBrainOgImageUrl } from '../lib/siteUrl';
 import { fetchBrainSceneImage } from '../lib/brainApi';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
+import { trackFeatureEngage, trackFeatureShare, trackFeatureView } from '../lib/analytics';
 import { markTodayDone } from '../lib/todayDone';
 import ZaloShareButton from '../components/ZaloShareButton';
 import SceneNameOverlay from '../components/SceneNameOverlay';
@@ -56,6 +57,7 @@ export default function BrainPage() {
 
   useEffect(() => {
     if (trackFeatureViewOnce('brain')) {
+      trackFeatureView('brain');
       incrementFeatureStat('brain', 'view').catch(() => {});
     }
   }, []);
@@ -112,6 +114,7 @@ export default function BrainPage() {
     setResultId(result.id);
     setImageSrc('');
     setPhase('loading');
+    trackFeatureEngage('brain', 'generate');
     incrementFeatureStat('brain', 'like').catch(() => {});
     markTodayDone('brain');
   };
@@ -316,7 +319,10 @@ export default function BrainPage() {
               className="zalo-share-wrap--block"
               title="Soi não — nambac"
               text="Xem kết quả soi não trên nambac!"
-              onShared={() => incrementFeatureStat('brain', 'share').catch(() => {})}
+              onShared={() => {
+                trackFeatureShare('brain');
+                incrementFeatureStat('brain', 'share').catch(() => {});
+              }}
             />
 
             <button type="button" className="brain-restart-btn" onClick={handleRetry}>
