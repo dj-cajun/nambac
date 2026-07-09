@@ -4,6 +4,8 @@ export const QUIZ_TEMPLATES = [
   {
     id: 'sponsor_bubble_tea',
     label: '💎 Trà sữa — Thương hiệu',
+    labelKo: '💎 버블티 — 브랜드',
+    titleKo: '1구 버블티 토핑은 뭐일까?',
     quiz_type: 'sponsor',
     category: 'Trendy',
     title: 'Bạn là topping trà sữa nào ở Quận 1?',
@@ -33,6 +35,8 @@ export const QUIZ_TEMPLATES = [
   {
     id: 'influencer_grab_driver',
     label: '📱 KOL — Grab Driver Vibe',
+    labelKo: '📱 인플루언서 — Grab 기사',
+    titleKo: '사이공 Grab 기사라면 어떤 타입?',
     quiz_type: 'sponsor',
     category: 'Delivery',
     title: 'Nếu bạn là tài xế Grab Sài Gòn thì kiểu nào?',
@@ -60,6 +64,8 @@ export const QUIZ_TEMPLATES = [
   {
     id: 'brand_compatibility',
     label: '🎯 B2B — So Kèo Hợp Nhau',
+    labelKo: '🎯 B2B — 궁합 테스트',
+    titleKo: '이 브랜드와 나의 궁합은?',
     quiz_type: 'binary_5q',
     category: 'Personality',
     title: 'Độ hợp cạ của bạn với thương hiệu này?',

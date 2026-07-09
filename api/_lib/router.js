@@ -38,6 +38,7 @@ import authSession, { authLogout } from './handlers/authSession.js';
 import authAdminLogin from './handlers/authAdminLogin.js';
 import adminUsers from './handlers/adminUsers.js';
 import siteVisit from './handlers/siteVisit.js';
+import { playerGradeGet, playerGradeComplete } from './handlers/playerGrade.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -69,6 +70,10 @@ export async function dispatch(req, res, segments = []) {
 
   // ── Site visit (daily unique visitors) ──
   if (a === 'visit' && !b && method === 'POST') return siteVisit(req, res);
+
+  // ── Player grade (quiz completion tiers) ──
+  if (a === 'player' && b === 'grade' && !c && method === 'GET') return playerGradeGet(req, res);
+  if (a === 'player' && b === 'complete' && !c && method === 'POST') return playerGradeComplete(req, res);
 
   // ── Google OAuth / session ──
   if (a === 'auth' && b === 'google' && c === 'callback' && method === 'GET') {

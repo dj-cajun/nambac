@@ -146,8 +146,8 @@ export default function AdminUsersPanel({ showToast }) {
         <div className="admin-filters">
           {[
             { id: 'all', label: '전체' },
-            { id: 'user', label: 'user' },
-            { id: 'admin', label: 'admin' },
+            { id: 'user', label: '일반' },
+            { id: 'admin', label: '관리자' },
           ].map((chip) => (
             <button
               key={chip.id}
@@ -232,8 +232,8 @@ export default function AdminUsersPanel({ showToast }) {
                         onChange={(e) => patchUser(u.id, { role: e.target.value })}
                         className={`admin-user-role ${u.role === 'admin' ? 'is-admin' : ''}`}
                       >
-                        <option value="user">user</option>
-                        <option value="admin">admin</option>
+                        <option value="user">일반</option>
+                        <option value="admin">관리자</option>
                       </select>
                     </td>
                     <td className="p-3 text-center">

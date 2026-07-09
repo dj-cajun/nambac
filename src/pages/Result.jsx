@@ -12,6 +12,7 @@ import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizResults, fetchQuizzes as loadQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { hasQuizLikedThisSession, trackQuizLikeOnce } from '../lib/quizRanking';
 import { buildShareUrl, buildOgImageUrl } from '../lib/siteUrl';
+import { recordPlayerQuizComplete } from '../lib/playerGrade';
 import { markTodayDone } from '../lib/todayDone';
 import { copyShareLinkWithFeedback } from '../lib/copyShareLink';
 import CopyToast from '../components/CopyToast';
@@ -32,6 +33,7 @@ const Result = () => {
     const [recommendedQuizzes, setRecommendedQuizzes] = useState([]);
     const [liked, setLiked] = useState(() => hasQuizLikedThisSession(quizIdParam));
     const [likeCount, setLikeCount] = useState(0);
+    const [playerGrade, setPlayerGrade] = useState(null);
     const { toast, showToast } = useCopyToast();
 
     // Fetch Results if not present
@@ -54,6 +56,12 @@ const Result = () => {
                 setFinalResult(match);
                 if (quizIdParam && !Number.isNaN(score)) {
                     trackQuizComplete(quizIdParam, score);
+                    recordPlayerQuizComplete(quizIdParam, score).then((data) => {
+                        if (data?.grade) {
+                            setPlayerGrade(data);
+                            window.dispatchEvent(new CustomEvent('nambac:grade-updated', { detail: data }));
+                        }
+                    });
                 }
                 markTodayDone('quiz');
             }
@@ -193,6 +201,38 @@ const Result = () => {
                         )}
                     </div>
                 </div>
+
+                {playerGrade?.grade && (
+                    <div className={`result-grade-card${playerGrade.leveledUp ? ' is-level-up' : ''}`}>
+                        <div className="result-grade-header">
+                            <span className="result-grade-emoji" aria-hidden="true">{playerGrade.grade.emoji}</span>
+                            <div>
+                                <p className="result-grade-kicker">
+                                    {playerGrade.isFirstEver
+                                        ? 'Hạng của bạn'
+                                        : playerGrade.leveledUp
+                                            ? 'Thăng hạng!'
+                                            : 'Hạng hiện tại'}
+                                </p>
+                                <p className="result-grade-title">{playerGrade.grade.label}</p>
+                            </div>
+                        </div>
+                        <p className="result-grade-meta">
+                            {playerGrade.uniqueQuizzes} quiz đã chơi
+                            {playerGrade.nextGrade
+                                ? ` · còn ${playerGrade.nextGrade.remaining} quiz tới ${playerGrade.nextGrade.emoji} ${playerGrade.nextGrade.label}`
+                                : ' · max rank!'}
+                        </p>
+                        {playerGrade.nextGrade && (
+                            <div className="result-grade-progress" aria-hidden="true">
+                                <div
+                                    className="result-grade-progress-fill"
+                                    style={{ width: `${playerGrade.progressPercent || 0}%` }}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* AdSense Slot (Below Result Image) */}
                 <AdSenseUnit adSlot={AD_SLOTS.result1} location="result-bottom-1" />

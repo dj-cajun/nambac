@@ -55,6 +55,26 @@
   flex-shrink: 0;
 }
 
+.site-grade-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 2px solid #1e293b;
+  background: linear-gradient(135deg, #e0f2fe, #fce7f3);
+  font-size: 13px;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 #1e293b;
+  flex-shrink: 0;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .streak-popup {
   position: fixed;
   top: 58px;

@@ -8,6 +8,7 @@ import { useDrawer } from './shell/DrawerContext';
 import { scrollToTop } from '../lib/scrollToTop';
 import { recordDailyVisit } from '../lib/dailyStreak';
 import { recordSiteVisit } from '../lib/siteVisit';
+import { fetchPlayerGrade } from '../lib/playerGrade';
 import './SiteLogoBar.css';
 
 const POPUP_SESSION_KEY = 'nambac_streak_popup_shown';
@@ -18,7 +19,26 @@ export default function SiteLogoBar() {
   const { toggleDrawer, open } = useDrawer();
   const { user, logout } = useAuth();
   const [streak, setStreak] = useState(0);
+  const [playerGrade, setPlayerGrade] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const loadGrade = () => {
+      fetchPlayerGrade().then((data) => {
+        if (data?.grade?.level > 0) setPlayerGrade(data.grade);
+      });
+    };
+    const onGradeUpdated = (event) => {
+      if (event.detail?.grade?.level > 0) {
+        setPlayerGrade(event.detail.grade);
+        return;
+      }
+      loadGrade();
+    };
+    loadGrade();
+    window.addEventListener('nambac:grade-updated', onGradeUpdated);
+    return () => window.removeEventListener('nambac:grade-updated', onGradeUpdated);
+  }, [user?.id]);
 
   useEffect(() => {
     recordSiteVisit();
@@ -62,6 +82,11 @@ export default function SiteLogoBar() {
       {streak > 0 && (
         <span className="site-streak-badge" aria-label={`Điểm danh ngày thứ ${streak} liên tiếp`}>
           🔥 Ngày {streak}
+        </span>
+      )}
+      {playerGrade && (
+        <span className="site-grade-badge" aria-label={`Hạng ${playerGrade.label}`}>
+          {playerGrade.emoji} {playerGrade.label}
         </span>
       )}
 

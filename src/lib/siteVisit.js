@@ -14,7 +14,7 @@ function writeCookie(name, value) {
   document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
 }
 
-function getVisitorId() {
+export function getVisitorId() {
   let id = readCookie(VID_COOKIE);
   if (!id) {
     id = crypto.randomUUID();

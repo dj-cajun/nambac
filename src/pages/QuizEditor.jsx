@@ -7,16 +7,18 @@ import { QUIZ_TEMPLATES } from '../../shared/quizTemplates.js';
 import './QuizEditor.css';
 
 const QUIZ_TYPES = [
-    { value: 'binary_5q', label: '🎯 Binary 5Q', desc: '5 câu A/B (mặc định)', qCount: 5, rCount: 8 },
-    { value: 'name_input', label: '✍️ Nhập tên', desc: 'Tên → kết quả ngẫu nhiên', qCount: 0, rCount: 10 },
-    { value: 'mbti_12q', label: '🧠 MBTI 12Q', desc: '12 câu → 16 kiểu', qCount: 12, rCount: 16 },
-    { value: 'sponsor', label: '💎 Nhà tài trợ', desc: 'Thiết kế + video tùy chỉnh', qCount: 5, rCount: 4 },
-    { value: 'full_custom', label: '⚙️ Full custom', desc: 'Chỉnh sửa mọi thứ', qCount: 5, rCount: 4 },
+    { value: 'binary_5q', label: '🎯 이지선다 5문항', desc: '5문항 A/B (기본)', qCount: 5, rCount: 8 },
+    { value: 'name_input', label: '✍️ 이름 입력', desc: '이름 → 랜덤 결과', qCount: 0, rCount: 10 },
+    { value: 'mbti_12q', label: '🧠 MBTI 12문항', desc: '12문항 → 16유형', qCount: 12, rCount: 16 },
+    { value: 'sponsor', label: '💎 스폰서', desc: '브랜드 디자인 + 영상', qCount: 5, rCount: 4 },
+    { value: 'full_custom', label: '⚙️ 완전 커스텀', desc: '모든 항목 직접 편집', qCount: 5, rCount: 4 },
 ];
+
+const QUIZ_TYPE_NAMES = Object.fromEntries(QUIZ_TYPES.map((t) => [t.value, t.label]));
 
 const EDITOR_CATEGORIES = QUIZ_CATEGORIES.map((c) => ({
   value: c.id,
-  label: c.label,
+  label: c.labelKo || c.label,
 }));
 
 const MBTI_DIMENSIONS = ['EI', 'SN', 'TF', 'JP'];
@@ -94,6 +96,13 @@ export default function QuizEditor({ embedded = false, onClose }) {
     const [showAiInput, setShowAiInput] = useState(false);
     const [generateStatus, setGenerateStatus] = useState('');
 
+    const goToAiEditorDraft = (notice) => {
+        setQuizType('binary_5q');
+        setStep(2);
+        setShowAiInput(false);
+        if (notice) setGenerateStatus(notice);
+    };
+
     // Initialize questions/results when type is selected
     const selectQuizType = (type) => {
         setQuizType(type);
@@ -154,12 +163,13 @@ export default function QuizEditor({ embedded = false, onClose }) {
     const handleAiGenerate = async (e) => {
         e.preventDefault();
         setIsAiGenerating(true);
-        setGenerateStatus('🤖 AI đang lên kịch bản quiz...');
+        setGenerateStatus('🤖 AI가 퀴즈 시나리오를 작성 중…');
         
         try {
             // Server-side Gemini (Admin API key required)
             const activeCategory = normalizeCategory(selectedPersona?.category || category);
-            setGenerateStatus(`🤖 Agent ${activeCategory} đang tạo quiz...`);
+            const categoryLabel = QUIZ_CATEGORIES.find((c) => c.id === activeCategory)?.labelKo || activeCategory;
+            setGenerateStatus(`🤖 ${categoryLabel} 에이전트가 퀴즈를 생성 중…`);
 
             const data = await api.generateQuizContent(activeCategory);
             console.log("AI Generation Successful:", data);
@@ -194,9 +204,9 @@ export default function QuizEditor({ embedded = false, onClose }) {
                 return { ...resultObj, result_code: i, title: resultObj.type_name || resultObj.title || '' };
             });
             setResults(finalResults);
+            setQuizType('binary_5q');
 
-            // Notify user of progress (Do NOT go to step 2 yet)
-            setGenerateStatus('🎨 Gemini đang viết prompt + tạo ảnh manga (9 ảnh: cover + kết quả)...');
+            setGenerateStatus('🎨 Gemini가 프롬프트 작성 및 만화 이미지 생성 중 (9장: 커버 + 결과)…');
 
             try {
                 const quizTitleStr = data.title || '';
@@ -256,21 +266,25 @@ export default function QuizEditor({ embedded = false, onClose }) {
                         })),
                     });
 
-                    alert('🎉 Quiz AI đã tạo và lưu thành công!');
+                    setGenerateStatus('');
+                    alert('🎉 AI 퀴즈가 생성되어 저장되었습니다!');
                     exitEditor();
                 } catch (saveErr) {
                     console.error('Auto-save Error:', saveErr);
-                    alert(`❌ Lưu thất bại: ${saveErr.message}\nNội dung vẫn còn trong editor.`);
+                    goToAiEditorDraft(`⚠️ 저장 실패: ${saveErr.message} — 내용을 확인한 뒤 직접 저장해 주세요.`);
+                    alert(`❌ 저장 실패: ${saveErr.message}\n에디터에서 내용을 확인한 뒤 저장해 주세요.`);
                 } finally {
                     setSaving(false);
                 }
             } catch (imgErr) {
                 console.error('Image pipeline error:', imgErr);
-                alert(`❌ Tạo ảnh thất bại: ${imgErr.message}`);
+                goToAiEditorDraft(`⚠️ 이미지 생성 실패: ${imgErr.message} — 텍스트는 준비되었습니다. 확인 후 저장해 주세요.`);
+                alert(`❌ 이미지 생성 실패: ${imgErr.message}\n생성된 텍스트는 에디터에서 확인할 수 있습니다.`);
             }
         } catch (err) {
             console.error("AI Gen Error:", err);
-            alert(`❌ AI thất bại: ${err.message}`);
+            setGenerateStatus('');
+            alert(`❌ AI 생성 실패: ${err.message}`);
         } finally {
             setIsAiGenerating(false);
         }
@@ -318,17 +332,17 @@ export default function QuizEditor({ embedded = false, onClose }) {
 
     // ZIP Upload (Disabled in serverless)
     const handleZipUpload = async (e) => {
-        alert("ZIP upload is disabled in serverless mode. Please create quizzes from scratch.");
+        alert('서버리스 환경에서는 ZIP 업로드를 사용할 수 없습니다. 직접 퀴즈를 만들어 주세요.');
     };
 
     // Save quiz via Turso API
     const handleSave = async () => {
-        if (!title.trim()) return alert('Nhập tiêu đề quiz');
+        if (!title.trim()) return alert('퀴즈 제목을 입력하세요');
         if (quizType !== 'name_input' && questions.some(q => !q.question_text.trim())) {
-            return alert('Hoàn thiện tất cả câu hỏi');
+            return alert('모든 문항을 완성해 주세요');
         }
         if (results.some(r => !r.title.trim())) {
-            return alert('Hoàn thiện tiêu đề tất cả kết quả');
+            return alert('모든 결과 제목을 완성해 주세요');
         }
 
         setSaving(true);
@@ -375,7 +389,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
             setStep(5);
         } catch (err) {
             console.error("Save Error:", err);
-            alert(`❌ Error: ${err.message}`);
+            alert(`❌ 오류: ${err.message}`);
         } finally {
             setSaving(false);
         }
@@ -387,13 +401,13 @@ export default function QuizEditor({ embedded = false, onClose }) {
             {!embedded && (
                 <div className="editor-header">
                     <div className="flex flex-col items-center mb-2">
-                        <h1 className="editor-logo">🎮 EDITOR</h1>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">AI Quiz Factory</p>
+                        <h1 className="editor-logo">🎮 퀴즈 에디터</h1>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">AI 퀴즈 팩토리</p>
                     </div>
                 </div>
             )}
                 <div className="editor-steps">
-                    {['Loại', 'Thông tin', 'Câu hỏi', 'Kết quả', 'Xong'].map((label, i) => (
+                    {['유형', '기본정보', '문항', '결과', '완료'].map((label, i) => (
                         <div
                             key={i}
                             className={`step-dot ${step === i + 1 ? 'active' : ''} ${step > i + 1 ? 'done' : ''}`}
@@ -405,10 +419,26 @@ export default function QuizEditor({ embedded = false, onClose }) {
                     ))}
                 </div>
 
+            {(isAiGenerating || generateStatus) && (
+                <div className={`editor-generate-status ${isAiGenerating ? 'is-loading' : 'is-notice'}`} role="status" aria-live="polite">
+                    {isAiGenerating && <span className="editor-generate-spinner" aria-hidden="true" />}
+                    <p className="editor-generate-status-text">{generateStatus}</p>
+                    {!isAiGenerating && generateStatus && (
+                        <button
+                            type="button"
+                            className="editor-generate-status-dismiss"
+                            onClick={() => setGenerateStatus('')}
+                        >
+                            닫기
+                        </button>
+                    )}
+                </div>
+            )}
+
             {/* Step 1: Quiz Type Selection */}
             {step === 1 && (
                 <div className="editor-section">
-                    <h2 className="section-title">Chọn loại quiz</h2>
+                    <h2 className="section-title">퀴즈 유형 선택</h2>
                     <div className="type-grid">
                         {QUIZ_TYPES.map(t => (
                             <button
@@ -418,12 +448,12 @@ export default function QuizEditor({ embedded = false, onClose }) {
                             >
                                 <span className="type-label">{t.label}</span>
                                 <span className="type-desc">{t.desc}</span>
-                                <span className="type-meta">Q: {t.qCount} / R: {t.rCount}</span>
+                                <span className="type-meta">문항: {t.qCount} / 결과: {t.rCount}</span>
                             </button>
                         ))}
                     </div>
 
-                    <div className="divider-or">hoặc dùng template B2B</div>
+                    <div className="divider-or">또는 B2B 템플릿 사용</div>
 
                     <div className="template-grid">
                         {QUIZ_TEMPLATES.map((tpl) => (
@@ -433,13 +463,13 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                 className="type-card template-card"
                                 onClick={() => applyTemplate(tpl)}
                             >
-                                <span className="type-label">{tpl.label}</span>
-                                <span className="type-desc">{tpl.title}</span>
+                                <span className="type-label">{tpl.labelKo || tpl.label}</span>
+                                <span className="type-desc">{tpl.titleKo || tpl.title}</span>
                             </button>
                         ))}
                     </div>
 
-                    <div className="divider-or">hoặc</div>
+                    <div className="divider-or">또는</div>
                     
                     <div className="ai-gen-wrapper">
                         {!showAiInput ? (
@@ -449,11 +479,11 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                 disabled={isAiGenerating}
                             >
                                 <span className="text-2xl">✨</span>
-                                <span>Tạo quiz bằng AI trong 10 giây</span>
+                                <span>AI로 10초 만에 퀴즈 만들기</span>
                             </button>
                         ) : (
                             <form onSubmit={handleAiGenerate} className="ai-input-form">
-                                <h3 className="text-sm font-black text-[#FF2D85] mb-2 uppercase tracking-widest text-center">AI Persona Choice</h3>
+                                <h3 className="text-sm font-black text-[#FF2D85] mb-2 uppercase tracking-widest text-center">AI 페르소나 선택</h3>
                                 <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-6">
                                     {personas.map((p) => (
                                         <button
@@ -479,24 +509,24 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                     disabled={isAiGenerating}
                                 >
                                     {isAiGenerating ? (
-                                        <>Đang tạo... <span className="animate-spin text-lg">⏳</span></>
+                                        <>생성 중… <span className="animate-spin text-lg">⏳</span></>
                                     ) : (
-                                        <>Tạo quiz AI theo danh mục này 🚀</>
+                                        <>이 카테고리로 AI 퀴즈 생성 🚀</>
                                     )}
                                 </button>
-                                <button type="button" className="text-gray-400 font-bold text-[10px] mt-4 underline block w-full text-center" onClick={() => setShowAiInput(false)}>Hủy</button>
+                                <button type="button" className="text-gray-400 font-bold text-[10px] mt-4 underline block w-full text-center" onClick={() => setShowAiInput(false)}>취소</button>
                             </form>
                         )}
                     </div>
 
-                    <div className="divider-or">hoặc</div>
+                    <div className="divider-or">또는</div>
 
                     <button
                         className="editor-btn secondary zip-btn"
                         onClick={() => zipInputRef.current?.click()}
                         disabled={saving}
                     >
-                        📦 Tải lên ZIP
+                        📦 ZIP 업로드
                     </button>
                     <input
                         ref={zipInputRef}
@@ -511,29 +541,29 @@ export default function QuizEditor({ embedded = false, onClose }) {
             {/* Step 2: Quiz Info */}
             {step === 2 && (
                 <div className="editor-section">
-                    <h2 className="section-title">✨ Quiz Information</h2>
+                    <h2 className="section-title">✨ 퀴즈 기본 정보</h2>
                     <div className="form-group">
-                        <label>Title</label>
+                        <label>제목</label>
                         <input
                             className="editor-input"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="VD: Bạn là loại cà phê nào?"
+                            placeholder="예: 당신은 어떤 커피 타입인가요?"
                             maxLength={100}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Description</label>
+                        <label>설명</label>
                         <textarea
                             className="editor-textarea"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Mô tả quiz..."
+                            placeholder="퀴즈 설명…"
                             rows={3}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Category</label>
+                        <label>카테고리</label>
                         <div className="category-chips">
                             {EDITOR_CATEGORIES.map(c => (
                                 <button
@@ -547,22 +577,22 @@ export default function QuizEditor({ embedded = false, onClose }) {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label>Thumbnail Image</label>
+                        <label>썸네일 이미지</label>
                         <div className="flex items-center gap-6">
                             <div className="thumbnail-upload group relative" onClick={() => fileInputRef.current?.click()}>
                                 {thumbnailPreview ? (
-                                    <img src={thumbnailPreview} alt="thumb" className="thumb-preview" />
+                                    <img src={thumbnailPreview} alt="썸네일" className="thumb-preview" />
                                 ) : (
                                     <div className="flex flex-col items-center gap-2">
                                         <span className="text-4xl group-hover:scale-125 transition-transform">📷</span>
-                                        <span className="text-[10px] font-black text-gray-400">UPLOAD</span>
+                                        <span className="text-[10px] font-black text-gray-400">업로드</span>
                                     </div>
                                 )}
                             </div>
                             <div className="text-xs text-gray-400 font-bold leading-relaxed">
-                                <p>• Kích thước: 1080×1080</p>
+                                <p>• 권장 크기: 1080×1080</p>
                                 <p>• JPG, PNG, WEBP</p>
-                                <p>• Tối đa 5MB</p>
+                                <p>• 최대 5MB</p>
                             </div>
                         </div>
                         <input
@@ -575,41 +605,41 @@ export default function QuizEditor({ embedded = false, onClose }) {
                     </div>
                     {(quizType === 'sponsor' || quizType === 'full_custom') && (
                         <div className="form-group sponsor-design-block">
-                            <label>💎 Thiết kế thương hiệu</label>
+                            <label>💎 브랜드 디자인</label>
                             <input
                                 className="editor-input mb-2"
-                                placeholder="Tên thương hiệu (VD: Grab Vietnam)"
+                                placeholder="브랜드명 (예: Grab Vietnam)"
                                 value={design.brand_name || ''}
                                 onChange={(e) => updateDesign('brand_name', e.target.value)}
                             />
                             <input
                                 className="editor-input mb-2"
-                                placeholder="Logo URL (/images/sponsor-logo.png)"
+                                placeholder="로고 URL (/images/sponsor-logo.png)"
                                 value={design.sponsor_logo || ''}
                                 onChange={(e) => updateDesign('sponsor_logo', e.target.value)}
                             />
                             <input
                                 className="editor-input mb-2"
-                                placeholder="Banner URL (/images/sponsor-banner.png)"
+                                placeholder="배너 URL (/images/sponsor-banner.png)"
                                 value={design.sponsor_banner || ''}
                                 onChange={(e) => updateDesign('sponsor_banner', e.target.value)}
                             />
                             <input
                                 className="editor-input"
-                                placeholder="Màu chủ đạo (#FF2D85)"
+                                placeholder="메인 컬러 (#FF2D85)"
                                 value={design.primary_color || ''}
                                 onChange={(e) => updateDesign('primary_color', e.target.value)}
                             />
                         </div>
                     )}
                     <div className="form-row mt-10">
-                        <button className="editor-btn secondary px-10" onClick={() => setStep(1)}>Back</button>
+                        <button className="editor-btn secondary px-10" onClick={() => setStep(1)}>이전</button>
                         <button
                             className="editor-btn primary px-10"
                             onClick={() => setStep(quizType === 'name_input' ? 4 : 3)}
                             disabled={!title.trim()}
                         >
-                            Next Step
+                            다음
                         </button>
                     </div>
                 </div>
@@ -619,7 +649,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
             {step === 3 && quizType !== 'name_input' && (
                 <div className="editor-section">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="section-title !m-0">📝 Questions</h2>
+                        <h2 className="section-title !m-0">📝 문항</h2>
                         <span className="badge">{QUIZ_TYPES.find(t => t.value === quizType)?.label}</span>
                     </div>
 
@@ -649,7 +679,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                 <div className="flex flex-col gap-4">
                                     <input
                                         className="editor-input"
-                                        placeholder="Type your question here..."
+                                        placeholder="문항을 입력하세요…"
                                         value={q.question_text}
                                         onChange={(e) => updateQuestion(idx, 'question_text', e.target.value)}
                                     />
@@ -658,7 +688,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300">A</span>
                                             <input
                                                 className="editor-input option-input !pl-8"
-                                                placeholder="Option A"
+                                                placeholder="선택지 A"
                                                 value={q.option_a}
                                                 onChange={(e) => updateQuestion(idx, 'option_a', e.target.value)}
                                             />
@@ -667,7 +697,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300">B</span>
                                             <input
                                                 className="editor-input option-input !pl-8"
-                                                placeholder="Option B"
+                                                placeholder="선택지 B"
                                                 value={q.option_b}
                                                 onChange={(e) => updateQuestion(idx, 'option_b', e.target.value)}
                                             />
@@ -675,9 +705,9 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                     </div>
                                     {quizType === 'binary_5q' && (
                                         <div className="flex gap-4 px-2">
-                                            <span className="text-[10px] font-black text-[#FF2D85]">{q.score_a}pt</span>
-                                            <span className="text-[10px] font-black text-gray-400">SCORE PATTERN</span>
-                                            <span className="text-[10px] font-black text-[#FF2D85]">{q.score_b}pt</span>
+                                            <span className="text-[10px] font-black text-[#FF2D85]">{q.score_a}점</span>
+                                            <span className="text-[10px] font-black text-gray-400">점수 패턴</span>
+                                            <span className="text-[10px] font-black text-[#FF2D85]">{q.score_b}점</span>
                                         </div>
                                     )}
                                 </div>
@@ -688,13 +718,13 @@ export default function QuizEditor({ embedded = false, onClose }) {
                     {(quizType === 'full_custom' || quizType === 'sponsor') && (
                         <button className="editor-btn secondary add-btn group" onClick={addQuestion}>
                             <span className="group-hover:rotate-90 transition-transform inline-block">+</span>
-                            <span>Add Question</span>
+                            <span>문항 추가</span>
                         </button>
                     )}
 
                     <div className="form-row mt-6">
-                        <button className="editor-btn secondary px-10" onClick={() => setStep(2)}>Back</button>
-                        <button className="editor-btn primary px-10" onClick={() => setStep(4)}>Next Step</button>
+                        <button className="editor-btn secondary px-10" onClick={() => setStep(2)}>이전</button>
+                        <button className="editor-btn primary px-10" onClick={() => setStep(4)}>다음</button>
                     </div>
                 </div>
             )}
@@ -703,8 +733,8 @@ export default function QuizEditor({ embedded = false, onClose }) {
             {step === 4 && (
                 <div className="editor-section">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="section-title !m-0">🏆 Results</h2>
-                        {quizType === 'mbti_12q' && <span className="badge">16 Types</span>}
+                        <h2 className="section-title !m-0">🏆 결과</h2>
+                        {quizType === 'mbti_12q' && <span className="badge">16유형</span>}
                     </div>
 
                     <div className="results-list">
@@ -712,9 +742,9 @@ export default function QuizEditor({ embedded = false, onClose }) {
                             <div key={idx} className="result-editor-card">
                                 <div className="r-header mb-4">
                                     <span className="r-code">
-                                        {quizType === 'binary_5q' ? `Level ${r.result_code}` :
-                                            quizType === 'mbti_12q' ? `Type #${idx + 1}` :
-                                                `Result ${idx + 1}`}
+                                        {quizType === 'binary_5q' ? `레벨 ${r.result_code}` :
+                                            quizType === 'mbti_12q' ? `유형 #${idx + 1}` :
+                                                `결과 ${idx + 1}`}
                                     </span>
                                     {(quizType === 'full_custom' || quizType === 'sponsor' || quizType === 'name_input') && (
                                         <button className="q-remove hover:scale-110 transition-transform" onClick={() => removeResult(idx)}>✕</button>
@@ -723,20 +753,20 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                 <div className="flex flex-col gap-3">
                                     <input
                                         className="editor-input"
-                                        placeholder="Result Title (e.g. The Coffee Master ☕)"
+                                        placeholder="결과 제목 (예: 커피 마스터 ☕)"
                                         value={r.title}
                                         onChange={(e) => updateResult(idx, 'title', e.target.value)}
                                     />
                                     <textarea
                                         className="editor-textarea !min-h-[80px]"
-                                        placeholder="Detailed description..."
+                                        placeholder="상세 설명…"
                                         value={r.description}
                                         onChange={(e) => updateResult(idx, 'description', e.target.value)}
                                         rows={2}
                                     />
                                     <input
                                         className="editor-input"
-                                        placeholder="Tags (comma separated: strong, bold, fast)"
+                                        placeholder="태그 (쉼표로 구분: 강함, 대담, 빠름)"
                                         value={(r.traits || []).join(', ')}
                                         onChange={(e) => updateResultTraits(idx, e.target.value)}
                                     />
@@ -748,13 +778,13 @@ export default function QuizEditor({ embedded = false, onClose }) {
                     {(quizType === 'full_custom' || quizType === 'sponsor' || quizType === 'name_input') && (
                         <button className="editor-btn secondary add-btn group" onClick={addResult}>
                             <span className="group-hover:rotate-90 transition-transform inline-block">+</span>
-                            <span>Add Result Type</span>
+                            <span>결과 유형 추가</span>
                         </button>
                     )}
 
                     <div className="form-row mt-6">
                         <button className="editor-btn secondary px-10" onClick={() => setStep(quizType === 'name_input' ? 2 : 3)}>
-                            Back
+                            이전
                         </button>
                         <button
                             className="editor-btn primary save-btn px-10"
@@ -764,9 +794,9 @@ export default function QuizEditor({ embedded = false, onClose }) {
                             {saving ? (
                                 <div className="flex items-center gap-2">
                                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    <span>Saving...</span>
+                                    <span>저장 중…</span>
                                 </div>
-                            ) : '💾 Save Quiz'}
+                            ) : '💾 퀴즈 저장'}
                         </button>
                     </div>
                 </div>
@@ -777,29 +807,29 @@ export default function QuizEditor({ embedded = false, onClose }) {
                 <div className="editor-section complete-section">
                     <div className="complete-card">
                         <span className="complete-emoji">💎</span>
-                        <h2 className="text-3xl font-black mb-2">Quiz Published!</h2>
-                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mb-8">Successfully saved to database</p>
+                        <h2 className="text-3xl font-black mb-2">퀴즈 게시 완료!</h2>
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mb-8">데이터베이스에 저장되었습니다</p>
                         
                         <div className="complete-info mb-10">
                             <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
-                                <span className="text-xs font-black text-gray-400 uppercase">Title</span>
+                                <span className="text-xs font-black text-gray-400 uppercase">제목</span>
                                 <span className="font-bold text-gray-900">{saveResult.data.title}</span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase mb-1">Type</span>
-                                    <span className="font-bold text-sm bg-pink-50 text-[#FF2D85] px-2 py-1 rounded-lg border border-pink-100">{saveResult.data.quiz_type}</span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase mb-1">유형</span>
+                                    <span className="font-bold text-sm bg-pink-50 text-[#FF2D85] px-2 py-1 rounded-lg border border-pink-100">{QUIZ_TYPE_NAMES[saveResult.data.quiz_type] || saveResult.data.quiz_type}</span>
                                 </div>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase mb-1">Stats</span>
-                                    <span className="font-bold text-sm">{saveResult.data.question_count}Q / {saveResult.data.result_count}R</span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase mb-1">통계</span>
+                                    <span className="font-bold text-sm">{saveResult.data.question_count}문항 / {saveResult.data.result_count}결과</span>
                                 </div>
                             </div>
                         </div>
 
                         {saveResult.data.brand_report_token && saveResult.data.id && (
                             <div className="brand-report-link-box mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-left">
-                                <p className="text-xs font-black text-yellow-800 uppercase mb-2">📊 Brand Report Link</p>
+                                <p className="text-xs font-black text-yellow-800 uppercase mb-2">📊 브랜드 리포트 링크</p>
                                 <code className="text-[11px] break-all text-gray-700">
                                     /brands/report/{saveResult.data.id}/{saveResult.data.brand_report_token}
                                 </code>
@@ -808,7 +838,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
 
                         <div className="flex flex-col gap-4">
                             <button className="editor-btn primary w-full text-lg py-5" onClick={exitEditor}>
-                                Go to Admin Dashboard
+                                관리자 대시보드로
                             </button>
                             <button className="text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-[#FF2D85] transition-colors" onClick={() => {
                                 setStep(1);
@@ -820,7 +850,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
                                 setThumbnailPreview('');
                                 setSaveResult(null);
                             }}>
-                                Create New Quiz
+                                새 퀴즈 만들기
                             </button>
                         </div>
                     </div>

@@ -408,7 +408,7 @@ const Admin = () => {
         {!isAdminAuthed ? (
             <div className="min-h-screen flex items-center justify-center p-6">
                 <div className="w-full max-w-sm space-y-4 border-[3px] border-black rounded-lg p-8 bg-white shadow-md">
-                    <h1 className="text-xl font-black">Admin</h1>
+                    <h1 className="text-xl font-black">관리자</h1>
                     {authLoading ? (
                         <p className="text-sm text-gray-600">세션 확인 중…</p>
                     ) : (
@@ -452,7 +452,7 @@ const Admin = () => {
                             <button type="button" onClick={closeEditModal} className="w-8 h-8 bg-white text-black rounded-sm border-[1.5px] border-black" aria-label="닫기">✕</button>
                         </div>
                         <div className="flex gap-0 bg-white border-b-[1.5px] border-black">
-                            {[{ id: 'info', label: '기본 정보' }, { id: 'questions', label: 'Questions' }, { id: 'results', label: '결과' }].map(tab => (
+                            {[{ id: 'info', label: '기본 정보' }, { id: 'questions', label: '문항' }, { id: 'results', label: '결과' }].map(tab => (
                                 <button key={tab.id} type="button" onClick={() => setModalTab(tab.id)} className={`px-4 py-2 font-black text-sm ${modalTab === tab.id ? 'text-black border-b-[3px] border-black' : 'text-gray-500'}`}>{tab.label}</button>
                             ))}
                         </div>
