@@ -116,8 +116,9 @@ export default function TarotFortuneWheel({
   todayLabel,
   cardRef,
   onComplete,
+  startExpanded = false,
 }) {
-  const [phase, setPhase] = useState('awaitingGather');
+  const [phase, setPhase] = useState(startExpanded ? 'expanded' : 'awaitingGather');
   const [pickedIndex, setPickedIndex] = useState(null);
 
   const handleGather = useCallback(() => {

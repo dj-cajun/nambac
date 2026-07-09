@@ -3,7 +3,7 @@ import { buildOgImageApiUrl, parseTraits } from '../composeOgImage.js';
 
 const BOT_AGENTS = [
   'facebookexternalhit', 'facebot',
-  'zalosharebot', 'zalo',
+  'zalosharebot',
   'twitterbot', 'linkedinbot',
   'googlebot', 'slackbot',
   'discordbot', 'whatsapp',

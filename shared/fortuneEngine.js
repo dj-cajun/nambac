@@ -50,6 +50,30 @@ export function calculateTodayFortune(name = '', date = new Date()) {
   };
 }
 
+/** Rebuild sharer's fortune from link params (idx + date — not visitor's name hash). */
+export function buildFortuneResultFromShare(share) {
+  if (!share?.friendName) return null;
+  const fortuneIndex = share.fortuneIndex;
+  const fortune = share.fortune || getFortuneByIndex(fortuneIndex);
+  const dateLabel = share.dateLabel || getDateStr();
+  const soulmateIndex = Number.isInteger(fortune?.soulmateIndex)
+    ? ((fortune.soulmateIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT
+    : (fortuneIndex + 7) % FORTUNE_COUNT;
+  const rivalIndex = Number.isInteger(fortune?.villainIndex)
+    ? ((fortune.villainIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT
+    : (fortuneIndex + 11) % FORTUNE_COUNT;
+  return {
+    fortuneIndex,
+    soulmateIndex,
+    rivalIndex,
+    dateLabel,
+    fortune,
+    soulmate: getFortuneByIndex(soulmateIndex),
+    rival: getFortuneByIndex(rivalIndex),
+    name: share.friendName,
+  };
+}
+
 /** Parse YYYY-MM-DD as local calendar date — no silent fallback (keeps OG/share dates frozen). */
 export function parseFortuneDateLabel(dateLabel) {
   if (!isValidFortuneDateLabel(dateLabel)) {

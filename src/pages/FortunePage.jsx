@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Download, Share2, Heart } from 'lucide-react';
@@ -12,6 +12,7 @@ import {
   formatFortuneDateLong,
   formatFortuneDateShort,
   parseFortuneShareParams,
+  buildFortuneResultFromShare,
 } from '../../shared/fortuneEngine.js';
 import { FORTUNE_COUNT } from '../../shared/fortuneData.js';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
@@ -53,8 +54,10 @@ function introIndexFromDate(dateLabel) {
 
 export default function FortunePage({ dayOffset = 0 }) {
   const cardRef = useRef(null);
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const friendShare = parseFortuneShareParams(searchParams);
+  const sharedResult = friendShare ? buildFortuneResultFromShare(friendShare) : null;
   const { toast, showToast } = useCopyToast();
 
   const isTomorrow = dayOffset === 1;
@@ -65,19 +68,17 @@ export default function FortunePage({ dayOffset = 0 }) {
     return d;
   }, [dayOffset]);
 
-  // Prefill only when starting a normal visit with own saved name.
-  // Friend share links always start blank — never show someone else's name in the input.
   const [name, setName] = useState(() => {
-    if (friendShare) return '';
+    if (friendShare) return friendShare.friendName;
     try {
       return localStorage.getItem(NAME_KEY) || '';
     } catch {
       return '';
     }
   });
-  const [phase, setPhase] = useState('form'); // form | ritual | done
-  const [showActions, setShowActions] = useState(false);
-  const [result, setResult] = useState(null);
+  const [phase, setPhase] = useState(sharedResult ? 'done' : 'form'); // form | ritual | done
+  const [showActions, setShowActions] = useState(!!sharedResult);
+  const [result, setResult] = useState(sharedResult);
   const [imageSrc, setImageSrc] = useState('');
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -117,9 +118,19 @@ export default function FortunePage({ dayOffset = 0 }) {
   };
 
   const handleRetry = () => {
+    if (friendShare) {
+      navigate(dayOffset === 1 ? '/fortune/tomorrow' : '/fortune', { replace: true });
+    }
     setPhase('form');
     setShowActions(false);
     setResult(null);
+    setName(() => {
+      try {
+        return localStorage.getItem(NAME_KEY) || '';
+      } catch {
+        return '';
+      }
+    });
     setImageSrc('');
     setImageError(false);
   };
@@ -134,6 +145,17 @@ export default function FortunePage({ dayOffset = 0 }) {
       })
       .catch(console.error);
   }, []);
+
+  useEffect(() => {
+    const share = parseFortuneShareParams(searchParams);
+    if (!share) return;
+    const next = buildFortuneResultFromShare(share);
+    if (!next) return;
+    setName(share.friendName);
+    setResult(next);
+    setPhase('done');
+    setShowActions(true);
+  }, [searchParams]);
 
   useEffect(() => {
     const today = getDateStr();
@@ -306,7 +328,7 @@ export default function FortunePage({ dayOffset = 0 }) {
               )}{' '}
               dính <strong>{friendShare.fortune.emoji} {friendShare.fortune.title}</strong>
               <br />
-              Nhập tên bạn — xem có thoát được không 👀
+              Nhập tên bạn — xem vận của mình có giống không 👀
             </div>
           )}
 
@@ -333,6 +355,18 @@ export default function FortunePage({ dayOffset = 0 }) {
         </>
       )}
 
+      {friendShare && (phase === 'ritual' || phase === 'done') && result && (
+        <div className="fortune-friend-banner fortune-friend-banner--viewing">
+          Bạn đang xem tử vi của <strong>{friendShare.friendName}</strong>
+          {friendShare.dateLabel && (
+            <>
+              {' '}
+              · <strong>{formatFortuneDateShort(friendShare.dateLabel)}</strong>
+            </>
+          )}
+        </div>
+      )}
+
       {(phase === 'ritual' || phase === 'done') && result && (
         <TarotFortuneWheel
           fortune={result.fortune}
@@ -344,6 +378,7 @@ export default function FortunePage({ dayOffset = 0 }) {
           todayLabel={todayLabel}
           cardRef={cardRef}
           onComplete={handleRitualComplete}
+          startExpanded={!!friendShare}
         />
       )}
 

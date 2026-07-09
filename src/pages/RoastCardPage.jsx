@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, RefreshCw } from 'lucide-react';
@@ -30,6 +30,7 @@ const LOADING_LINES = [
 
 export default function RoastCardPage() {
   const cardRef = useRef(null);
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const shared = parseRoastShareParams(searchParams);
 
@@ -60,6 +61,14 @@ export default function RoastCardPage() {
       incrementFeatureStat('roast', 'view').catch(() => {});
     }
   }, []);
+
+  useEffect(() => {
+    const next = parseRoastShareParams(searchParams);
+    if (!next) return;
+    setFriendName(next.name);
+    setTraitId(next.traitId);
+    setPhase('reveal');
+  }, [searchParams]);
 
   // Fetch the AI scene image whenever a trait is chosen (loading or reveal)
   useEffect(() => {
@@ -114,6 +123,9 @@ export default function RoastCardPage() {
   };
 
   const handleRetry = () => {
+    navigate('/roast-card', { replace: true });
+    setFriendName('');
+    setTraitId('');
     setPhase('form');
     setProgress(0);
     setImageSrc('');
@@ -152,7 +164,7 @@ export default function RoastCardPage() {
   return (
     <div className="roast-generator-page">
       <Helmet>
-        <title>Thẻ đen bóc phốt bạn bè 💳 — nambac.xyz</title>
+        <title>{ogTitle}</title>
         <meta
           name="description"
           content="Nhập tên bạn thân → hệ thống soi tội ngẫu nhiên → nhận thẻ đen bóc phốt kèm ảnh, tag Zalo. Không cần đăng nhập."
@@ -178,9 +190,13 @@ export default function RoastCardPage() {
 
       {shared && phase === 'reveal' && (
         <div className="roast-viral-banner">
-          Ai đó vừa làm thẻ đen cho <strong>{shared.name}</strong>!
-          <br />
-          Nhập tên bạn — soi thử xem tội gì 👀
+          Thẻ đen của <strong>{shared.name}</strong>
+          {currentTrait && (
+            <>
+              {' '}
+              — <strong>{currentTrait.emoji} {currentTrait.title}</strong>
+            </>
+          )}
         </div>
       )}
 

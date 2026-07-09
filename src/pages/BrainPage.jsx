@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, RefreshCw } from 'lucide-react';
@@ -30,6 +30,7 @@ const LOADING_LINES = [
 
 export default function BrainPage() {
   const cardRef = useRef(null);
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const shared = parseBrainShareParams(searchParams);
 
@@ -59,6 +60,14 @@ export default function BrainPage() {
       incrementFeatureStat('brain', 'view').catch(() => {});
     }
   }, []);
+
+  useEffect(() => {
+    const next = parseBrainShareParams(searchParams);
+    if (!next) return;
+    setFriendName(next.name);
+    setResultId(next.resultId);
+    setPhase('reveal');
+  }, [searchParams]);
 
   useEffect(() => {
     if (!resultId || phase === 'form') return undefined;
@@ -116,6 +125,9 @@ export default function BrainPage() {
   };
 
   const handleRetry = () => {
+    navigate('/brain', { replace: true });
+    setFriendName('');
+    setResultId('');
     setPhase('form');
     setProgress(0);
     setImageSrc('');
@@ -145,7 +157,7 @@ export default function BrainPage() {
   return (
     <div className="brain-page">
       <Helmet>
-        <title>Trong đầu bạn đang nghĩ gì? 🧠 — nambac.xyz</title>
+        <title>{ogTitle}</title>
         <meta
           name="description"
           content="Nhập tên → hệ thống quét sóng não → xem % trong đầu bạn đang nghĩ gì. Vui thôi, tag bạn bè trên Zalo!"
@@ -166,9 +178,13 @@ export default function BrainPage() {
 
       {shared && phase === 'reveal' && (
         <div className="brain-viral-banner">
-          Ai đó vừa soi não cho <strong>{shared.name}</strong>!
-          <br />
-          Nhập tên bạn — xem trong đầu có gì 👀
+          Kết quả soi não của <strong>{shared.name}</strong>
+          {currentResult && (
+            <>
+              {' '}
+              — <strong>{currentResult.emoji} {currentResult.title}</strong>
+            </>
+          )}
         </div>
       )}
 
