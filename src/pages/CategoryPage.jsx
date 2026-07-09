@@ -5,7 +5,7 @@ import { getCategoryMeta, matchesCategory } from '../constants/categories';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
 import { sortByViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import { scrollToTop } from '../lib/scrollToTop';
-import QuizImage from '../components/QuizImage';
+import QuizCardThumb from '../components/QuizCardThumb';
 import QuizCardTitle from '../components/QuizCardTitle';
 import QuizCardStats from '../components/QuizCardStats';
 import './Home.css';
@@ -76,9 +76,12 @@ export default function CategoryPage() {
           ) : (
             filtered.map((quiz) => (
               <div key={quiz.id} className="glass-card square-card" onClick={() => handleQuizClick(quiz.id)}>
-                <div className="glass-card-thumb-large">
-                  <QuizImage src={quiz.image_url} alt="thumb" seed={quiz.id} />
-                </div>
+                <QuizCardThumb
+                  src={quiz.image_url}
+                  seed={quiz.id}
+                  alt={quiz.title}
+                  typeLabel={category.label}
+                />
                 <div className="glass-card-info-bottom">
                   <QuizCardTitle title={quiz.title} />
                   <QuizCardStats quiz={quiz} />

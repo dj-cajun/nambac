@@ -10,6 +10,7 @@
     "db:migrate": "node scripts/db/migrate_to_turso.js",
     "db:normalize-categories": "node scripts/db/normalize_categories.js",
     "db:migrate-phase2": "node scripts/db/migrate_phase2.js",
+    "db:migrate-users": "node scripts/db/migrate_users.js",
     "images:placeholders": "node scripts/images/ensure_image_placeholders.js",
     "images:sync": "node scripts/images/sync_images.mjs",
     "images:backfill": "node scripts/images/backfill_images.mjs",

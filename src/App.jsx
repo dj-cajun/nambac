@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import SiteLogoBar from './components/SiteLogoBar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -37,11 +38,13 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
-      <DrawerProvider>
-        <AppContent />
-      </DrawerProvider>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <DrawerProvider>
+          <AppContent />
+        </DrawerProvider>
+      </Router>
+    </AuthProvider>
   );
 }
 

@@ -4,6 +4,8 @@ import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi } from '../lib/adminApi';
 import { getAdminKey, setAdminKey } from '../lib/adminKey';
 import { getArchetypesByGroup } from '../../shared/personalityArchetypes.js';
+import GoogleLoginButton from '../components/GoogleLoginButton';
+import { useAuth } from '../context/AuthContext';
 import './Admin.css';
 
 const getAdminCategoryLabel = (type) => {
@@ -13,7 +15,9 @@ const getAdminCategoryLabel = (type) => {
 };
 
 const Admin = () => {
+    const { isAdmin: isGoogleAdmin } = useAuth();
     const [adminKey, setAdminKeyState] = useState(() => getAdminKey());
+    const isAdminAuthed = Boolean(adminKey) || isGoogleAdmin;
     const [unlockInput, setUnlockInput] = useState('');
     const [unlockError, setUnlockError] = useState('');
     const [unlockLoading, setUnlockLoading] = useState(false);
@@ -34,6 +38,9 @@ const Admin = () => {
     const [inquiriesLoading, setInquiriesLoading] = useState(false);
     const [analytics, setAnalytics] = useState(null);
     const [analyticsLoading, setAnalyticsLoading] = useState(false);
+    const [users, setUsers] = useState([]);
+    const [usersTotal, setUsersTotal] = useState(0);
+    const [usersLoading, setUsersLoading] = useState(false);
     const [generatingArchetypeId, setGeneratingArchetypeId] = useState(null);
     const [archetypeStatus, setArchetypeStatus] = useState('');
     const [factoryWithImages, setFactoryWithImages] = useState(true);
@@ -116,10 +123,10 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        if (adminKey) {
+        if (isAdminAuthed) {
             fetchQuizzes();
         }
-    }, [adminKey]);
+    }, [isAdminAuthed]);
 
     const fetchInquiries = async () => {
         setInquiriesLoading(true);
@@ -134,10 +141,10 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        if (adminKey && adminTab === 'b2b') {
+        if (isAdminAuthed && adminTab === 'b2b') {
             fetchInquiries();
         }
-    }, [adminKey, adminTab]);
+    }, [isAdminAuthed, adminTab]);
 
     const fetchAnalytics = async () => {
         setAnalyticsLoading(true);
@@ -152,10 +159,42 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        if (adminKey && adminTab === 'analytics') {
+        if (isAdminAuthed && adminTab === 'analytics') {
             fetchAnalytics();
         }
-    }, [adminKey, adminTab]);
+    }, [isAdminAuthed, adminTab]);
+
+    const fetchUsers = async () => {
+        setUsersLoading(true);
+        try {
+            const data = await api.fetchUsers();
+            setUsers(data.users || []);
+            setUsersTotal(data.total || 0);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            showToast('사용자 목록을 불러오지 못했습니다.', 'error');
+        } finally {
+            setUsersLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isAdminAuthed && adminTab === 'users') {
+            fetchUsers();
+        }
+    }, [isAdminAuthed, adminTab]);
+
+    const updateUserRole = async (userId, role) => {
+        try {
+            setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role } : u)));
+            await api.updateUserRole(userId, role);
+            showToast('권한이 변경되었습니다.', 'success');
+        } catch (error) {
+            console.error('Error updating user role:', error);
+            showToast(`권한 변경 실패: ${error.message}`, 'error');
+            fetchUsers();
+        }
+    };
 
     const updateInquiryStatus = async (id, newStatus) => {
         try {
@@ -401,11 +440,14 @@ const Admin = () => {
 
     return (
         <div className="admin-shell">
-        {!adminKey ? (
+        {!isAdminAuthed ? (
             <div className="min-h-screen flex items-center justify-center p-6">
-                <form onSubmit={handleUnlock} className="w-full max-w-sm space-y-4 border-[3px] border-black rounded-lg p-8 bg-white shadow-md">
+                <div className="w-full max-w-sm space-y-4 border-[3px] border-black rounded-lg p-8 bg-white shadow-md">
                     <h1 className="text-xl font-black">Admin</h1>
-                    <p className="text-sm text-gray-600">Admin API key를 입력하세요. (세션에만 저장)</p>
+                    <p className="text-sm text-gray-600">Google 계정 또는 Admin API key로 로그인하세요.</p>
+                    <GoogleLoginButton returnTo="/admin" label="Google로 로그인" />
+                    <div className="text-center text-xs font-bold text-gray-400">또는</div>
+                    <form onSubmit={handleUnlock} className="space-y-4">
                     <input
                         type="password"
                         value={unlockInput}
@@ -422,7 +464,8 @@ const Admin = () => {
                     >
                         {unlockLoading ? '확인 중…' : 'Unlock'}
                     </button>
-                </form>
+                    </form>
+                </div>
             </div>
         ) : (
         <>
@@ -512,6 +555,7 @@ const Admin = () => {
                                     {[
                                         { id: 'quizzes', label: '퀴즈' },
                                         { id: 'b2b', label: 'B2B 문의' },
+                                        { id: 'users', label: '사용자' },
                                         { id: 'analytics', label: '통계' },
                                     ].map((tab) => (
                                         <button
@@ -537,6 +581,11 @@ const Admin = () => {
                                     )}
                                     {adminTab === 'analytics' && (
                                         <button type="button" className="admin-btn admin-btn-secondary" onClick={fetchAnalytics} disabled={analyticsLoading}>
+                                            ↻ 새로고침
+                                        </button>
+                                    )}
+                                    {adminTab === 'users' && (
+                                        <button type="button" className="admin-btn admin-btn-secondary" onClick={fetchUsers} disabled={usersLoading}>
                                             ↻ 새로고침
                                         </button>
                                     )}
@@ -569,7 +618,8 @@ const Admin = () => {
                             <>
                                 <div className="admin-panel-head">
                                     {adminTab === 'quizzes' ? '퀴즈 관리' :
-                                     adminTab === 'b2b' ? '브랜드 문의' : '통계'}
+                                     adminTab === 'b2b' ? '브랜드 문의' :
+                                     adminTab === 'users' ? `Google 사용자 (${usersTotal})` : '통계'}
                                 </div>
                                 <div className="admin-panel-body">
                                     {adminTab === 'quizzes' ? (
@@ -821,6 +871,70 @@ const Admin = () => {
                                                                                 삭제
                                                                             </button>
                                                                         </td>
+                                                                    </tr>
+                                                                ))
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : adminTab === 'users' ? (
+                                        <>
+                                            {usersLoading ? (
+                                                <div className="p-12 text-center">
+                                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF2D85] border-t-transparent mb-4"></div>
+                                                    <p className="text-gray-500">사용자 목록 불러오는 중…</p>
+                                                </div>
+                                            ) : (
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-left">
+                                                        <thead className="bg-gray-50">
+                                                            <tr>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">사용자</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">이메일</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">권한</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">최근 로그인</th>
+                                                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">가입일</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-gray-100">
+                                                            {users.length === 0 ? (
+                                                                <tr>
+                                                                    <td colSpan="5" className="p-8 text-center text-gray-400">
+                                                                        아직 Google 로그인 사용자가 없습니다.
+                                                                    </td>
+                                                                </tr>
+                                                            ) : (
+                                                                users.map((u) => (
+                                                                    <tr key={u.id} className="hover:bg-pink-50 transition-colors">
+                                                                        <td className="p-4">
+                                                                            <div className="flex items-center gap-3">
+                                                                                {u.picture_url ? (
+                                                                                    <img src={u.picture_url} alt="" className="w-9 h-9 rounded-full border border-gray-200 object-cover" />
+                                                                                ) : (
+                                                                                    <span className="w-9 h-9 rounded-full bg-pink-100 text-pink-600 font-black flex items-center justify-center text-sm">
+                                                                                        {(u.name || u.email || '?')[0]}
+                                                                                    </span>
+                                                                                )}
+                                                                                <span className="font-bold text-gray-900">{u.name || '-'}</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td className="p-4 text-sm text-gray-600">{u.email}</td>
+                                                                        <td className="p-4 text-center">
+                                                                            <select
+                                                                                value={u.role || 'user'}
+                                                                                onChange={(e) => updateUserRole(u.id, e.target.value)}
+                                                                                className={`px-3 py-1.5 rounded-full text-xs font-bold border border-gray-300 focus:outline-none ${
+                                                                                    u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                                                                                }`}
+                                                                            >
+                                                                                <option value="user">user</option>
+                                                                                <option value="admin">admin</option>
+                                                                            </select>
+                                                                        </td>
+                                                                        <td className="p-4 text-center text-sm text-gray-600">{formatDate(u.last_login_at)}</td>
+                                                                        <td className="p-4 text-center text-sm text-gray-600">{formatDate(u.created_at)}</td>
                                                                     </tr>
                                                                 ))
                                                             )}

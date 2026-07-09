@@ -39,7 +39,6 @@
 }
 
 .site-streak-badge {
-  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -122,4 +121,47 @@
   .site-logo-bar {
     padding: 12px 16px 4px;
   }
+}
+
+.site-auth-slot {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.site-auth-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 4px;
+  border: 2px solid #1e293b;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #475569;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #1e293b;
+}
+
+.site-auth-user:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.site-auth-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #cbd5e1;
+}
+
+.site-auth-avatar--fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffe4ef;
+  color: #ff2d85;
+  font-size: 12px;
+  font-weight: 900;
 }

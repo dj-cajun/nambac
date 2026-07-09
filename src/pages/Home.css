@@ -229,7 +229,9 @@
 }
 
 .feature-thumb-card-image {
+    position: relative;
     height: 62%;
+    flex: 0 0 62%;
     border-bottom: 2px solid #0f172a;
     overflow: hidden;
     background: #f0f0f0;
@@ -242,21 +244,51 @@
 }
 
 .feature-thumb-card-info {
-    flex: 1;
-    padding: 8px;
+    flex: 1 1 38%;
+    min-height: 0;
+    padding: 3px 8px 6px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    align-items: stretch;
     gap: 4px;
     min-width: 0;
+    overflow: hidden;
 }
 
 .feature-thumb-card-label {
-    font-size: 12px;
-    font-weight: 900;
-    line-height: 1.25;
+    flex: 0 1 auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-quiz-title);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.22;
     color: #1e293b;
     overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.feature-thumb-card-info .quiz-card-type {
+    font-size: 9px;
+    margin-bottom: 1px;
+}
+
+.feature-thumb-card-info .home-fortune-card-stats {
+    flex-shrink: 0;
+    margin-top: 0;
+    font-size: 11px;
+    gap: 3px;
+}
+
+.feature-thumb-card-info .home-fortune-card-stats svg {
+    width: 12px;
+    height: 12px;
 }
 
 .home-today-kicker {
@@ -658,12 +690,91 @@
 }
 
 .glass-card-thumb-large {
+    position: relative;
     width: 100%;
     height: 65%;
-    /* Top 2/3 roughly */
     border-bottom: 2px solid #000;
     background: #f0f0f0;
     overflow: hidden;
+}
+
+.glass-card-type-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #ff2d85;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 2px solid #0f172a;
+    border-radius: 999px;
+    line-height: 1.2;
+    box-shadow: 2px 2px 0 #0f172a;
+    max-width: calc(100% - 16px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.glass-card.square-card .glass-card-thumb-large {
+    height: 62%;
+    flex: 0 0 62%;
+}
+
+.glass-card.square-card .glass-card-info-bottom {
+    flex: 1 1 38%;
+    min-height: 0;
+    padding: 3px 8px 6px;
+    overflow: hidden;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 4px;
+}
+
+.glass-card.square-card .info-title-sm {
+    flex: 0 1 auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-quiz-title);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.22;
+    color: #0f172a;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.glass-card.square-card .glass-card-stats {
+    flex-shrink: 0;
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748b;
+    gap: 0;
+    border-top: none;
+    min-height: 16px;
+}
+
+.glass-card.square-card .glass-card-stats span {
+    gap: 3px;
+    min-width: 0;
+    flex: 1;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.glass-card.square-card .glass-card-stats svg {
+    width: 12px;
+    height: 12px;
 }
 
 .glass-card-thumb img,
@@ -725,6 +836,14 @@
     text-transform: uppercase;
     color: #ff2d85;
     line-height: 1.2;
+}
+
+.quiz-card-title-block {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 .glass-card-stats {

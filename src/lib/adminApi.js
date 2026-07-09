@@ -12,121 +12,122 @@ async function parseJson(res) {
   return data;
 }
 
-export function createAdminApi(adminKey = '') {
-  const headers = () => adminHeaders(adminKey);
+async function adminFetch(url, adminKey, init = {}) {
+  const res = await fetch(url, {
+    ...init,
+    credentials: 'include',
+    headers: { ...adminHeaders(adminKey), ...(init.headers || {}) },
+  });
+  return parseJson(res);
+}
 
+export function createAdminApi(adminKey = '') {
   return {
     async fetchAllQuizzes() {
-      const data = await parseJson(await fetch(apiUrl('/admin/quizzes'), { headers: headers() }));
+      const data = await adminFetch(apiUrl('/admin/quizzes'), adminKey);
       return data.quizzes || [];
     },
 
-    /** Public read — admin route so hidden/draft quizzes load in editor */
     async fetchQuizBundle(quizId) {
-      return parseJson(await fetch(apiUrl(`/admin/quizzes/${quizId}`), { headers: headers() }));
+      return adminFetch(apiUrl(`/admin/quizzes/${quizId}`), adminKey);
     },
 
-    /** Gemini quiz text — server-side keys only */
     async generateQuizContent(categoryId, customTopic = '') {
-      return parseJson(await fetch(apiUrl('/admin/generate-quiz-content'), {
+      return adminFetch(apiUrl('/admin/generate-quiz-content'), adminKey, {
         method: 'POST',
-        headers: headers(),
         body: JSON.stringify({ categoryId, customTopic }),
-      }));
+      });
     },
 
     async updateQuizStatus(quizId, is_active, status) {
-      await parseJson(await fetch(apiUrl(`/admin/quizzes/${quizId}`), {
+      await adminFetch(apiUrl(`/admin/quizzes/${quizId}`), adminKey, {
         method: 'PATCH',
-        headers: headers(),
         body: JSON.stringify({ action: 'status', is_active, status }),
-      }));
+      });
     },
 
     async deleteQuiz(quizId) {
-      await parseJson(await fetch(apiUrl(`/admin/quizzes/${quizId}`), {
-        method: 'DELETE',
-        headers: headers(),
-      }));
+      await adminFetch(apiUrl(`/admin/quizzes/${quizId}`), adminKey, { method: 'DELETE' });
     },
 
     async saveQuiz(quizId, { quiz, questions, results }) {
-      await parseJson(await fetch(apiUrl(`/admin/quizzes/${quizId}`), {
+      await adminFetch(apiUrl(`/admin/quizzes/${quizId}`), adminKey, {
         method: 'PATCH',
-        headers: headers(),
         body: JSON.stringify({ quiz, questions, results }),
-      }));
+      });
     },
 
     async deleteQuestion(quizId, questionId) {
-      await parseJson(await fetch(apiUrl(`/admin/quizzes/${quizId}`), {
+      await adminFetch(apiUrl(`/admin/quizzes/${quizId}`), adminKey, {
         method: 'PATCH',
-        headers: headers(),
         body: JSON.stringify({ deleteQuestionId: questionId }),
-      }));
+      });
     },
 
     async createQuiz(payload) {
-      return parseJson(await fetch(apiUrl('/admin/quizzes'), {
+      return adminFetch(apiUrl('/admin/quizzes'), adminKey, {
         method: 'POST',
-        headers: headers(),
         body: JSON.stringify(payload),
-      }));
+      });
     },
 
-    /** Gemini manga prompts + OpenRouter images (cover + 5Q + 8R) */
     async generateQuizImages(payload) {
-      return parseJson(await fetch(apiUrl('/admin/generate-quiz-images'), {
+      return adminFetch(apiUrl('/admin/generate-quiz-images'), adminKey, {
         method: 'POST',
-        headers: headers(),
         body: JSON.stringify(payload),
-      }));
+      });
     },
 
-    /** GitHub-style MBTI / personality one-click factory */
     async generateArchetypeQuiz(archetypeId, { generateImages = true } = {}) {
-      return parseJson(await fetch(apiUrl('/admin/generate-archetype-quiz'), {
+      return adminFetch(apiUrl('/admin/generate-archetype-quiz'), adminKey, {
         method: 'POST',
-        headers: headers(),
         body: JSON.stringify({ archetypeId, generateImages }),
-      }));
+      });
     },
 
     async fetchInquiries() {
-      const data = await parseJson(await fetch(apiUrl('/admin/brand-inquiries'), { headers: headers() }));
+      const data = await adminFetch(apiUrl('/admin/brand-inquiries'), adminKey);
       return data.inquiries || [];
     },
 
     async updateInquiryStatus(id, status) {
-      await parseJson(await fetch(apiUrl('/admin/brand-inquiries'), {
+      await adminFetch(apiUrl('/admin/brand-inquiries'), adminKey, {
         method: 'PATCH',
-        headers: headers(),
         body: JSON.stringify({ id, status }),
-      }));
+      });
     },
 
     async deleteInquiry(id) {
-      await parseJson(await fetch(apiUrl('/admin/brand-inquiries'), {
+      await adminFetch(apiUrl('/admin/brand-inquiries'), adminKey, {
         method: 'DELETE',
-        headers: headers(),
         body: JSON.stringify({ id }),
-      }));
+      });
     },
 
     async fetchAnalytics() {
-      return parseJson(await fetch(apiUrl('/admin/analytics'), { headers: headers() }));
+      return adminFetch(apiUrl('/admin/analytics'), adminKey);
+    },
+
+    async fetchUsers() {
+      return adminFetch(apiUrl('/admin/users'), adminKey);
+    },
+
+    async updateUserRole(userId, role) {
+      const data = await adminFetch(apiUrl('/admin/users'), adminKey, {
+        method: 'PATCH',
+        body: JSON.stringify({ id: userId, role }),
+      });
+      return data.user;
     },
   };
 }
 
-/** Upload image file to public/images (local dev API only) */
 export async function uploadQuizImage(file, adminKey = '') {
   const buffer = await file.arrayBuffer();
   const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-  const data = await parseJson(await fetch(apiUrl('/admin/upload'), {
+  const data = await adminFetch(apiUrl('/admin/upload'), adminKey, {
     method: 'POST',
-    headers: adminHeaders(adminKey),
     body: JSON.stringify({ filename: file.name, data: base64 }),
-  }));
+  });
   return data.path;
 }

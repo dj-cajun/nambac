@@ -8,15 +8,15 @@ import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 import './Home.css';
 import './MiniApp.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
-import { trackQuizViewOnce } from '../lib/quizRanking';
+import { getViralScore, trackQuizViewOnce } from '../lib/quizRanking';
 import { buildFeatureFeedItems, buildHomeFeed, pickHeroSlides } from '../lib/homeFeed';
 import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../shared/dailyPicks.js';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../lib/featureStats';
 import AdSenseUnit from '../components/AdSenseUnit';
 import QuizImage from '../components/QuizImage';
+import QuizCardThumb from '../components/QuizCardThumb';
 import QuizCardTitle from '../components/QuizCardTitle';
 import QuizCardStats from '../components/QuizCardStats';
-import FeatureThumbCard from '../components/FeatureThumbCard';
 import { useHomeFeatureThumbs } from '../hooks/useHomeFeatureThumbs';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { readTodayDone } from '../lib/todayDone';
@@ -293,14 +293,14 @@ export default function Home() {
     [fortuneStats, featureStats, featureThumbs],
   );
 
-  const heroSlides = useMemo(
-    () => pickHeroSlides(quizzes, featureFeedItems, 6),
-    [quizzes, featureFeedItems],
-  );
-
   const feedItems = useMemo(
     () => buildHomeFeed(quizzes, featureFeedItems, sortMode),
     [quizzes, featureFeedItems, sortMode],
+  );
+
+  const heroSlides = useMemo(
+    () => pickHeroSlides(quizzes, featureFeedItems, 6),
+    [quizzes, featureFeedItems],
   );
 
   const getCarouselStep = () => {
@@ -531,6 +531,7 @@ export default function Home() {
             {heroSlides.map((item, index) => (
               <button
                 key={`${item.kind}-${item.id}-dot`}
+                type="button"
                 className={`dot ${currentSlide === index ? 'active' : ''}`}
                 onClick={() => goToSlide(index)}
                 aria-label={`Slide ${index + 1}`}
@@ -539,41 +540,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      <nav className="home-quick-chips" aria-label="Chơi nhanh">
-        <FeatureThumbCard
-          to="/fortune"
-          typeLabel="Tử vi"
-          label={`${FORTUNE_BRAND.emoji} Tình yêu hôm nay`}
-          imageSrc={featureThumbs.fortuneToday.src}
-          imageSeed={featureThumbs.fortuneToday.seed}
-          stats={fortuneStats}
-        />
-        <FeatureThumbCard
-          to="/fortune/tomorrow"
-          typeLabel="Tử vi"
-          label="🔮 Tình yêu ngày mai"
-          imageSrc={featureThumbs.fortuneTomorrow.src}
-          imageSeed={featureThumbs.fortuneTomorrow.seed}
-          stats={fortuneStats}
-        />
-        <FeatureThumbCard
-          to="/roast-card"
-          typeLabel="Bóc phốt"
-          label="💳 Thẻ đen bóc phốt"
-          imageSrc={featureThumbs.roast.src}
-          imageSeed={featureThumbs.roast.seed}
-          stats={featureStats.roast}
-        />
-        <FeatureThumbCard
-          to="/brain"
-          typeLabel="Não"
-          label="🧠 Trong đầu bạn có gì?"
-          imageSrc={featureThumbs.brain.src}
-          imageSeed={featureThumbs.brain.seed}
-          stats={featureStats.brain}
-        />
-      </nav>
 
       <div className="sort-tabs">
         {SORT_OPTIONS.map((opt) => (
@@ -600,11 +566,14 @@ export default function Home() {
                 className="glass-card square-card"
                 onClick={() => handleFeedItemClick(item)}
               >
-                <div className="glass-card-thumb-large">
-                  <QuizImage src={item.image_url} alt="thumb" seed={item.imageSeed} />
-                </div>
+                <QuizCardThumb
+                  src={item.image_url}
+                  seed={item.imageSeed}
+                  alt={item.title}
+                  typeLabel={item.typeLabel}
+                />
                 <div className="glass-card-info-bottom">
-                  <QuizCardTitle title={item.title} typeLabel={item.typeLabel} />
+                  <QuizCardTitle title={item.title} />
                   <QuizCardStats quiz={item} />
                 </div>
               </div>

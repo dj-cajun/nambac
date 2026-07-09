@@ -6,10 +6,10 @@ export default function FeatureThumbCard({ to, label, typeLabel, imageSrc, image
   return (
     <Link to={to} className="feature-thumb-card">
       <div className="feature-thumb-card-image">
+        {typeLabel && <span className="glass-card-type-badge">{typeLabel}</span>}
         <QuizImage src={imageSrc} alt="" seed={imageSeed} />
       </div>
       <div className="feature-thumb-card-info">
-        {typeLabel && <span className="quiz-card-type">{typeLabel}</span>}
         <span className="feature-thumb-card-label">{label}</span>
         {stats && (
           <div className="home-fortune-card-stats">

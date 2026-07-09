@@ -33,6 +33,9 @@ import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
 import fortuneShare from './handlers/fortuneShare.js';
 import fortuneStats from './handlers/fortuneStats.js';
+import { authGoogleStart, authGoogleCallback } from './handlers/authGoogle.js';
+import authSession, { authLogout } from './handlers/authSession.js';
+import adminUsers from './handlers/adminUsers.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -62,6 +65,14 @@ export async function dispatch(req, res, segments = []) {
   // ── B2B inquiries ──
   if (a === 'brand-inquiries' && !b && method === 'POST') return brandInquiries(req, res);
 
+  // ── Google OAuth / session ──
+  if (a === 'auth' && b === 'google' && c === 'callback' && method === 'GET') {
+    return authGoogleCallback(req, res);
+  }
+  if (a === 'auth' && b === 'google' && !c && method === 'GET') return authGoogleStart(req, res);
+  if (a === 'auth' && b === 'me' && !c && method === 'GET') return authSession(req, res);
+  if (a === 'auth' && b === 'logout' && !c && method === 'POST') return authLogout(req, res);
+
   // ── Image generation ──
   if (a === 'generate-image' && !b && method === 'POST') return generateImage(req, res);
   if (a === 'admin' && b === 'generate-quiz-images' && !c && (method === 'POST' || method === 'OPTIONS')) {
@@ -83,6 +94,11 @@ export async function dispatch(req, res, segments = []) {
   // ── Admin brand inquiries ──
   if (a === 'admin' && b === 'brand-inquiries' && !c && ['GET', 'PATCH', 'DELETE'].includes(method)) {
     return adminBrandInquiries(req, res);
+  }
+
+  // ── Admin users ──
+  if (a === 'admin' && b === 'users' && !c && ['GET', 'PATCH'].includes(method)) {
+    return adminUsers(req, res);
   }
 
   // ── Admin upload / analytics ──

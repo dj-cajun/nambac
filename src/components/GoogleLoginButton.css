@@ -1,0 +1,48 @@
+.google-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: 2px solid #0f172a;
+  border-radius: 12px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #0f172a;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.google-login-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #0f172a;
+}
+
+.google-login-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.google-login-btn--compact {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 #0f172a;
+  gap: 6px;
+}
+
+.google-login-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.google-login-btn--compact .google-login-btn-icon svg {
+  width: 14px;
+  height: 14px;
+}

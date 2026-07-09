@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import NambacLogo from './NambacLogo';
+import GoogleLoginButton from './GoogleLoginButton';
+import { useAuth } from '../context/AuthContext';
 import { useDrawer } from './shell/DrawerContext';
 import { scrollToTop } from '../lib/scrollToTop';
 import { recordDailyVisit } from '../lib/dailyStreak';
@@ -13,6 +15,7 @@ export default function SiteLogoBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { toggleDrawer, open } = useDrawer();
+  const { user, logout } = useAuth();
   const [streak, setStreak] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
 
@@ -59,6 +62,21 @@ export default function SiteLogoBar() {
           🔥 Ngày {streak}
         </span>
       )}
+
+      <div className="site-auth-slot">
+        {user ? (
+          <button type="button" className="site-auth-user" onClick={logout} title={`${user.email} — 로그아웃`}>
+            {user.picture_url ? (
+              <img src={user.picture_url} alt="" className="site-auth-avatar" />
+            ) : (
+              <span className="site-auth-avatar site-auth-avatar--fallback">{(user.name || user.email || '?')[0]}</span>
+            )}
+            <LogOut size={14} aria-hidden="true" />
+          </button>
+        ) : (
+          <GoogleLoginButton compact returnTo={pathname} label="Đăng nhập" />
+        )}
+      </div>
 
       {showPopup && streak > 0 && (
         <div className="streak-popup" role="status">
