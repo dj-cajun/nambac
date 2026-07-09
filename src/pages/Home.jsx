@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { X } from 'lucide-react';
 import { scrollToTop } from '../lib/scrollToTop';
 import { fetchFortuneStats } from '../lib/fortuneApi';
@@ -20,6 +21,7 @@ import QuizCardStats from '../components/QuizCardStats';
 import { useHomeFeatureThumbs } from '../hooks/useHomeFeatureThumbs';
 import { AD_SLOTS } from '../lib/adsConfig';
 import { readTodayDone } from '../lib/todayDone';
+import { buildShareUrl, getOgDefaultImageUrl } from '../lib/siteUrl';
 
 const SORT_OPTIONS = [
   { id: 'trending', emoji: '🔥', label: 'Hot', sortFn: (a, b) => (b.view_count || 0) - (a.view_count || 0) },
@@ -428,8 +430,27 @@ export default function Home() {
     );
   }
 
+  const homeUrl = buildShareUrl('/');
+  const ogImage = getOgDefaultImageUrl();
+
   return (
     <div className="home-container">
+      <Helmet>
+        <title>nambac.xyz — Trắc nghiệm tính cách AI cho Gen Z Sài Gòn</title>
+        <meta
+          name="description"
+          content="Chỉ 5 câu hỏi — AI phân tích tính cách kiểu Gen Z Sài Gòn. Nhanh, vui, share Zalo liền tay!"
+        />
+        <link rel="canonical" href={homeUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={homeUrl} />
+        <meta property="og:title" content="nambac.xyz — Trắc nghiệm tính cách AI" />
+        <meta
+          property="og:description"
+          content="Chỉ 5 câu hỏi — AI phân tích tính cách kiểu Gen Z Sài Gòn. Nhanh, vui, share Zalo liền tay!"
+        />
+        <meta property="og:image" content={ogImage} />
+      </Helmet>
       <section className={`home-today${todayOpen ? ' is-open' : ''}`} aria-label="Hôm nay">
         <button
           type="button"

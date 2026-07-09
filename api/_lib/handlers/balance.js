@@ -1,4 +1,5 @@
 import { isTrustedSiteRequest } from '../requestOrigin.js';
+import { setNoStore, setPublicGetCache } from '../cdnCache.js';
 import {
   castBalanceVote,
   getBalanceStats,
@@ -18,6 +19,7 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET' && action === 'random') {
+      setPublicGetCache(res);
       const exclude = req.query?.exclude || '';
       const question = getRandomBalanceQuestion(exclude || undefined);
       let stats = { pct_a: 50, pct_b: 50, total: 0, votes_a: 0, votes_b: 0 };
@@ -30,6 +32,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'GET' && questionId) {
+      setPublicGetCache(res);
       const question = getQuestionById(questionId);
       if (!question) return res.status(404).json({ error: 'Question not found' });
       let stats = { pct_a: 50, pct_b: 50, total: 0, votes_a: 0, votes_b: 0 };
@@ -42,6 +45,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
+      setNoStore(res);
       if (!isTrustedSiteRequest(req)) {
         return res.status(403).json({ error: 'Forbidden' });
       }

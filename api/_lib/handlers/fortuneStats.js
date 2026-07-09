@@ -1,5 +1,6 @@
 import { getFortuneStats, incrementFortuneStat } from '../fortuneDb.js';
 import { isTrustedSiteRequest } from '../requestOrigin.js';
+import { setNoStore, setPublicGetCache } from '../cdnCache.js';
 import { FORTUNE_KIND } from '../../../shared/fortuneMeta.js';
 
 export default async function handler(req, res) {
@@ -11,12 +12,14 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
+      setPublicGetCache(res);
       const kind = req.query?.kind || FORTUNE_KIND;
       const stats = await getFortuneStats(kind);
       return res.status(200).json(stats);
     }
 
     if (req.method === 'POST') {
+      setNoStore(res);
       if (!isTrustedSiteRequest(req)) {
         return res.status(403).json({ error: 'Forbidden' });
       }

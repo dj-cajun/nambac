@@ -5,6 +5,7 @@ import {
   FEATURE_KINDS,
 } from '../featureStatsDb.js';
 import { isTrustedSiteRequest } from '../requestOrigin.js';
+import { setNoStore, setPublicGetCache } from '../cdnCache.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,6 +16,7 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
+      setPublicGetCache(res);
       const kind = (req.query?.kind || '').trim();
       if (!kind || kind === 'all') {
         const stats = await getManyFeatureStats(FEATURE_KINDS);
@@ -25,6 +27,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
+      setNoStore(res);
       if (!isTrustedSiteRequest(req)) {
         return res.status(403).json({ error: 'Forbidden' });
       }

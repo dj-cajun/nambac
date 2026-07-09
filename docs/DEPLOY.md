@@ -9,24 +9,22 @@
 - **Primary:** Vercel (frontend + `api/handler.js` serverless)
 - DNS for `www` / apex points at Vercel
 
-## Cloudflare Workers Builds (GitHub check)
-A GitHub check named **Workers Builds: nambac** may still run on every push and fail.
+## Cloudflare (removed)
+Unused Cloudflare Workers/Pages Git integration for `nambac` was **disconnected and deleted** (2026-07).
 
-This repo is **not** a Cloudflare Workers app (no `wrangler.toml` / OpenNext). The check comes from a leftover Cloudflare GitHub App / Workers Builds link.
+- Production traffic was never on Cloudflare (Vercel serves `www.nambac.xyz`)
+- Old GitHub check **Workers Builds: nambac** was noise from a broken build command (`/`)
+- New pushes should no longer show that check
 
-**Fix (dashboard, one-time):**
-1. Open [Cloudflare Dashboard → Workers → nambac](https://dash.cloudflare.com/)
-2. Disconnect **Git integration / Workers Builds** for this repository  
-   (or delete the unused Workers script if it is not serving traffic)
-3. Optionally uninstall the Cloudflare GitHub App from the `dj-cajun/nambac` repo if unused
-
-Until disconnected, the red check is noise — Vercel deploy is what serves production.
+If a stale failure still appears on an old commit, ignore it — only the latest commit checks matter.
 
 ## Cache
 `GET /api/quizzes` sets:
 - `Cache-Control` / `CDN-Cache-Control` / `Vercel-CDN-Cache-Control`
 - `s-maxage=60, stale-while-revalidate=300`
 - plus a 30s in-memory cache on warm serverless instances
+
+Public GET stats (`/api/balance`, `/api/fortune/stats`, `/api/feature/stats`) use short CDN cache (`s-maxage=30`).
 
 ## Sitemap
 - Static file: `public/sitemap.xml` (committed, includes quiz URLs)
