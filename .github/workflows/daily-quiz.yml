@@ -61,7 +61,7 @@ jobs:
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
-          VITE_SITE_URL: https://nambac.xyz
+          VITE_SITE_URL: https://www.nambac.xyz
         run: |
           ARGS=""
           if [ -n "${{ github.event.inputs.category }}" ]; then
@@ -75,6 +75,14 @@ jobs:
           fi
           node scripts/ops/run_daily_quiz.mjs $ARGS 2>&1 | tee daily-quiz.log
 
+      - name: Regenerate sitemap
+        if: success()
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          VITE_SITE_URL: https://www.nambac.xyz
+        run: npm run sitemap:generate
+
       - name: Upload log artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -83,15 +91,15 @@ jobs:
           path: daily-quiz.log
           retention-days: 14
 
-      - name: Commit new images
+      - name: Commit new images + sitemap
         if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/images/backfill_*.webp public/images/backfill_*.png 2>/dev/null || true
+          git add public/images/backfill_*.webp public/images/backfill_*.png public/sitemap.xml 2>/dev/null || true
           if git diff --staged --quiet; then
-            echo "No new backfill images to commit."
+            echo "No new backfill images or sitemap changes to commit."
             exit 0
           fi
-          git commit -m "chore(images): daily quiz backfill $(date -u +%Y-%m-%dT%H:%MZ)"
+          git commit -m "chore(content): daily quiz assets + sitemap $(date -u +%Y-%m-%dT%H:%MZ)"
           git push

@@ -23,10 +23,12 @@ const checks = [
         // list endpoint should omit heavy config; null/undefined is fine
       }
       const cache = res.headers.get('cache-control') || '';
-      if (process.env.REQUIRE_QUIZ_CACHE === '1' && !cache.includes('s-maxage')) {
-        throw new Error(`missing cache-control: ${cache}`);
+      const cdn = res.headers.get('cdn-cache-control') || res.headers.get('vercel-cdn-cache-control') || '';
+      if (process.env.REQUIRE_QUIZ_CACHE === '1') {
+        const ok = cache.includes('s-maxage') || cdn.includes('s-maxage');
+        if (!ok) throw new Error(`missing cache-control: ${cache || cdn || '(empty)'}`);
       }
-      return `quizzes=${quizzes.length}`;
+      return `quizzes=${quizzes.length} cache=${(cdn || cache).slice(0, 48)}`;
     },
   },
   { name: 'GET /api/push/subscribe', url: `${base}/push/subscribe` },
