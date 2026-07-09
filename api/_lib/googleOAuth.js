@@ -10,11 +10,18 @@ function resolveSiteUrl(req) {
 
   let siteUrl = (process.env.VITE_SITE_URL || 'http://localhost:5173').replace(/\/$/, '');
 
-  if (req && !process.env.VERCEL) {
+  if (req) {
     const host = req.headers?.['x-forwarded-host'] || req.headers?.host;
-    if (host && (host.startsWith('localhost') || host.startsWith('127.0.0.1'))) {
-      const proto = req.headers?.['x-forwarded-proto'] || 'http';
-      siteUrl = `${proto}://${host}`.replace(/\/$/, '');
+    if (host) {
+      const isLocal = host.startsWith('localhost') || host.startsWith('127.0.0.1');
+      const isVercel = Boolean(process.env.VERCEL);
+      if (isLocal && !isVercel) {
+        const proto = req.headers?.['x-forwarded-proto'] || 'http';
+        siteUrl = `${proto}://${host}`.replace(/\/$/, '');
+      } else if (isVercel && !host.includes('localhost')) {
+        const proto = req.headers?.['x-forwarded-proto'] || 'https';
+        siteUrl = `${proto}://${host}`.replace(/\/$/, '');
+      }
     }
   }
 

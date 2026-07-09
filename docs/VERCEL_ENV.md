@@ -14,6 +14,10 @@
 | `GEMINI_API_KEY` | `AIza...` | AI 퀴즈 텍스트 (서버) |
 | `OPENROUTER_API_KEY` | `sk-or-...` | AI 이미지 (서버) |
 | `ADMIN_API_KEY` | 랜덤 문자열 | Admin API — Production 필수 |
+| `GOOGLE_CLIENT_ID` | `....apps.googleusercontent.com` | Google 로그인 |
+| `GOOGLE_CLIENT_SECRET` | `GOCSPX-...` | Google 로그인 (서버 전용) |
+| `SESSION_SECRET` | 랜덤 문자열 | 로그인 세션 쿠키 서명 |
+| `ADMIN_ALLOWED_EMAILS` | `you@gmail.com` | Google 로그인 시 admin 권한 |
 | `CRON_SECRET` | 랜덤 문자열 | 일일 퀴즈 Cron |
 
 ## Production에서 제거
@@ -43,7 +47,7 @@
 
 | Key | |
 |-----|--|
-| `VITE_SITE_URL` | `https://nambac.xyz` 또는 `https://nambac.vercel.app` |
+| `VITE_SITE_URL` | `https://www.nambac.xyz` (실제 접속 도메인과 동일) |
 | `VITE_PREMIUM_CODE` | 설정 시에만 광고 제거 (`?premium=CODE`) |
 
 ## Hobby 제한
