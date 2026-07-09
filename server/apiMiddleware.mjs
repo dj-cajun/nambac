@@ -10,13 +10,10 @@ import { dispatch } from '../api/_lib/router.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.join(__dirname, '..');
 
-let envLoaded = false;
-
 export function loadDevEnv() {
-  if (envLoaded) return;
+  // Re-read .env.local each request in dev so credential edits apply without restart.
   dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
   dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
-  envLoaded = true;
 }
 
 function readJsonBody(req) {
