@@ -92,7 +92,8 @@ async function ensureQuizLikeColumn() {
     try {
       await db.execute({ sql: 'ALTER TABLE quizzes ADD COLUMN like_count INTEGER DEFAULT 0' });
     } catch (err) {
-      if (!String(err.message).toLowerCase().includes('duplicate column')) {
+      const msg = String(err.message || '').toLowerCase();
+      if (!msg.includes('duplicate column') && !msg.includes('already exists')) {
         likeColumnReady = null;
         throw err;
       }
