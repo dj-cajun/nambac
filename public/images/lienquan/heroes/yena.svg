@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="yena archetype portrait">
+  <defs>
+    <linearGradient id="bg-yena" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2d1a08"/>
+      <stop offset="1" stop-color="#6b3a12"/>
+    </linearGradient>
+    <radialGradient id="glow-yena" cx="50%" cy="40%" r="60%">
+      <stop stop-color="#fb923c" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#fb923c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg-yena)"/>
+  <rect width="256" height="256" fill="url(#glow-yena)"/>
+  
+      <circle cx="128" cy="128" r="62" fill="none" stroke="#fb923c" stroke-width="6" stroke-dasharray="18 10"/>
+      <circle cx="128" cy="128" r="38" fill="none" stroke="#fde68a" stroke-width="5" stroke-dasharray="12 8"/>
+      <polygon points="128,70 142,110 182,110 150,134 162,174 128,150 94,174 106,134 74,110 114,110" fill="#fb923c" opacity="0.85"/>
+    
+  <circle cx="128" cy="128" r="118" fill="none" stroke="#fb923c" stroke-width="4" opacity="0.55"/>
+</svg>

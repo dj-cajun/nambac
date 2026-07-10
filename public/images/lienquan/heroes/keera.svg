@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="keera archetype portrait">
+  <defs>
+    <linearGradient id="bg-keera" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1a0824"/>
+      <stop offset="1" stop-color="#4a1258"/>
+    </linearGradient>
+    <radialGradient id="glow-keera" cx="50%" cy="40%" r="60%">
+      <stop stop-color="#e879f9" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#e879f9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg-keera)"/>
+  <rect width="256" height="256" fill="url(#glow-keera)"/>
+  
+      <path d="M60 170 Q90 90 128 110 Q166 90 196 170" fill="none" stroke="#e879f9" stroke-width="7"/>
+      <path d="M78 130 Q128 60 178 130" fill="none" stroke="#f0abfc" stroke-width="5" opacity="0.7"/>
+      <circle cx="128" cy="128" r="14" fill="#e879f9" opacity="0.5"/>
+    
+  <circle cx="128" cy="128" r="118" fill="none" stroke="#e879f9" stroke-width="4" opacity="0.55"/>
+</svg>

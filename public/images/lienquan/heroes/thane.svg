@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="thane archetype portrait">
+  <defs>
+    <linearGradient id="bg-thane" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101828"/>
+      <stop offset="1" stop-color="#243b5c"/>
+    </linearGradient>
+    <radialGradient id="glow-thane" cx="50%" cy="40%" r="60%">
+      <stop stop-color="#94a3b8" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#94a3b8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg-thane)"/>
+  <rect width="256" height="256" fill="url(#glow-thane)"/>
+  
+      <path d="M88 72 L88 184 Q128 200 168 184 L168 72 Q128 56 88 72Z" fill="#334155" stroke="#cbd5e1" stroke-width="5"/>
+      <path d="M108 96 L148 96 L148 160 L108 160Z" fill="#1e293b" stroke="#e2e8f0" stroke-width="3"/>
+      <line x1="128" y1="72" x2="128" y2="48" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round"/>
+    
+  <circle cx="128" cy="128" r="118" fill="none" stroke="#94a3b8" stroke-width="4" opacity="0.55"/>
+</svg>

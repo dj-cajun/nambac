@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="nakroth archetype portrait">
+  <defs>
+    <linearGradient id="bg-nakroth" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08141c"/>
+      <stop offset="1" stop-color="#12324a"/>
+    </linearGradient>
+    <radialGradient id="glow-nakroth" cx="50%" cy="40%" r="60%">
+      <stop stop-color="#22d3ee" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg-nakroth)"/>
+  <rect width="256" height="256" fill="url(#glow-nakroth)"/>
+  
+      <path d="M72 188 L108 68 L128 120 L148 68 L184 188" fill="none" stroke="#22d3ee" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M96 140 L160 140" stroke="#67e8f9" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="128" cy="156" r="8" fill="#22d3ee"/>
+    
+  <circle cx="128" cy="128" r="118" fill="none" stroke="#22d3ee" stroke-width="4" opacity="0.55"/>
+</svg>

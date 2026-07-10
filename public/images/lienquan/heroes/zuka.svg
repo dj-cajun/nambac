@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="zuka archetype portrait">
+  <defs>
+    <linearGradient id="bg-zuka" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f2418"/>
+      <stop offset="1" stop-color="#1f5c34"/>
+    </linearGradient>
+    <radialGradient id="glow-zuka" cx="50%" cy="40%" r="60%">
+      <stop stop-color="#4ade80" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#4ade80" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg-zuka)"/>
+  <rect width="256" height="256" fill="url(#glow-zuka)"/>
+  
+      <circle cx="128" cy="118" r="44" fill="#166534" stroke="#4ade80" stroke-width="5"/>
+      <path d="M92 170 Q128 210 164 170" fill="none" stroke="#86efac" stroke-width="8" stroke-linecap="round"/>
+      <path d="M70 96 L92 72 M186 96 L164 72" stroke="#4ade80" stroke-width="6" stroke-linecap="round"/>
+    
+  <circle cx="128" cy="128" r="118" fill="none" stroke="#4ade80" stroke-width="4" opacity="0.55"/>
+</svg>

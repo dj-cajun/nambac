@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="yan archetype portrait">
+  <defs>
+    <linearGradient id="bg-yan" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2a0a0a"/>
+      <stop offset="1" stop-color="#6b1515"/>
+    </linearGradient>
+    <radialGradient id="glow-yan" cx="50%" cy="40%" r="60%">
+      <stop stop-color="#f87171" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#f87171" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg-yan)"/>
+  <rect width="256" height="256" fill="url(#glow-yan)"/>
+  
+      <path d="M88 180 L128 70 L168 180" fill="none" stroke="#f87171" stroke-width="8" stroke-linejoin="round"/>
+      <ellipse cx="128" cy="188" rx="48" ry="12" fill="#fca5a5" opacity="0.35"/>
+      <path d="M108 120 L148 120" stroke="#fecaca" stroke-width="5" stroke-linecap="round"/>
+    
+  <circle cx="128" cy="128" r="118" fill="none" stroke="#f87171" stroke-width="4" opacity="0.55"/>
+</svg>

@@ -19,6 +19,7 @@
     "images:roast": "node scripts/images/backfill_roast.mjs",
     "images:brain": "node scripts/images/backfill_brain.mjs",
     "images:sbti": "node scripts/images/backfill_sbti.mjs",
+    "images:lienquan-portraits": "node scripts/generate-lienquan-hero-portraits.mjs",
     "images:backfill:all": "bash scripts/images/backfill_all.sh",
     "images:webp": "node scripts/images/convert_to_webp.mjs",
     "images:fix-urls": "node scripts/images/fix_image_urls.mjs",

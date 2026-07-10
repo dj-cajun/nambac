@@ -18,5 +18,6 @@ export {
   masteryLabel,
 } from './quizQuestions.js';
 export { KHOE_SEED } from './khoeSeed.js';
+export { getHeroPortraitPath, hasHeroPortrait } from './heroImage.js';
 export { LQ_UI } from './uiText.js';
 export { LQ_GLOSSARY, translateItem, allItemEntries } from './glossary.js';

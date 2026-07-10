@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { HEROES, getHero } from '../../../shared/lienquan/heroes.js';
+import { getHeroPortraitPath } from '../../../shared/lienquan/heroImage.js';
 import { LQ_UI } from '../../../shared/lienquan/uiText.js';
 import { createBoast, fetchBoasts, likeBoast } from '../../lib/lienquan/boastApi.js';
 import { useAuth } from '../../context/AuthContext';
@@ -222,7 +223,20 @@ export default function KhoePage() {
               </div>
               <p className="lq-khoe-caption">{b.caption}</p>
               {b.image_url ? (
-                <img src={b.image_url} alt="" className="lq-khoe-img" loading="lazy" />
+                <img
+                  src={b.image_url}
+                  alt=""
+                  className="lq-khoe-img"
+                  loading="lazy"
+                  onError={(e) => {
+                    const fallback = getHeroPortraitPath(b.hero_id);
+                    if (fallback && !e.currentTarget.src.endsWith(fallback)) {
+                      e.currentTarget.src = fallback;
+                      return;
+                    }
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               ) : null}
               {b.tiktok_url ? (
                 <a href={b.tiktok_url} target="_blank" rel="noopener noreferrer" className="lq-text-link">

@@ -51,7 +51,7 @@ export default function HeroDetailPage() {
 
       <div className="lq-detail-card">
         <div className="lq-detail-profile">
-          <HeroIcon hero={hero} size="lg" />
+          <HeroIcon hero={hero} size="xl" />
           <div>
             <h1>{hero.name}</h1>
             {hero.title && <p className="lq-detail-title">{hero.title}</p>}
