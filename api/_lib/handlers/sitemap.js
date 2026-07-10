@@ -2,14 +2,16 @@ import { listActiveQuizzes } from '../quizDb.js';
 import { QUIZ_CATEGORY_IDS } from '../../../shared/categories.js';
 import { CANONICAL_SITE_ORIGIN } from '../../../shared/siteOrigin.js';
 import { HEROES } from '../../../shared/lienquan/heroes.js';
+import { BLOG_POSTS } from '../../../src/content/blogPosts.js';
 
 const STATIC_PATHS = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
   { path: '/blog', changefreq: 'weekly', priority: '0.9' },
-  { path: '/blog/xu-huong-di-dong-gen-z-sai-gon', changefreq: 'monthly', priority: '0.85' },
-  { path: '/blog/lich-su-quiz-truc-tuyen-viet-nam', changefreq: 'monthly', priority: '0.85' },
-  { path: '/blog/ung-dung-ai-sang-tao-noi-dung-giai-tri', changefreq: 'monthly', priority: '0.85' },
-  { path: '/blog/van-hoa-meme-va-ap-luc-cot-song-gen-z', changefreq: 'monthly', priority: '0.85' },
+  ...BLOG_POSTS.map((p) => ({
+    path: `/blog/${p.slug}`,
+    changefreq: 'monthly',
+    priority: '0.85',
+  })),
   { path: '/explore', changefreq: 'daily', priority: '0.9' },
   { path: '/leaderboard', changefreq: 'weekly', priority: '0.7' },
   { path: '/about', changefreq: 'monthly', priority: '0.8' },

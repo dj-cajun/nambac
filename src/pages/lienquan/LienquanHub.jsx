@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SearchBar from './components/SearchBar.jsx';
 import TierStrip from './components/TierStrip.jsx';
-import QuizEventBanner from './components/QuizEventBanner.jsx';
 import QuizTierHub from './components/QuizTierHub.jsx';
 import MasteryBadgeCard from './components/MasteryBadgeCard.jsx';
 import GiaoAnCard from './components/GiaoAnCard.jsx';
@@ -61,7 +60,6 @@ export default function LienquanHub() {
         <p>{LQ_UI.hubSub}</p>
       </header>
 
-      <QuizEventBanner />
       <QuizTierHub />
 
       <nav className="lq-nav-chips" aria-label="Liên Quân menu">

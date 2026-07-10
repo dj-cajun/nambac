@@ -152,6 +152,92 @@ export const BLOG_POSTS = [
       },
     ],
   },
+  {
+    slug: 'cam-nang-lien-quan-mobile-tren-nambac',
+    title: 'Cẩm Nang Liên Quân Mobile Trên nambac: Counter, Giáo Án Và Quiz Thông Thạo',
+    metaTitle: 'Cẩm Nang Liên Quân Mobile — Counter, Giáo Án Pro, Quiz 5 Cấp | nambac',
+    subtitle: 'Tìm counter trong 30 giây, copy build AOG, thi Thông Thạo từ Đồng đến TT7',
+    date: '2026-07-10',
+    readMinutes: 10,
+    excerpt:
+      'Hướng dẫn dùng hub Liên Quân trên nambac.xyz — khắc chế tướng, giáo án pro VN, từ điển meta và bài thi 5 cấp độ.',
+    lead: [
+      'Liên Quân Mobile (Arena of Valor) là một trong những tựa game MOBA được yêu thích nhất tại Việt Nam, với cộng đồng rank, giải AOG và văn hóa "giáo án" copy build pro đã trở thành thói quen hàng ngày. Tuy nhiên, người chơi mới hoặc quay lại sau patch thường gặp khó khăn khi phải lục tìm counter pick, build item và thuật ngữ meta trên hàng chục nguồn khác nhau.',
+      'nambac.xyz cung cấp một cẩm nang Liên Quân tập trung trên mobile: tìm tướng, xem khắc chế, sao chép giáo án pro và làm bài thi Thông Thạo 5 cấp độ — mỗi cấp 10 câu, từ thuật ngữ cơ bản đến build AOG. Nội dung mang tính tham khảo giải trí, không phải dữ liệu chính thức Garena.',
+    ],
+    sections: [
+      {
+        heading: '1. Tìm counter và mẹo đối đầu nhanh',
+        paragraphs: [
+          'Trên hub Liên Quân, bạn có thể tìm tướng theo tên hoặc biệt danh (ví dụ "Flo" cho Florentino, "Nak" cho Nakroth). Mỗi tướng meta hiển thị lane, tier AOG tham khảo, danh sách khắc chế và mẹo đối đầu ngắn gọn — ví dụ khi gặp Elsu nên giữ góc khuất, khi đối đầu Florentino cần cẩn thận trade early sau skill 1.',
+          'Phần Khắc Chế & Tier giúp bạn nắm nhanh meta theo đường: Top, Rừng, Mid, AD và Support. Đây là điểm khởi đầu hợp lý trước khi vào rank hoặc xem highlight AOG — đặc biệt hữu ích khi bạn cần pick nhanh trong lobby mà không kịp mở wiki dài.',
+        ],
+      },
+      {
+        heading: '2. Giáo án pro và từ điển trang bị',
+        paragraphs: [
+          'Mục Giáo Án Pro tổng hợp build tham khảo từ meta cộng đồng VN: 6 món đồ, bảng ngọc (Arcana), phù hiệu (Rune) và mã copy nhanh. Ví dụ giáo án Florentino từ SGP Bang, Nakroth từ 1S Maris — bạn có thể sao chép một phát và chỉnh trong trận theo đối thủ.',
+          'Từ Điển Game liệt kê tên trang bị, thuật ngữ như Bùa xanh, Giao tranh tổng, Khắc chế, Giáo án — hữu ích cho người mới làm quen meta Việt Nam mà chưa quen slang lobby.',
+        ],
+      },
+      {
+        heading: '3. Quiz Thông Thạo — 5 cấp độ, 10 câu mỗi cấp',
+        paragraphs: [
+          'Ngay trên trang hub, bạn chọn một trong năm cấp: Đồng (thuật ngữ cơ bản), Thông Thạo 2 (lane tướng), Thông Thạo 4 (counter pick), Thông Thạo 6 (mẹo lane), Thông Thạo 7 (giáo án AOG). Mỗi cấp có đúng 10 câu hỏi trắc nghiệm, lấy dữ liệu từ cẩm nang nambac — không phải đề ngẫu nhiên từ internet.',
+          'Sau khi hoàn thành, bạn nhận mark Thông Thạo trên nambac và có thể khoe ở Góc Khoe. Quiz mang tính giải trí; kết quả không phản ánh rank Liên Quân thực tế trên máy chủ Garena.',
+        ],
+      },
+      {
+        heading: 'Kết luận',
+        paragraphs: [
+          'Cẩm nang Liên Quân trên nambac hướng tới người chơi VN cần thông tin nhanh, gọn trên điện thoại: counter, giáo án, từ điển và quiz. Truy cập tại nambac.xyz/lienquan — chọn cấp quiz phù hợp rank của bạn và ôn meta trước khi leo rank tối nay.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'vbti-huong-dan-trac-nghiem-viet-nam',
+    title: 'VBTI Là Gì? Hướng Dẫn Trắc Nghiệm Tính Cách Việt Nam Trên nambac',
+    metaTitle: 'VBTI — Trắc Nghiệm Tính Cách Gen Z Việt Nam | nambac.xyz',
+    subtitle: '16 archetype, MBTI cross, cung hoàng đạo — bản địa hóa cho Gen Z Sài Gòn',
+    date: '2026-07-10',
+    readMinutes: 9,
+    excerpt:
+      'Giải thích VBTI (Vietnam personality test) trên nambac — cách làm bài, đọc kết quả và chia sẻ trên Zalo.',
+    lead: [
+      'Trắc nghiệm tính cách (personality quiz) đã trở thành một phần văn hóa giải trí số của Gen Z Việt Nam. Từ các bài test MBTI trên Facebook đến meme "bạn là ai trong nhóm bạn thân", người trẻ Sài Gòn thích những công cụ vừa giải trí vừa giúp họ hiểu bản thân — và quan trọng hơn, có thứ để khoe trong group Zalo.',
+      'VBTI trên nambac.xyz là bộ trắc nghiệm tính cách bản địa hóa cho người Việt: 16 archetype với ngôn ngữ đời thường, liên kết MBTI, và các bài cross với cung hoàng đạo. Bài viết này giải thích VBTI là gì, cách sử dụng và ý nghĩa giải trí của kết quả.',
+    ],
+    sections: [
+      {
+        heading: '1. VBTI khác gì so với MBTI thuần?',
+        paragraphs: [
+          'MBTI (Myers-Briggs) phân loại 16 kiểu tính cách dựa trên bốn trục E/I, S/N, T/F, J/P. VBTI trên nambac lấy cảm hứng từ khung này nhưng viết lại hoàn toàn bằng ngữ cảnh Việt Nam: crush trên Zalo, trà sữa Quận 1, Grab đi làm, áp lực deadline — không phải bản dịch sách giáo khoa tiếng Anh.',
+          'Mỗi archetype có tên gọi Gen Z quen thuộc (ví dụ kiểu "thánh ghost" hay "reply trong 3 giây"), mô tả dài và traits ngắn. Kết quả mang tính giải trí — nambac không đưa ra chẩn đoán tâm lý hay tư vấn nghề nghiệp chính thức.',
+        ],
+      },
+      {
+        heading: '2. Các bài test trên hub VBTI',
+        paragraphs: [
+          'Bài test chính tại /vbti/test dẫn bạn qua các câu hỏi tình huống và trả về một trong 16 archetype. Trang /vbti/types liệt kê đầy đủ các type với mô tả chi tiết; bạn có thể đọc trước hoặc sau khi làm bài.',
+          'Các bài cross như VBTI × MBTI và VBTI × cung hoàng đạo kết hợp hai hệ thống phân loại để tạo kết quả độc đáo hơn — phù hợp người thích soi hợp crush hoặc tag bạn thân trong nhóm chat.',
+        ],
+      },
+      {
+        heading: '3. Cách chia sẻ và lưu ý quyền riêng tư',
+        paragraphs: [
+          'Sau khi có kết quả, nambac hỗ trợ chia sẻ link với ảnh OG (Open Graph) để hiển thị đẹp trên Zalo và Facebook. Bạn không cần đăng nhập để làm bài; dữ liệu cá nhân không được bán cho bên thứ ba — xem thêm Chính sách bảo mật trên nambac.xyz.',
+          'Nếu kết quả "trúng quá đúng" hoặc ngược lại quá sai, hãy nhớ đây là nội dung AI + giải trí. Làm lại bài hoặc thử bài cross khác để so sánh — đừng coi VBTI thay thế tư vấn chuyên môn.',
+        ],
+      },
+      {
+        heading: 'Kết luận',
+        paragraphs: [
+          'VBTI trên nambac là công cụ giải trí giúp Gen Z Việt khám phá archetype bản thân bằng ngôn ngữ quen thuộc. Truy cập nambac.xyz/vbti để bắt đầu bài test — miễn phí, nhanh, và sẵn sàng tag bạn bè.',
+        ],
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug) {
