@@ -9,9 +9,9 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 const types = JSON.parse(
-  fs.readFileSync(path.join(root, 'shared/sbti/types.vi.json'), 'utf8'),
+  fs.readFileSync(path.join(root, 'shared/vbti/types.vi.json'), 'utf8'),
 );
-const outDir = path.join(root, 'public/sbti/types');
+const outDir = path.join(root, 'public/vbti/types');
 fs.mkdirSync(outDir, { recursive: true });
 
 const hues = [
@@ -34,7 +34,7 @@ codes.forEach((code, i) => {
   <rect width="400" height="300" fill="url(#bg)"/>
   <text x="200" y="150" text-anchor="middle" font-family="system-ui, sans-serif" font-size="72" font-weight="900" fill="rgba(255,255,255,0.92)">${code.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>
   <text x="200" y="210" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="rgba(255,255,255,0.75)">${(types[code].name || '').slice(0, 24).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>
-  <text x="200" y="270" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" fill="rgba(255,255,255,0.5)">nambac · SBTI</text>
+  <text x="200" y="270" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" fill="rgba(255,255,255,0.5)">nambac · VBTI</text>
 </svg>`;
   fs.writeFileSync(path.join(outDir, `${safe}.svg`), svg);
 });
@@ -42,8 +42,9 @@ codes.forEach((code, i) => {
 const hubThumb = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
   <rect width="320" height="200" fill="#2b2235"/>
-  <text x="160" y="95" text-anchor="middle" font-family="system-ui,sans-serif" font-size="56" font-weight="900" fill="#e85d4c">SBTI</text>
-  <text x="160" y="130" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" fill="#fff">27 types · meme test</text>
+  <text x="160" y="88" text-anchor="middle" font-family="system-ui,sans-serif" font-size="44" font-weight="900" fill="#e85d4c">VBTI</text>
+  <text x="160" y="118" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">Vietnam Behavior Type Indicator</text>
+  <text x="160" y="140" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" fill="rgba(255,255,255,0.75)">27 types · meme test</text>
 </svg>`;
 fs.writeFileSync(path.join(root, 'public/images/sbti-hub-thumb.svg'), hubThumb);
 

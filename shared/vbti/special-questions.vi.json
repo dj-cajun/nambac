@@ -1,0 +1,24 @@
+[
+  {
+    "id": "drink_gate_q1",
+    "special": true,
+    "kind": "drink_gate",
+    "text": "Sở thích hàng ngày của bạn là gì?",
+    "options": [
+      { "label": "Ăn uống ngủ", "value": 1 },
+      { "label": "Nghệ thuật", "value": 2 },
+      { "label": "Nhâm nhi bia rượu cuối tuần", "value": 3 },
+      { "label": "Tập gym", "value": 4 }
+    ]
+  },
+  {
+    "id": "drink_gate_q2",
+    "special": true,
+    "kind": "drink_trigger",
+    "text": "Thái độ của bạn với bia rượu?",
+    "options": [
+      { "label": "Nhẹ nhàng, lâu lâu làm vài lon là dừng", "value": 1 },
+      { "label": "Bia rượu trong bình giữ nhiệt uống như nước lọc, chén chú chén anh tới sáng", "value": 2 }
+    ]
+  }
+]

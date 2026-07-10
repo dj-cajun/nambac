@@ -59,7 +59,7 @@ export function getLienquanThumbnailPath() {
 }
 
 export function getSbtiThumbnailPath() {
-  return '/images/sbti-hub-thumb.svg';
+  return '/images/sbti_hub.webp';
 }
 
 export function getHomeFeatureThumbPlan(date = new Date()) {

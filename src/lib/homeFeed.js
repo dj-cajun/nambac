@@ -79,15 +79,15 @@ export function buildFeatureFeedItems({ fortuneStats, featureStats, featureThumb
     {
       kind: 'sbti',
       id: 'sbti',
-      title: '🎭 SBTI — Test meme personality',
-      image_url: featureThumbs.sbti?.src || '/images/sbti-hub-thumb.svg',
+      title: '🎭 VBTI — Vietnam Behavior Type Indicator',
+      image_url: featureThumbs.sbti?.src || '/images/sbti_hub.webp',
       imageSeed: featureThumbs.sbti?.seed || 'sbti-hub',
-      to: '/sbti',
+      to: '/vbti',
       view_count: featureStats?.sbti?.view_count || 0,
       share_count: featureStats?.sbti?.share_count || 0,
       like_count: featureStats?.sbti?.like_count || 0,
       participant_count: 0,
-      typeLabel: 'SBTI',
+      typeLabel: 'VBTI',
     },
   ];
 }

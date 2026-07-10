@@ -1,0 +1,164 @@
+{
+  "CTRL": {
+    "code": "CTRL",
+    "name": "Người Cầm Trịch",
+    "intro": "Thế nào, để tôi cầm trịch giùm cho nhé?",
+    "desc": "Bạn thuộc nhóm hiếm — người chống lại luật hỗn loạn của group chat. CTRL là đứa lúc nào cũng có Google Sheet chia tiền đi chơi, note ngày thi rõ ràng trên lịch điện thoại. Có bạn CTRL trong nhóm là được nâng cấp GPS cuộc đời — trước khi cả đám lạc trôi vì 'thôi từ từ', họ đã chốt lịch, đặt Grab, và kéo mọi người về đúng giờ hẹn."
+  },
+  "ATM-er": {
+    "code": "ATM-er",
+    "name": "Người Rút Tiền",
+    "intro": "Bạn nghĩ tôi giàu lắm hả?",
+    "desc": "ATM-er luôn trong trạng thái sẵn sàng chuyển khoản — cho bạn bè mượn tiền trà sữa, cho crush đặt Grab, cho cả nhóm ăn lẩu cuối tháng. Ví thì mỏng như lá lúa nhưng lòng thì rộng như sông Sài Gòn. Họ không phải ngân hàng, chỉ là quên set hạn mức chuyển khoản mỗi lần đi chơi."
+  },
+  "Dior-s": {
+    "code": "Dior-s",
+    "name": "Kẻ Phèn",
+    "intro": "Chờ đó, tôi sẽ lột xác.",
+    "desc": "Dior-s đang trong arc 'glow up' — biết mình đang hết tiền cuối tháng, đi dép lê ra quán trà đá, nhưng vẫn tin ngày mai sẽ khác. Mỗi status Facebook mới là một lần update bản thân. Không phèn mãi đâu, chỉ đang tích lũy để bung."
+  },
+  "BOSS": {
+    "code": "BOSS",
+    "name": "Trùm Cuối",
+    "intro": "Đưa tay lái đây, để tôi chở.",
+    "desc": "BOSS không hỏi cả nhóm muốn đi đâu — họ tự chốt quán, chốt giờ, chốt luôn ai đi ai không. Họp nhóm bắt đầu khi họ lên tiếng trong group chat. Không phải áp đảo, chỉ là... tới giờ rồi, đi thôi."
+  },
+  "THAN-K": {
+    "code": "THAN-K",
+    "name": "Người Biết Ơn",
+    "intro": "Cảm ơn trời, cảm ơn đất, cảm ơn cả wifi nhà mình!",
+    "desc": "THAN-K biết ơn từ ly trà đá miễn phí đến cục wifi full vạch. Họ gửi lời cảm ơn như spam sticker Zalo — chân thành đến mức hơi quá liều. Nhưng đời này cần có người nhớ ơn như vậy."
+  },
+  "OH-NO": {
+    "code": "OH-NO",
+    "name": "Người Ôi Không",
+    "intro": "Ôi không! Sao tôi lại ra type này?!",
+    "desc": "OH-NO sốc thật sự khi đọc kết quả. Họ ngồi tua lại 30 câu trong đầu, tự hỏi mình bấm sai chỗ nào. Spoiler: không sai đâu, chỉ là twist đời bạn thôi."
+  },
+  "GOGO": {
+    "code": "GOGO",
+    "name": "Người Lên Đường",
+    "intro": "Gogogo, đi thôi đừng chần chừ!",
+    "desc": "GOGO không chờ tâm trạng đẹp — họ chỉ chờ Grab tới. Đi phượt Đà Lạt, chạy deadline, hay rep tin crush: tất cả đều bắt đầu bằng một câu 'đi liền!'."
+  },
+  "SEXY": {
+    "code": "SEXY",
+    "name": "Cực Phẩm",
+    "intro": "Bạn sinh ra đã là cực phẩm, không cần filter!",
+    "desc": "SEXY mang aura tự tin không cần app chỉnh ảnh. Không phải khoe mẽ — họ chỉ biết mình hợp lên hình. Camera điện thoại đứa nào cũng tự động lấy nét khi họ xuất hiện."
+  },
+  "LOVE-R": {
+    "code": "LOVE-R",
+    "name": "Người Đa Tình",
+    "intro": "Tình cảm thì đầy, còn ví thì hơi rỗng.",
+    "desc": "LOVE-R yêu sâu, nhớ dai, viết caption Facebook dài như văn tự sự. Trái tim full pin nhưng lịch hẹn trống trơn. Lãng mạn trên lý thuyết, lộn xộn ngoài thực tế."
+  },
+  "MUM": {
+    "code": "MUM",
+    "name": "Mẹ Đường",
+    "intro": "Cho tôi gọi bạn là con được không?",
+    "desc": "MUM chăm bạn bè như chăm cả nhóm nhỏ. Nhắc uống nước, nhắc nộp bài, nhắc đừng nhắn lại người cũ lúc nửa đêm. Năng lượng ấm áp full công suất, kiểu 'mẹ' đúng nghĩa trong group chat."
+  },
+  "FAKE": {
+    "code": "FAKE",
+    "name": "Người Giả",
+    "intro": "Chẳng còn ai là người thật nữa rồi.",
+    "desc": "FAKE đeo nhiều lớp mặt nạ hơn số tab Chrome đang mở. Ngoài mặt cực kỳ hoà đồng, nhưng soi gương lúc 2 giờ sáng lại tự hỏi: mình thật ra là ai? Biến hình liên tục cũng mệt lắm."
+  },
+  "OJBK": {
+    "code": "OJBK",
+    "name": "Người Tùy Tiện",
+    "intro": "Tôi nói tùy tiện là thật sự tùy tiện luôn.",
+    "desc": "OJBK trả lời 'ăn gì cũng được' là thật lòng, không phải giả vờ dễ tính. Không phải thiếu chính kiến — họ chỉ đã buông bỏ hết drama từ lâu. Zen mode bật 24/7."
+  },
+  "MALO": {
+    "code": "MALO",
+    "name": "Khỉ Con",
+    "intro": "Đời là dungeon, tôi chỉ là con khỉ nhỏ đi cày.",
+    "desc": "MALO cày cuộc sống như cày EXP trong game. Không phải nhân vật chính, nhưng tiềm năng làm meme cực cao. Build sinh tồn là chuẩn của họ."
+  },
+  "JOKE-R": {
+    "code": "JOKE-R",
+    "name": "Chú Hề",
+    "intro": "Hoá ra ai cũng là hề hết.",
+    "desc": "JOKE-R cười trước khi drama kịp ập tới. Đùa là lớp giáp bảo vệ. Họ luôn biết trước punchline của plot twist cuộc đời mình."
+  },
+  "WOC!": {
+    "code": "WOC!",
+    "name": "Người WTF",
+    "intro": "WTF, sao tôi lại ra type này chứ?",
+    "desc": "WOC! chạy song song hai hệ điều hành: bên ngoài hét ồn ào như đám cưới, bên trong đang âm thầm xử lý dữ liệu. Hỗn loạn nhưng có nét riêng."
+  },
+  "THIN-K": {
+    "code": "THIN-K",
+    "name": "Người Suy Nghĩ",
+    "intro": "Đã suy nghĩ sâu suốt 100 giây rồi đấy.",
+    "desc": "THIN-K nghĩ nhiều nhưng đôi lúc ra được insight hay thật. Cái đầu như đang gõ chat không bao giờ dừng. Đào sâu là bản năng mặc định."
+  },
+  "SHIT": {
+    "code": "SHIT",
+    "name": "Người Cay Đắng",
+    "intro": "Cái thế giới này... đúng là một mớ hỗn độn.",
+    "desc": "SHIT nhìn thẳng vào sự vô lý của đời sống. Cay nghiệt nhưng không giả vui. Kiểu 'thực tế đến trần trụi' cũng có nghệ thuật riêng của nó."
+  },
+  "ZZZZ": {
+    "code": "ZZZZ",
+    "name": "Người Giả Chết",
+    "intro": "Tôi chưa chết, chỉ đang ngủ thôi.",
+    "desc": "ZZZZ né drama bằng cách chuyển sang chế độ ngủ. Xung đột tới là auto offline luôn. Tiết kiệm năng lượng là chiến thuật sống còn của họ."
+  },
+  "POOR": {
+    "code": "POOR",
+    "name": "Người Tập Trung",
+    "intro": "Tôi nghèo, nhưng tôi tập trung.",
+    "desc": "POOR sống tối giản vì ví mỏng, nhưng cực kỳ tập trung vào mục tiêu. Bỏ hết những ồn ào không cần thiết, giữ đúng một hướng đi. Nghèo tiền nhưng giàu sự rõ ràng."
+  },
+  "MONK": {
+    "code": "MONK",
+    "name": "Thầy Tu",
+    "intro": "Chẳng còn ham muốn trần tục gì cả.",
+    "desc": "MONK buông bỏ hết khoe mẽ và sợ bị bỏ lỡ. Họ lướt mạng ít, hít thở sâu nhiều. Tu tâm tốc độ ánh sáng."
+  },
+  "IMSB": {
+    "code": "IMSB",
+    "name": "Người Tự Nghi",
+    "intro": "Thật á? Tôi ngu vậy sao?",
+    "desc": "IMSB nghi ngờ bản thân trước khi ai kịp chê. Tiếng nói nội tâm có độc nhưng đôi khi lại giúp họ cẩn thận hơn. Bậc thầy tự cà khịa chính mình."
+  },
+  "SOLO": {
+    "code": "SOLO",
+    "name": "Người Cô Đơn",
+    "intro": "Tôi khóc — sao tôi lại cô đơn thế này?",
+    "desc": "SOLO mang vibe sói đơn độc nhưng thật ra rất cần kết nối. Độc lập là vậy, nhưng hộp thư trống trơn vẫn thấy buồn."
+  },
+  "FUCK": {
+    "code": "FUCK",
+    "name": "Người Bùng Nổ",
+    "intro": "Đ*! Sao lại ra type này?",
+    "desc": "FUCK mang năng lượng hoang dại khó đoán. Không theo khuôn mẫu nào cả. Chaos nhưng có sức hút riêng."
+  },
+  "DEAD": {
+    "code": "DEAD",
+    "name": "Người Chết Bên Trong",
+    "intro": "Tôi... còn sống không ta?",
+    "desc": "DEAD đã 'clear' đời nhiều lần rồi. Cảm xúc phẳng lặng, bình tĩnh sâu sắc. Một kiểu phản kháng thầm lặng với mọi ồn ào ngoài kia."
+  },
+  "IMFW": {
+    "code": "IMFW",
+    "name": "Người Mong Manh",
+    "intro": "Tôi thật sự... vô dụng vậy sao?",
+    "desc": "IMFW nhạy cảm và dễ tin người. Cần được chăm như chăm cây cảnh trong nhà. Mỏng manh nhưng chân thành."
+  },
+  "HHHH": {
+    "code": "HHHH",
+    "name": "Người Cười",
+    "intro": "HAHAHAHAHA.",
+    "desc": "Cả thư viện nhân cách sập nguồn vì bạn quá độc lạ. HHHH là phương án cuối: cười thôi. Không cần miêu tả dài — chỉ cần HA."
+  },
+  "DRUNK": {
+    "code": "DRUNK",
+    "name": "Người Say",
+    "intro": "Rượu vào là auto say, không cãi được.",
+    "desc": "Trigger ẩn: độ 'thân' với men bia đạt max. DRUNK đi lảo đảo, tâm trạng bay bổng, nhìn cái gì cũng thấy hai cái. Bia rượu như nước lọc — hệ thống đầu hàng luôn."
+  }
+}

@@ -42,14 +42,14 @@ const LienquanHeroDetail = lazy(() => import('./pages/lienquan/HeroDetailPage'))
 const LienquanGiaoAn = lazy(() => import('./pages/lienquan/GiaoAnPage'));
 const LienquanKhoe = lazy(() => import('./pages/lienquan/KhoePage'));
 const LienquanQuiz = lazy(() => import('./pages/lienquan/LienquanQuizPage'));
-const SbtiHub = lazy(() => import('./pages/sbti/SbtiHub'));
-const SbtiTestPage = lazy(() => import('./pages/sbti/SbtiTestPage'));
-const SbtiResultPage = lazy(() => import('./pages/sbti/SbtiResultPage'));
-const SbtiTypesPage = lazy(() => import('./pages/sbti/SbtiTypesPage'));
-const SbtiTypeDetailPage = lazy(() => import('./pages/sbti/SbtiTypeDetailPage'));
-const SbtiMbtiPage = lazy(() => import('./pages/sbti/SbtiMbtiPage'));
-const SbtiCrossMbtiPage = lazy(() => import('./pages/sbti/SbtiCrossMbtiPage'));
-const SbtiCrossZodiacPage = lazy(() => import('./pages/sbti/SbtiCrossZodiacPage'));
+const SbtiHub = lazy(() => import('./pages/vbti/SbtiHub'));
+const SbtiTestPage = lazy(() => import('./pages/vbti/SbtiTestPage'));
+const SbtiResultPage = lazy(() => import('./pages/vbti/SbtiResultPage'));
+const SbtiTypesPage = lazy(() => import('./pages/vbti/SbtiTypesPage'));
+const SbtiTypeDetailPage = lazy(() => import('./pages/vbti/SbtiTypeDetailPage'));
+const SbtiMbtiPage = lazy(() => import('./pages/vbti/SbtiMbtiPage'));
+const SbtiCrossMbtiPage = lazy(() => import('./pages/vbti/SbtiCrossMbtiPage'));
+const SbtiCrossZodiacPage = lazy(() => import('./pages/vbti/SbtiCrossZodiacPage'));
 
 function RouteFallback() {
   return <div className="route-fallback" aria-hidden="true" />;
@@ -125,14 +125,22 @@ function AppContent() {
           <Route path="/lienquan/giao-an" element={<LienquanGiaoAn />} />
           <Route path="/lienquan/khoe" element={<LienquanKhoe />} />
           <Route path="/lienquan/quiz" element={<LienquanQuiz />} />
-          <Route path="/sbti" element={<SbtiHub />} />
-          <Route path="/sbti/test" element={<SbtiTestPage />} />
-          <Route path="/sbti/result" element={<SbtiResultPage />} />
-          <Route path="/sbti/types" element={<SbtiTypesPage />} />
-          <Route path="/sbti/types/:code" element={<SbtiTypeDetailPage />} />
-          <Route path="/sbti/mbti" element={<SbtiMbtiPage />} />
-          <Route path="/sbti/x-mbti" element={<SbtiCrossMbtiPage />} />
-          <Route path="/sbti/x-cung" element={<SbtiCrossZodiacPage />} />
+          <Route path="/vbti" element={<SbtiHub />} />
+          <Route path="/vbti/test" element={<SbtiTestPage />} />
+          <Route path="/vbti/result" element={<SbtiResultPage />} />
+          <Route path="/vbti/types" element={<SbtiTypesPage />} />
+          <Route path="/vbti/types/:code" element={<SbtiTypeDetailPage />} />
+          <Route path="/vbti/mbti" element={<SbtiMbtiPage />} />
+          <Route path="/vbti/x-mbti" element={<SbtiCrossMbtiPage />} />
+          <Route path="/vbti/x-cung" element={<SbtiCrossZodiacPage />} />
+          <Route path="/sbti" element={<Navigate to="/vbti" replace />} />
+          <Route path="/sbti/test" element={<Navigate to="/vbti/test" replace />} />
+          <Route path="/sbti/result" element={<Navigate to="/vbti/result" replace />} />
+          <Route path="/sbti/types" element={<Navigate to="/vbti/types" replace />} />
+          <Route path="/sbti/types/:code" element={<SbtiLegacyTypeRedirect />} />
+          <Route path="/sbti/mbti" element={<Navigate to="/vbti/mbti" replace />} />
+          <Route path="/sbti/x-mbti" element={<Navigate to="/vbti/x-mbti" replace />} />
+          <Route path="/sbti/x-cung" element={<SbtiLegacyCrossZodiacRedirect />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/editor" element={<QuizEditor />} />
           <Route path="/about" element={<About />} />
@@ -163,6 +171,16 @@ function AnalysisRedirect() {
   }
 
   return <Navigate to="/" replace />;
+}
+
+function SbtiLegacyTypeRedirect() {
+  const { code } = useParams();
+  return <Navigate to={`/vbti/types/${code}`} replace />;
+}
+
+function SbtiLegacyCrossZodiacRedirect() {
+  const location = useLocation();
+  return <Navigate to={`/vbti/x-cung${location.search}`} replace />;
 }
 
 export default App;

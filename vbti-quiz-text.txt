@@ -1,0 +1,610 @@
+nambac — VBTI (Vietnam Behavior Type Indicator) — toàn bộ text
+Xuất lúc: 2026-07-10 (v2 — đã localize thêm chi tiết Việt Nam + Gen Z slang)
+Nguồn: shared/vbti/*.json, ui-text.vi.js, cross-mbti.js, cross-zodiac.js, scoring.js
+
+HƯỚNG DẪN SỬA
+─────────────
+• Sửa text trong file này, rồi báo agent / copy lại vào file JSON tương ứng.
+• KHÔNG đổi: id, dim, value (1/2/3), code type, pattern H/M/L — trừ khi biết scoring.
+• Câu chính: shared/vbti/questions.vi.json (30)
+• Câu ẩn:  shared/vbti/special-questions.vi.json (2)
+• 27 type:  shared/vbti/types.vi.json
+• MBTI:     shared/vbti/mbti-questions.vi.json (28)
+• UI:       shared/vbti/ui-text.vi.js
+• Pattern:  shared/vbti/patterns.json (chỉ số — đừng sửa tùy tiện)
+
+════════════════════════════════════════
+PHẦN 1 — UI COPY (ui-text.vi.js)
+════════════════════════════════════════
+
+brand: VBTI
+brandFull: Vietnam Behavior Type Indicator
+backLabel: ← VBTI
+drawerLabel: Test VBTI
+hubTitle: VBTI
+hubSub: Vietnam Behavior Type Indicator · 30 câu chất Việt + nhánh ẩn · 5 mô hình · 15 chiều · 27 nhãn meme
+hubCta: Bắt đầu test
+disclaimer: Chỉ mang tính giải trí · nambac.xyz — không phải tư vấn tâm lý.
+
+tabTest: Làm test
+tabTypes: Bộ sưu tập type
+tabMbti: MBTI 16 type
+tabCrossMbti: VBTI × MBTI
+tabCrossZodiac: VBTI × Cung hoàng đạo
+
+testProgress: Câu
+testOf: /
+testBack: Quay lại
+testSubmit: Xem kết quả
+specialLabel: Câu bổ sung
+
+resultTitle: Kết quả của bạn
+resultRetake: Làm lại
+resultShare: Xuất thẻ chia sẻ
+resultTypes: Xem tất cả type
+resultCross: Ghép với MBTI
+copyToast: Đã sao chép link!
+yourType: VBTI của bạn
+
+typesTitle: 27 nhân cách VBTI
+typesSub: Chạm để xem chi tiết
+typeDetailBack: ← Bộ sưu tập
+
+mbtiTitle: MBTI 16 type
+mbtiSub: 28 câu · 2 lựa chọn · ~5 phút
+mbtiStart: Bắt đầu MBTI
+mbtiYourType: Type MBTI của bạn
+mbtiRetake: Làm lại
+
+crossTitle: VBTI × MBTI
+crossSub: 16 × 27 = 432 tổ hợp
+crossPickMbti: Chọn MBTI của bạn
+crossNeedResult: Làm test VBTI trước để mở khóa.
+
+zodiacTitle: VBTI × Cung hoàng đạo
+zodiacSub: 27 × 12 = 324 buff
+zodiacPick: Chọn cung của bạn
+
+FAQ 1 Q: VBTI khác MBTI thế nào?
+FAQ 1 A: VBTI (Vietnam Behavior Type Indicator) dùng 15 chiều H/M/L và nhãn meme — thuần giải trí, không phải công cụ tâm lý.
+FAQ 2 Q: Dữ liệu có upload không?
+FAQ 2 A: Không. Mọi tính toán chạy trên trình duyệt của bạn.
+FAQ 3 Q: Nhân cách ẩn là gì?
+FAQ 3 A: Có câu trigger đặc biệt về sở thích/bia rượu. Đáp án đúng điều kiện → DRUNK hoặc HHHH.
+
+════════════════════════════════════════
+PHẦN 2 — 15 CHIỀU & 5 MÔ HÌNH (dimensions.vi.json)
+════════════════════════════════════════
+
+Mô hình Bản ngã: S1, S2, S3
+Mô hình Cảm xúc: E1, E2, E3
+Mô hình Thái độ: A1, A2, A3
+Mô hình Hành động: Ac1, Ac2, Ac3
+Mô hình Xã hội: So1, So2, So3
+
+S1 — S1 Tự tin (Bản ngã)
+S2 — S2 Rõ ràng bản thân (Bản ngã)
+S3 — S3 Giá trị cốt lõi (Bản ngã)
+E1 — E1 An toàn gắn bó (Cảm xúc)
+E2 — E2 Đầu tư cảm xúc (Cảm xúc)
+E3 — E3 Ranh giới & phụ thuộc (Cảm xúc)
+A1 — A1 Nhìn thế giới (Thái độ)
+A2 — A2 Quy tắc & linh hoạt (Thái độ)
+A3 — A3 Ý nghĩa cuộc sống (Thái độ)
+Ac1 — Ac1 Động lực (Hành động)
+Ac2 — Ac2 Quyết định (Hành động)
+Ac3 — Ac3 Thực thi (Hành động)
+So1 — So1 Chủ động xã hội (Xã hội)
+So2 — So2 Ranh giới giao tiếp (Xã hội)
+So3 — So3 Thể hiện & chân thật (Xã hội)
+
+════════════════════════════════════════
+PHẦN 3 — 30 CÂU TEST CHÍNH (questions.vi.json) — đã localize
+════════════════════════════════════════
+
+Q1 [S1] Nửa đêm lướt lại story Facebook cả nhóm, tự nhiên thấy mình như vai phụ buồn nhất đám — không phải kiểu bí ẩn ngầu, mà tự ti thật sự.
+   A) Đúng, tôi khóc thật [1]
+   B) Cái gì vậy trời [2]
+   C) Không phải tôi! [3]
+
+Q2 [S1] Tôi không đủ tốt — đứa nào trong group cũng giỏi hơn mình.
+   A) Đúng [1]
+   B) Đôi khi [2]
+   C) Không [3]
+
+Q3 [S2] Tôi biết rõ bản thân thật sự là ai, không cần fake theo trend.
+   A) Không đồng ý [1]
+   B) Trung lập [2]
+   C) Đồng ý [3]
+
+Q4 [S2] Tôi có một mục tiêu/đam mê thật sự theo đuổi, không chỉ chạy theo số đông.
+   A) Không [1]
+   B) Có lẽ [2]
+   C) Có [3]
+
+Q5 [S3] Tôi phải leo rank Liên Quân/Free Fire liên tục — không top thì ăn ngủ không ngon.
+   A) Không [1]
+   B) Đôi khi [2]
+   C) Đúng [3]
+
+Q6 [S3] Ai nói gì về tôi trên confession trường... thôi kệ, whatever.
+   A) Không đồng ý [1]
+   B) Trung lập [2]
+   C) Đồng ý [3]
+
+Q7 [E1] Crush 5 tiếng không rep Zalo, seen rồi im, bảo bận việc gia đình — bạn nghĩ sao?
+   A) 5 tiếng mà bận? Nghi ngờ luôn [1]
+   B) Lắc lư giữa tin và nghi [2]
+   C) Chắc người ta đang kẹt xe/mệt thật [3]
+
+Q8 [E1] Trong tình cảm tôi hay lo bị bỏ rơi, sợ bị 'seen' rồi biến mất luôn.
+   A) Có [1]
+   B) Thỉnh thoảng [2]
+   C) Không [3]
+
+Q9 [E2] Tôi thề mối tình nào tôi cũng nghiêm túc, dù chỉ mới thả tim story vài lần!
+   A) Không hẳn [1]
+   B) Có lẽ? [2]
+   C) Có! (tự hào) [3]
+
+Q10 [E2] Người yêu bạn siêu tốt, chở đi ăn hủ tiếu gõ lúc nửa đêm không than nửa lời — bạn sẽ...
+   A) Dù họ tốt tôi vẫn giữ khoảng cách [1]
+   B) Giữa A và C [2]
+   C) Trân trọng, dễ thành 'yêu bằng cả trái tim' [3]
+
+Q11 [E3] Yêu rồi mà đối phương dính như sam, đi đâu cũng đòi theo — bạn?
+   A) Thích luôn [1]
+   B) Tùy [2]
+   C) Cần không gian riêng [3]
+
+Q12 [E3] Mọi quan hệ tôi đều coi trọng không gian riêng, dù là bạn thân hay người yêu.
+   A) Tôi thích phụ thuộc [1]
+   B) Tùy [2]
+   C) Đúng! (gật mạnh) [3]
+
+Q13 [A1] Đa số người lạ ngoài đời là người tốt, không phải ai cũng lừa đảo qua điện thoại.
+   A) Lừa đảo nhiều hơn bạn nghĩ [1]
+   B) Có lẽ [2]
+   C) Tôi tin người tốt nhiều hơn [3]
+
+Q14 [A1] Một bé đứng trước cổng trường đưa kẹo miễn phí, nói là quà tặng — bạn?
+   A) Ỏ dễ thương quá, nhận luôn! [1]
+   B) Hả? [2]
+   C) Chiêu lừa mới đây, tránh xa [3]
+
+Q15 [A2] Sắp thi cuối kỳ, tối nay đứa bạn rủ đi cà phê cày Liên Quân — bạn?
+   A) Bỏ ôn đi chơi luôn! [1]
+   B) Xin đi trễ một chút [2]
+   C) Sắp thi rồi, ở nhà ôn bài [3]
+
+Q16 [A2] Tôi thích phá luật một chút, ghét bị ai kiểm soát giờ giấc.
+   A) Đồng ý [1]
+   B) Trung lập [2]
+   C) Không [3]
+
+Q17 [A3] Tôi làm gì cũng thường có mục tiêu rõ ràng, không chỉ sống qua ngày.
+   A) Không [1]
+   B) Đôi khi [2]
+   C) Có [3]
+
+Q18 [A3] Đột nhiên tôi thấy đời chẳng có ý nghĩa gì — chạy KPI cả năm cũng chỉ vì hormone thôi.
+   A) Đúng vậy [1]
+   B) Có lẽ [2]
+   C) Vô lý [3]
+
+Q19 [Ac1] Tôi làm việc để tiến bộ mỗi ngày, không phải chỉ để tránh bị sếp mắng.
+   A) Không [1]
+   B) Trung lập [2]
+   C) Đúng [3]
+
+Q20 [Ac1] Ngồi 'giải quyết nỗi buồn' 30 phút vẫn chưa xong — bạn giống ai?
+   A) Ngồi thêm 30 phút xem sao [1]
+   B) Vỗ bụng: "Ra đi mà!" [2]
+   C) Ra tiệm thuốc mua liền cho chắc [3]
+
+Q21 [Ac2] Tôi quyết định nhanh, ghét kiểu "để tao suy nghĩ thêm".
+   A) Không [1]
+   B) Đôi khi [2]
+   C) Đúng [3]
+
+Q22 [Ac2] Câu này không có đề — chọn mù thôi.
+   A) Chắc A? [1]
+   B) Hay B? [2]
+   C) Không biết chọn C [3]
+
+Q23 [Ac3] Sếp/giáo viên bảo bạn "làm gấp lên" — trong đầu bạn nghĩ gì?
+   A) Bị dí deadline mới chịu làm mạnh [1]
+   B) Đôi khi [2]
+   C) Đúng, việc phải được đẩy tới cùng [3]
+
+Q24 [Ac3] Tôi hay lập kế hoạch chi tiết, nhưng ____
+   A) Kế hoạch không bằng đời, đổi liên tục [1]
+   B) Lúc được lúc không [2]
+   C) Ghét ai phá plan của tôi [3]
+
+Q25 [So1] Chơi game quen một người bạn online, được rủ ra ngoài cà phê gặp mặt — bạn?
+   A) Chat online thôi, gặp ngoài hơi run [1]
+   B) Gặp cũng được [2]
+   C) Diện đồ đẹp, chat nhiệt tình luôn — biết đâu hợp [3]
+
+Q26 [So1] Bạn thân rủ thêm 'bạn của bạn' vào nhóm chơi chung — bạn thường?
+   A) Giữ khoảng cách, ngại người lạ [1]
+   B) Tùy vibe hôm đó [2]
+   C) Bạn của bạn tôi = bạn tôi luôn! [3]
+
+Q27 [So2] Tôi có 'hàng rào điện' vô hình — ai lại gần quá là auto cảnh giác.
+   A) Đồng ý [1]
+   B) Trung lập [2]
+   C) Không [3]
+
+Q28 [So2] Tôi muốn thân với người quen như kiểu họ hàng xa lâu ngày gặp lại.
+   A) Đồng ý [1]
+   B) Trung lập [2]
+   C) Không [3]
+
+Q29 [So3] Có ý kiến khác trong nhóm nhưng không nói ra — vì?
+   A) Ít khi giữ im lặng vậy [1]
+   B) Ngại mất lòng bạn bè [2]
+   C) Không muốn để lộ mặt tối của mình [3]
+
+Q30 [So3] Tôi thể hiện khác nhau tùy người đang nói chuyện — trước ba mẹ khác, trước bạn bè khác.
+   A) Không [1]
+   B) Trung lập [2]
+   C) Có [3]
+
+════════════════════════════════════════
+PHẦN 4 — 2 CÂU ẨN / DRINK GATE (special-questions.vi.json)
+════════════════════════════════════════
+(Chỉ hiện nếu q1 chọn "Nhâm nhi bia rượu cuối tuần" [value=3])
+
+[drink_gate_q1] Sở thích hàng ngày của bạn là gì?
+   A) Ăn uống ngủ [1]
+   B) Nghệ thuật [2]
+   C) Nhâm nhi bia rượu cuối tuần [3]  ← trigger nhánh ẩn
+   D) Tập gym [4]
+
+[drink_gate_q2] Thái độ của bạn với bia rượu?
+   A) Nhẹ nhàng, lâu lâu làm vài lon là dừng [1]
+   B) Bia rượu trong bình giữ nhiệt uống như nước lọc, chén chú chén anh tới sáng [2]  ← trigger DRUNK
+
+════════════════════════════════════════
+PHẦN 5 — 27 KẾT QUẢ TYPE (types.vi.json) — đã localize
+════════════════════════════════════════
+
+[CTRL] Người Cầm Trịch
+intro: Thế nào, để tôi cầm trịch giùm cho nhé?
+desc: Bạn thuộc nhóm hiếm — người chống lại luật hỗn loạn của group chat. CTRL là đứa lúc nào cũng có Google Sheet chia tiền đi chơi, note ngày thi rõ ràng trên lịch điện thoại. Có bạn CTRL trong nhóm là được nâng cấp GPS cuộc đời — trước khi cả đám lạc trôi vì 'thôi từ từ', họ đã chốt lịch, đặt Grab, và kéo mọi người về đúng giờ hẹn.
+
+[ATM-er] Người Rút Tiền
+intro: Bạn nghĩ tôi giàu lắm hả?
+desc: ATM-er luôn trong trạng thái sẵn sàng chuyển khoản — cho bạn bè mượn tiền trà sữa, cho crush đặt Grab, cho cả nhóm ăn lẩu cuối tháng. Ví thì mỏng như lá lúa nhưng lòng thì rộng như sông Sài Gòn. Họ không phải ngân hàng, chỉ là quên set hạn mức chuyển khoản mỗi lần đi chơi.
+
+[Dior-s] Kẻ Phèn
+intro: Chờ đó, tôi sẽ lột xác.
+desc: Dior-s đang trong arc 'glow up' — biết mình đang hết tiền cuối tháng, đi dép lê ra quán trà đá, nhưng vẫn tin ngày mai sẽ khác. Mỗi status Facebook mới là một lần update bản thân. Không phèn mãi đâu, chỉ đang tích lũy để bung.
+
+[BOSS] Trùm Cuối
+intro: Đưa tay lái đây, để tôi chở.
+desc: BOSS không hỏi cả nhóm muốn đi đâu — họ tự chốt quán, chốt giờ, chốt luôn ai đi ai không. Họp nhóm bắt đầu khi họ lên tiếng trong group chat. Không phải áp đảo, chỉ là... tới giờ rồi, đi thôi.
+
+[THAN-K] Người Biết Ơn
+intro: Cảm ơn trời, cảm ơn đất, cảm ơn cả wifi nhà mình!
+desc: THAN-K biết ơn từ ly trà đá miễn phí đến cục wifi full vạch. Họ gửi lời cảm ơn như spam sticker Zalo — chân thành đến mức hơi quá liều. Nhưng đời này cần có người nhớ ơn như vậy.
+
+[OH-NO] Người Ôi Không
+intro: Ôi không! Sao tôi lại ra type này?!
+desc: OH-NO sốc thật sự khi đọc kết quả. Họ ngồi tua lại 30 câu trong đầu, tự hỏi mình bấm sai chỗ nào. Spoiler: không sai đâu, chỉ là twist đời bạn thôi.
+
+[GOGO] Người Lên Đường
+intro: Gogogo, đi thôi đừng chần chừ!
+desc: GOGO không chờ tâm trạng đẹp — họ chỉ chờ Grab tới. Đi phượt Đà Lạt, chạy deadline, hay rep tin crush: tất cả đều bắt đầu bằng một câu 'đi liền!'.
+
+[SEXY] Cực Phẩm
+intro: Bạn sinh ra đã là cực phẩm, không cần filter!
+desc: SEXY mang aura tự tin không cần app chỉnh ảnh. Không phải khoe mẽ — họ chỉ biết mình hợp lên hình. Camera điện thoại đứa nào cũng tự động lấy nét khi họ xuất hiện.
+
+[LOVE-R] Người Đa Tình
+intro: Tình cảm thì đầy, còn ví thì hơi rỗng.
+desc: LOVE-R yêu sâu, nhớ dai, viết caption Facebook dài như văn tự sự. Trái tim full pin nhưng lịch hẹn trống trơn. Lãng mạn trên lý thuyết, lộn xộn ngoài thực tế.
+
+[MUM] Mẹ Đường
+intro: Cho tôi gọi bạn là con được không?
+desc: MUM chăm bạn bè như chăm cả nhóm nhỏ. Nhắc uống nước, nhắc nộp bài, nhắc đừng nhắn lại người cũ lúc nửa đêm. Năng lượng ấm áp full công suất, kiểu 'mẹ' đúng nghĩa trong group chat.
+
+[FAKE] Người Giả
+intro: Chẳng còn ai là người thật nữa rồi.
+desc: FAKE đeo nhiều lớp mặt nạ hơn số tab Chrome đang mở. Ngoài mặt cực kỳ hoà đồng, nhưng soi gương lúc 2 giờ sáng lại tự hỏi: mình thật ra là ai? Biến hình liên tục cũng mệt lắm.
+
+[OJBK] Người Tùy Tiện
+intro: Tôi nói tùy tiện là thật sự tùy tiện luôn.
+desc: OJBK trả lời 'ăn gì cũng được' là thật lòng, không phải giả vờ dễ tính. Không phải thiếu chính kiến — họ chỉ đã buông bỏ hết drama từ lâu. Zen mode bật 24/7.
+
+[MALO] Khỉ Con
+intro: Đời là dungeon, tôi chỉ là con khỉ nhỏ đi cày.
+desc: MALO cày cuộc sống như cày EXP trong game. Không phải nhân vật chính, nhưng tiềm năng làm meme cực cao. Build sinh tồn là chuẩn của họ.
+
+[JOKE-R] Chú Hề
+intro: Hoá ra ai cũng là hề hết.
+desc: JOKE-R cười trước khi drama kịp ập tới. Đùa là lớp giáp bảo vệ. Họ luôn biết trước punchline của plot twist cuộc đời mình.
+
+[WOC!] Người WTF
+intro: WTF, sao tôi lại ra type này chứ?
+desc: WOC! chạy song song hai hệ điều hành: bên ngoài hét ồn ào như đám cưới, bên trong đang âm thầm xử lý dữ liệu. Hỗn loạn nhưng có nét riêng.
+
+[THIN-K] Người Suy Nghĩ
+intro: Đã suy nghĩ sâu suốt 100 giây rồi đấy.
+desc: THIN-K nghĩ nhiều nhưng đôi lúc ra được insight hay thật. Cái đầu như đang gõ chat không bao giờ dừng. Đào sâu là bản năng mặc định.
+
+[SHIT] Người Cay Đắng
+intro: Cái thế giới này... đúng là một mớ hỗn độn.
+desc: SHIT nhìn thẳng vào sự vô lý của đời sống. Cay nghiệt nhưng không giả vui. Kiểu 'thực tế đến trần trụi' cũng có nghệ thuật riêng của nó.
+
+[ZZZZ] Người Giả Chết
+intro: Tôi chưa chết, chỉ đang ngủ thôi.
+desc: ZZZZ né drama bằng cách chuyển sang chế độ ngủ. Xung đột tới là auto offline luôn. Tiết kiệm năng lượng là chiến thuật sống còn của họ.
+
+[POOR] Người Tập Trung
+intro: Tôi nghèo, nhưng tôi tập trung.
+desc: POOR sống tối giản vì ví mỏng, nhưng cực kỳ tập trung vào mục tiêu. Bỏ hết những ồn ào không cần thiết, giữ đúng một hướng đi. Nghèo tiền nhưng giàu sự rõ ràng.
+
+[MONK] Thầy Tu
+intro: Chẳng còn ham muốn trần tục gì cả.
+desc: MONK buông bỏ hết khoe mẽ và sợ bị bỏ lỡ. Họ lướt mạng ít, hít thở sâu nhiều. Tu tâm tốc độ ánh sáng.
+
+[IMSB] Người Tự Nghi
+intro: Thật á? Tôi ngu vậy sao?
+desc: IMSB nghi ngờ bản thân trước khi ai kịp chê. Tiếng nói nội tâm có độc nhưng đôi khi lại giúp họ cẩn thận hơn. Bậc thầy tự cà khịa chính mình.
+
+[SOLO] Người Cô Đơn
+intro: Tôi khóc — sao tôi lại cô đơn thế này?
+desc: SOLO mang vibe sói đơn độc nhưng thật ra rất cần kết nối. Độc lập là vậy, nhưng hộp thư trống trơn vẫn thấy buồn.
+
+[FUCK] Người Bùng Nổ
+intro: Đ*! Sao lại ra type này?
+desc: FUCK mang năng lượng hoang dại khó đoán. Không theo khuôn mẫu nào cả. Chaos nhưng có sức hút riêng.
+
+[DEAD] Người Chết Bên Trong
+intro: Tôi... còn sống không ta?
+desc: DEAD đã 'clear' đời nhiều lần rồi. Cảm xúc phẳng lặng, bình tĩnh sâu sắc. Một kiểu phản kháng thầm lặng với mọi ồn ào ngoài kia.
+
+[IMFW] Người Mong Manh
+intro: Tôi thật sự... vô dụng vậy sao?
+desc: IMFW nhạy cảm và dễ tin người. Cần được chăm như chăm cây cảnh trong nhà. Mỏng manh nhưng chân thành.
+
+[HHHH] Người Cười
+intro: HAHAHAHAHA.
+desc: Cả thư viện nhân cách sập nguồn vì bạn quá độc lạ. HHHH là phương án cuối: cười thôi. Không cần miêu tả dài — chỉ cần HA.
+(trigger: similarity < 60%)
+
+[DRUNK] Người Say
+intro: Rượu vào là auto say, không cãi được.
+desc: Trigger ẩn: độ 'thân' với men bia đạt max. DRUNK đi lảo đảo, tâm trạng bay bổng, nhìn cái gì cũng thấy hai cái. Bia rượu như nước lọc — hệ thống đầu hàng luôn.
+(trigger: drink_gate_q2 = 2)
+
+════════════════════════════════════════
+PHẦN 6 — TEXT KẾT QUẢ ĐỘNG (scoring.js — hardcoded, không đổi)
+════════════════════════════════════════
+
+modeKicker DRUNK: Nhân cách ẩn đã kích hoạt
+badge DRUNK: Khớp 100% · yếu tố cồn đã tiếp quản
+sub DRUNK: Độ thân ethanol quá cao — hệ thống bỏ qua phán xét thường.
+
+modeKicker HHHH: Hệ thống ép kết quả
+badge HHHH: Thư viện chuẩn chỉ khớp {similarity}%
+sub HHHH: Thư viện nhân cách bó tay — bạn được gán HHHH.
+
+modeKicker normal: Nhân cách chính
+badge normal: Khớp {similarity}% · trúng {exact}/15 chiều
+sub normal: Độ khớp khá cao — coi đây là bức chân dung đầu tiên.
+
+secondary label: Gần nhất chuẩn: {code} ({similarity}%)
+
+════════════════════════════════════════
+PHẦN 7 — 28 CÂU MBTI (mbti-questions.vi.json) — đã localize
+════════════════════════════════════════
+(Mỗi câu: chọn A hoặc B → chữ cái trong [ ])
+
+Q1 [EI]
+   A) Rủ cả nhóm đi cà phê/quán nhậu đông vui [E]
+   B) Ở nhà đọc sách / xem Netflix một mình [I]
+
+Q2 [EI]
+   A) Chủ động bắt chuyện với người lạ ở tiệc sinh nhật, đám cưới [E]
+   B) Thích đứng cạnh người quen thôi [I]
+
+Q3 [EI]
+   A) Giao lưu lâu tôi càng sung [E]
+   B) Giao lưu xong về là cần nằm im recharge [I]
+
+Q4 [EI]
+   A) Có vấn đề là nói ngay trong group chat để cả nhóm cùng gỡ [E]
+   B) Nghĩ kỹ trong đầu rồi mới nói ra [I]
+
+Q5 [EI]
+   A) Mọi người thấy tôi nhiệt tình, dễ bắt chuyện [E]
+   B) Mọi người thấy tôi trầm, chậm nóng lên [I]
+
+Q6 [EI]
+   A) Vào lớp mới, công ty mới là hòa nhập cực nhanh [E]
+   B) Cần thời gian mới quen được [I]
+
+Q7 [EI]
+   A) Thích không khí đông vui, náo nhiệt kiểu hội chợ [E]
+   B) Thích cuộc nói chuyện nhỏ, sâu, riêng tư [I]
+
+Q8 [SN]
+   A) Thực tế, chú ý chi tiết ngay trước mắt [S]
+   B) Hay tưởng tượng, nhìn xa về tương lai [N]
+
+Q9 [SN]
+   A) Học qua ví dụ, làm theo từng bước cụ thể [S]
+   B) Học qua khái niệm, nguyên lý tổng quát [N]
+
+Q10 [SN]
+   A) Tin vào kinh nghiệm thực tế và số liệu [S]
+   B) Tin vào linh cảm, cảm giác trong người [N]
+
+Q11 [SN]
+   A) Kể chuyện chi tiết, cụ thể từng bước [S]
+   B) Kể chuyện bằng ẩn dụ, ý nghĩa sâu xa [N]
+
+Q12 [SN]
+   A) Chú ý việc đang xảy ra ngay lúc này [S]
+   B) Chú ý những pattern, liên kết ẩn giữa các việc [N]
+
+Q13 [SN]
+   A) Muốn làm chắc một việc trước khi qua việc khác [S]
+   B) Muốn thử liền ý tưởng mới, dù chưa chắc [N]
+
+Q14 [SN]
+   A) Lập kế hoạch từng bước rất thực tế [S]
+   B) Có tầm nhìn lớn trước rồi mới tính chi tiết [N]
+
+Q15 [TF]
+   A) Quyết định theo logic, công bằng cho tất cả [T]
+   B) Quyết định theo cảm xúc, giữ hòa khí [F]
+
+Q16 [TF]
+   A) Bạn tâm sự — tôi phân tích và đưa lời khuyên [T]
+   B) Bạn tâm sự — tôi an ủi trước đã [F]
+
+Q17 [TF]
+   A) Đánh giá theo đúng/sai rõ ràng [T]
+   B) Đánh giá theo có làm ai buồn/tổn thương không [F]
+
+Q18 [TF]
+   A) Mọi người bảo tôi lý trí, nói thẳng [T]
+   B) Mọi người bảo tôi dễ thương, mềm lòng [F]
+
+Q19 [TF]
+   A) Cãi nhau — chỉ bàn vấn đề, không nhắc chuyện cá nhân [T]
+   B) Cãi nhau — lo tình cảm, mối quan hệ bị sứt mẻ [F]
+
+Q20 [TF]
+   A) Khó chịu khi ai đó ra quyết định vô lý [T]
+   B) Khó chịu khi ai đó cư xử lạnh lùng [F]
+
+Q21 [TF]
+   A) Nói thật quan trọng hơn hết [T]
+   B) Giữ cảm xúc của đối phương quan trọng hơn [F]
+
+Q22 [JP]
+   A) Sống có kế hoạch, ngăn nắp, lịch để trong Google Calendar [J]
+   B) Sống linh hoạt, tùy hứng, đến đâu hay đến đó [P]
+
+Q23 [JP]
+   A) Deadline còn xa là bắt tay làm sớm luôn [J]
+   B) Deadline gần kề mới bung lụa làm hết công suất [P]
+
+Q24 [JP]
+   A) Đi du lịch thích có lịch trình rõ ràng từng ngày [J]
+   B) Đi tới đâu tính tới đó, thích bất ngờ [P]
+
+Q25 [JP]
+   A) Bàn học/phòng ở thường gọn gàng, ngăn nắp [J]
+   B) Có hơi bừa nhưng biết chính xác đồ ở đâu [P]
+
+Q26 [JP]
+   A) Quyết xong là chốt luôn, không đổi ý [J]
+   B) Quyết xong vẫn để ngỏ vài lựa chọn khác [P]
+
+Q27 [JP]
+   A) Thích cảm giác đã hoàn thành, gạch xong to-do [J]
+   B) Thích sự tự do được thay đổi bất cứ lúc nào [P]
+
+Q28 [JP]
+   A) To-do list là bắt buộc phải có [J]
+   B) To-do list có hay không cũng được, tùy tâm trạng [P]
+
+════════════════════════════════════════
+PHẦN 8 — MBTI 16 NICKNAME (cross-mbti.js)
+════════════════════════════════════════
+
+INTJ — Kiến trúc sư
+INTP — Nhà logic
+ENTJ — Chỉ huy
+ENTP — Nhà tranh biện
+INFJ — Người che chở
+INFP — Người hòa giải
+ENFJ — Người dẫn dắt
+ENFP — Người truyền cảm hứng
+ISTJ — Người kiểm tra
+ISFJ — Người bảo vệ
+ESTJ — Người điều hành
+ESFJ — Người quản gia
+ISTP — Thợ thủ công
+ISFP — Nghệ sĩ phiêu lưu
+ESTP — Doanh nhân
+ESFP — Người trình diễn
+
+MBTI axis mô tả (template cross):
+E — hướng ngoại, năng lượng từ người khác
+I — hướng nội, năng lượng từ không gian riêng
+S — thực tế, chi tiết hiện tại
+N — tưởng tượng, pattern tương lai
+T — logic, công bằng
+F — cảm xúc, hòa hợp
+J — kế hoạch, chốt việc
+P — linh hoạt, giữ option
+
+cross compatibility label: Độ hợp: {n}/5
+
+════════════════════════════════════════
+PHẦN 9 — 12 CUNG HOÀNG ĐẠO (cross-zodiac.js)
+════════════════════════════════════════
+
+♈ Bạch Dương (aries)
+♉ Kim Ngưu (taurus)
+♊ Song Tử (gemini)
+♋ Cự Giải (cancer)
+♌ Sư Tử (leo)
+♍ Xử Nữ (virgo)
+♎ Thiên Bình (libra)
+♏ Bọ Cạp (scorpio)
+♐ Nhân Mã (sagittarius)
+♑ Ma Kết (capricorn)
+♒ Bảo Bình (aquarius)
+♓ Song Ngư (pisces)
+
+buff template: {emoji} {name} cộng buff {element} cho {typeName}.
+element fire: tự tin và hành động
+element earth: ổn định và kiên nhẫn
+element air: social và idea
+element water: cảm xúc và intuition
+
+════════════════════════════════════════
+PHẦN 10 — PATTERN CHUẨN (patterns.json) — THAM KHẢO, KHÔNG ĐỔI
+════════════════════════════════════════
+(15 chiều H/M/L theo thứ tự S1 S2 S3 E1 E2 E3 A1 A2 A3 Ac1 Ac2 Ac3 So1 So2 So3)
+
+CTRL:    HHH-HMH-MHH-HHH-MHM
+ATM-er:  HHH-HHM-HHH-HMH-MHL
+Dior-s:  MHM-MMH-MHM-HMH-LHL
+BOSS:    HHH-HMH-MMH-HHH-LHL
+THAN-K:  MHM-HMM-HHM-MMH-MHL
+OH-NO:   HHL-LMH-LHH-HHM-LHL
+GOGO:    HHM-HMH-MMH-HHH-MHM
+SEXY:    HMH-HHL-HMM-HMM-HLH
+LOVE-R:  MLH-LHL-HLH-MLM-MLH
+MUM:     MMH-MHL-HMM-LMM-HLL
+FAKE:    HLM-MML-MLM-MLM-HLH
+OJBK:    MMH-MMM-HML-LMM-MML
+MALO:    MLH-MHM-MLH-MLH-LMH
+JOKE-R:  LLH-LHL-LML-LLL-MLM
+WOC!:    HHL-HMH-MMH-HHM-LHH
+THIN-K:  HHL-HMH-MLH-MHM-LHH
+SHIT:    HHL-HLH-LMM-HHM-LHH
+ZZZZ:    MHL-MLH-LML-MML-LHM
+POOR:    HHL-MLH-LMH-HHH-LHL
+MONK:    HHL-LLH-LLM-MML-LHM
+IMSB:    LLM-LMM-LLL-LLL-MLM
+SOLO:    LML-LLH-LHL-LML-LHM
+FUCK:    MLL-LHL-LLM-MLL-HLH
+DEAD:    LLL-LLM-LML-LLL-LHM
+IMFW:    LLH-LHL-LML-LLL-MLL
+
+(DRUNK, HHHH không có pattern — trigger đặc biệt)
+
+════════════════════════════════════════
+HẾT FILE
+════════════════════════════════════════

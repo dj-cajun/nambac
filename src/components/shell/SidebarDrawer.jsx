@@ -9,7 +9,7 @@ import { QUIZ_CATEGORIES } from '../../constants/categories';
 import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../../shared/dailyPicks.js';
 import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
 import { LQ_UI } from '../../../shared/lienquan/uiText.js';
-import { SBTI_UI } from '../../../shared/sbti/ui-text.vi.js';
+import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { scrollToTop } from '../../lib/scrollToTop';
 import './SidebarDrawer.css';
 
@@ -46,7 +46,7 @@ function buildMiniAppsGroup(todayBalance) {
       { to: '/roast-card', label: '💳 Bóc phốt' },
       { to: '/brain', label: '🧠 Não bạn' },
       { to: '/lienquan', label: `⚔️ ${LQ_UI.drawerLabel}` },
-      { to: '/sbti', label: `🎭 ${SBTI_UI.drawerLabel}` },
+      { to: '/vbti', label: `🎭 ${SBTI_UI.drawerLabel}` },
     ],
   };
 }
@@ -62,7 +62,7 @@ function isMiniAppRoute(pathname) {
     || pathname.startsWith('/roast-card')
     || pathname === '/brain'
     || pathname.startsWith('/lienquan')
-    || pathname.startsWith('/sbti');
+    || pathname.startsWith('/vbti');
 }
 
 function DrawerLink({ link, closeDrawer, nested = false, lined = false }) {

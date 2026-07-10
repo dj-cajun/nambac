@@ -504,10 +504,10 @@ export default function Home() {
             <TodayThumbCard
               className={`home-today-card home-today-sbti${doneToday.has('sbti') ? ' is-done' : ''}`}
               done={doneToday.has('sbti')}
-              to="/sbti"
+              to="/vbti"
               imageSrc={featureThumbs.sbti?.src}
               imageSeed={featureThumbs.sbti?.seed || 'sbti'}
-              label="SBTI"
+              label="VBTI"
               emoji="🎭"
             />
           </div>
