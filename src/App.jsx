@@ -36,7 +36,10 @@ const BlogPost = lazy(() => import('./pages/BlogPost'));
 const FortunePage = lazy(() => import('./pages/FortunePage'));
 const BalancePage = lazy(() => import('./pages/BalancePage'));
 const RoastCardPage = lazy(() => import('./pages/RoastCardPage'));
-const BrainPage = lazy(() => import('./pages/BrainPage'));
+const LienquanHub = lazy(() => import('./pages/lienquan/LienquanHub'));
+const LienquanHeroDetail = lazy(() => import('./pages/lienquan/HeroDetailPage'));
+const LienquanGiaoAn = lazy(() => import('./pages/lienquan/GiaoAnPage'));
+const LienquanKhoe = lazy(() => import('./pages/lienquan/KhoePage'));
 
 function RouteFallback() {
   return <div className="route-fallback" aria-hidden="true" />;
@@ -107,6 +110,10 @@ function AppContent() {
           <Route path="/balance/:questionId" element={<BalancePage />} />
           <Route path="/roast-card" element={<RoastCardPage />} />
           <Route path="/brain" element={<BrainPage />} />
+          <Route path="/lienquan" element={<LienquanHub />} />
+          <Route path="/lienquan/tuong/:slug" element={<LienquanHeroDetail />} />
+          <Route path="/lienquan/giao-an" element={<LienquanGiaoAn />} />
+          <Route path="/lienquan/khoe" element={<LienquanKhoe />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/editor" element={<QuizEditor />} />
           <Route path="/about" element={<About />} />

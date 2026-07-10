@@ -7,7 +7,7 @@ const STAT_FIELDS = {
 };
 
 /** Whitelisted mini-app kinds that can hold view/share/like counters. */
-export const FEATURE_KINDS = ['balance', 'roast', 'brain'];
+export const FEATURE_KINDS = ['balance', 'roast', 'brain', 'lienquan'];
 
 function normalizeKind(kind) {
   const k = String(kind || '').trim();

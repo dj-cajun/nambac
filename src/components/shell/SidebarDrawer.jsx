@@ -43,6 +43,7 @@ function buildMiniAppsGroup(todayBalance) {
       { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} Balance Quiz` },
       { to: '/roast-card', label: '💳 Bóc phốt' },
       { to: '/brain', label: '🧠 Não bạn' },
+      { to: '/lienquan', label: '⚔️ Liên Quân' },
     ],
   };
 }
@@ -56,7 +57,8 @@ function isDrawerLinkActive(pathname, link) {
 function isMiniAppRoute(pathname) {
   return pathname.startsWith('/balance')
     || pathname.startsWith('/roast-card')
-    || pathname === '/brain';
+    || pathname === '/brain'
+    || pathname.startsWith('/lienquan');
 }
 
 function DrawerLink({ link, closeDrawer, nested = false, lined = false }) {
