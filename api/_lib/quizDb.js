@@ -175,6 +175,11 @@ export async function deleteQuiz(quizId) {
   const db = getTurso();
   await db.execute({ sql: 'DELETE FROM questions WHERE quiz_id = ?', args: [quizId] });
   await db.execute({ sql: 'DELETE FROM results WHERE quiz_id = ?', args: [quizId] });
+  try {
+    await db.execute({ sql: 'DELETE FROM quiz_completions WHERE quiz_id = ?', args: [quizId] });
+  } catch {
+    // Table may not exist on older DBs
+  }
   await db.execute({ sql: 'DELETE FROM quizzes WHERE id = ?', args: [quizId] });
 }
 

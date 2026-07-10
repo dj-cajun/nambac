@@ -16,7 +16,7 @@ export function requireAdmin(req, res) {
     return true;
   }
 
-  const key = req.headers['x-admin-key'] || req.headers['X-Admin-Key'];
+  const key = req.headers?.['x-admin-key'] || req.headers?.['X-Admin-Key'];
   if (key === expected) return true;
 
   res.status(401).json({ error: 'Unauthorized' });

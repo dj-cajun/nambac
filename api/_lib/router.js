@@ -48,7 +48,11 @@ function stripPathQuery(query) {
 }
 
 function withId(req, id, extra = {}) {
-  return { ...req, query: { ...stripPathQuery(req.query), id, ...extra } };
+  // Mutate query in place — spreading `req` drops non-enumerable `headers` on
+  // Vercel/Node IncomingMessage, which breaks requireAdmin / session cookies.
+  const prev = req.query && typeof req.query === 'object' ? req.query : {};
+  req.query = { ...stripPathQuery(prev), id, ...extra };
+  return req;
 }
 
 /**
@@ -101,8 +105,16 @@ export async function dispatch(req, res, segments = []) {
   }
 
   // ── Admin quizzes ──
-  if (a === 'admin' && b === 'quizzes' && !c && (method === 'GET' || method === 'POST')) return adminQuizzes(req, res);
-  if (a === 'admin' && b === 'quizzes' && c && !d && ['GET', 'PATCH', 'DELETE'].includes(method)) {
+  if (a === 'admin' && b === 'quizzes' && !c && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {
+    return adminQuizzes(req, res);
+  }
+  if (
+    a === 'admin' &&
+    b === 'quizzes' &&
+    c &&
+    !d &&
+    ['GET', 'PATCH', 'DELETE', 'OPTIONS'].includes(method)
+  ) {
     return adminQuizById(withId(req, c), res);
   }
 

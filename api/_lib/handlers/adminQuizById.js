@@ -18,9 +18,10 @@ export default async function handler(req, res) {
   if (!requireAdmin(req, res)) return;
 
   const quizId = req.query?.id;
-  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
 
   try {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+
     if (req.method === 'GET') {
       if (!quizId) return res.status(400).json({ error: 'Quiz id required' });
       const bundle = await getQuizBundle(quizId);

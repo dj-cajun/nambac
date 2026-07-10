@@ -5,7 +5,7 @@ export function requireWebhook(req, res) {
     return false;
   }
 
-  const header = req.headers['x-webhook-secret'] || req.headers['X-Webhook-Secret'];
+  const header = req.headers?.['x-webhook-secret'] || req.headers?.['X-Webhook-Secret'];
   const query = req.query?.secret;
   const auth = req.headers.authorization?.replace(/^Bearer\s+/i, '');
 
