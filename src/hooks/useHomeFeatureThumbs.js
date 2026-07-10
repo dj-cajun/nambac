@@ -41,5 +41,7 @@ export function useHomeFeatureThumbs() {
     roast: plan.roast,
     brain: plan.brain,
     balance: { ...plan.balance, src: balanceSrc },
+    lienquan: plan.lienquan,
+    sbti: plan.sbti,
   };
 }

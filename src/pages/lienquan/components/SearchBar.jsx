@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchHeroes } from '../../../lib/lienquan/searchHeroes.js';
+import { LQ_UI } from '../../../../shared/lienquan/uiText.js';
 
 export default function SearchBar() {
   const navigate = useNavigate();
@@ -32,13 +33,13 @@ export default function SearchBar() {
   return (
     <div className="lq-search" ref={wrapRef}>
       <label className="lq-search-label" htmlFor="lq-hero-search">
-        Tìm tướng (30 giây)
+        {LQ_UI.searchLabel}
       </label>
       <input
         id="lq-hero-search"
         type="search"
         className="lq-search-input"
-        placeholder="Gõ tướng… (Florentino, Nakroth, Murad)"
+        placeholder={LQ_UI.searchPlaceholder}
         value={query}
         autoComplete="off"
         aria-autocomplete="list"

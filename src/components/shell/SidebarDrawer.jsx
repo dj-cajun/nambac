@@ -8,6 +8,8 @@ import { fetchQuizzes } from '../../lib/quizApi';
 import { QUIZ_CATEGORIES } from '../../constants/categories';
 import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../../shared/dailyPicks.js';
 import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
+import { LQ_UI } from '../../../shared/lienquan/uiText.js';
+import { SBTI_UI } from '../../../shared/sbti/ui-text.vi.js';
 import { scrollToTop } from '../../lib/scrollToTop';
 import './SidebarDrawer.css';
 
@@ -43,7 +45,8 @@ function buildMiniAppsGroup(todayBalance) {
       { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} Balance Quiz` },
       { to: '/roast-card', label: '💳 Bóc phốt' },
       { to: '/brain', label: '🧠 Não bạn' },
-      { to: '/lienquan', label: '⚔️ Liên Quân' },
+      { to: '/lienquan', label: `⚔️ ${LQ_UI.drawerLabel}` },
+      { to: '/sbti', label: `🎭 ${SBTI_UI.drawerLabel}` },
     ],
   };
 }
@@ -58,7 +61,8 @@ function isMiniAppRoute(pathname) {
   return pathname.startsWith('/balance')
     || pathname.startsWith('/roast-card')
     || pathname === '/brain'
-    || pathname.startsWith('/lienquan');
+    || pathname.startsWith('/lienquan')
+    || pathname.startsWith('/sbti');
 }
 
 function DrawerLink({ link, closeDrawer, nested = false, lined = false }) {

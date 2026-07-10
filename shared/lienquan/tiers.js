@@ -1,4 +1,4 @@
-/** Lane tier boards — AOG-flavored meta snapshot (entertainment). */
+/** Lane tier boards — AOG-flavored meta snapshot from heroes.json (entertainment). */
 export const LANES = [
   { id: 'top', label: 'Top' },
   { id: 'jungle', label: 'Rừng' },
@@ -7,16 +7,16 @@ export const LANES = [
   { id: 'sp', label: 'Sp' },
 ];
 
-/** S+ / featured picks per lane for hub strip */
+/** Featured picks per lane — 15 meta heroes */
 export const TIER_BOARD = {
   updatedAt: '2026-07-10',
-  label: 'Meta AOG (tham khảo)',
+  label: 'Meta AOG 2026 (tham khảo)',
   byLane: {
-    top: ['florentino', 'veres', 'arum', 'wiro'],
-    jungle: ['nakroth', 'murad', 'airi', 'butterfly'],
-    mid: ['raz', 'natalya', 'tulen', 'krixi'],
-    adc: ['elsu', 'violet', 'yorn', 'slimz'],
-    sp: ['xeniel', 'annette', 'grakk', 'ormarr'],
+    top: ['florentino', 'yena', 'zuka', 'omen'],
+    jungle: ['keera', 'aoi', 'nakroth', 'yan'],
+    mid: ['liliana', 'raz', 'krixi'],
+    adc: ['hayate', 'elsu', 'violet'],
+    sp: ['thane'],
   },
 };
 

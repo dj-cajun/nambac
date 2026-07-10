@@ -1,0 +1,24 @@
+[
+  {
+    "id": "drink_gate_q1",
+    "special": true,
+    "kind": "drink_gate",
+    "text": "Sở thích hàng ngày của bạn là gì?",
+    "options": [
+      { "label": "Ăn uống ngủ", "value": 1 },
+      { "label": "Nghệ thuật", "value": 2 },
+      { "label": "Uống rượu", "value": 3 },
+      { "label": "Gym", "value": 4 }
+    ]
+  },
+  {
+    "id": "drink_gate_q2",
+    "special": true,
+    "kind": "drink_trigger",
+    "text": "Thái độ của bạn với rượu?",
+    "options": [
+      { "label": "Nhẹ nhàng, không uống nhiều", "value": 1 },
+      { "label": "Rượu trong bình giữ nhiệt như nước lọc", "value": 2 }
+    ]
+  }
+]

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getHero } from '../../../../shared/lienquan/heroes.js';
+import { LQ_UI } from '../../../../shared/lienquan/uiText.js';
 import HeroIcon from './HeroIcon.jsx';
 import CopyButton from './CopyButton.jsx';
 
@@ -18,16 +19,20 @@ export default function GiaoAnCard({ giaoAn }) {
           </p>
         </div>
       </div>
+      <p className="lq-giaoan-extra">{LQ_UI.buildLabel}</p>
       <div className="lq-giaoan-items">
         {(giaoAn.items || []).map((item) => (
           <span key={item} className="lq-item-chip">{item}</span>
         ))}
       </div>
       <p className="lq-giaoan-extra">
-        Arcana: {giaoAn.arcana} · Spell: {giaoAn.spell}
+        Ngọc: {giaoAn.arcana}
       </p>
+      {giaoAn.spell ? (
+        <p className="lq-giaoan-extra">Rune: {giaoAn.spell}</p>
+      ) : null}
       <div className="lq-giaoan-actions">
-        <CopyButton text={giaoAn.copyCode} />
+        <CopyButton text={giaoAn.copyCode} label={LQ_UI.copyButton} doneLabel={LQ_UI.copyToast} />
         {hero && (
           <Link to={`/lienquan/tuong/${hero.id}`} className="lq-text-link">
             Xem tướng

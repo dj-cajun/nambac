@@ -1,0 +1,242 @@
+[
+  {
+    "id": "florentino",
+    "name": "Florentino",
+    "position": "Top",
+    "tier": "S+",
+    "counters": ["aleister", "arum", "roxie"],
+    "tip": "Đừng tay đôi với Florentino trước cấp 4. Lên Đao Truy Hồn sớm để giảm khả năng hồi phục cực bá đạo của hắn.",
+    "giao_an": {
+      "author": "SGP Bang",
+      "match": "AOG Spring 2026",
+      "items": ["Giày Kiên Cường", "Thương Longinus", "Phức Hợp Kiếm", "Nanh Fenrir", "Huân Chương Troy", "Giáp Hộ Mệnh"],
+      "arcana": "Đỏ: Công vật lý/Xuyên giáp x10, Tím: Tốc đánh/Tốc chạy x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Vực Hỗn Loạn: Ma Tính",
+      "copy_code": "LQ-BUILD-FLORENTINO-BANG-2026"
+    }
+  },
+  {
+    "id": "yena",
+    "name": "Yena",
+    "position": "Top",
+    "tier": "S",
+    "counters": ["omen", "florentino", "maloch"],
+    "tip": "Cẩn thận bụi rậm. Yena có khả năng dồn combo câm lặng và miễn khống cực mạnh ở dạng Viên Đao.",
+    "giao_an": {
+      "author": "1S BirdLB",
+      "match": "Đấu Trường Danh Vọng 2026",
+      "items": ["Giày Kiên Cường", "Thương Longinus", "Áo Choàng Hiệp Sĩ", "Nanh Fenrir", "Huân Chương Troy", "Giáp Hộ Mệnh"],
+      "arcana": "Đỏ: Công vật lý/Xuyên giáp x10, Tím: Tốc chạy/Hồi máu x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Vực Hỗn Loạn: Ma Tính",
+      "copy_code": "LQ-BUILD-YENA-BIRDLB-2026"
+    }
+  },
+  {
+    "id": "omen",
+    "name": "Omen",
+    "position": "Top",
+    "tier": "A+",
+    "counters": ["florentino", "hayate", "richter"],
+    "tip": "Giữ khoảng cách khi Omen có chiêu cuối (Sát Vực). Đừng lãng phí chiêu thức khi hắn đang bật chiêu 2 (Sát Niệm).",
+    "giao_an": {
+      "author": "FL Jiro",
+      "match": "AOG Summer 2026",
+      "items": ["Giày Kiên Cường", "Kiếm Fafnir", "Khiên Thất Truyền", "Giáp Gaia", "Rìu Hyoga", "Nham Thuẫn"],
+      "arcana": "Đỏ: Tốc đánh/Máu/Giáp x10, Tím: Tốc đánh/Tốc chạy x10, Lục: Giảm hồi chiêu x10",
+      "rune": "Tháp Quang Minh: Tinh Linh",
+      "copy_code": "LQ-BUILD-OMEN-JIRO-2026"
+    }
+  },
+  {
+    "id": "zuka",
+    "name": "Zuka",
+    "position": "Top",
+    "tier": "S",
+    "counters": ["omen", "baldum", "thane"],
+    "tip": "Zuka rất cơ động và dồn sát thương nhanh. Hãy chọn các vị tướng có khống chế cứng để bắt hắn khi lao vào.",
+    "giao_an": {
+      "author": "TDT Kuga",
+      "match": "AOG Pro League 2026",
+      "items": ["Giày Kiên Cường", "Thương Xuyên Phá", "Phức Hợp Kiếm", "Nanh Fenrir", "Kiếm Muramasa", "Giáp Hộ Mệnh"],
+      "arcana": "Đỏ: Công vật lý/Xuyên giáp x10, Tím: Tốc chạy/Công vật lý x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Vực Hỗn Loạn: Ma Tính",
+      "copy_code": "LQ-BUILD-ZUKA-KUGA-2026"
+    }
+  },
+  {
+    "id": "nakroth",
+    "name": "Nakroth",
+    "position": "Rừng",
+    "tier": "S",
+    "counters": ["aleister", "arum", "omen"],
+    "tip": "Hãy bảo vệ bùa xanh thật tốt. Cố gắng ép giao tranh tổng sớm trước khi Nakroth kịp đi đẩy lén trộm trụ.",
+    "giao_an": {
+      "author": "1S Maris",
+      "match": "Đấu Trường Danh Vọng 2026",
+      "items": ["Rìu Leviathan", "Giày Kiên Cường", "Thương Xuyên Phá", "Phức Hợp Kiếm", "Nanh Fenrir", "Nham Thuẫn"],
+      "arcana": "Đỏ: Tỷ lệ chí mạng x10, Tím: Hút máu x5/Tốc đánh tốc chạy x5, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Tháp Quang Minh: Tinh Linh",
+      "copy_code": "LQ-BUILD-NAKROTH-MARIS-2026"
+    }
+  },
+  {
+    "id": "keera",
+    "name": "Keera",
+    "position": "Rừng",
+    "tier": "S+",
+    "counters": ["kriknak", "wukong", "elsu"],
+    "tip": "Keera có thể đi xuyên tường nhờ chiêu cuối. Sát thương phép dồn vô cùng lỗi, chủ lực tuyệt đối không đi lẻ.",
+    "giao_an": {
+      "author": "SGP Bang",
+      "match": "Grand Finals 2026",
+      "items": ["Gươm Loki", "Giày Phù Thủy", "Trượng Bùng Nổ", "Vương Miện Hecate", "Trượng Hỗn Mang", "Quả Cầu Băng Sương"],
+      "arcana": "Đỏ: Công phép/Xuyên giáp phép x10, Tím: Tốc đánh/Tốc chạy x10, Lục: Tốc đánh/Xuyên giáp phép x10",
+      "rune": "Tháp Quang Minh: Thánh Thuẫn",
+      "copy_code": "LQ-BUILD-KEERA-BANG-2026"
+    }
+  },
+  {
+    "id": "aoi",
+    "name": "Aoi",
+    "position": "Rừng",
+    "tier": "S+",
+    "counters": ["arum", "aleister", "baldum"],
+    "tip": "Aoi đu dây rất xa và có long trảo hồi phục. Đứng gần công trình hoặc đồng đội để giảm góc đu dây của cô ta.",
+    "giao_an": {
+      "author": "GGG Gray",
+      "match": "AOG Summer 2026",
+      "items": ["Kiếm Truy Hồn", "Giày Kiên Cường", "Thương Longinus", "Phức Hợp Kiếm", "Nanh Fenrir", "Giáp Hộ Mệnh"],
+      "arcana": "Đỏ: Công vật lý/Xuyên giáp x10, Tím: Tốc chạy/Công vật lý x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Vực Hỗn Loạn: Đấu Khí",
+      "copy_code": "LQ-BUILD-AOI-GRAY-2026"
+    }
+  },
+  {
+    "id": "yan",
+    "name": "Yan",
+    "position": "Rừng",
+    "tier": "S",
+    "counters": ["hayate", "valhein", "arum"],
+    "tip": "Yan cực mạnh ở giai đoạn cuối trận khi đạt cấp 12. Hãy cố gắng xâm chiếm rừng và kết thúc trận đấu sớm.",
+    "giao_an": {
+      "author": "SGP Bang",
+      "match": "AOG Play-offs 2026",
+      "items": ["Rìu Leviathan", "Giày Kiên Cường", "Thương Longinus", "Phức Hợp Kiếm", "Nanh Fenrir", "Nham Thuẫn"],
+      "arcana": "Đỏ: Công vật lý/Xuyên giáp x10, Tím: Tốc đánh/Tốc chạy x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Vực Hỗn Loạn: Đấu Khí",
+      "copy_code": "LQ-BUILD-YAN-BANG-2026"
+    }
+  },
+  {
+    "id": "liliana",
+    "name": "Liliana",
+    "position": "Mid",
+    "tier": "S+",
+    "counters": ["raz", "tulen", "lorion"],
+    "tip": "Liliana cấu rỉa máu rất đau ở dạng người và dồn sát thương mạnh ở dạng cáo. Né chiêu 1 và chiêu 2 ở tầm xa.",
+    "giao_an": {
+      "author": "1S Maris",
+      "match": "AOG Grand Finals 2026",
+      "items": ["Giày Thuật Sĩ", "Trượng Bùng Nổ", "Sách Truy Hồn", "Vương Miện Hecate", "Trượng Hỗn Mang", "Quả Cầu Băng Sương"],
+      "arcana": "Đỏ: Công phép/Xuyên giáp phép x10, Tím: Tốc đánh/Tốc chạy x10, Lục: Công phép/Xuyên giáp phép x10",
+      "rune": "Tháp Quang Minh: Thần Quang",
+      "copy_code": "LQ-BUILD-LILIANA-MARIS-2026"
+    }
+  },
+  {
+    "id": "raz",
+    "name": "Raz",
+    "position": "Mid",
+    "tier": "S",
+    "counters": ["krixi", "lorion", "chaugnar"],
+    "tip": "Né Cú Đấm Chân Không (chiêu 1) liên tục. Raz có lối chơi núp bụi dồn combo đẩy lùi cực kỳ đáng sợ.",
+    "giao_an": {
+      "author": "TDT Sa",
+      "match": "Đấu Trường Danh Vọng 2026",
+      "items": ["Giày Phù Thủy", "Trượng Bùng Nổ", "Vương Miện Hecate", "Quyền Trượng Rhea", "Trượng Hỗn Mang", "Quả Cầu Băng Sương"],
+      "arcana": "Đỏ: Công phép/Xuyên giáp phép x10, Tím: Hút máu phép x5/Tốc chạy x5, Lục: Công phép/Xuyên giáp phép x10",
+      "rune": "Vực Hỗn Loạn: Ma Tính",
+      "copy_code": "LQ-BUILD-RAZ-SA-2026"
+    }
+  },
+  {
+    "id": "krixi",
+    "name": "Krixi",
+    "position": "Mid",
+    "tier": "A+",
+    "counters": ["liliana", "raz", "nakroth"],
+    "tip": "Chiêu 2 của Krixi hất tung diện rộng rất khó chịu. Luôn giữ khoảng cách và lên Giày Kiên Cường để giảm thời gian khống chế.",
+    "giao_an": {
+      "author": "FL XB",
+      "match": "AOG Legends 2026",
+      "items": ["Giày Thuật Sĩ", "Trượng Bùng Nổ", "Sách Truy Hồn", "Vương Miện Hecate", "Trượng Hỗn Mang", "Quả Cầu Băng Sương"],
+      "arcana": "Đỏ: Công phép/Xuyên giáp phép x10, Tím: Tốc chạy/Hồi máu x10, Lục: Công phép/Xuyên giáp phép x10",
+      "rune": "Tháp Quang Minh: Thần Quang",
+      "copy_code": "LQ-BUILD-KRIXI-XB-2026"
+    }
+  },
+  {
+    "id": "hayate",
+    "name": "Hayate",
+    "position": "AD",
+    "tier": "S+",
+    "counters": ["joker", "valhein", "wukong"],
+    "tip": "Né chiêu 1 (Chuỗi Phi Tiêu) của Hayate để không bị tích nội tại sát thương chuẩn. Cẩn thận chiêu cuối khi có giao tranh lớn.",
+    "giao_an": {
+      "author": "SGP Red",
+      "match": "AOG Summer 2026",
+      "items": ["Giày Du Mục", "Rìu Hyoga", "Kiếm Fafnir", "Thương Xuyên Phá", "Phức Hợp Kiếm", "Giáp Hộ Mệnh"],
+      "arcana": "Đỏ: Tốc đánh/Tỷ lệ chí mạng x10, Tím: Tốc đánh/Tốc chạy x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Vực Hỗn Loạn: Ma Tính",
+      "copy_code": "LQ-BUILD-HAYATE-RED-2026"
+    }
+  },
+  {
+    "id": "elsu",
+    "name": "Elsu",
+    "position": "AD",
+    "tier": "S+",
+    "counters": ["max", "wukong", "kriknak"],
+    "tip": "Luôn di chuyển zig-zag để né Viễn Trình Kích (chiêu 2 bắn tỉa). Nhớ phá các Ưng Trạm (mắt) mà hắn đặt trong bụi.",
+    "giao_an": {
+      "author": "1S QuangHai",
+      "match": "Đấu Trường Danh Vọng 2026",
+      "items": ["Giày Du Mục", "Kiếm Muramasa", "Nanh Fenrir", "Phức Hợp Kiếm", "Kiếm Fafnir", "Giáp Hộ Mệnh"],
+      "arcana": "Đỏ: Công vật lý/Xuyên giáp x10, Tím: Tốc chạy/Công vật lý x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Tháp Quang Minh: Tinh Linh",
+      "copy_code": "LQ-BUILD-ELSU-QUANGHAI-2026"
+    }
+  },
+  {
+    "id": "violet",
+    "name": "Violet",
+    "position": "AD",
+    "tier": "S",
+    "counters": ["elsu", "nakroth", "zuka"],
+    "tip": "Violet cấu rỉa cực mạnh sau khi lộn bắn (chiêu 1). Đừng đứng thẳng hàng với lính để tránh bị dính sát thương lan.",
+    "giao_an": {
+      "author": "SGP Red",
+      "match": "AOG Spring 2026",
+      "items": ["Giày Du Mục", "Thánh Kiếm", "Thương Xuyên Phá", "Phức Hợp Kiếm", "Nanh Fenrir", "Giáp Hộ Mệnh"],
+      "arcana": "Đỏ: Tỷ lệ chí mạng/Sát thương chí mạng x10, Tím: Tốc chạy/Công vật lý x10, Lục: Công vật lý/Xuyên giáp x10",
+      "rune": "Tháp Quang Minh: Luyện Kim",
+      "copy_code": "LQ-BUILD-VIOLET-RED-2026"
+    }
+  },
+  {
+    "id": "thane",
+    "name": "Thane",
+    "position": "SP",
+    "tier": "S+",
+    "counters": ["hayate", "maloch", "lauriel"],
+    "tip": "Thane có nội tại hồi máu cực trâu khi thấp máu. Đừng dồn hết chiêu thức vào Thane, hãy bỏ qua hắn và bắt chủ lực tuyến sau.",
+    "giao_an": {
+      "author": "SGP Khoa",
+      "match": "AOG Grand Finals 2026",
+      "items": ["Đại Địa Mở Trói", "Giày Kiên Cường", "Khiên Huyền Thoại", "Giáp Gaia", "Giáp Thống Khổ", "Huân Chương Troy"],
+      "arcana": "Đỏ: Đỡ đòn/Máu/Giáp x10, Tím: Máu tối đa/Hồi máu x10, Lục: Giáp/Giáp phép/Giảm hồi chiêu x10",
+      "rune": "Rừng Nguyên Sinh: Mộc Giáp",
+      "copy_code": "LQ-BUILD-THANE-KHOA-2026"
+    }
+  }
+]

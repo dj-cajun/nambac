@@ -58,6 +58,10 @@ export function getLienquanThumbnailPath() {
   return '/images/lienquan/hub-thumb.svg';
 }
 
+export function getSbtiThumbnailPath() {
+  return '/images/sbti-hub-thumb.svg';
+}
+
 export function getHomeFeatureThumbPlan(date = new Date()) {
   const today = getDateStr(date);
   const tomorrow = addDaysToDateLabel(today, 1);
@@ -98,6 +102,10 @@ export function getHomeFeatureThumbPlan(date = new Date()) {
     lienquan: {
       src: getLienquanThumbnailPath(),
       seed: 'lienquan-hub',
+    },
+    sbti: {
+      src: getSbtiThumbnailPath(),
+      seed: 'sbti-hub',
     },
   };
 }

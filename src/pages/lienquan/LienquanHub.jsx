@@ -5,6 +5,7 @@ import SearchBar from './components/SearchBar.jsx';
 import TierStrip from './components/TierStrip.jsx';
 import QuizEventBanner from './components/QuizEventBanner.jsx';
 import MasteryBadgeCard from './components/MasteryBadgeCard.jsx';
+import { LQ_UI } from '../../../shared/lienquan/uiText.js';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../../lib/featureStats';
 import { trackFeatureView } from '../../lib/analytics';
 import { fetchMastery } from '../../lib/lienquan/mastery.js';
@@ -24,7 +25,7 @@ export default function LienquanHub() {
   return (
     <div className="lienquan-page">
       <Helmet>
-        <title>Liên Quân — Counter & Giáo Án Pro | nambac</title>
+        <title>{LQ_UI.hubTitle} | nambac</title>
         <meta
           name="description"
           content="Tìm counter tướng Liên Quân trong 30 giây, sao chép giáo án pro, làm quiz Thông Thạo trên nambac."
@@ -36,17 +37,17 @@ export default function LienquanHub() {
 
       <header className="lq-hero-block">
         <div className="lq-hero-title-row">
-          <h1>Liên Quân</h1>
+          <h1>{LQ_UI.hubTitle}</h1>
           <MasteryBadgeCard mastery={mastery} variant="inline" />
         </div>
-        <p>Tìm counter trong 30 giây · Giáo án pro · Meta AOG</p>
+        <p>{LQ_UI.hubSub}</p>
       </header>
 
       <SearchBar />
 
       <nav className="lq-nav-chips" aria-label="Liên Quân menu">
-        <Link to="/lienquan/giao-an" className="lq-chip">Giáo Án Pro</Link>
-        <Link to="/lienquan/khoe" className="lq-chip">Góc Khoe</Link>
+        <Link to="/lienquan/giao-an" className="lq-chip">{LQ_UI.tabGiaoAn}</Link>
+        <Link to="/lienquan/khoe" className="lq-chip">{LQ_UI.tabKhoe}</Link>
         <Link to="/lienquan/quiz" className="lq-chip">Thi Thông Thạo</Link>
       </nav>
 

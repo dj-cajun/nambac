@@ -42,6 +42,14 @@ const LienquanHeroDetail = lazy(() => import('./pages/lienquan/HeroDetailPage'))
 const LienquanGiaoAn = lazy(() => import('./pages/lienquan/GiaoAnPage'));
 const LienquanKhoe = lazy(() => import('./pages/lienquan/KhoePage'));
 const LienquanQuiz = lazy(() => import('./pages/lienquan/LienquanQuizPage'));
+const SbtiHub = lazy(() => import('./pages/sbti/SbtiHub'));
+const SbtiTestPage = lazy(() => import('./pages/sbti/SbtiTestPage'));
+const SbtiResultPage = lazy(() => import('./pages/sbti/SbtiResultPage'));
+const SbtiTypesPage = lazy(() => import('./pages/sbti/SbtiTypesPage'));
+const SbtiTypeDetailPage = lazy(() => import('./pages/sbti/SbtiTypeDetailPage'));
+const SbtiMbtiPage = lazy(() => import('./pages/sbti/SbtiMbtiPage'));
+const SbtiCrossMbtiPage = lazy(() => import('./pages/sbti/SbtiCrossMbtiPage'));
+const SbtiCrossZodiacPage = lazy(() => import('./pages/sbti/SbtiCrossZodiacPage'));
 
 function RouteFallback() {
   return <div className="route-fallback" aria-hidden="true" />;
@@ -117,6 +125,14 @@ function AppContent() {
           <Route path="/lienquan/giao-an" element={<LienquanGiaoAn />} />
           <Route path="/lienquan/khoe" element={<LienquanKhoe />} />
           <Route path="/lienquan/quiz" element={<LienquanQuiz />} />
+          <Route path="/sbti" element={<SbtiHub />} />
+          <Route path="/sbti/test" element={<SbtiTestPage />} />
+          <Route path="/sbti/result" element={<SbtiResultPage />} />
+          <Route path="/sbti/types" element={<SbtiTypesPage />} />
+          <Route path="/sbti/types/:code" element={<SbtiTypeDetailPage />} />
+          <Route path="/sbti/mbti" element={<SbtiMbtiPage />} />
+          <Route path="/sbti/x-mbti" element={<SbtiCrossMbtiPage />} />
+          <Route path="/sbti/x-cung" element={<SbtiCrossZodiacPage />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/editor" element={<QuizEditor />} />
           <Route path="/about" element={<About />} />

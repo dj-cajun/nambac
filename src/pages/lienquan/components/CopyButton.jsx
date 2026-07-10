@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { copyGiaoAnText } from '../../../lib/lienquan/copyGiaoAn.js';
+import { LQ_UI } from '../../../../shared/lienquan/uiText.js';
 
-export default function CopyButton({ text, label = 'Sao chép' }) {
+export default function CopyButton({
+  text,
+  label = LQ_UI.copyButton,
+  doneLabel = LQ_UI.copyToast,
+}) {
   const [done, setDone] = useState(false);
   const [error, setError] = useState(false);
 
@@ -19,7 +24,7 @@ export default function CopyButton({ text, label = 'Sao chép' }) {
 
   return (
     <button type="button" className="lq-copy-btn" onClick={onCopy}>
-      {done ? 'Đã sao chép!' : error ? 'Thử lại' : label}
+      {done ? doneLabel : error ? 'Thử lại' : label}
     </button>
   );
 }

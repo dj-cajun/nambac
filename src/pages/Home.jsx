@@ -409,7 +409,7 @@ export default function Home() {
       handleQuizClick(item.quizId);
       return;
     }
-    if (item.kind === 'roast' || item.kind === 'brain' || item.kind === 'lienquan') {
+    if (item.kind === 'roast' || item.kind === 'brain' || item.kind === 'lienquan' || item.kind === 'sbti') {
       if (trackFeatureViewOnce(item.kind)) {
         incrementFeatureStat(item.kind, 'view').catch(console.error);
       }
@@ -500,6 +500,15 @@ export default function Home() {
               imageSeed={featureThumbs.lienquan?.seed || 'lienquan'}
               label="Liên Quân"
               emoji="⚔️"
+            />
+            <TodayThumbCard
+              className={`home-today-card home-today-sbti${doneToday.has('sbti') ? ' is-done' : ''}`}
+              done={doneToday.has('sbti')}
+              to="/sbti"
+              imageSrc={featureThumbs.sbti?.src}
+              imageSeed={featureThumbs.sbti?.seed || 'sbti'}
+              label="SBTI"
+              emoji="🎭"
             />
           </div>
 

@@ -1,33 +1,50 @@
-/** Liên Quân heroes — static seed (no Garena API). Vietnamese tips. */
-export const HEROES = [
-  {
-    id: 'florentino',
-    name: 'Florentino',
-    aliases: ['flo', 'kiếm sĩ'],
-    lane: 'top',
-    tier: 'S+',
-    weakAgainst: ['aleister', 'arum', 'veres'],
-    counterNotes: [
-      'CC phép dài — Flo khó trade sớm.',
-      'Ôm + tank, Flo không thoát dễ.',
-      'Đấu sĩ cứng, ép nhịp mid-game.',
-    ],
-    tip: 'Gặp Florentino: đừng trade trước level 2 — skill 1 của hắn quá mạnh early.',
-  },
-  {
-    id: 'nakroth',
-    name: 'Nakroth',
-    aliases: ['nak'],
-    lane: 'jungle',
-    tier: 'S+',
-    weakAgainst: ['taara', 'xeniel', 'grakk'],
-    counterNotes: [
-      'Tank máu cao, Nak khó burst.',
-      'Ult cứu / chống dive.',
-      'Hook + CC cắt nhịp gank.',
-    ],
-    tip: 'Nakroth gank sớm: giữ bụi, đợi skill 2 rồi mới nhảy — đừng bay lung tung.',
-  },
+/**
+ * Liên Quân heroes — meta 15 from heroes.json + supplemental roster for search/counters.
+ * Entertainment seed (no Garena API).
+ */
+import metaHeroes from './heroes.json' with { type: 'json' };
+
+const POS_TO_LANE = {
+  Top: 'top',
+  Rừng: 'jungle',
+  Mid: 'mid',
+  AD: 'adc',
+  SP: 'sp',
+};
+
+const META_ALIASES = {
+  florentino: ['flo', 'kiếm sĩ'],
+  yena: ['ye na'],
+  omen: [],
+  zuka: [],
+  nakroth: ['nak'],
+  keera: [],
+  aoi: [],
+  yan: [],
+  liliana: ['lili', 'cáo'],
+  raz: [],
+  krixi: [],
+  hayate: ['haya'],
+  elsu: [],
+  violet: ['vio'],
+  thane: [],
+};
+
+/** Featured AOG-flavored meta (15) — source of truth: heroes.json */
+const META_HEROES = metaHeroes.map((h) => ({
+  id: h.id,
+  name: h.name,
+  aliases: META_ALIASES[h.id] || [],
+  lane: POS_TO_LANE[h.position] || String(h.position || 'top').toLowerCase(),
+  tier: h.tier,
+  weakAgainst: h.counters || [],
+  counterNotes: (h.counters || []).map(() => 'Khắc chế theo meta AOG (tham khảo).'),
+  tip: h.tip,
+  meta: true,
+}));
+
+/** Extra roster so search / counters still resolve */
+const EXTRA_HEROES = [
   {
     id: 'murad',
     name: 'Murad',
@@ -41,34 +58,6 @@ export const HEROES = [
       'Tank chịu burst ult của Murad.',
     ],
     tip: 'Murad cần stack trước khi all-in. Đừng 1v1 khi chưa đủ dấu ấn.',
-  },
-  {
-    id: 'raz',
-    name: 'Raz',
-    aliases: [],
-    lane: 'mid',
-    tier: 'S+',
-    weakAgainst: ['krixi', 'natalya', 'gildur'],
-    counterNotes: [
-      'Poke / clear ép Raz mất tempo.',
-      'Burst mage đua sát thương.',
-      'CC set — Raz khó kite.',
-    ],
-    tip: 'Raz poke bằng skill 1 — giữ khoảng cách, đừng để bị dồn sát thương gần.',
-  },
-  {
-    id: 'violet',
-    name: 'Violet',
-    aliases: ['vio'],
-    lane: 'adc',
-    tier: 'S',
-    weakAgainst: ['yorn', 'elsu', 'wiro'],
-    counterNotes: [
-      'Tầm xa hơn, ép Violet vị trí.',
-      'Sniper góc — Violet khó đứng.',
-      'Engage cứng vào AD.',
-    ],
-    tip: 'Violet kiting: luôn giữ khoảng cách sau mỗi phát bắn, đừng đứng im.',
   },
   {
     id: 'airi',
@@ -169,20 +158,6 @@ export const HEROES = [
     tip: 'Grakk hook trong bụi — một hook trượt là mất tempo, kiên nhẫn.',
   },
   {
-    id: 'krixi',
-    name: 'Krixi',
-    aliases: [],
-    lane: 'mid',
-    tier: 'A',
-    weakAgainst: ['natalya', 'gildur', 'tulen'],
-    counterNotes: [
-      'Burst / poke đua mid.',
-      'CC set Krixi.',
-      'Roam / burst nhanh.',
-    ],
-    tip: 'Krixi clear wave nhanh rồi roam — đừng ngồi mid cả trận.',
-  },
-  {
     id: 'natalya',
     name: 'Natalya',
     aliases: ['nata'],
@@ -211,20 +186,6 @@ export const HEROES = [
     tip: 'Yorn tầm xa: giữ khoảng cách tối đa, đừng chase vào bụi.',
   },
   {
-    id: 'elsu',
-    name: 'Elsu',
-    aliases: [],
-    lane: 'adc',
-    tier: 'S+',
-    weakAgainst: ['wiro', 'murad', 'nakroth'],
-    counterNotes: [
-      'Engage / gap close Elsu.',
-      'Dive từ bụi.',
-      'Gank cắt góc bắn.',
-    ],
-    tip: 'Elsu bắn từ xa — một phát miss là nguy hiểm, canh góc map.',
-  },
-  {
     id: 'wiro',
     name: 'Wiro',
     aliases: [],
@@ -251,20 +212,6 @@ export const HEROES = [
       'Dive / burst Arthur.',
     ],
     tip: 'Arthur ổn định cho người mới — tập engage đúng lúc ult.',
-  },
-  {
-    id: 'zuka',
-    name: 'Zuka',
-    aliases: [],
-    lane: 'jungle',
-    tier: 'A',
-    weakAgainst: ['nakroth', 'airi', 'zill'],
-    counterNotes: [
-      'Duel / gank mạnh hơn.',
-      'Combo nhanh trước Zuka.',
-      'Burst jungle đối đầu.',
-    ],
-    tip: 'Zuka bay vào backline — chọn mục tiêu AD/mage trước.',
   },
   {
     id: 'zill',
@@ -332,7 +279,7 @@ export const HEROES = [
     counterNotes: [
       'Hook ép Annette.',
       'Engage thẳng vào Anne.',
-      'Cứu / tranh peel.',
+      'Peel tranh chấp.',
     ],
     tip: 'Annette peel cho AD — ưu tiên cứu carry hơn là chase kill.',
   },
@@ -392,6 +339,134 @@ export const HEROES = [
     ],
     tip: 'Butterfly late-game mạnh — sống sót early rồi scale.',
   },
+  {
+    id: 'roxie',
+    name: 'Roxie',
+    aliases: [],
+    lane: 'top',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Roxie tank đường — giữ skill cho combat.',
+  },
+  {
+    id: 'joker',
+    name: 'Joker',
+    aliases: [],
+    lane: 'adc',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Joker poke tầm xa — đừng đứng im.',
+  },
+  {
+    id: 'valhein',
+    name: 'Valhein',
+    aliases: [],
+    lane: 'adc',
+    tier: 'B',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Valhein ổn định early — farm rồi scale.',
+  },
+  {
+    id: 'wukong',
+    name: 'Wukong',
+    aliases: ['ngộ không'],
+    lane: 'jungle',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Wukong dive backline — chọn mục tiêu AD.',
+  },
+  // Counter stubs referenced by meta 15
+  {
+    id: 'maloch',
+    name: 'Maloch',
+    aliases: [],
+    lane: 'top',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Maloch tank / engage — canh chiêu cuối diện rộng.',
+  },
+  {
+    id: 'richter',
+    name: 'Richter',
+    aliases: [],
+    lane: 'top',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Richter cơ động — đừng lãng phí CC khi hắn dash.',
+  },
+  {
+    id: 'baldum',
+    name: 'Baldum',
+    aliases: [],
+    lane: 'sp',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Baldum set trong bụi — tránh đứng gần tường.',
+  },
+  {
+    id: 'kriknak',
+    name: 'Kriknak',
+    aliases: [],
+    lane: 'jungle',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Kriknak gank nhanh — ward bụi và giữ khoảng cách.',
+  },
+  {
+    id: 'lorion',
+    name: 'Lorion',
+    aliases: [],
+    lane: 'mid',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Lorion poke / zone — né skill vùng.',
+  },
+  {
+    id: 'chaugnar',
+    name: 'Chaugnar',
+    aliases: [],
+    lane: 'sp',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Chaugnar chống mage — ưu tiên peel cho carry.',
+  },
+  {
+    id: 'max',
+    name: 'Max',
+    aliases: [],
+    lane: 'sp',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Max engage thẳng — đừng đứng gần tường khi hắn có ult.',
+  },
+  {
+    id: 'lauriel',
+    name: 'Lauriel',
+    aliases: [],
+    lane: 'mid',
+    tier: 'A',
+    weakAgainst: [],
+    counterNotes: [],
+    tip: 'Lauriel cơ động cao — giữ CC cho lúc hắn dash vào.',
+  },
+];
+
+const metaIds = new Set(META_HEROES.map((h) => h.id));
+
+export const HEROES = [
+  ...META_HEROES,
+  ...EXTRA_HEROES.filter((h) => !metaIds.has(h.id)),
 ];
 
 export const HERO_BY_ID = Object.fromEntries(HEROES.map((h) => [h.id, h]));
@@ -412,4 +487,15 @@ export function resolveCounters(hero) {
       };
     })
     .filter(Boolean);
+}
+
+export function searchHeroes(query) {
+  const q = String(query || '')
+    .trim()
+    .toLowerCase();
+  if (!q) return HEROES.filter((h) => h.meta);
+  return HEROES.filter((h) => {
+    if (h.id.includes(q) || h.name.toLowerCase().includes(q)) return true;
+    return (h.aliases || []).some((a) => String(a).toLowerCase().includes(q));
+  });
 }

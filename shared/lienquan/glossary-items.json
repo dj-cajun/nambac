@@ -1,0 +1,64 @@
+{
+  "physical": {
+    "Thương Longinus": "롱기누스의 창",
+    "Phức Hợp Kiếm": "복합 검 (다재다능)",
+    "Nanh Fenrir": "펜릴의 이빨 (강력한 공증)",
+    "Thương Xuyên Phá": "파쇄의 창 (방관)",
+    "Kiếm Muramasa": "무라마사 (탱커 카운터 방관)",
+    "Thánh Kiếm": "성검 (치명타)",
+    "Kiếm Fafnir": "파프니르의 래피어 (퍼뎀 흡혈)",
+    "Rìu Leviathan": "리바이어선 도끼 (정글)",
+    "Kiếm Truy Hồn": "영혼 추적검 (치감/정글)",
+    "Áo Choàng Hiệp Sĩ": "기사의 망토"
+  },
+  "magic": {
+    "Trượng Bùng Nổ": "폭발의 지팡이",
+    "Vương Miện Hecate": "헤카테의 왕관 (마공 뻥튀기)",
+    "Trượng Hỗn Mang": "혼돈의 지팡이 (마관)",
+    "Quyền Trượng Rhea": "레아의 권능 (마법 흡혈/보호막)",
+    "Sách Truy Hồn": "치유 억제의 책 (치감책)",
+    "Quả Cầu Băng Sương": "빙결의 구 (존야)",
+    "Gươm Loki": "로키의 핏빛 검 (정글 주문력 장비)"
+  },
+  "defense": {
+    "Huân Chương Troy": "트로이의 훈장 (마법 방어 원탑)",
+    "Giáp Hộ Mệnh": "수호의 갑옷 (부활 항아리)",
+    "Khiên Thất Truyền": "상실의 방패 (공속 감소)",
+    "Khiên Huyền Thoại": "전설의 방패 (쿨감 방어)",
+    "Giáp Gaia": "가이아의 갑옷 (마방/이속)",
+    "Rìu Hyoga": "빙결의 도끼 (평타 슬로우)",
+    "Nham Thuẫn": "바위 방패 (액티브 보호막)",
+    "Giáp Thống Khổ": "고통의 갑옷 (가시갑옷)"
+  },
+  "boots_support": {
+    "Giày Kiên Cường": "강인함의 신발 (CC 단축)",
+    "Giày Du Mục": "유목민의 신발 (공속)",
+    "Giày Phù Thủy": "마법사의 신발 (마관)",
+    "Giày Thuật Sĩ": "술사의 신발 (쿨감)",
+    "Đại Địa Mở Trói": "대지의 정화 (서폿)",
+    "Đại Địa Giáp Tốc": "대지의 가속 (서폿)"
+  },
+  "lanes": {
+    "Top": "탑",
+    "Rừng": "정글",
+    "Mid": "미드",
+    "AD": "원딜(AD)",
+    "SP": "서폿"
+  },
+  "terms": {
+    "Giáo Án": "교안(프로 빌드)",
+    "Ngọc / Arcana": "아르카나(문장)",
+    "Rune": "룬",
+    "Khắc chế": "카운터",
+    "Bùa xanh": "블루 버프",
+    "Bùa đỏ": "레드 버프",
+    "Giao tranh tổng": "한타",
+    "Đẩy lén / trộm trụ": "스플릿 / 타워 스틸",
+    "Câm lặng": "침묵",
+    "Miễn khống": "CC 면역",
+    "Xuyên giáp": "물리 관통(방관)",
+    "Xuyên giáp phép": "마법 관통(마관)",
+    "Hút máu": "흡혈",
+    "Giảm hồi chiêu": "쿨감"
+  }
+}

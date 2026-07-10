@@ -1,0 +1,47 @@
+{
+  "order": ["S1", "S2", "S3", "E1", "E2", "E3", "A1", "A2", "A3", "Ac1", "Ac2", "Ac3", "So1", "So2", "So3"],
+  "models": [
+    {
+      "id": "self",
+      "name": "Mô hình Bản ngã",
+      "dims": ["S1", "S2", "S3"]
+    },
+    {
+      "id": "emotional",
+      "name": "Mô hình Cảm xúc",
+      "dims": ["E1", "E2", "E3"]
+    },
+    {
+      "id": "attitude",
+      "name": "Mô hình Thái độ",
+      "dims": ["A1", "A2", "A3"]
+    },
+    {
+      "id": "action",
+      "name": "Mô hình Hành động",
+      "dims": ["Ac1", "Ac2", "Ac3"]
+    },
+    {
+      "id": "social",
+      "name": "Mô hình Xã hội",
+      "dims": ["So1", "So2", "So3"]
+    }
+  ],
+  "labels": {
+    "S1": { "name": "S1 Tự tin", "model": "Bản ngã" },
+    "S2": { "name": "S2 Rõ ràng bản thân", "model": "Bản ngã" },
+    "S3": { "name": "S3 Giá trị cốt lõi", "model": "Bản ngã" },
+    "E1": { "name": "E1 An toàn gắn bó", "model": "Cảm xúc" },
+    "E2": { "name": "E2 Đầu tư cảm xúc", "model": "Cảm xúc" },
+    "E3": { "name": "E3 Ranh giới & phụ thuộc", "model": "Cảm xúc" },
+    "A1": { "name": "A1 Nhìn thế giới", "model": "Thái độ" },
+    "A2": { "name": "A2 Quy tắc & linh hoạt", "model": "Thái độ" },
+    "A3": { "name": "A3 Ý nghĩa cuộc sống", "model": "Thái độ" },
+    "Ac1": { "name": "Ac1 Động lực", "model": "Hành động" },
+    "Ac2": { "name": "Ac2 Quyết định", "model": "Hành động" },
+    "Ac3": { "name": "Ac3 Thực thi", "model": "Hành động" },
+    "So1": { "name": "So1 Chủ động xã hội", "model": "Xã hội" },
+    "So2": { "name": "So2 Ranh giới giao tiếp", "model": "Xã hội" },
+    "So3": { "name": "So3 Thể hiện & chân thật", "model": "Xã hội" }
+  }
+}

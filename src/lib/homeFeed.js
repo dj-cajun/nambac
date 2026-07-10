@@ -1,7 +1,7 @@
 import { getViralScore } from './quizRanking';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 
-/** @typedef {'quiz'|'fortune'|'roast'|'brain'|'lienquan'} FeedItemKind */
+/** @typedef {'quiz'|'fortune'|'roast'|'brain'|'lienquan'|'sbti'} FeedItemKind */
 
 /**
  * @param {object} params
@@ -75,6 +75,19 @@ export function buildFeatureFeedItems({ fortuneStats, featureStats, featureThumb
       like_count: featureStats?.lienquan?.like_count || 0,
       participant_count: 0,
       typeLabel: 'Liên Quân',
+    },
+    {
+      kind: 'sbti',
+      id: 'sbti',
+      title: '🎭 SBTI — Test meme personality',
+      image_url: featureThumbs.sbti?.src || '/images/sbti-hub-thumb.svg',
+      imageSeed: featureThumbs.sbti?.seed || 'sbti-hub',
+      to: '/sbti',
+      view_count: featureStats?.sbti?.view_count || 0,
+      share_count: featureStats?.sbti?.share_count || 0,
+      like_count: featureStats?.sbti?.like_count || 0,
+      participant_count: 0,
+      typeLabel: 'SBTI',
     },
   ];
 }

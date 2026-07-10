@@ -1,0 +1,164 @@
+{
+  "CTRL": {
+    "code": "CTRL",
+    "name": "Người Cầm Trịch",
+    "intro": "Thế nào, bị tôi cầm trịch rồi chứ?",
+    "desc": "Bạn thuộc nhóm hiếm — người chống lại luật entropy của vũ trụ. CTRL là task manager biết đi bằng hai chân: quy tắc chỉ là setting mặc định, kế hoạch chỉ là doodle tạm thời. Có bạn CTRL nghĩa là GPS cuộc đời được nâng cấp — trước khi tàu trật ray, họ Ctrl+S rồi kéo bạn về đúng hướng bằng logic không thể chối."
+  },
+  "ATM-er": {
+    "code": "ATM-er",
+    "name": "Người Rút Tiền",
+    "intro": "Bạn nghĩ tôi giàu lắm à?",
+    "desc": "ATM-er luôn ở trạng thái sẵn sàng chi — cho bạn bè, cho crush, cho vibe. Ví mỏng nhưng lòng rộng. Họ không phải ngân hàng, chỉ là người hay quên set giới hạn rút."
+  },
+  "Dior-s": {
+    "code": "Dior-s",
+    "name": "Kẻ Phèn",
+    "intro": "Chờ đó, tôi sẽ lột xác.",
+    "desc": "Dior-s đang trong arc comeback. Họ biết mình đang ở đáy meta, và đó là fuel. Mỗi ngày là một patch note cá nhân."
+  },
+  "BOSS": {
+    "code": "BOSS",
+    "name": "Trùm Cuối",
+    "intro": "Đưa vô lăng đây, tôi lái.",
+    "desc": "BOSS không hỏi ai muốn đi đâu — họ quyết định lane và tempo. Teamfight bắt đầu khi họ gõ bàn. Không phải áp đảo, chỉ là... đúng giờ."
+  },
+  "THAN-K": {
+    "code": "THAN-K",
+    "name": "Người Biết Ơn",
+    "intro": "Tôi cảm ơn trời! Cảm ơn đất!",
+    "desc": "THAN-K biết ơn cả wifi 3 vạch. Họ gửi lời cảm ơn như spam sticker — chân thành đến mức hơi quá. Nhưng đời cần người nhớ ơn."
+  },
+  "OH-NO": {
+    "code": "OH-NO",
+    "name": "Người Ôi Không",
+    "intro": "Ôi không! Sao tôi lại là type này?!",
+    "desc": "OH-NO sốc khi đọc kết quả. Họ replay lại 30 câu trong đầu, tự hỏi bước nào đi sai. Spoiler: không có bước sai, chỉ có plot twist."
+  },
+  "GOGO": {
+    "code": "GOGO",
+    "name": "Người Lên Đường",
+    "intro": "gogogo~ đi thôi!",
+    "desc": "GOGO không chờ mood — họ chờ tín hiệu xanh. Du lịch, deadline, crush: tất cả đều bắt đầu bằng một câu let's go."
+  },
+  "SEXY": {
+    "code": "SEXY",
+    "name": "Cực Phẩm",
+    "intro": "Bạn sinh ra đã là cực phẩm!",
+    "desc": "SEXY mang aura tự tin không cần filter. Không phải khoa trương — họ chỉ biết mình hợp spotlight. Camera tự tìm đến."
+  },
+  "LOVE-R": {
+    "code": "LOVE-R",
+    "name": "Người Đa Tình",
+    "intro": "Tình quá đầy, thực tế hơi nghèo.",
+    "desc": "LOVE-R yêu sâu, nhớ lâu, viết status dài. Trái tim full bar nhưng schedule trống. Romantic trong theory, messy trong practice."
+  },
+  "MUM": {
+    "code": "MUM",
+    "name": "Mẹ Đường",
+    "intro": "Cho tôi... gọi bạn là mẹ được không?",
+    "desc": "MUM chăm sóc bạn bè như nuôi team nhỏ. Nhắc uống nước, nhắc deadline, nhắc đừng text ex. Warm energy level max."
+  },
+  "FAKE": {
+    "code": "FAKE",
+    "name": "Người Giả",
+    "intro": "Không còn người thật nữa rồi.",
+    "desc": "FAKE đeo nhiều mask hơn số tab Chrome. Họ social smooth nhưng mirror selfie thì hỏi: mình là ai? Shapeshifter hơi mệt."
+  },
+  "OJBK": {
+    "code": "OJBK",
+    "name": "Người Tùy Tiện",
+    "intro": "Tôi nói tùy tiện là thật tùy tiện.",
+    "desc": "OJBK trả lời ăn gì cũng được thật sự. Không phải thiếu quan điểm — họ đã transcend drama. Zen mode on."
+  },
+  "MALO": {
+    "code": "MALO",
+    "name": "Khỉ Con",
+    "intro": "Đời là dungeon, tôi chỉ là khỉ con.",
+    "desc": "MALO grind cuộc sống như farm exp. Không main character, nhưng meme potential cao. Survival build."
+  },
+  "JOKE-R": {
+    "code": "JOKE-R",
+    "name": "Chú Hề",
+    "intro": "Hóa ra ta đều là hề.",
+    "desc": "JOKE-R cười trước khi reality hit. Irony là armor. Họ biết punchline của plot twist cuộc đời."
+  },
+  "WOC!": {
+    "code": "WOC!",
+    "name": "Người WTF",
+    "intro": "WTF, sao tôi lại type này?",
+    "desc": "WOC! chạy hai OS: surface mode hét ồn ào, inner mode đang render. Chaos có charm riêng."
+  },
+  "THIN-K": {
+    "code": "THIN-K",
+    "name": "Người Suy Nghĩ",
+    "intro": "Đã suy nghĩ sâu 100 giây.",
+    "desc": "THIN-K overthink nhưng đôi khi ra insight hay. Typing... trong đầu không bao giờ dừng. Deep dive là default."
+  },
+  "SHIT": {
+    "code": "SHIT",
+    "name": "Người Cay Đắng",
+    "intro": "Thế giới này... một cục.",
+    "desc": "SHIT nhìn thẳng vào absurd của đời. Cynical nhưng không fake vui. Rage realism có nghệ thuật riêng."
+  },
+  "ZZZZ": {
+    "code": "ZZZZ",
+    "name": "Người Giả Chết",
+    "intro": "Tôi chưa chết, chỉ đang ngủ.",
+    "desc": "ZZZZ dodge drama bằng sleep mode. Conflict đến là AFK. Energy saving là chiến thuật sống."
+  },
+  "POOR": {
+    "code": "POOR",
+    "name": "Người Tập Trung",
+    "intro": "Tôi nghèo, nhưng tôi focus.",
+    "desc": "POOR minimalist by wallet, laser by attention. Bỏ noise, giữ một mục tiêu. Poor in money, rich in clarity."
+  },
+  "MONK": {
+    "code": "MONK",
+    "name": "Thầy Tu",
+    "intro": "Không có ham muốn trần tục.",
+    "desc": "MONK detach khỏi flex và FOMO. Họ scroll ít, thở sâu nhiều. Inner peace speedrun."
+  },
+  "IMSB": {
+    "code": "IMSB",
+    "name": "Người Tự Nghi",
+    "intro": "Thật à? Tôi ngốc vậy sao?",
+    "desc": "IMSB doubt mình trước khi doubt người khác. Inner voice toxic nhưng đôi khi giữ họ cẩn thận. Self-roast master."
+  },
+  "SOLO": {
+    "code": "SOLO",
+    "name": "Người Cô Đơn",
+    "intro": "Tôi khóc — sao tôi lại cô đơn?",
+    "desc": "SOLO vibe lone wolf nhưng thực ra cần connection. Họ independent nhưng inbox trống vẫn buồn."
+  },
+  "FUCK": {
+    "code": "FUCK",
+    "name": "Người Bùng Nổ",
+    "intro": "Đ*! Type gì vậy?",
+    "desc": "FUCK wild card energy. Không predict được, không fit template. Chaos agent có charisma."
+  },
+  "DEAD": {
+    "code": "DEAD",
+    "name": "Người Chết Bên Trong",
+    "intro": "Tôi... còn sống không?",
+    "desc": "DEAD đã clear game called life nhiều lần. Flat affect, deep calm. Protest im lặng với noise của thế giới."
+  },
+  "IMFW": {
+    "code": "IMFW",
+    "name": "Người Mong Manh",
+    "intro": "Tôi thật sự... vô dụng sao?",
+    "desc": "IMFW sensitive và dễ tin. Cần được chăm như cây lan. Fragile nhưng genuine."
+  },
+  "HHHH": {
+    "code": "HHHH",
+    "name": "Người Cười",
+    "intro": "HAHAHAHAHA.",
+    "desc": "Thư viện nhân cách crash vì bạn quá unique. HHHH là fallback: cười thôi. Không có mô tả dài — chỉ có HA."
+  },
+  "DRUNK": {
+    "code": "DRUNK",
+    "name": "Người Say",
+    "intro": "Rượu cháy cổ — không say không được.",
+    "desc": "Trigger ẩn: ethanol affinity max. DRUNK walk sway, mood high, vision double. Thermos rượu như nước lọc — hệ thống đầu hàng."
+  }
+}

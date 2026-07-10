@@ -395,6 +395,22 @@
   font-weight: 900;
 }
 
+.lq-detail-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--lq-gold);
+}
+
+.lq-tier-lane-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--lq-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .lq-detail-lane {
   font-size: 13px;
   font-weight: 700;

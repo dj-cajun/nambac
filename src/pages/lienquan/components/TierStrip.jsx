@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LQ_UI } from '../../../../shared/lienquan/uiText.js';
 import { LANES, getLaneHeroIds, TIER_BOARD } from '../../../../shared/lienquan/tiers.js';
 import { getHero } from '../../../../shared/lienquan/heroes.js';
 import HeroIcon from './HeroIcon.jsx';
@@ -11,10 +12,11 @@ export default function TierStrip() {
   return (
     <section className="lq-tier">
       <div className="lq-tier-head">
-        <h2>Bảng tier meta</h2>
+        <h2>{LQ_UI.tabCounterTier}</h2>
         <span className="lq-tier-date">{TIER_BOARD.label} · {TIER_BOARD.updatedAt}</span>
       </div>
-      <div className="lq-tier-tabs" role="tablist" aria-label="Lane">
+      <p className="lq-tier-lane-label">{LQ_UI.lanePick}</p>
+      <div className="lq-tier-tabs" role="tablist" aria-label={LQ_UI.lanePick}>
         {LANES.map((l) => (
           <button
             key={l.id}

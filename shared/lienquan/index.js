@@ -1,4 +1,4 @@
-export { HEROES, HERO_BY_ID, getHero, resolveCounters } from './heroes.js';
+export { HEROES, HERO_BY_ID, getHero, resolveCounters, searchHeroes } from './heroes.js';
 export { LANES, TIER_BOARD, getLaneHeroIds } from './tiers.js';
 export {
   MATCHES,
@@ -6,6 +6,7 @@ export {
   getMatch,
   getGiaoAnsForMatch,
   getGiaoAn,
+  getGiaoAnForHero,
 } from './giaoAns.js';
 export { LIENQUAN_QUIZ, getLienquanQuizPath } from './quizMeta.js';
 export {
@@ -15,3 +16,5 @@ export {
   masteryLabel,
 } from './quizQuestions.js';
 export { KHOE_SEED } from './khoeSeed.js';
+export { LQ_UI } from './uiText.js';
+export { LQ_GLOSSARY, translateItem, allItemEntries } from './glossary.js';
