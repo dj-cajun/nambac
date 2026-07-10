@@ -74,7 +74,7 @@ function AppContent() {
   const isBrandsPage = location.pathname === '/brands' || location.pathname.startsWith('/brands/');
   const mainTabPaths = ['/', '/explore', '/leaderboard'];
   const showBottomNav = mainTabPaths.includes(location.pathname);
-  const hideFooter = showBottomNav || isBrandsPage;
+  const hideFooter = isAdminPage;
   const showSiteHeader = !isAdminPage && location.pathname !== '/brands';
 
   return (
@@ -154,7 +154,7 @@ function AppContent() {
           <Route path="/terms-of-service" element={<TermsOfService />} />
         </Routes>
       </Suspense>
-      {!hideFooter && <Footer />}
+      {!hideFooter && <Footer withBottomNav={showBottomNav} />}
       {showBottomNav && <BottomNav />}
       <InstallBanner />
       <PushPrompt />

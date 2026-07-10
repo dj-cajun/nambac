@@ -697,12 +697,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      <footer className="home-footer">
-        <p className="home-footer-copy">
-          © 2026 nambac.xyz — Made for Vietnamese Gen Z with love and pixels.
-        </p>
-      </footer>
     </div>
   );
 }
