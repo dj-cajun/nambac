@@ -14,9 +14,18 @@ export { LIENQUAN_QUIZ, getLienquanQuizPath } from './quizMeta.js';
 export {
   LIENQUAN_QUIZ_QUESTIONS,
   scoreToMastery,
+  scoreTierToMastery,
   MASTERY_LABELS,
   masteryLabel,
 } from './quizQuestions.js';
+export {
+  QUIZ_DIFFICULTIES,
+  QUIZ_TIER_COUNT,
+  getTierMeta,
+  getTierQuestions,
+  tierResultMessage,
+  LIENQUAN_QUIZ_POOL,
+} from './quizPool.js';
 export { KHOE_SEED } from './khoeSeed.js';
 export { getHeroPortraitPath, hasHeroPortrait } from './heroImage.js';
 export { LQ_UI } from './uiText.js';

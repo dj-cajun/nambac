@@ -17,15 +17,21 @@ function padDesc(text) {
   return s + DESC_PAD;
 }
 
+function pickWrongOption(options) {
+  const wrong = options.filter((o) => !o.correct);
+  return wrong[0] || null;
+}
+
+/** binary_5q: selecting B adds score — knowledge quizzes put the correct answer in option_b */
 function toBinaryQuestion(row, index) {
   const correct = row.options.find((o) => o.correct);
-  const wrong = row.options.find((o) => !o.correct);
+  const wrong = pickWrongOption(row.options);
   const [score_a, score_b] = BINARY_5Q_SCORES[index] || [0, 0];
   return {
     order_number: index + 1,
     question_text: row.text,
-    option_a: correct?.label || '',
-    option_b: wrong?.label || '',
+    option_a: wrong?.label || '',
+    option_b: correct?.label || '',
     score_a,
     score_b,
   };
@@ -48,52 +54,52 @@ const RESULTS = [
   },
   {
     result_code: 2,
-    title: 'Thông Thạo 3 — Đọc map khá',
-    type_name: 'Thông Thạo 3 — Đọc map khá',
+    title: 'Thông Thạo 2 — Đọc map khá',
+    type_name: 'Thông Thạo 2 — Đọc map khá',
     description: padDesc('Bạn hiểu nhịp trade và khi nào all-in — teamfight bớt feed hơn trung bình lobby VN.'),
     traits: ['Đọc map', 'Trade ổn', 'Ít feed'],
   },
   {
     result_code: 3,
-    title: 'Thông Thạo 5 — Ranker có tâm',
-    type_name: 'Thông Thạo 5 — Ranker có tâm',
+    title: 'Thông Thạo 3 — Lane ổn',
+    type_name: 'Thông Thạo 3 — Lane ổn',
+    description: padDesc('Counter phổ biến và spell trừng trị — bạn đã vượt mức casual lobby.'),
+    traits: ['Lane ổn', 'Counter', 'Spell đúng'],
+  },
+  {
+    result_code: 4,
+    title: 'Thông Thạo 4 — Ranker có tâm',
+    type_name: 'Thông Thạo 4 — Ranker có tâm',
     description: padDesc('Meta AOG, giáo án item và counter pick không còn là thuật ngữ xa lạ với bạn.'),
     traits: ['Meta', 'Giáo án', 'Ranker'],
   },
   {
-    result_code: 4,
-    title: 'Thông Thạo 6 — Cơ bản pro',
-    type_name: 'Thông Thạo 6 — Cơ bản pro',
-    description: padDesc('Bạn có thể shotcall nhẹ và copy build pro trong vài giây — đúng vibe cẩm nang nambac.'),
+    result_code: 5,
+    title: 'Thông Thạo 5 — Shotcall nhẹ',
+    type_name: 'Thông Thạo 5 — Shotcall nhẹ',
+    description: padDesc('Bạn có thể đọc map và copy build pro trong vài giây — đúng vibe cẩm nang nambac.'),
     traits: ['Shotcall', 'Build pro', 'AOG fan'],
   },
   {
-    result_code: 5,
-    title: 'Thông Thạo 7 — Thánh hiểu meta',
-    type_name: 'Thông Thạo 7 — Thánh hiểu meta',
-    description: padDesc('Counter, giáo án, thuật ngữ VN — bạn gần như full package. Khoe mark ở góc chiến tích đi!'),
-    traits: ['Thông Thạo 7', 'Meta VN', 'Khoe được'],
-  },
-  {
     result_code: 6,
-    title: 'Coach phòng trọ — Giáo án tay nhanh',
-    type_name: 'Coach phòng trọ — Giáo án tay nhanh',
-    description: padDesc('Bạn thích sao chép build hơn tự nghĩ — chiến thuật thực dụng, rank vẫn lên.'),
-    traits: ['Giáo án', 'Thực dụng', 'Copy nhanh'],
+    title: 'Thông Thạo 6 — Cơ bản pro',
+    type_name: 'Thông Thạo 6 — Cơ bản pro',
+    description: padDesc('Counter, giáo án, thuật ngữ VN — gần full package. Thi lại 10 câu để chạm Thông Thạo 7!'),
+    traits: ['Thông Thạo 6', 'Meta VN', 'Ranker'],
   },
   {
     result_code: 7,
-    title: 'Fan AOG — Biết tên pro',
-    type_name: 'Fan AOG — Biết tên pro',
-    description: padDesc('Bạn theo dõi giải và meta pro VN — vào hub xem highlight giáo án SGP Bang & cộng đồng.'),
-    traits: ['AOG', 'Pro play', 'Cộng đồng'],
+    title: 'Thông Thạo 7 — Thánh hiểu meta',
+    type_name: 'Thông Thạo 7 — Thánh hiểu meta',
+    description: padDesc('Bạn hiểu meta VN như fan AOG — khoe mark ở góc chiến tích đi!'),
+    traits: ['Thông Thạo 7', 'AOG', 'Khoe được'],
   },
 ];
 
 export const LIENQUAN_QUIZ_DB_SEED = {
   title: LIENQUAN_QUIZ_DB_TITLE,
   description: padDesc(
-    `${LQ_UI.bannerBody} (Explore: 5 câu thử nhanh — bản đủ 10 câu tại /lienquan/quiz)`,
+    `${LQ_UI.bannerBody} (Explore: 5 câu thử nhanh tier 3 — bản đủ 5 cấp tại /lienquan/quiz)`,
   ),
   category: 'Survival',
   quiz_type: 'binary_5q',

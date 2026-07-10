@@ -30,7 +30,7 @@ export const LQ_UI = {
 
   bannerTitle: 'Bạn có thực sự hiểu rõ về Liên Quân Mobile?',
   bannerBody:
-    '10 câu Thông Thạo — nhận mark từ Đồng đến Thông Thạo 7 trên nambac.xyz!',
+    '5 cấp thi Thông Thạo — 10 câu mỗi cấp, mark từ Đồng đến Thông Thạo 7 trên nambac.xyz!',
   bannerCta: 'Thử Thách Ngay',
   bannerExploreNote: 'Bản trên Explore là 5 câu thử — làm đủ 10 câu tại hub.',
 
@@ -44,15 +44,16 @@ export const LQ_UI = {
   khoeCaptionPlaceholder: 'Hôm nay Flo quadra hard carry lane đối phương… 🔥',
   khoeEmptyHint: 'Chưa có bài mới? Bạn là người đầu tiên khoe MVP hôm nay!',
 
-  quizIntro: '10 câu · Meta + cơ bản · Mark Đồng → Thông Thạo 7',
+  quizIntro: '5 cấp độ · 10 câu mỗi cấp · Đồng → Thông Thạo 7',
+  quizTierHint: 'Bắt đầu từ Đồng nếu mới chơi — pro thử Thông Thạo 7 (giáo án AOG).',
   quizResultMemes: {
     0: 'Rank Đồng cũng được — vào copy giáo án pro là kéo nhanh hơn đọc wiki.',
-    1: 'Thông Thạo 1 rồi! Biết AOG là gì — bạn đã hơn nửa lobby VN 😂',
-    2: 'Thông Thạo 3 — đọc map khá. Giờ thử khoe ở Góc Khoe xem.',
-    3: 'Thông Thạo 5 — ranker có tâm. Counter pick bạn đã ngon.',
-    4: 'Thông Thạo 6 — gần pro rồi. SGP Bang sẽ gật đầu (trong tưởng tượng).',
-    5: 'Thông Thạo 6+ — cơ bản pro. Một bước nữa thôi!',
-    6: 'Thông Thạo 6++ — mark gần max. Thi lại 1 lần nữa là 7.',
+    1: 'Thông Thạo 1! Biết lane cơ bản — bạn đã hơn nửa lobby VN 😂',
+    2: 'Thông Thạo 2 — đọc map khá. Giờ thử khoe ở Góc Khoe xem.',
+    3: 'Thông Thạo 3 — trade ổn. Counter pick bạn đã ngon.',
+    4: 'Thông Thạo 4 — ranker có tâm. Meta AOG không còn xa lạ.',
+    5: 'Thông Thạo 5 — shotcall nhẹ. SGP Bang sẽ gật đầu (trong tưởng tượng).',
+    6: 'Thông Thạo 6 — gần pro rồi. Thi lại 1 lần nữa là chạm 7.',
     7: 'Thông Thạo 7! Mark vàng đã gắn — khoe ngay Góc Khoe, đừng giữ trong tim.',
   },
 
