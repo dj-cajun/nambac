@@ -62,6 +62,11 @@ export default defineConfig({
             req.url = '/api/lienquan-share';
             return next();
           }
+          const vbtiResultShare = pathname.match(/^\/share-vbti\/result\/([^/]+)$/);
+          if (vbtiResultShare) {
+            req.url = `/api/vbti-share?result=${encodeURIComponent(vbtiResultShare[1])}`;
+            return next();
+          }
           const vbtiTypeShare = pathname.match(/^\/share-vbti\/type\/([^/]+)$/);
           if (vbtiTypeShare) {
             req.url = `/api/vbti-share?type=${encodeURIComponent(vbtiTypeShare[1])}`;

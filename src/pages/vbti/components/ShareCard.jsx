@@ -1,6 +1,9 @@
 import { useRef, useState } from 'react';
 import { SBTI_UI } from '../../../../shared/vbti/ui-text.vi.js';
 import { typePosterSrc } from '../../../lib/vbti/assets.js';
+import { buildVbtiShareUrl } from '../../../lib/siteUrl';
+import { incrementFeatureStat } from '../../../lib/featureStats';
+import { trackFeatureShare } from '../../../lib/analytics';
 
 export default function ShareCard({ result, onCopied }) {
   const ref = useRef(null);
@@ -8,9 +11,11 @@ export default function ShareCard({ result, onCopied }) {
 
   const copyLink = async () => {
     const code = result?.finalType?.code || SBTI_UI.brand;
-    const url = `https://www.nambac.xyz/vbti/types/${encodeURIComponent(code)}`;
+    const url = buildVbtiShareUrl({ page: 'result', typeCode: code });
     try {
       await navigator.clipboard.writeText(url);
+      trackFeatureShare('sbti');
+      incrementFeatureStat('sbti', 'share').catch(() => {});
       onCopied?.();
     } catch {
       /* ignore */

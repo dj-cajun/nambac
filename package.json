@@ -28,6 +28,7 @@
     "daily:quiz": "node scripts/ops/run_daily_quiz.mjs",
     "gen:quizzes": "node scripts/ops/batch_generate_quizzes.mjs",
     "seed:quizzes": "node scripts/ops/seed_handcrafted_quizzes.mjs",
+    "seed:lienquan-quiz": "node scripts/ops/seed_lienquan_quiz.mjs",
     "daily:quiz:api": "node scripts/ops/daily_quiz.mjs",
     "content:today": "node scripts/ops/daily_content_callout.mjs",
     "demo:ai-quiz": "node scripts/dev/create_ai_quiz_demo.mjs",

@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { loadSbtiResult } from '../../lib/vbti/session.js';
 import { typePosterSrc } from '../../lib/vbti/assets.js';
+import { buildVbtiShareUrl } from '../../lib/siteUrl';
 import TypePoster from './components/TypePoster.jsx';
 import ShareCard from './components/ShareCard.jsx';
 import './sbti.css';
@@ -22,7 +23,7 @@ export default function SbtiResultPage() {
 
   const type = result.finalType;
   const ogImage = `https://www.nambac.xyz${typePosterSrc(type.code)}`;
-  const pageUrl = `https://www.nambac.xyz/vbti/types/${encodeURIComponent(type.code)}`;
+  const shareUrl = buildVbtiShareUrl({ page: 'result', typeCode: type.code });
 
   return (
     <div className="sbti-page">
@@ -30,10 +31,12 @@ export default function SbtiResultPage() {
         <title>{type.code} — {type.name} | VBTI nambac</title>
         <meta name="description" content={`${type.code}: ${type.intro}`} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${type.code} — ${type.name} | VBTI`} />
+        <meta property="og:title" content={`Kết quả VBTI: ${type.code} — ${type.name}`} />
         <meta property="og:description" content={type.intro} />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={pageUrl} />
+        <meta property="og:url" content={shareUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       <Link to="/vbti" className="sbti-back">{SBTI_UI.backLabel}</Link>

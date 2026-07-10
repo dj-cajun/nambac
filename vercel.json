@@ -86,6 +86,10 @@
       "destination": "/api/handler?path=lienquan-share"
     },
     {
+      "source": "/share-vbti/result/:code",
+      "destination": "/api/handler?path=vbti-share&result=:code"
+    },
+    {
       "source": "/share-vbti/type/:code",
       "destination": "/api/handler?path=vbti-share&type=:code"
     },

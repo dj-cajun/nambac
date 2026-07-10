@@ -1,9 +1,19 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LIENQUAN_QUIZ, getLienquanQuizPath } from '../../../../shared/lienquan/quizMeta.js';
+import { LIENQUAN_QUIZ } from '../../../../shared/lienquan/quizMeta.js';
+import { fetchLienquanQuizMeta } from '../../../lib/lienquan/quizMetaApi.js';
 
 export default function QuizEventBanner() {
+  const [ctaPath, setCtaPath] = useState(LIENQUAN_QUIZ.ctaPath);
+
+  useEffect(() => {
+    fetchLienquanQuizMeta().then((meta) => {
+      if (meta?.ctaPath) setCtaPath(meta.ctaPath);
+    });
+  }, []);
+
   return (
-    <Link to={getLienquanQuizPath()} className="lq-quiz-banner">
+    <Link to={ctaPath} className="lq-quiz-banner">
       <div className="lq-quiz-banner-text">
         <strong>{LIENQUAN_QUIZ.bannerTitle}</strong>
         <span>{LIENQUAN_QUIZ.bannerBody}</span>

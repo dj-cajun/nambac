@@ -46,6 +46,11 @@ export default function QuizPage({ quizIdProp }) {
                 setLoading(true);
                 
                 const bundle = await fetchQuizBundle(quizId);
+                const featureRoute = bundle.quiz?.config?.featureRoute;
+                if (featureRoute) {
+                    navigate(featureRoute, { replace: true });
+                    return;
+                }
                 setQuizInfo(bundle.quiz);
                 setQuestions(bundle.questions || []);
                 setResults(bundle.results || []);

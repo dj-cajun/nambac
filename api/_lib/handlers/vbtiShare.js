@@ -49,6 +49,8 @@ const PAGE_META = {
   },
 };
 
+const SBTI_RESULT_DESC_PREFIX = 'Kết quả test VBTI —';
+
 function typePosterUrl(host, code) {
   const slug = sbtiCodeSlug(code);
   const protocol = host.includes('localhost') ? 'http' : 'https';
@@ -56,16 +58,22 @@ function typePosterUrl(host, code) {
 }
 
 function resolvePageMeta(req) {
-  const typeCode = String(req.query?.type || '').trim();
+  const resultCode = String(req.query?.result || '').trim();
+  const typeCode = String(req.query?.type || resultCode || '').trim();
   if (typeCode) {
     const type = getType(typeCode);
     if (type) {
+      const isResult = Boolean(req.query?.result);
       return {
-        title: `${type.code} — ${type.name} | VBTI nambac`,
-        description: type.intro,
+        title: isResult
+          ? `Kết quả VBTI: ${type.code} — ${type.name} | nambac`
+          : `${type.code} — ${type.name} | VBTI nambac`,
+        description: isResult
+          ? `${SBTI_RESULT_DESC_PREFIX} ${type.intro}`
+          : type.intro,
         path: `/vbti/types/${encodeURIComponent(type.code)}`,
-        ogTitle: `${type.code} — ${type.name}`,
-        ogSubtitle: type.intro.slice(0, 120),
+        ogTitle: isResult ? `Kết quả VBTI: ${type.code}` : `${type.code} — ${type.name}`,
+        ogSubtitle: isResult ? type.name : type.intro.slice(0, 120),
         posterCode: type.code,
       };
     }
@@ -76,6 +84,9 @@ function resolvePageMeta(req) {
 }
 
 function resolveSharePath(req) {
+  if (req.query?.result) {
+    return `/share-vbti/result/${encodeURIComponent(req.query.result)}`;
+  }
   if (req.query?.type) {
     return `/share-vbti/type/${encodeURIComponent(req.query.type)}`;
   }

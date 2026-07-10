@@ -116,6 +116,9 @@ export function buildVbtiOgImageUrl({ title, subtitle } = {}) {
 /** VBTI crawler share URL (FB/Zalo preview) */
 export function buildVbtiShareUrl({ page = 'hub', typeCode = null } = {}) {
   const origin = getSiteOrigin();
+  if (page === 'result' && typeCode) {
+    return `${origin}/share-vbti/result/${encodeURIComponent(typeCode)}`;
+  }
   if (typeCode) {
     return `${origin}/share-vbti/type/${encodeURIComponent(typeCode)}`;
   }

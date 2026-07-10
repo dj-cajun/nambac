@@ -46,6 +46,7 @@ import { playerGradeGet, playerGradeComplete } from './handlers/playerGrade.js';
 import sitemap from './handlers/sitemap.js';
 import lienquanMastery from './handlers/lienquan/mastery.js';
 import lienquanBoast from './handlers/lienquan/boast.js';
+import lienquanQuizMeta from './handlers/lienquan/quizMeta.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -218,6 +219,14 @@ export async function dispatch(req, res, segments = []) {
   // ── Liên Quân mastery + khoe feed ──
   if (a === 'lienquan' && b === 'mastery' && !c && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {
     return lienquanMastery(req, res);
+  }
+  if (
+    a === 'lienquan' &&
+    b === 'quiz-meta' &&
+    !c &&
+    (method === 'GET' || method === 'HEAD' || method === 'OPTIONS')
+  ) {
+    return lienquanQuizMeta(req, res);
   }
   if (
     a === 'lienquan' &&
