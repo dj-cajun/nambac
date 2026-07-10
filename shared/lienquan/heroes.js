@@ -30,6 +30,85 @@ const META_ALIASES = {
   thane: [],
 };
 
+/** Per-counter lane tips for meta 15 (matches heroes.json counters order) */
+const META_COUNTER_NOTES = {
+  florentino: [
+    'Aleister ult khóa Flo khi lao vào trade sai vị trí.',
+    'Arum ôm cứng — cắt nhịp combo và thoát của Flo.',
+    'Roxie tank đường chịu burst early, ép Flo không hồi máu.',
+  ],
+  yena: [
+    'Omen ult tầm xa, không cho Yena lao vào bất ngờ.',
+    'Florentino trade mạnh hơn early, thắng đổi chiêu Viên Đao.',
+    'Maloch chịu combo, chờ Yena hết skill rồi counter.',
+  ],
+  omen: [
+    'Florentino duel tốt hơn khi Omen chưa có ult.',
+    'Hayate tầm xa kite, né Sát Vực và Sát Niệm.',
+    'Richter cơ động, tránh bị Omen bắt góc tường.',
+  ],
+  zuka: [
+    'Omen giữ khoảng cách, không cho Zuka lao thẳng.',
+    'Baldum set trong bụi, khóa Zuka trước khi lao.',
+    'Thane hồi máu trâu, không dồn hết skill vào tank.',
+  ],
+  nakroth: [
+    'Aleister CC diện rộng, cắt nhịp gank Nak.',
+    'Arum ôm Nak khi dive, team follow up ngay.',
+    'Omen ult cứu carry khỏi combo Nakroth.',
+  ],
+  keera: [
+    'Kriknak gank sớm, ép Keera trước khi scale.',
+    'Wukong dive backline, buộc Keera chọn mục tiêu sai.',
+    'Elsu tầm xa, giữ khoảng cách khi Keera xuyên tường.',
+  ],
+  aoi: [
+    'Arum ôm Aoi giữa đu dây, không cho thoát.',
+    'Aleister ult khóa Aoi khi lao vào team.',
+    'Baldum set trong bụi, bắt Aoi trước khi long trảo.',
+  ],
+  yan: [
+    'Hayate kite Yan late, tránh để Yan cấp 12 all-in.',
+    'Valhein farm an toàn, scale trước khi Yan mạnh.',
+    'Arum peel carry khỏi Yan lao vào.',
+  ],
+  liliana: [
+    'Raz poke tầm xa, né skill cáo trước khi all-in.',
+    'Tulen burst nhanh, đua sát thương trước combo Liliana.',
+    'Lorion zone control, ép Liliana đứng sai vị trí.',
+  ],
+  raz: [
+    'Krixi hất tung diện rộng, khó cho Raz núp bụi combo.',
+    'Lorion poke xa, trade trước khi Raz lao vào.',
+    'Chaugnar peel mage, cứu carry khỏi Cú Đấm Chân Không.',
+  ],
+  krixi: [
+    'Liliana poke mạnh hơn mid-game, giữ tầm xa.',
+    'Raz núp bụi, trừng phạt Krixi đứng lộ.',
+    'Nakroth gank liên tục, Krixi không có chỗ farm.',
+  ],
+  hayate: [
+    'Joker poke tầm xa, né Chuỗi Phi Tiêu.',
+    'Valhein scale ổn định, đừng trade sớm với Hayate.',
+    'Wukong dive thẳng vào Hayate khi thiếu peel.',
+  ],
+  elsu: [
+    'Max engage cứng, cắt Elsu khi đứng tường.',
+    'Wukong lao thẳng, Elsu khó né ở cự ly gần.',
+    'Kriknak gank từ bụi, phá Ưng Trạm trước.',
+  ],
+  violet: [
+    'Elsu tầm xa, kite Violet sau lộn bắn.',
+    'Nakroth dive Violet khi thiếu flash.',
+    'Zuka lao nhanh, Violet khó thoát nếu đứng lộ.',
+  ],
+  thane: [
+    'Hayate kite, không dồn skill vào Thane low HP.',
+    'Maloch sustain đường, chờ Thane hết nội tại hồi máu.',
+    'Lauriel burst mage, bỏ qua Thane bắt carry sau.',
+  ],
+};
+
 /** Featured AOG-flavored meta (15) — source of truth: heroes.json */
 const META_HEROES = metaHeroes.map((h) => ({
   id: h.id,
@@ -38,7 +117,10 @@ const META_HEROES = metaHeroes.map((h) => ({
   lane: POS_TO_LANE[h.position] || String(h.position || 'top').toLowerCase(),
   tier: h.tier,
   weakAgainst: h.counters || [],
-  counterNotes: (h.counters || []).map(() => 'Khắc chế theo meta AOG (tham khảo).'),
+  counterNotes:
+    META_COUNTER_NOTES[h.id]
+    || h.counter_notes
+    || (h.counters || []).map(() => 'Khắc chế theo meta AOG (tham khảo).'),
   tip: h.tip,
   meta: true,
 }));

@@ -512,15 +512,30 @@ export default function Home() {
             />
           </div>
 
-          {todayQuiz && (
-            <button
-              type="button"
-              className="home-today-start-cta"
-              onClick={() => handleQuizClick(todayQuiz.id)}
+          <div className="home-today-cta-row">
+            {todayQuiz && (
+              <button
+                type="button"
+                className="home-today-start-cta"
+                onClick={() => handleQuizClick(todayQuiz.id)}
+              >
+                ▶ Bắt đầu quiz hôm nay
+              </button>
+            )}
+            <Link
+              to="/vbti"
+              className={`home-today-vbti-cta${todayQuiz ? '' : ' is-solo'}`}
             >
-              ▶ Bắt đầu quiz hôm nay
-            </button>
-          )}
+              {featureThumbs.sbti?.src ? (
+                <span className="home-today-vbti-thumb" aria-hidden>
+                  <QuizImage src={featureThumbs.sbti.src} alt="" seed={featureThumbs.sbti.seed || 'sbti'} />
+                </span>
+              ) : (
+                <span className="home-today-vbti-emoji" aria-hidden>🎭</span>
+              )}
+              VBTI
+            </Link>
+          </div>
 
           <Link to="/brain" className="home-today-more-link">
             Não bạn 🧠 · thêm trò chơi →

@@ -11,6 +11,15 @@ export const LQ_UI = {
   tabCounterTier: 'Khắc Chế & Tier',
   tabGiaoAn: 'Giáo Án Pro',
   tabKhoe: 'Khoe Chiến Tích',
+  tabTuDien: 'Từ Điển Game',
+
+  shareLink: 'Sao chép link chia sẻ',
+  shareToast: 'Đã sao chép link!',
+
+  glossaryTitle: 'Từ Điển Liên Quân',
+  glossarySub: 'Trang bị · ngọc · thuật ngữ meta (tham khảo)',
+  glossarySearch: 'Tìm tên item hoặc thuật ngữ…',
+  hubGiaoAnTitle: 'Giáo án nổi bật',
 
   counterTitle: 'Tướng Khắc Chế:',
   tipTitle: 'Mẹo Đối Đầu:',

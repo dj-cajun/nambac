@@ -9,6 +9,8 @@ import {
 import { saveMastery } from '../../lib/lienquan/mastery.js';
 import { markTodayDone } from '../../lib/todayDone.js';
 import MasteryBadgeCard from './components/MasteryBadgeCard.jsx';
+import ShareLinkButton from './components/ShareLinkButton.jsx';
+import { buildLienquanOgImageUrl, buildLienquanShareUrl } from '../../lib/siteUrl';
 import './lienquan.css';
 
 export default function LienquanQuizPage() {
@@ -21,6 +23,12 @@ export default function LienquanQuizPage() {
 
   const q = questions[index];
   const progress = Math.round(((index + (done ? 1 : 0)) / questions.length) * 100);
+  const ogImage = buildLienquanOgImageUrl({
+    title: 'Quiz Thông Thạo Liên Quân',
+    subtitle: '10 câu · Mark Đồng → Thông Thạo 7',
+  });
+  const shareUrl = buildLienquanShareUrl({ page: 'quiz' });
+  const metaDescription = '10 câu hỏi Liên Quân — lấy mark Thông Thạo 7 trên nambac.';
 
   const answer = async (opt) => {
     if (picked || done) return;
@@ -46,7 +54,17 @@ export default function LienquanQuizPage() {
     <div className="lienquan-page">
       <Helmet>
         <title>Quiz Thông Thạo Liên Quân | nambac</title>
-        <meta name="description" content="10 câu hỏi Liên Quân — lấy mark Thông Thạo 7 trên nambac." />
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href="https://www.nambac.xyz/lienquan/quiz" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Quiz Thông Thạo Liên Quân | nambac" />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:url" content={shareUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       <Link to="/lienquan" className="lq-back">← Liên Quân</Link>
@@ -102,6 +120,7 @@ export default function LienquanQuizPage() {
           <div className="lq-nav-chips">
             <Link to="/lienquan" className="lq-chip">Về hub</Link>
             <Link to="/lienquan/khoe" className="lq-chip">Góc Khoe</Link>
+            <ShareLinkButton page="quiz" className="lq-chip lq-chip-btn" />
             <button
               type="button"
               className="lq-chip"

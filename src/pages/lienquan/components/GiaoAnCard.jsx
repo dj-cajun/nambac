@@ -9,7 +9,7 @@ export default function GiaoAnCard({ giaoAn }) {
   const hero = getHero(giaoAn.heroId);
 
   return (
-    <article className="lq-giaoan-card">
+    <article className="lq-giaoan-card" id={giaoAn.id}>
       <div className="lq-giaoan-top">
         {hero && <HeroIcon hero={hero} size="md" />}
         <div>

@@ -54,3 +54,14 @@ export function getGiaoAn(id) {
 export function getGiaoAnForHero(heroId) {
   return GIAO_ANS.find((g) => g.heroId === heroId) || null;
 }
+
+/** Hub highlight — pro picks featured on /lienquan */
+export const HIGHLIGHT_GIAO_AN_IDS = [
+  'ga-florentino-meta',
+  'ga-nakroth-meta',
+  'ga-keera-meta',
+];
+
+export function getHighlightGiaoAns() {
+  return HIGHLIGHT_GIAO_AN_IDS.map((id) => getGiaoAn(id)).filter(Boolean);
+}

@@ -55,7 +55,7 @@ export function getBalanceThumbnailPath(questionId) {
 }
 
 export function getLienquanThumbnailPath() {
-  return '/images/lienquan/hub-thumb.svg';
+  return '/images/lienquan_hub.webp';
 }
 
 export function getSbtiThumbnailPath() {

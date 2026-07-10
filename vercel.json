@@ -74,6 +74,18 @@
       "destination": "/api/handler?path=brain-share&name=:name&result=:result"
     },
     {
+      "source": "/share-lienquan/tuong/:hero",
+      "destination": "/api/handler?path=lienquan-share&hero=:hero"
+    },
+    {
+      "source": "/share-lienquan/:page",
+      "destination": "/api/handler?path=lienquan-share&page=:page"
+    },
+    {
+      "source": "/share-lienquan",
+      "destination": "/api/handler?path=lienquan-share"
+    },
+    {
       "source": "/share/:id/:score",
       "destination": "/api/handler?path=og&id=:id&score=:score"
     },

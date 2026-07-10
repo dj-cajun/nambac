@@ -82,3 +82,29 @@ export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel) {
   }
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
+
+/** Liên Quân hub OG — hub thumb + khoe collage */
+export function buildLienquanOgImageUrl({ title, subtitle } = {}) {
+  const params = new URLSearchParams();
+  if (title) params.set('title', String(title).slice(0, 80));
+  if (subtitle) params.set('subtitle', String(subtitle).slice(0, 120));
+  const qs = params.toString();
+  return `${getSiteOrigin()}/api/lienquan-og${qs ? `?${qs}` : ''}`;
+}
+
+/** Liên Quân crawler share URL (FB/Zalo preview) */
+export function buildLienquanShareUrl({ page = 'hub', heroId = null } = {}) {
+  const origin = getSiteOrigin();
+  if (heroId) {
+    return `${origin}/share-lienquan/tuong/${encodeURIComponent(heroId)}`;
+  }
+  if (page && page !== 'hub') {
+    return `${origin}/share-lienquan/${encodeURIComponent(page)}`;
+  }
+  return `${origin}/share-lienquan`;
+}
+
+/** VBTI hub OG — hub hero + type poster mosaic */
+export function buildVbtiOgImageUrl() {
+  return `${getSiteOrigin()}/api/vbti-og`;
+}

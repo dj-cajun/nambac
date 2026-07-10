@@ -1,6 +1,7 @@
 import { listActiveQuizzes } from '../quizDb.js';
 import { QUIZ_CATEGORY_IDS } from '../../../shared/categories.js';
 import { CANONICAL_SITE_ORIGIN } from '../../../shared/siteOrigin.js';
+import { HEROES } from '../../../shared/lienquan/heroes.js';
 
 const STATIC_PATHS = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
@@ -28,6 +29,7 @@ const STATIC_PATHS = [
   { path: '/lienquan/giao-an', changefreq: 'weekly', priority: '0.85' },
   { path: '/lienquan/khoe', changefreq: 'daily', priority: '0.8' },
   { path: '/lienquan/quiz', changefreq: 'weekly', priority: '0.85' },
+  { path: '/lienquan/tu-dien', changefreq: 'monthly', priority: '0.75' },
 ];
 
 function escapeXml(value) {
@@ -57,6 +59,10 @@ export default async function handler(req, res) {
 
     for (const item of STATIC_PATHS) {
       lines.push(urlEntry(`${origin}${item.path}`, item.changefreq, item.priority));
+    }
+
+    for (const hero of HEROES.filter((h) => h.meta)) {
+      lines.push(urlEntry(`${origin}/lienquan/tuong/${hero.id}`, 'weekly', '0.8'));
     }
 
     for (const categoryId of QUIZ_CATEGORY_IDS) {

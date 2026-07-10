@@ -88,8 +88,14 @@ export async function handleApiRequest(req, res) {
 
   const url = req.url || '';
   const pathname = url.split('?')[0];
+  const queryParams = parseQuery(url);
   const apiPath = pathname.replace(/^\/api\/?/, '');
-  const segments = apiPath.split('/').filter(Boolean);
+  const pathSegments = apiPath.split('/').filter(Boolean);
+
+  let segments = pathSegments;
+  if (pathSegments[0] === 'handler' && queryParams.path) {
+    segments = String(queryParams.path).split('/').filter(Boolean);
+  }
 
   let body = req.body;
   if (body === undefined && req.method && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
@@ -101,7 +107,7 @@ export async function handleApiRequest(req, res) {
     headers: req.headers,
     body,
     url,
-    query: { ...parseQuery(url), path: segments },
+    query: { ...queryParams, path: queryParams.path ?? segments },
   };
 
   return dispatch(vercelReq, res, segments);

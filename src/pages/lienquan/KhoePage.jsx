@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { HEROES, getHero } from '../../../shared/lienquan/heroes.js';
@@ -6,12 +6,20 @@ import { createBoast, fetchBoasts, likeBoast } from '../../lib/lienquan/boastApi
 import { useAuth } from '../../context/AuthContext';
 import GoogleLoginButton from '../../components/GoogleLoginButton';
 import HeroIcon from './components/HeroIcon.jsx';
+import ShareLinkButton from './components/ShareLinkButton.jsx';
+import { buildLienquanOgImageUrl, buildLienquanShareUrl } from '../../lib/siteUrl';
 import './lienquan.css';
+
+const PAGE_SIZE = 12;
 
 export default function KhoePage() {
   const { user, isLoggedIn } = useAuth();
   const [boasts, setBoasts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const sentinelRef = useRef(null);
   const [error, setError] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [caption, setCaption] = useState('');
@@ -19,23 +27,49 @@ export default function KhoePage() {
   const [tiktokUrl, setTiktokUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const ogImage = buildLienquanOgImageUrl({
+    title: 'Góc Khoe Chiến Tích',
+    subtitle: 'MVP · clip · cộng đồng Liên Quân',
+  });
+  const shareUrl = buildLienquanShareUrl({ page: 'khoe' });
+  const metaDescription = 'Khoe MVP, quadra, clip TikTok Liên Quân — cộng đồng nambac.';
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async ({ append = false, nextOffset = 0 } = {}) => {
+    if (append) setLoadingMore(true);
+    else setLoading(true);
     setError('');
     try {
-      const data = await fetchBoasts({ limit: 40 });
-      setBoasts(data.boasts || []);
+      const data = await fetchBoasts({ limit: PAGE_SIZE, offset: nextOffset });
+      const rows = data.boasts || [];
+      setBoasts((prev) => (append ? [...prev, ...rows] : rows));
+      setOffset(nextOffset + rows.length);
+      setHasMore(rows.length === PAGE_SIZE);
     } catch (err) {
       setError(err.message || 'Không tải được feed');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, []);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || !hasMore || loading || loadingMore) return undefined;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          load({ append: true, nextOffset: offset });
+        }
+      },
+      { rootMargin: '120px' },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore, load, offset]);
 
   const onLike = async (id) => {
     try {
@@ -86,7 +120,17 @@ export default function KhoePage() {
     <div className="lienquan-page">
       <Helmet>
         <title>Góc Khoe Chiến Tích | Liên Quân nambac</title>
-        <meta name="description" content="Khoe MVP, quadra, clip TikTok Liên Quân — cộng đồng nambac." />
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href="https://www.nambac.xyz/lienquan/khoe" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Góc Khoe Chiến Tích | Liên Quân" />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:url" content={shareUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       <Link to="/lienquan" className="lq-back">← Liên Quân</Link>
@@ -192,6 +236,13 @@ export default function KhoePage() {
             </article>
           );
         })}
+      </div>
+
+      {loadingMore && <p className="lq-coming">Đang tải thêm…</p>}
+      {hasMore && <div ref={sentinelRef} className="lq-khoe-sentinel" aria-hidden="true" />}
+
+      <div className="lq-nav-chips">
+        <ShareLinkButton page="khoe" className="lq-chip lq-chip-btn" />
       </div>
     </div>
   );

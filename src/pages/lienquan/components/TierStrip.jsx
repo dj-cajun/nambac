@@ -5,7 +5,7 @@ import { getHero } from '../../../../shared/lienquan/heroes.js';
 import HeroIcon from './HeroIcon.jsx';
 
 export default function TierStrip() {
-  const [lane, setLane] = useState('jungle');
+  const [lane, setLane] = useState('top');
   const ids = getLaneHeroIds(lane);
   const heroes = ids.map((id) => getHero(id)).filter(Boolean);
 

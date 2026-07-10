@@ -48,6 +48,20 @@ export default defineConfig({
             req.url = `/api/brain-share?name=${encodeURIComponent(decodeURIComponent(bname))}&result=${encodeURIComponent(bresult)}`;
             return next();
           }
+          const lienquanHeroShare = pathname.match(/^\/share-lienquan\/tuong\/([^/]+)$/);
+          if (lienquanHeroShare) {
+            req.url = `/api/lienquan-share?hero=${encodeURIComponent(lienquanHeroShare[1])}`;
+            return next();
+          }
+          const lienquanPageShare = pathname.match(/^\/share-lienquan\/([^/]+)$/);
+          if (lienquanPageShare) {
+            req.url = `/api/lienquan-share?page=${encodeURIComponent(lienquanPageShare[1])}`;
+            return next();
+          }
+          if (pathname === '/share-lienquan') {
+            req.url = '/api/lienquan-share';
+            return next();
+          }
           const scoreMatch = pathname.match(/^\/share\/([^/]+)\/(\d+)$/);
           const quizMatch = pathname.match(/^\/share\/([^/]+)$/);
           if (scoreMatch) {

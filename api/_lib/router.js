@@ -33,6 +33,9 @@ import fortuneImage from './handlers/fortuneImage.js';
 import fortuneOg from './handlers/fortuneOg.js';
 import fortuneShare from './handlers/fortuneShare.js';
 import fortuneStats from './handlers/fortuneStats.js';
+import lienquanOg from './handlers/lienquanOg.js';
+import lienquanShare from './handlers/lienquanShare.js';
+import vbtiOg from './handlers/vbtiOg.js';
 import { authGoogleStart, authGoogleCallback } from './handlers/authGoogle.js';
 import authSession, { authLogout } from './handlers/authSession.js';
 import authAdminLogin from './handlers/authAdminLogin.js';
@@ -200,6 +203,15 @@ export async function dispatch(req, res, segments = []) {
   }
 
   if (a === 'fortune-share' && !b) return fortuneShare(req, res);
+
+  // ── Liên Quân / VBTI hub OG cards ──
+  if (a === 'lienquan-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return lienquanOg(req, res);
+  }
+  if (a === 'vbti-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+    return vbtiOg(req, res);
+  }
+  if (a === 'lienquan-share' && !b) return lienquanShare(req, res);
 
   // ── Liên Quân mastery + khoe feed ──
   if (a === 'lienquan' && b === 'mastery' && !c && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {

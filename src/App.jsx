@@ -42,6 +42,7 @@ const LienquanHeroDetail = lazy(() => import('./pages/lienquan/HeroDetailPage'))
 const LienquanGiaoAn = lazy(() => import('./pages/lienquan/GiaoAnPage'));
 const LienquanKhoe = lazy(() => import('./pages/lienquan/KhoePage'));
 const LienquanQuiz = lazy(() => import('./pages/lienquan/LienquanQuizPage'));
+const LienquanTuDien = lazy(() => import('./pages/lienquan/TuDienPage'));
 const SbtiHub = lazy(() => import('./pages/vbti/SbtiHub'));
 const SbtiTestPage = lazy(() => import('./pages/vbti/SbtiTestPage'));
 const SbtiResultPage = lazy(() => import('./pages/vbti/SbtiResultPage'));
@@ -125,6 +126,7 @@ function AppContent() {
           <Route path="/lienquan/giao-an" element={<LienquanGiaoAn />} />
           <Route path="/lienquan/khoe" element={<LienquanKhoe />} />
           <Route path="/lienquan/quiz" element={<LienquanQuiz />} />
+          <Route path="/lienquan/tu-dien" element={<LienquanTuDien />} />
           <Route path="/vbti" element={<SbtiHub />} />
           <Route path="/vbti/test" element={<SbtiTestPage />} />
           <Route path="/vbti/result" element={<SbtiResultPage />} />

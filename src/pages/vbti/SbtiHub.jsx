@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../../lib/featureStats';
 import { trackFeatureView } from '../../lib/analytics';
+import { buildVbtiOgImageUrl } from '../../lib/siteUrl';
 import './sbti.css';
 
 const CATEGORY_BOXES = [
@@ -25,6 +26,7 @@ export default function SbtiHub() {
 
   const metaDescription =
     'VBTI — Vietnam Behavior Type Indicator. Test tiếng Việt: 30 câu, 27 nhãn meme, nhánh ẩn DRUNK. Giải trí trên nambac.xyz.';
+  const ogImage = buildVbtiOgImageUrl();
 
   return (
     <div className="sbti-page">
@@ -35,8 +37,12 @@ export default function SbtiHub() {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${SBTI_UI.brand} — ${SBTI_UI.brandFull} | nambac`} />
         <meta property="og:description" content={metaDescription} />
-        <meta property="og:image" content="https://www.nambac.xyz/images/sbti_hub.webp" />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:url" content="https://www.nambac.xyz/vbti" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       <Link to="/" className="sbti-back">← nambac</Link>

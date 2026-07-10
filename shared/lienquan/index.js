@@ -3,10 +3,12 @@ export { LANES, TIER_BOARD, getLaneHeroIds } from './tiers.js';
 export {
   MATCHES,
   GIAO_ANS,
+  HIGHLIGHT_GIAO_AN_IDS,
   getMatch,
   getGiaoAnsForMatch,
   getGiaoAn,
   getGiaoAnForHero,
+  getHighlightGiaoAns,
 } from './giaoAns.js';
 export { LIENQUAN_QUIZ, getLienquanQuizPath } from './quizMeta.js';
 export {
