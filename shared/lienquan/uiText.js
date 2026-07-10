@@ -21,7 +21,7 @@ export const LQ_UI = {
   glossarySearch: 'Tìm tên item hoặc thuật ngữ…',
   hubGiaoAnTitle: 'Giáo án nổi bật',
   hubQuizTitle: 'Thi Thông Thạo · 5 cấp độ',
-  hubQuizSub: '10 câu mỗi cấp — từ Đồng đến giáo án AOG. Chọn cấp phù hợp rank của bạn.',
+  hubQuizSub: 'Cấp 1 → Cấp 5 · 10 câu mỗi cấp · Mark Đồng đến Thông Thạo 7',
 
   counterTitle: 'Tướng Khắc Chế:',
   tipTitle: 'Mẹo Đối Đầu:',

@@ -5,7 +5,7 @@ import { QUIZ_DIFFICULTIES } from '../../../../shared/lienquan/quizPool.js';
 export default function QuizTierHub() {
   return (
     <section id="quiz" className="lq-hub-quiz-box" aria-label="Thi Thông Thạo · 5 cấp độ">
-      <p className="lq-hub-quiz-box-kicker">5 cấp · 10 câu mỗi cấp</p>
+      <p className="lq-hub-quiz-box-kicker">Cấp 1 → Cấp 5 · 10 câu mỗi cấp</p>
       <div className="lq-hub-quiz-tier-row">
         {QUIZ_DIFFICULTIES.map((d) => (
           <Link

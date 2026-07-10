@@ -8,43 +8,48 @@ export const QUIZ_TIER_COUNT = 10;
 export const QUIZ_DIFFICULTIES = [
   {
     id: 1,
-    slug: 'dong',
-    label: 'Đồng',
-    subtitle: 'Thuật ngữ & cơ bản',
+    slug: 'cap-1',
+    label: 'Cấp 1',
+    subtitle: 'Đồng · Thuật ngữ cơ bản',
     emoji: '🥉',
     masteryHint: 'Mới làm quen Liên Quân',
+    masteryCap: 1,
   },
   {
     id: 2,
-    slug: 'tt2',
-    label: 'Thông Thạo 2',
-    subtitle: 'Lane & tướng meta',
+    slug: 'cap-2',
+    label: 'Cấp 2',
+    subtitle: 'Thông Thạo 1–2 · Lane & tướng',
     emoji: '⚔️',
     masteryHint: 'Biết ai đi đường nào',
+    masteryCap: 2,
   },
   {
     id: 3,
-    slug: 'tt4',
-    label: 'Thông Thạo 4',
-    subtitle: 'Counter pick',
+    slug: 'cap-3',
+    label: 'Cấp 3',
+    subtitle: 'Thông Thạo 3–4 · Counter pick',
     emoji: '💠',
     masteryHint: 'Chọn tướng khắc chế',
+    masteryCap: 4,
   },
   {
     id: 4,
-    slug: 'tt6',
-    label: 'Thông Thạo 6',
-    subtitle: 'Mẹo lane & đối đầu',
+    slug: 'cap-4',
+    label: 'Cấp 4',
+    subtitle: 'Thông Thạo 5–6 · Mẹo lane',
     emoji: '👑',
     masteryHint: 'Đọc tip pro',
+    masteryCap: 6,
   },
   {
     id: 5,
-    slug: 'tt7',
-    label: 'Thông Thạo 7',
-    subtitle: 'Giáo án AOG',
+    slug: 'cap-5',
+    label: 'Cấp 5',
+    subtitle: 'Thông Thạo 7 · Giáo án AOG',
     emoji: '🏆',
     masteryHint: 'Build & rune pro',
+    masteryCap: 7,
   },
 ];
 
@@ -62,13 +67,16 @@ export function getTierQuestions(tierId) {
   return qs.map(({ source, ...q }) => q);
 }
 
-/** Map tier + correct count (0–10) → Thông Thạo level 0–7 */
+/** Map tier (1–5) + correct count → Thông Thạo 0–7; harder tiers cap higher */
 export function scoreTierToMastery(tierId, correctCount) {
   const tier = Math.max(1, Math.min(5, Number(tierId) || 1));
+  const meta = getTierMeta(tier);
+  const cap = meta.masteryCap ?? 7;
   const n = Math.max(0, Math.min(QUIZ_TIER_COUNT, Number(correctCount) || 0));
-  const base = tier - 1;
-  const bonus = n <= 2 ? 0 : n <= 5 ? 1 : n <= 8 ? 2 : 3;
-  return Math.min(7, base + bonus);
+  const floor = Math.max(0, cap - 3);
+  const span = Math.max(1, cap - floor);
+  const level = floor + Math.round((n / QUIZ_TIER_COUNT) * span);
+  return Math.min(cap, Math.max(floor, level));
 }
 
 export function tierResultMessage(tierId, correctCount) {
