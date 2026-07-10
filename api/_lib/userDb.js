@@ -122,13 +122,15 @@ export async function getUserById(id) {
 export async function getUserStats() {
   const db = getTurso();
   await ensureSchema(db);
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const result = await db.execute({
     sql: `SELECT
             COUNT(*) AS total,
             SUM(CASE WHEN role = 'admin' THEN 1 ELSE 0 END) AS admins,
-            SUM(CASE WHEN datetime(COALESCE(last_login_at, created_at)) >= datetime('now', '-7 days') THEN 1 ELSE 0 END) AS active7d,
+            SUM(CASE WHEN COALESCE(last_login_at, created_at) >= ? THEN 1 ELSE 0 END) AS active7d,
             SUM(CASE WHEN email_opt_in = 1 THEN 1 ELSE 0 END) AS mailable
           FROM users`,
+    args: [weekAgo],
   });
   const row = result.rows[0] || {};
   const visitors = await getTodayVisitorStats();
@@ -169,7 +171,7 @@ export async function listUsers({ limit = 200, offset = 0, search = '', role = '
   const result = await db.execute({
     sql: `SELECT * FROM users
           WHERE ${whereSql}
-          ORDER BY datetime(COALESCE(last_login_at, created_at)) DESC
+          ORDER BY COALESCE(last_login_at, created_at) DESC
           LIMIT ? OFFSET ?`,
     args: [...args, safeLimit, safeOffset],
   });

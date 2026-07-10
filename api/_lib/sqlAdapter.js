@@ -13,7 +13,7 @@ export function adaptSqliteToPostgres(sql) {
 
   s = s.replace(
     /date\(datetime\('now',\s*'\+7 hours'\)\)/gi,
-    "(NOW() AT TIME ZONE 'Asia/Ho_Chi_Minh')::date",
+    "(NOW() AT TIME ZONE 'Asia/Ho_Chi_Minh')::date::text",
   );
 
   s = s.replace(/datetime\('now',\s*'(-?\d+)\s+days'\)/gi, (_, n) => {
@@ -24,6 +24,11 @@ export function adaptSqliteToPostgres(sql) {
 
   s = s.replace(/datetime\('now'\)/gi, 'NOW()');
   s = s.replace(/datetime\(([^)]+)\)/gi, '$1');
+  // TEXT ISO timestamps vs NOW() interval (Postgres)
+  s = s.replace(
+    /COALESCE\((last_login_at,\s*created_at)\)\s*>=\s*(NOW\(\)\s*-\s*INTERVAL\s*'\d+\s+days')/gi,
+    'COALESCE($1)::timestamptz >= $2',
+  );
   s = s.replace(/DEFAULT \(datetime\('now'\)\)/gi, 'DEFAULT NOW()');
   s = s.replace(/\bBLOB\b/gi, 'BYTEA');
   s = s.replace(/\bexcluded\./gi, 'EXCLUDED.');
