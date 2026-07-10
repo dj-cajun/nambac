@@ -42,7 +42,7 @@ export default function GiaoAnPage() {
       {MATCHES.map((match) => {
         const builds = getGiaoAnsForMatch(match.id);
         return (
-          <section key={match.id} className="lq-match">
+          <section key={match.id} id={`match-${match.id}`} className="lq-match">
             <h2>
               {LQ_UI.matchLabel} {match.title}
             </h2>

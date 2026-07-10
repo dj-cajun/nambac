@@ -4,8 +4,8 @@
  */
 export const LQ_UI = {
   drawerLabel: 'Cẩm Nang Liên Quân',
-  searchPlaceholder: 'Tìm tướng của bạn...',
-  searchLabel: 'Tìm tướng của bạn',
+  searchPlaceholder: 'Tìm tướng, giáo án SGP, item, thuật ngữ…',
+  searchLabel: 'Tìm trong Cẩm Nang',
   lanePick: 'Chọn Đường',
 
   tabCounterTier: 'Khắc Chế & Tier',
@@ -42,7 +42,10 @@ export const LQ_UI = {
   khoeSub: 'Đăng MVP · clip TikTok · thả 🔥 — khoe là content.',
   khoeUploadCta: '+ Đăng chiến tích',
   khoeUploadClose: 'Đóng form',
-  khoeLoginHint: 'Đăng nhập Google để đăng bài — khoe clip rank lên feed.',
+  khoeImageLabel: 'Ảnh từ máy (tùy chọn)',
+  khoeImageHint: 'Chọn từ thư viện hoặc chụp · JPG/PNG tối đa 6MB',
+  khoeLoginHint: 'Đăng nhập Google để xem feed, đăng MVP và thả 🔥.',
+  khoeLoginGateTitle: 'Góc Khoe · cần đăng nhập',
   khoeCaptionPlaceholder: 'Hôm nay Flo quadra hard carry lane đối phương… 🔥',
   khoeEmptyHint: 'Chưa có bài mới? Bạn là người đầu tiên khoe MVP hôm nay!',
 

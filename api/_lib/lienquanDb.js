@@ -77,6 +77,13 @@ export async function upsertMasteryLevel(playerKey, level) {
   return next;
 }
 
+function normalizeBoastImageUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (raw.startsWith('/api/lienquan/khoe-image?')) return raw.slice(0, 500);
+  return normalizeHttpsUrl(raw);
+}
+
 function normalizeHttpsUrl(value, { allowTiktok = false } = {}) {
   const raw = String(value || '').trim();
   if (!raw) return '';
@@ -161,7 +168,7 @@ export async function createBoast({
   if (text.length < 4) throw new Error('Caption too short');
 
   const name = String(displayName || 'Player').trim().slice(0, 40) || 'Player';
-  const image_url = normalizeHttpsUrl(imageUrl);
+  const image_url = normalizeBoastImageUrl(imageUrl);
   const tiktok_url = normalizeHttpsUrl(tiktokUrl, { allowTiktok: true });
   if (!image_url && !tiktok_url) {
     // allow text-only boasts

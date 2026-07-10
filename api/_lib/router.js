@@ -46,6 +46,7 @@ import { playerGradeGet, playerGradeComplete } from './handlers/playerGrade.js';
 import sitemap from './handlers/sitemap.js';
 import lienquanMastery from './handlers/lienquan/mastery.js';
 import lienquanBoast from './handlers/lienquan/boast.js';
+import lienquanKhoeImage from './handlers/lienquan/khoeImage.js';
 import lienquanQuizMeta from './handlers/lienquan/quizMeta.js';
 
 function stripPathQuery(query) {
@@ -235,6 +236,14 @@ export async function dispatch(req, res, segments = []) {
     ['GET', 'POST', 'PATCH', 'OPTIONS'].includes(method)
   ) {
     return lienquanBoast(req, res);
+  }
+  if (
+    a === 'lienquan' &&
+    (b === 'khoe-image' || b === 'khoe-upload') &&
+    !c &&
+    ['GET', 'POST', 'OPTIONS'].includes(method)
+  ) {
+    return lienquanKhoeImage(req, res);
   }
 
   return res.status(404).json({ error: 'Not found', path: segments.join('/') });

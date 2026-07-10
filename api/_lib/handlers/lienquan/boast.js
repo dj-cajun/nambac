@@ -24,6 +24,9 @@ export default async function handler(req, res) {
     });
 
     if (req.method === 'GET') {
+      if (!session?.userId) {
+        return res.status(401).json({ error: 'Đăng nhập Google để xem Góc Khoe' });
+      }
       const data = await listBoasts({
         limit: req.query?.limit,
         offset: req.query?.offset,
@@ -52,11 +55,15 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PATCH') {
+      if (!session?.userId) {
+        return res.status(401).json({ error: 'Đăng nhập Google để thích bài' });
+      }
       if (body.action !== 'like') {
         return res.status(400).json({ error: 'Unknown action' });
       }
-      if (!visitorKey) return res.status(400).json({ error: 'visitorId required' });
-      const result = await likeBoast(body.id, visitorKey);
+      const likeKey = buildLqPlayerKey({ userId: session.userId });
+      if (!likeKey) return res.status(400).json({ error: 'Login required' });
+      const result = await likeBoast(body.id, likeKey);
       return res.status(200).json(result);
     }
 

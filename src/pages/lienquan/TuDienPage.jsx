@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { LQ_GLOSSARY } from '../../../shared/lienquan/glossary.js';
 import { LQ_UI } from '../../../shared/lienquan/uiText.js';
 import { buildLienquanOgImageUrl, buildLienquanShareUrl } from '../../lib/siteUrl';
@@ -21,7 +21,13 @@ function flattenSection(section) {
 }
 
 export default function TuDienPage() {
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get('q') || '');
+
+  useEffect(() => {
+    const q = searchParams.get('q') || '';
+    setQuery(q);
+  }, [searchParams]);
   const ogImage = buildLienquanOgImageUrl();
   const shareUrl = buildLienquanShareUrl({ page: 'tu-dien' });
 

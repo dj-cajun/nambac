@@ -66,7 +66,6 @@ export default function LienquanHub() {
         <Link to="/lienquan/giao-an" className="lq-chip">{LQ_UI.tabGiaoAn}</Link>
         <Link to="/lienquan/khoe" className="lq-chip">{LQ_UI.tabKhoe}</Link>
         <Link to="/lienquan/tu-dien" className="lq-chip">{LQ_UI.tabTuDien}</Link>
-        <Link to="/lienquan#quiz" className="lq-chip lq-chip-accent">Thi Thông Thạo</Link>
       </nav>
 
       <TierStrip />

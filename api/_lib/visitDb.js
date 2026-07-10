@@ -59,7 +59,8 @@ async function ensureSchema(db) {
           sql: 'ALTER TABLE site_daily_visitors ADD COLUMN ip_key TEXT',
         });
       } catch (err) {
-        if (!String(err.message || '').toLowerCase().includes('duplicate column')) {
+        const msg = String(err.message || '').toLowerCase();
+        if (!msg.includes('duplicate column') && !msg.includes('already exists')) {
           ipColumnReady = null;
           throw err;
         }

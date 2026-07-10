@@ -295,9 +295,20 @@ export async function upsertQuestions(quizId, questions) {
     const q = questions[idx];
     const id = q.id && q.id.length > 20 ? q.id : randomUUID();
     await db.execute({
-      sql: `INSERT OR REPLACE INTO questions
+      sql: `INSERT INTO questions
         (id, quiz_id, order_number, question_text, option_a, option_b, score_a, score_b, image_url, dimension, options)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET
+          quiz_id = EXCLUDED.quiz_id,
+          order_number = EXCLUDED.order_number,
+          question_text = EXCLUDED.question_text,
+          option_a = EXCLUDED.option_a,
+          option_b = EXCLUDED.option_b,
+          score_a = EXCLUDED.score_a,
+          score_b = EXCLUDED.score_b,
+          image_url = EXCLUDED.image_url,
+          dimension = EXCLUDED.dimension,
+          options = EXCLUDED.options`,
       args: [
         id,
         quizId,
@@ -321,9 +332,17 @@ export async function upsertResults(quizId, results) {
     if (!r.title && !r.description) continue;
     const id = r.id && r.id.length > 20 ? r.id : randomUUID();
     await db.execute({
-      sql: `INSERT OR REPLACE INTO results
+      sql: `INSERT INTO results
         (id, quiz_id, result_code, title, type_name, description, traits, image_url)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET
+          quiz_id = EXCLUDED.quiz_id,
+          result_code = EXCLUDED.result_code,
+          title = EXCLUDED.title,
+          type_name = EXCLUDED.type_name,
+          description = EXCLUDED.description,
+          traits = EXCLUDED.traits,
+          image_url = EXCLUDED.image_url`,
       args: [
         id,
         quizId,

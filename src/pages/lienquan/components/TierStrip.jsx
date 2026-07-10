@@ -10,7 +10,7 @@ export default function TierStrip() {
   const heroes = ids.map((id) => getHero(id)).filter(Boolean);
 
   return (
-    <section className="lq-tier">
+    <section className="lq-tier" id="tier">
       <div className="lq-tier-head">
         <h2>{LQ_UI.tabCounterTier}</h2>
         <span className="lq-tier-date">{TIER_BOARD.label} · {TIER_BOARD.updatedAt}</span>

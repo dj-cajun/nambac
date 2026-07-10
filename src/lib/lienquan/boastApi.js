@@ -37,3 +37,14 @@ export async function likeBoast(boastId) {
     }),
   );
 }
+
+export async function uploadKhoeImage(base64Data) {
+  return parseJson(
+    await fetch(apiUrl('/lienquan/khoe-upload'), {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: base64Data }),
+    }),
+  );
+}

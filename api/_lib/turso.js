@@ -1,22 +1,28 @@
 import { createClient } from '@libsql/client';
+import { getPostgresDb, isPostgresConfigured } from './postgres.js';
 
-let client;
+let libsqlClient;
 
+/** DB client — Supabase Postgres 우선, 없으면 Turso(libsql) */
 export function getTurso() {
-  if (client) return client;
+  if (isPostgresConfigured()) {
+    return getPostgresDb();
+  }
+
+  if (libsqlClient) return libsqlClient;
 
   const url = process.env.TURSO_DATABASE_URL || process.env.VITE_TURSO_DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
   if (!url) {
-    throw new Error('TURSO_DATABASE_URL is not configured');
+    throw new Error('SUPABASE_DB_URL (or DATABASE_URL) or TURSO_DATABASE_URL is not configured');
   }
   if (!authToken) {
     throw new Error('TURSO_AUTH_TOKEN is not configured');
   }
 
-  client = createClient({ url, authToken });
-  return client;
+  libsqlClient = createClient({ url, authToken });
+  return libsqlClient;
 }
 
 function safeJsonParse(value, fallback = null) {
