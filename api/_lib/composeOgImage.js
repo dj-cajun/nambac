@@ -5,6 +5,7 @@ import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import sharp from 'sharp';
 import { formatFortuneDateShort } from '../../shared/fortuneEngine.js';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
+import { CANONICAL_SITE_ORIGIN } from '../../shared/siteOrigin.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMAGES_DIR = path.join(__dirname, '../../public/images');
@@ -671,11 +672,27 @@ const FEATURE_OG_HEIGHT = 630;
 const FEATURE_IMAGE_HEIGHT = 380;
 const FEATURE_PANEL_HEIGHT = FEATURE_OG_HEIGHT - FEATURE_IMAGE_HEIGHT;
 
-async function loadPublicAsset(publicPath) {
+function resolveAssetOrigin(host) {
+  if (host) {
+    const proto = String(host).includes('localhost') ? 'http' : 'https';
+    return `${proto}://${host}`;
+  }
+  return CANONICAL_SITE_ORIGIN;
+}
+
+/** Load /images/* — local in dev; HTTP fallback on Vercel (public/images excluded from bundle). */
+async function loadPublicAsset(publicPath, host) {
   const rel = String(publicPath || '').replace(/^\//, '');
   const fp = path.join(PUBLIC_DIR, rel);
-  if (!fs.existsSync(fp)) throw new Error(`Missing public asset: ${publicPath}`);
-  const buf = fs.readFileSync(fp);
+  let buf;
+  if (fs.existsSync(fp)) {
+    buf = fs.readFileSync(fp);
+  } else {
+    const origin = resolveAssetOrigin(host);
+    const res = await fetch(`${origin}/${rel}`);
+    if (!res.ok) throw new Error(`Missing public asset: ${publicPath}`);
+    buf = Buffer.from(await res.arrayBuffer());
+  }
   if (rel.endsWith('.svg')) {
     return sharp(buf, { density: 200 }).png().toBuffer();
   }
@@ -702,15 +719,18 @@ function buildLienquanPanelSvg({ title, subtitle }) {
 
 const LIENQUAN_OG_ASSETS = [
   { path: '/images/lienquan/hub-thumb.svg', w: 360, h: 360, top: 10, left: 40 },
-  { path: '/images/lienquan/khoe-flo.svg', w: 360, h: 108, top: 20, left: 440 },
-  { path: '/images/lienquan/khoe-nak.svg', w: 360, h: 108, top: 136, left: 440 },
-  { path: '/images/lienquan/khoe-elsu.svg', w: 360, h: 108, top: 252, left: 440 },
+  { path: '/images/lienquan/heroes/florentino.svg', w: 116, h: 116, top: 24, left: 440 },
+  { path: '/images/lienquan/heroes/nakroth.svg', w: 116, h: 116, top: 24, left: 572 },
+  { path: '/images/lienquan/heroes/elsu.svg', w: 116, h: 116, top: 156, left: 440 },
+  { path: '/images/lienquan/heroes/liliana.svg', w: 116, h: 116, top: 156, left: 572 },
+  { path: '/images/lienquan/heroes/thane.svg', w: 116, h: 116, top: 244, left: 506 },
 ];
 
 /** Liên Quân hub OG — hub thumb + khoe scene collage + dark gold panel */
 export async function composeLienquanOgImage({
   title = 'Cẩm Nang Liên Quân',
   subtitle = 'Khắc chế · Giáo án pro · Meta AOG',
+  host,
 } = {}) {
   const bg = await sharp({
     create: {
@@ -726,11 +746,11 @@ export async function composeLienquanOgImage({
   const composites = [];
   for (const asset of LIENQUAN_OG_ASSETS) {
     try {
-      const raw = await loadPublicAsset(asset.path);
+      const raw = await loadPublicAsset(asset.path, host);
       const tile = await resizeAsset(raw, asset.w, asset.h, 'cover');
       composites.push({ input: tile, top: asset.top, left: asset.left });
-    } catch {
-      /* skip missing tile */
+    } catch (err) {
+      console.warn('composeLienquanOgImage asset skip:', asset.path, err.message);
     }
   }
 
@@ -738,10 +758,7 @@ export async function composeLienquanOgImage({
   if (composites.length) {
     topImage = await sharp(bg).composite(composites).toBuffer();
   } else {
-    const fallback = path.join(__dirname, 'og-default.png');
-    topImage = await sharp(fs.readFileSync(fallback))
-      .resize(FEATURE_OG_WIDTH, FEATURE_IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
-      .toBuffer();
+    throw new Error('No Liên Quân OG assets loaded');
   }
 
   const panelBuffer = await renderPanelPng(buildLienquanPanelSvg({ title, subtitle }));
@@ -758,7 +775,7 @@ export async function composeLienquanOgImage({
       { input: topImage, top: 0, left: 0 },
       { input: panelBuffer, top: FEATURE_IMAGE_HEIGHT, left: 0 },
     ])
-    .webp({ quality: 90 })
+    .png()
     .toBuffer();
 }
 
@@ -788,10 +805,11 @@ const VBTI_OG_TYPE_TILES = [
 export async function composeVbtiOgImage({
   title = 'VBTI',
   subtitle = '27 nhãn meme · test tiếng Việt trên nambac',
+  host,
 } = {}) {
   let topImage;
   try {
-    const hub = await loadPublicAsset('/images/sbti_hub.webp');
+    const hub = await loadPublicAsset('/images/sbti_hub.webp', host);
     const hubBg = await resizeAsset(hub, FEATURE_OG_WIDTH, FEATURE_IMAGE_HEIGHT, 'cover');
 
     const tileW = 168;
@@ -801,7 +819,7 @@ export async function composeVbtiOgImage({
     const composites = [];
     for (let i = 0; i < VBTI_OG_TYPE_TILES.length; i += 1) {
       try {
-        const raw = await loadPublicAsset(VBTI_OG_TYPE_TILES[i]);
+        const raw = await loadPublicAsset(VBTI_OG_TYPE_TILES[i], host);
         const tile = await resizeAsset(raw, tileW, tileH, 'cover');
         const col = i % 3;
         const row = Math.floor(i / 3);
@@ -818,11 +836,9 @@ export async function composeVbtiOgImage({
     topImage = composites.length
       ? await sharp(hubBg).composite(composites).toBuffer()
       : hubBg;
-  } catch {
-    const fallback = path.join(__dirname, 'og-default.png');
-    topImage = await sharp(fs.readFileSync(fallback))
-      .resize(FEATURE_OG_WIDTH, FEATURE_IMAGE_HEIGHT, { fit: 'cover', position: 'attention' })
-      .toBuffer();
+  } catch (err) {
+    console.error('composeVbtiOgImage hub load failed:', err.message);
+    throw err;
   }
 
   const panelBuffer = await renderPanelPng(buildVbtiPanelSvg({ title, subtitle }));
@@ -839,7 +855,7 @@ export async function composeVbtiOgImage({
       { input: topImage, top: 0, left: 0 },
       { input: panelBuffer, top: FEATURE_IMAGE_HEIGHT, left: 0 },
     ])
-    .webp({ quality: 90 })
+    .png()
     .toBuffer();
 }
 
@@ -880,7 +896,7 @@ export async function composeLienquanThumbImage() {
     const composites = [];
     try {
       const hub = await resizeAsset(
-        await loadPublicAsset('/images/lienquan/hub-thumb.svg'),
+        await loadPublicAsset('/images/lienquan/hub-thumb.svg', null),
         340,
         340,
         'contain',
@@ -897,7 +913,7 @@ export async function composeLienquanThumbImage() {
     ];
     for (const clip of clips) {
       try {
-        const tile = await resizeAsset(await loadPublicAsset(clip.path), 200, 112, 'cover');
+        const tile = await resizeAsset(await loadPublicAsset(clip.path, null), 200, 112, 'cover');
         composites.push({ input: tile, top: clip.top, left: clip.left });
       } catch {
         /* ignore */

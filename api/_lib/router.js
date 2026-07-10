@@ -207,10 +207,10 @@ export async function dispatch(req, res, segments = []) {
   if (a === 'fortune-share' && !b) return fortuneShare(req, res);
 
   // ── Liên Quân / VBTI hub OG cards ──
-  if (a === 'lienquan-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+  if (a === 'lienquan-og' && !b && (method === 'GET' || method === 'HEAD' || method === 'OPTIONS')) {
     return lienquanOg(req, res);
   }
-  if (a === 'vbti-og' && !b && (method === 'GET' || method === 'OPTIONS')) {
+  if (a === 'vbti-og' && !b && (method === 'GET' || method === 'HEAD' || method === 'OPTIONS')) {
     return vbtiOg(req, res);
   }
   if (a === 'lienquan-share' && !b) return lienquanShare(req, res);

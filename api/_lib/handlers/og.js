@@ -34,6 +34,9 @@ function buildResultDescription(result) {
 
 export function ogHtml({ title, description, image, url, redirectUrl }) {
   const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const refresh = redirectUrl
+    ? `<meta http-equiv="refresh" content="0;url=${esc(redirectUrl)}">`
+    : '';
   return `<!DOCTYPE html>
 <html><head>
 <meta charset="utf-8">
@@ -45,13 +48,14 @@ export function ogHtml({ title, description, image, url, redirectUrl }) {
 <meta property="og:image" content="${esc(image)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
 <meta property="og:url" content="${esc(url)}">
 <meta property="og:site_name" content="nambac.xyz">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${esc(image)}">
-<meta http-equiv="refresh" content="0;url=${esc(redirectUrl)}">
+${refresh}
 </head>
 <body><p>Redirecting...</p></body>
 </html>`;

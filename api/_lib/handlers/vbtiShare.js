@@ -122,7 +122,6 @@ export default async function handler(req, res) {
       description: meta.description,
       image,
       url: `${currentBase}${sharePath}`,
-      redirectUrl,
     });
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');

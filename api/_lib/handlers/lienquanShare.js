@@ -88,7 +88,6 @@ export default async function handler(req, res) {
         subtitle: meta.ogSubtitle,
       }),
       url: `${currentBase}${sharePath}`,
-      redirectUrl,
     });
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
