@@ -409,14 +409,21 @@
 
 .drawer-footer {
   flex-shrink: 0;
-  padding: 16px;
+  padding: 12px 16px 16px;
   border-top: 1px solid #f1f5f9;
   background: #f8fafc;
   text-align: center;
 }
 
+.drawer-footer .drawer-link {
+  display: block;
+  margin-bottom: 4px;
+  text-align: left;
+  background: transparent;
+}
+
 .drawer-footer p {
-  margin: 0;
+  margin: 10px 0 0;
   font-size: 14px;
   font-weight: 600;
   color: #94a3b8;

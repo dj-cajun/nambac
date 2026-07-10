@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchFortuneSceneImage } from '../lib/fortuneApi';
+import { fetchBalanceSceneImage } from '../lib/balanceApi';
 import { getHomeFeatureThumbPlan } from '../../shared/featureThumbnails.js';
 
 export function useHomeFeatureThumbs() {
@@ -7,6 +8,7 @@ export function useHomeFeatureThumbs() {
 
   const [fortuneTodaySrc, setFortuneTodaySrc] = useState(plan.fortuneToday.src);
   const [fortuneTomorrowSrc, setFortuneTomorrowSrc] = useState(plan.fortuneTomorrow.src);
+  const [balanceSrc, setBalanceSrc] = useState(plan.balance.src);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,10 +22,12 @@ export function useHomeFeatureThumbs() {
         fortuneIndex: plan.fortuneTomorrow.fortuneIndex,
         dateLabel: plan.fortuneTomorrow.dateLabel,
       }),
-    ]).then(([todayRes, tomorrowRes]) => {
+      fetchBalanceSceneImage(plan.balance.questionId),
+    ]).then(([todayRes, tomorrowRes, balanceRes]) => {
       if (cancelled) return;
       if (todayRes.status === 'fulfilled') setFortuneTodaySrc(todayRes.value.src);
       if (tomorrowRes.status === 'fulfilled') setFortuneTomorrowSrc(tomorrowRes.value.src);
+      if (balanceRes.status === 'fulfilled') setBalanceSrc(balanceRes.value.src);
     });
 
     return () => {
@@ -36,5 +40,6 @@ export function useHomeFeatureThumbs() {
     fortuneTomorrow: { ...plan.fortuneTomorrow, src: fortuneTomorrowSrc },
     roast: plan.roast,
     brain: plan.brain,
+    balance: { ...plan.balance, src: balanceSrc },
   };
 }

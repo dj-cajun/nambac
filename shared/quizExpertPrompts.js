@@ -1,7 +1,12 @@
 /**
  * Expert agent prompts — one per QUIZ_CATEGORY id.
  * Used by: Admin/QuizEditor (Gemini), Cron daily quiz, demo scripts.
- * All experts inherit MASTER v5.0 rich content minimums (see shared/quizPrompts.js).
+ * All experts inherit MASTER v5.1 rich content + anti-leakage rules (see shared/quizPrompts.js).
+ *
+ * ⚠️ Custom topic input: write a plain creative brief only
+ * (e.g. "attachment style ở Sài Gòn"). Do NOT paste research notes,
+ * source links, or phrases like "inspired by GitHub personality-test repos"
+ * — the LLM may copy these verbatim into the final quiz text.
  */
 
 const EXPERT_RICHNESS_FOOTER = `
@@ -9,7 +14,10 @@ const EXPERT_RICHNESS_FOOTER = `
 - Questions = mini-scenarios (70+ chars): who, where (Sài Gòn), conflict, "Bạn sẽ làm gì?"
 - Every option = action/dialogue + (parenthetical punchline in Vietnamese)
 - 8 result archetypes with type_name in quotes + description 320+ chars (4+ sentences) + exactly 3 traits
-- Reference tone: viral crush/Zalo/trà sữa quizzes on nambac.xyz — never dry or generic`;
+- Reference tone: viral crush/Zalo/trà sữa quizzes on nambac.xyz — never dry or generic
+- Never leak topic-source meta (GitHub, repo, README, research notes) into Vietnamese output
+- Never duplicate a closing CTA / sentence inside the same field
+- Never join two alternate phrasings with " | "`;
 
 export const QUIZ_EXPERT_PROMPTS = {
   MBTI: `# 🧠 Expert: MBTI (category id: MBTI)

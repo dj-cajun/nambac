@@ -22,14 +22,9 @@ export default function BottomNav() {
         <Compass size={24} color={isActive('/explore') ? '#FF2D85' : '#94A3B8'} />
         <span className={labelClass('/explore')}>Khám phá</span>
       </div>
-      <div className="w-12" />
       <div className={`nav-item-col ${isActive('/leaderboard') ? 'active' : ''}`} onClick={() => navigate('/leaderboard')}>
         <BarChart2 size={24} color={isActive('/leaderboard') ? '#FF2D85' : '#94A3B8'} />
         <span className={labelClass('/leaderboard')}>BXH</span>
-      </div>
-      <div className={`nav-item-col ${isActive('/brands') ? 'active' : ''}`} onClick={() => navigate('/brands')}>
-        <span style={{ fontSize: '20px', lineHeight: 1 }}>🎯</span>
-        <span className={labelClass('/brands')}>Thương hiệu</span>
       </div>
     </div>
   );

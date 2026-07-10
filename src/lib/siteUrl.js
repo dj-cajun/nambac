@@ -40,7 +40,7 @@ export function buildRoastOgImageUrl(name, traitId) {
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
 
-/** Balance (Chọn 1 trong 2) share OG — scene image + question + picked A/B */
+/** Balance Quiz share OG — scene image + question + picked A/B */
 export function buildBalanceOgImageUrl(questionId, choice = null) {
   const side = choice === 'a' ? 'A' : choice === 'b' ? 'B' : '';
   if (import.meta.env.DEV) {

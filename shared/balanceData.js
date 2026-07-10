@@ -1,5 +1,5 @@
 /**
- * Balance game dataset — Chọn 1 trong 2 (shared client + server)
+ * Balance game dataset — Balance Quiz (shared client + server)
  * Schema: id, emoji?, title, optionA, optionB
  */
 
@@ -210,7 +210,7 @@ export const BALANCE_QUESTIONS = [
   {
     id: 'sc_030',
     emoji: '💅',
-    title: 'Chụp ảnh nhóm đăng lên, bạn xấu bạn đẹp:',
+    title: 'Chụp ảnh nhóm, trong hình mình đẹp còn bạn bị dìm:',
     optionA: 'Đăng — mình đẹp là được, bạn tự lo. (Ruthless queen!)',
     optionB: 'Chụp lại tấm khác — không bỏ ai lại phía sau. (Loyal friend!)',
   },

@@ -40,7 +40,7 @@ function buildMiniAppsGroup(todayBalance) {
     label: '🎮 Chơi nhanh',
     variant: 'miniapps',
     links: [
-      { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} 1 trong 2` },
+      { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} Balance Quiz` },
       { to: '/roast-card', label: '💳 Bóc phốt' },
       { to: '/brain', label: '🧠 Não bạn' },
     ],
@@ -236,6 +236,26 @@ export default function SidebarDrawer() {
             </div>
 
             <div className="drawer-footer">
+              <Link
+                to="/brands"
+                className="drawer-link drawer-link--lined"
+                onClick={() => {
+                  scrollToTop();
+                  closeDrawer();
+                }}
+              >
+                🎯 Thương hiệu / Hợp tác
+              </Link>
+              <Link
+                to="/blog"
+                className="drawer-link drawer-link--lined"
+                onClick={() => {
+                  scrollToTop();
+                  closeDrawer();
+                }}
+              >
+                📰 Insights
+              </Link>
               <p>Gen Z Sài Gòn · Không cần đăng nhập</p>
             </div>
           </motion.aside>

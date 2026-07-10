@@ -241,7 +241,6 @@ export default function Home() {
     brain: { view_count: 0, share_count: 0, like_count: 0 },
   });
   const [doneToday, setDoneToday] = useState(() => readTodayDone());
-  const [todayOpen, setTodayOpen] = useState(false);
   const carouselRef = useRef(null);
   const introPanelRef = useRef(null);
   const introBodyRef = useRef(null);
@@ -418,10 +417,6 @@ export default function Home() {
     navigate(item.to);
   };
 
-  const toggleTodaySection = () => {
-    setTodayOpen((prev) => !prev);
-  };
-
   if (loading) {
     return (
       <div className="home-container flex items-center justify-center">
@@ -451,136 +446,138 @@ export default function Home() {
         />
         <meta property="og:image" content={ogImage} />
       </Helmet>
-      <section className={`home-today${todayOpen ? ' is-open' : ''}`} aria-label="Hôm nay">
-        <button
-          type="button"
-          className="home-today-header"
-          onClick={toggleTodaySection}
-          aria-expanded={todayOpen}
-        >
-          <div className="home-today-header-text">
-            <h2 className="home-today-title">Hôm nay · Chơi 90 giây ☕</h2>
-            <p className="home-today-sub">Ở quán cf? Làm nhanh rồi khoe Zalo nhé</p>
-          </div>
-          <span className="home-today-chevron" aria-hidden="true">{todayOpen ? '▲' : '▼'}</span>
-        </button>
+      <section className="home-today" aria-label="Hôm nay">
+        <div className="home-today-header-text">
+          <h2 className="home-today-title">Hôm nay · Chơi 90 giây ☕</h2>
+          <p className="home-today-sub">Ở quán cf? Làm nhanh rồi khoe Zalo nhé</p>
+        </div>
 
-        <div className={`home-today-body-wrap${todayOpen ? ' is-open' : ''}`} aria-hidden={!todayOpen}>
-          <div className="home-today-body">
-            <div className="home-today-grid">
-              {todayQuiz && (
-                <TodayThumbCard
-                  className={`home-today-card home-today-quiz${doneToday.has('quiz') ? ' is-done' : ''}`}
-                  done={doneToday.has('quiz')}
-                  onClick={() => handleQuizClick(todayQuiz.id)}
-                  imageSrc={todayQuiz.image_url}
-                  imageSeed={todayQuiz.id}
-                  label="Quiz"
-                  emoji="🎯"
-                />
-              )}
+        <div className="home-today-body">
+          <div className="home-today-grid">
+            {todayQuiz && (
               <TodayThumbCard
-                className={`home-today-card home-today-fortune${doneToday.has('fortune') ? ' is-done' : ''}`}
-                done={doneToday.has('fortune')}
-                to="/fortune"
-                imageSrc={featureThumbs.fortuneToday.src}
-                imageSeed={featureThumbs.fortuneToday.seed}
-                label="Tử vi"
-                emoji={FORTUNE_BRAND.emoji}
+                className={`home-today-card home-today-quiz${doneToday.has('quiz') ? ' is-done' : ''}`}
+                done={doneToday.has('quiz')}
+                onClick={() => handleQuizClick(todayQuiz.id)}
+                imageSrc={todayQuiz.image_url}
+                imageSeed={todayQuiz.id}
+                label="Quiz"
+                emoji="🎯"
               />
-              <TodayThumbCard
-                className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
-                done={doneToday.has('balance')}
-                to={`/balance/${todayBalance.id}`}
-                label="1 trong 2"
-                emoji={todayBalance.emoji || '⚖️'}
-              />
-              <TodayThumbCard
-                className={`home-today-card home-today-roast${doneToday.has('roast') ? ' is-done' : ''}`}
-                done={doneToday.has('roast')}
-                to="/roast-card"
-                imageSrc={featureThumbs.roast.src}
-                imageSeed={featureThumbs.roast.seed}
-                label="Bóc phốt"
-                emoji="💳"
-              />
-              <TodayThumbCard
-                className={`home-today-card home-today-brain${doneToday.has('brain') ? ' is-done' : ''}`}
-                done={doneToday.has('brain')}
-                to="/brain"
-                imageSrc={featureThumbs.brain.src}
-                imageSeed={featureThumbs.brain.seed}
-                label="Não bạn"
-                emoji="🧠"
-              />
-            </div>
+            )}
+            <TodayThumbCard
+              className={`home-today-card home-today-fortune${doneToday.has('fortune') ? ' is-done' : ''}`}
+              done={doneToday.has('fortune')}
+              to="/fortune"
+              imageSrc={featureThumbs.fortuneToday.src}
+              imageSeed={featureThumbs.fortuneToday.seed}
+              label="Tử vi"
+              emoji={FORTUNE_BRAND.emoji}
+            />
+            <TodayThumbCard
+              className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
+              done={doneToday.has('balance')}
+              to={`/balance/${todayBalance.id}`}
+              imageSrc={featureThumbs.balance?.src}
+              imageSeed={featureThumbs.balance?.seed || todayBalance.id}
+              label="Balance Quiz"
+              emoji={todayBalance.emoji || '⚖️'}
+            />
+            <TodayThumbCard
+              className={`home-today-card home-today-roast${doneToday.has('roast') ? ' is-done' : ''}`}
+              done={doneToday.has('roast')}
+              to="/roast-card"
+              imageSrc={featureThumbs.roast.src}
+              imageSeed={featureThumbs.roast.seed}
+              label="Bóc phốt"
+              emoji="💳"
+            />
           </div>
+
+          {todayQuiz && (
+            <button
+              type="button"
+              className="home-today-start-cta"
+              onClick={() => handleQuizClick(todayQuiz.id)}
+            >
+              ▶ Bắt đầu quiz hôm nay
+            </button>
+          )}
+
+          <Link to="/brain" className="home-today-more-link">
+            Não bạn 🧠 · thêm trò chơi →
+          </Link>
         </div>
       </section>
 
+      <AdSenseUnit adSlot={AD_SLOTS.home} location="home-middle" />
+
       {heroSlides.length > 0 && (
-        <div className="hero-carousel-outer">
-          <div className="hero-carousel-wrapper">
-            <div
-              className="hero-carousel"
-              ref={carouselRef}
-              onScroll={handleScroll}
-              onMouseDown={handleMouseDown}
-              onMouseLeave={handleMouseLeave}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-            >
-              {heroSlides.map((item) => (
-                <div
-                  key={`${item.kind}-${item.id}`}
-                  className="hero-slide"
-                  onClick={() => handleFeedItemClick(item)}
-                >
-                  <div className="hero-image-bg">
-                    <QuizImage src={item.image_url} alt={item.title} seed={item.imageSeed} />
+        <section className="home-hot-section" aria-label="Đang hot">
+          <h3 className="home-hot-title">🔥 Đang hot</h3>
+          <div className="hero-carousel-outer">
+            <div className="hero-carousel-wrapper">
+              <div
+                className="hero-carousel"
+                ref={carouselRef}
+                onScroll={handleScroll}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+              >
+                {heroSlides.map((item) => (
+                  <div
+                    key={`${item.kind}-${item.id}`}
+                    className="hero-slide"
+                    onClick={() => handleFeedItemClick(item)}
+                  >
+                    <div className="hero-image-bg">
+                      <QuizImage src={item.image_url} alt={item.title} seed={item.imageSeed} />
+                    </div>
+                    <div className="hero-overlay-gradient" />
+                    <div className="hero-content">
+                      <span className="trending-badge">{item.typeLabel}</span>
+                      <h2 className="hero-title">{item.title}</h2>
+                    </div>
                   </div>
-                  <div className="hero-overlay-gradient" />
-                  <div className="hero-content">
-                    <span className="trending-badge">{item.typeLabel}</span>
-                    <h2 className="hero-title">{item.title}</h2>
-                  </div>
-                </div>
+                ))}
+              </div>
+            </div>
+            <div className="carousel-dots">
+              {heroSlides.map((item, index) => (
+                <button
+                  key={`${item.kind}-${item.id}-dot`}
+                  type="button"
+                  className={`dot ${currentSlide === index ? 'active' : ''}`}
+                  onClick={() => goToSlide(index)}
+                  aria-label={`Slide ${index + 1}`}
+                />
               ))}
             </div>
           </div>
-          <div className="carousel-dots">
-            {heroSlides.map((item, index) => (
+        </section>
+      )}
+
+      <section className="home-feed-section" aria-label="Khám phá quiz">
+        <div className="home-sort-bar">
+          <div className="sort-tabs" role="tablist" aria-label="Sắp xếp quiz">
+            {SORT_OPTIONS.map((opt) => (
               <button
-                key={`${item.kind}-${item.id}-dot`}
+                key={opt.id}
                 type="button"
-                className={`dot ${currentSlide === index ? 'active' : ''}`}
-                onClick={() => goToSlide(index)}
-                aria-label={`Slide ${index + 1}`}
-              />
+                role="tab"
+                aria-selected={sortMode === opt.id}
+                className={`sort-tab ${sortMode === opt.id ? 'active' : ''}`}
+                onClick={() => setSortMode(opt.id)}
+              >
+                <span className="sort-tab-emoji" aria-hidden="true">{opt.emoji}</span>
+                <span className="sort-tab-label">{opt.label}</span>
+              </button>
             ))}
           </div>
         </div>
-      )}
 
-      <div className="home-sort-bar">
-        <div className="sort-tabs" role="tablist" aria-label="Sắp xếp quiz">
-          {SORT_OPTIONS.map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              role="tab"
-              aria-selected={sortMode === opt.id}
-              className={`sort-tab ${sortMode === opt.id ? 'active' : ''}`}
-              onClick={() => setSortMode(opt.id)}
-            >
-              <span className="sort-tab-emoji" aria-hidden="true">{opt.emoji}</span>
-              <span className="sort-tab-label">{opt.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6">
         <h3 className="glass-section-title">{SECTION_TITLES[sortMode]}</h3>
         <div className="glass-list grid-cols-2">
           {feedItems.length === 0 ? (
@@ -606,15 +603,24 @@ export default function Home() {
             ))
           )}
         </div>
-      </div>
+      </section>
 
-      <AdSenseUnit adSlot={AD_SLOTS.home} location="home-middle" />
+      <section className="home-brand-cta" aria-label="Hợp tác thương hiệu">
+        <p className="home-brand-cta-kicker">Dành cho nhãn hàng</p>
+        <h3>Chạy quiz branded để kéo Gen Z thật</h3>
+        <p>
+          Team nambac hỗ trợ từ concept, nội dung, hình ảnh đến báo cáo realtime.
+          Phù hợp cho launch sản phẩm, social campaign, seeding cộng đồng.
+        </p>
+        <div className="home-brand-cta-actions">
+          <Link to="/brands" className="home-brand-cta-btn primary">Nhận tư vấn miễn phí</Link>
+          <Link to="/brands" className="home-brand-cta-btn">Xem gói hợp tác</Link>
+        </div>
+      </section>
 
       <div className="home-intro-box">
-        <h3 className="home-intro-box-title">nambac.xyz — Trắc nghiệm tính cách AI</h3>
-        <p className="home-intro-box-desc">
-          Mỗi bài chỉ 5 câu hỏi — nhanh, vui và đầy bất ngờ!
-        </p>
+        <h3 className="home-intro-box-title">nambac.xyz</h3>
+        <p className="home-intro-box-desc">Trắc nghiệm AI · 5 câu · share Zalo liền</p>
         <div className="home-intro-btns" role="group" aria-label="Thông tin nambac">
           {INTRO_BUTTONS.map((btn) => (
             <button
@@ -628,20 +634,9 @@ export default function Home() {
             </button>
           ))}
         </div>
-
-        <button
-          type="button"
-          className={`home-intro-btn home-intro-btn-wide${introModal === 'brands' ? ' active' : ''}`}
-          aria-expanded={introModal === 'brands'}
-          onClick={() => openIntroSection('brands')}
-        >
-          Hợp tác thương hiệu 🎯
-        </button>
-
         <Link to="/blog" className="home-intro-btn home-intro-btn-wide home-intro-btn-link">
-          Insights 📰 — Bài viết phân tích
+          Insights 📰
         </Link>
-
         {introModal && (
           <div
             ref={introPanelRef}
@@ -669,19 +664,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      <section className="home-brand-cta" aria-label="Hợp tác thương hiệu">
-        <p className="home-brand-cta-kicker">Dành cho nhãn hàng</p>
-        <h3>Chạy quiz branded để kéo Gen Z thật</h3>
-        <p>
-          Team nambac hỗ trợ từ concept, nội dung, hình ảnh đến báo cáo realtime.
-          Phù hợp cho launch sản phẩm, social campaign, seeding cộng đồng.
-        </p>
-        <div className="home-brand-cta-actions">
-          <Link to="/brands" className="home-brand-cta-btn primary">Nhận tư vấn miễn phí</Link>
-          <Link to="/brands" className="home-brand-cta-btn">Xem gói hợp tác</Link>
-        </div>
-      </section>
 
       <footer className="home-footer">
         <p className="home-footer-copy">

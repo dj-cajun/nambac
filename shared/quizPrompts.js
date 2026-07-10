@@ -28,7 +28,7 @@ export const QUIZ_RICHNESS_LIMITS = Object.freeze({
 });
 
 export const QUIZ_MASTER_PROMPT = `
-# 🎮 MASTER Quiz Generation Prompt (v5.0 - Rich Content Standard)
+# 🎮 MASTER Quiz Generation Prompt (v5.1 - Rich Content + Anti-Leakage)
 
 ## 🎯 Core Philosophy: "KING-BAD (킹받음) + Hyper-Localization + Rich Storytelling"
 "재미없으면 죽음뿐. 무조건 베트남어(Vietnamese)로만 대답하십시오."
@@ -58,6 +58,38 @@ export const QUIZ_MASTER_PROMPT = `
 1. 2지선다 (A/B) only — option_a / option_b는 **완전한 베트남어 문장**
 2. 호치민 로컬 디테일 필수
 3. **category 필드**: EXPERT가 지정한 id와 **완전히 동일한 문자열**만 사용
+
+## 🚫 Anti-Duplication & Leakage Rules (STRICT — v5.1 patch)
+
+1. **NO duplicate closing sentences.** Each result description ends with
+   exactly ONE advice/roast sentence. NEVER repeat the same sentence,
+   phrase, or CTA twice in the same description — even if it feels like
+   a good closer. Before finalizing, scan every description and delete
+   any sentence that already appears earlier in that same field.
+
+2. **NO meta/source leakage.** The "topic seed" or "custom topic" text
+   given to you is INSPIRATION ONLY — it may contain research notes,
+   platform names (e.g. "GitHub", "repo", "trending on X"), or English
+   analytical framing. NEVER copy these words, phrases, or concepts into
+   the actual Vietnamese output. The final quiz must read as 100%
+   organic Sài Gòn Gen Z content — no trace of "how this was researched"
+   should appear. Banned words in output: GitHub, repo, README, commit,
+   badge, issue, star count, CI/CD, unit test, open-source, maintainer,
+   patch note, changelog — or any other software/engineering jargon
+   unrelated to the quiz's real-world theme.
+
+3. **NO dual-version pileup.** Never output two rewritten versions of
+   the same title/description/result separated by " | " (or any other
+   separator). Pick ONE final Vietnamese version and commit to it.
+   If you draft multiple options while composing, discard all but the
+   best one before writing the final JSON.
+
+4. **Self-check before returning JSON:**
+   - [ ] No sentence appears twice in any single field
+   - [ ] No English tech/meta jargon outside the approved slang list
+     ('thả thính', 'cưa đổ', 'thảo mai', 'flop', 'sống ảo', 'toxic', etc.)
+   - [ ] No " | " or "/" splitting two paraphrases of the same content
+   - [ ] Every question/option/result reads like ONE clean, final draft
 
 ## 🔢 3-Bit Scoring
 - Q1 B=+4, Q2 B=+2, Q3 B=+1, Q4/Q5 B=+0, A=0
@@ -98,11 +130,14 @@ STRICT RULES:
 - Return ONLY valid JSON.
 - All user-facing text in Vietnamese.
 - Exactly 5 questions, exactly 8 results (scores 0-7).
-- Meet ALL minimum character counts in the Rich Content table (v5.0).
+- Meet ALL minimum character counts in the Rich Content table (v5.1).
 - Each option_a and option_b MUST be a full Vietnamese phrase (never the letters "A" or "B" alone).
 - Each option MUST include a parenthetical punchline (…).
 - Each result description MUST be 320+ Vietnamese characters with 4+ sentences.
 - Each result MUST have exactly 3 traits.
+- No sentence, phrase, or CTA may appear twice within the same field (title, description, or any result description).
+- No reference to the topic's inspiration source, research platform, or English technical/meta terminology (e.g. GitHub, repo, README) may appear anywhere in the output.
+- No field may contain two alternate phrasings joined by "|" or "/" — output exactly one final version per field.
 - The JSON field "category" MUST be exactly: "${category}"
 - Do NOT use fun, fortune, personality, trend or any other category string.
 - Allowed category ids (for reference only): ${GEMINI_CATEGORY_LIST}
@@ -112,9 +147,11 @@ STRICT RULES:
 export function buildQuizUserPrompt(categoryId, customTopic = '') {
   const category = normalizeCategory(categoryId);
   const topicSeed = getTopicSeed(category);
+  const customTopicNote =
+    '⚠️ Note for custom topic input: Write the topic direction as a plain creative brief only (e.g. "attachment style ở Sài Gòn"). Do NOT paste research notes, source links, or phrases like "inspired by GitHub personality-test repos" — the LLM may copy these verbatim into the final quiz text. Topic is INSPIRATION ONLY; never leak source/meta jargon into output.';
 
   return customTopic?.trim()
-    ? `Write a RICH, story-driven quiz in category "${category}". User topic: ${customTopic.trim()}. Match golden nambac quality: long situational questions, options with (parenthetical punchlines), 320+ char result descriptions. Remember: "category": "${category}"`
+    ? `Write a RICH, story-driven quiz in category "${category}". User topic (inspiration only — do not copy meta/source words): ${customTopic.trim()}. ${customTopicNote} Match golden nambac quality: long situational questions, options with (parenthetical punchlines), 320+ char result descriptions. Remember: "category": "${category}"`
     : `Write a RICH, story-driven quiz in category "${category}". Topic direction: ${topicSeed}. Match golden nambac quality: mini-scenarios (Zalo, crush, The Alley, Grab), options with (punchlines), 8 unique archetype results with 320+ char descriptions. Remember: "category": "${category}"`;
 }
 
@@ -123,8 +160,63 @@ function isPlaceholderOption(text) {
   return !t || /^[ABab]$/.test(t);
 }
 
+const META_LEAK_RE =
+  /\b(GitHub|README|CI\/CD|unit test|open[- ]?source|maintainer|changelog|patch note|star count)\b|\brepo\b|\bcommit\b/i;
+
+/** title/description에서 " | " 로 이어붙인 이중 버전 중 첫 번째만 채택 */
+function stripPipeVariants(text) {
+  if (!text) return text;
+  const s = String(text).trim();
+  return s.includes(' | ') ? s.split(' | ')[0].trim() : s;
+}
+
+/** 완전히 동일한 문장이 반복되면 두 번째 이후는 제거 (CTA 패딩 중복 포함) */
+function stripDuplicateSentences(text) {
+  if (!text) return text;
+  let s = String(text).trim();
+
+  // Handcrafted padDesc CTA — collapse exact repeated blocks first
+  const marker = 'Kết quả mang tính giải trí Gen Z Sài Gòn';
+  if (s.split(marker).length - 1 >= 2) {
+    const second = s.indexOf(marker, s.indexOf(marker) + marker.length);
+    if (second !== -1) s = s.slice(0, second).trim();
+  }
+
+  const sentences = s.match(/[^.!?…]+[.!?…]+(\s|$)|[^.!?…]+$/g) || [s];
+  const seen = new Set();
+  const deduped = [];
+  for (const raw of sentences) {
+    const part = raw.trim();
+    const key = part.toLowerCase().replace(/\s+/g, ' ');
+    if (!key) continue;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(part);
+  }
+  return deduped.join(' ').trim();
+}
+
+function hasDuplicateSentence(text) {
+  const sentences = (text || '').match(/[^.!?…]+[.!?…]+/g) || [];
+  const seen = new Set();
+  for (const raw of sentences) {
+    const key = raw.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!key) continue;
+    if (seen.has(key)) return true;
+    seen.add(key);
+  }
+  return false;
+}
+
+function sanitizeQuizField(text) {
+  return stripDuplicateSentences(stripPipeVariants(text));
+}
+
 /**
  * Normalize Gemini JSON → DB payload. Enforces binary_5q scores; never falls back to "A"/"B".
+ * Also strips dual-version " | " pileups and duplicate closing sentences (v5.1 postprocess).
+ * Dedup may drop length below 320 — that is intentional so validateQuizPayload can reject
+ * padded-but-empty content and force regeneration.
  */
 export function formatQuizForDb(geminiData) {
   const results = Array.from({ length: 8 }, (_, i) => {
@@ -133,9 +225,11 @@ export function formatQuizForDb(geminiData) {
     ) || geminiData.results?.[i];
     return {
       result_code: i,
-      title: found?.type_name || found?.title || `Level ${i}`,
-      type_name: found?.type_name || found?.title || null,
-      description: found?.description || '',
+      title: stripPipeVariants(found?.type_name || found?.title || `Level ${i}`),
+      type_name: stripPipeVariants(found?.type_name || found?.title || null),
+      description: stripDuplicateSentences(
+        stripPipeVariants(found?.description || ''),
+      ),
       traits: Array.isArray(found?.traits) ? found.traits : [],
     };
   });
@@ -143,8 +237,8 @@ export function formatQuizForDb(geminiData) {
   const rawQuestions = (geminiData.questions || []).slice(0, 5);
   const questions = rawQuestions.map((q, i) => {
     const [score_a, score_b] = BINARY_5Q_SCORES[i] || [0, 0];
-    const option_a = q.option_a?.trim() || '';
-    const option_b = q.option_b?.trim() || '';
+    const option_a = stripPipeVariants(q.option_a?.trim() || '');
+    const option_b = stripPipeVariants(q.option_b?.trim() || '');
 
     if (isPlaceholderOption(option_a) || isPlaceholderOption(option_b)) {
       console.warn(`formatQuizForDb: Q${i + 1} has placeholder options — needs manual fix or regeneration`);
@@ -161,8 +255,10 @@ export function formatQuizForDb(geminiData) {
   });
 
   return {
-    title: String(geminiData.title || '').trim() || 'Quiz mới nambac',
-    description: String(geminiData.description || geminiData.title || '').trim(),
+    title: stripPipeVariants(String(geminiData.title || '').trim()) || 'Quiz mới nambac',
+    description: stripDuplicateSentences(
+      stripPipeVariants(String(geminiData.description || geminiData.title || '').trim()),
+    ),
     category: normalizeCategory(geminiData.category),
     quiz_type: 'binary_5q',
     questions,
@@ -183,6 +279,12 @@ function validateQuizRichness(payload) {
   }
   if ((payload.description?.trim().length || 0) < L.descriptionMin) {
     errors.push(`description too short (min ${L.descriptionMin} chars)`);
+  }
+  if (/\s\|\s/.test(payload.title || '') || /\s\|\s/.test(payload.description || '')) {
+    errors.push('title/description has dual-version " | " pileup');
+  }
+  if (META_LEAK_RE.test(`${payload.title || ''} ${payload.description || ''}`)) {
+    errors.push('title/description leaks tech/meta jargon (GitHub/repo/etc.)');
   }
 
   payload.questions.forEach((q, i) => {
@@ -210,9 +312,22 @@ function validateQuizRichness(payload) {
     if (desc.length < L.resultDescMin) {
       errors.push(`Result ${i}: description too short (${desc.length} < ${L.resultDescMin})`);
     }
+    if (hasDuplicateSentence(desc)) {
+      errors.push(`Result ${i}: description contains duplicate sentence(s)`);
+    }
     const traits = Array.isArray(r.traits) ? r.traits.filter(Boolean) : [];
     if (traits.length < L.traitsCount) {
       errors.push(`Result ${i}: need ${L.traitsCount} traits, got ${traits.length}`);
+    }
+    if (/\s\|\s/.test(title) || /\s\|\s/.test(desc)) {
+      errors.push(`Result ${i}: dual-version " | " pileup`);
+    }
+    if (META_LEAK_RE.test(`${title} ${desc}`)) {
+      errors.push(`Result ${i}: tech/meta jargon leak`);
+    }
+    const marker = 'Kết quả mang tính giải trí Gen Z Sài Gòn';
+    if (desc.split(marker).length - 1 >= 2) {
+      errors.push(`Result ${i}: duplicate closing CTA`);
     }
   });
 

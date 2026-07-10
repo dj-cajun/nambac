@@ -52,9 +52,13 @@ for (const [i, q] of targets.entries()) {
     continue;
   }
 
+  if (force && localPath && fs.existsSync(localPath)) {
+    fs.unlinkSync(localPath);
+  }
+
   process.stdout.write(`  🖼️  ${q.id} generating… `);
   try {
-    const result = await ensureBalanceSceneImage({ id: q.id, indexHint: i });
+    const result = await ensureBalanceSceneImage({ id: q.id, indexHint: i, force });
     console.log(result.cached ? `cached (${result.source})` : `saved ${result.image_url}`);
     ok += 1;
   } catch (err) {

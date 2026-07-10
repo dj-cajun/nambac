@@ -42,14 +42,14 @@ async function webpFromB64(b64) {
 }
 
 /** Disk → CDN → AI generate → cache. Always returns image_url for the question. */
-export async function ensureBalanceSceneImage({ id, indexHint = 0, host }) {
+export async function ensureBalanceSceneImage({ id, indexHint = 0, host, force = false }) {
   const cleanId = safeId(id);
   if (!cleanId) throw new Error('Balance image: id is required');
 
   const filePath = cacheFilePath(cleanId);
   const url = getBalanceImagePublicPath(cleanId);
 
-  if (fs.existsSync(filePath)) {
+  if (!force && fs.existsSync(filePath)) {
     return {
       image_url: url,
       buffer: fs.readFileSync(filePath),
@@ -58,14 +58,16 @@ export async function ensureBalanceSceneImage({ id, indexHint = 0, host }) {
     };
   }
 
-  const fetchHost = resolveFetchHost(host);
-  try {
-    const buffer = await loadImageBuffer(url, fetchHost);
-    if (buffer) {
-      return { image_url: url, buffer, cached: true, source: 'cdn' };
+  if (!force) {
+    const fetchHost = resolveFetchHost(host);
+    try {
+      const buffer = await loadImageBuffer(url, fetchHost);
+      if (buffer) {
+        return { image_url: url, buffer, cached: true, source: 'cdn' };
+      }
+    } catch {
+      /* not on CDN yet — generate below */
     }
-  } catch {
-    /* not on CDN yet — generate below */
   }
 
   const prompt = getBalanceScenePrompt(cleanId, indexHint);

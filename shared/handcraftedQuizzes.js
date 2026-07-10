@@ -6,11 +6,16 @@ import { BINARY_5Q_SCORES } from './quizPrompts.js';
 import { QUIZ_RICHNESS_LIMITS } from './quizPrompts.js';
 
 const DESC_PAD =
-  ' Kết quả mang tính giải trí Gen Z Sài Gòn — nếu trúng quá đúng thì tag bạn thân trên Zalo để cùng roast. Chia sẻ story và so sánh xem ai giống archetype này nhất nhé!';
+  ' Kết quả mang tính giải trí Gen Z Sài Gòn — nếu trúng quá đúng thì tag bạn thân trên Zalo để cùng roast!';
+
+const QUESTION_PAD = ' Bạn sẽ chọn phản ứng nào trong tình huống này?';
 
 function padDesc(text) {
   let s = String(text || '').trim();
-  while (s.length < QUIZ_RICHNESS_LIMITS.resultDescMin) {
+  const marker = 'Kết quả mang tính giải trí Gen Z Sài Gòn';
+  // Never append twice — descriptions that already have the disclaimer stay as-is.
+  if (s.includes(marker)) return s;
+  if (s.length < QUIZ_RICHNESS_LIMITS.resultDescMin) {
     s += DESC_PAD;
   }
   return s;
@@ -23,11 +28,14 @@ function padTitle(text) {
 }
 
 function padQuestion(text) {
-  let t = String(text || '').trim();
-  while (t.length < QUIZ_RICHNESS_LIMITS.questionMin) {
-    t += ' Bạn sẽ chọn phản ứng nào trong tình huống này?';
+  let s = String(text || '').trim();
+  const marker = 'Bạn sẽ chọn phản ứng nào trong tình huống này?';
+  // Never append twice — questions that already have the filler stay as-is.
+  if (s.includes(marker)) return s;
+  if (s.length < QUIZ_RICHNESS_LIMITS.questionMin) {
+    s += QUESTION_PAD;
   }
-  return t;
+  return s;
 }
 
 function q(text, a, b) {

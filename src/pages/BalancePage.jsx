@@ -170,13 +170,13 @@ export default function BalancePage() {
   const sharePageUrl = question ? buildBalanceShareLink(question.id, ogChoice || 'a') : null;
   const ogTitle = question
     ? `${question.title.slice(0, 80)} — A hay B? ⚖️`
-    : 'Chọn 1 trong 2 ⚖️ — nambac.xyz';
+    : 'Balance Quiz ⚖️ — nambac.xyz';
   const balanceShareUrl = voted ? buildBalanceShareLink(question.id, voted) : '';
 
   return (
     <div className="balance-game-page">
       <Helmet>
-        <title>Chọn 1 trong 2 ⚖️ — nambac.xyz</title>
+        <title>Balance Quiz ⚖️ — nambac.xyz</title>
         <meta
           name="description"
           content="A hay B? Tình huống Gen Z Sài Gòn — vote 3 giây, xem % cộng đồng, khoe Zalo."

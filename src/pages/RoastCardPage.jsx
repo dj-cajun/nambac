@@ -337,7 +337,7 @@ export default function RoastCardPage() {
       </AnimatePresence>
 
       <Link to="/balance" className="roast-link-balance">
-        ⚖️ Chơi Chọn 1 trong 2
+        ⚖️ Chơi Balance Quiz
       </Link>
     </div>
   );

@@ -1,7 +1,7 @@
 import { FORTUNE_COUNT } from './fortuneData.js';
 import { ROAST_TRAITS } from './roastData.js';
 import { BRAIN_RESULTS } from './brainData.js';
-import { getIctDateString, hashString } from './dailyPicks.js';
+import { getIctDateString, hashString, pickDailyBalanceQuestion } from './dailyPicks.js';
 import { getDateStr } from './fortuneEngine.js';
 
 /** Intro card index for a date — same logic as FortunePage intro preview */
@@ -49,6 +49,11 @@ export function getBrainThumbnailPath(resultId) {
   return `/images/brain_${resultId}.webp`;
 }
 
+export function getBalanceThumbnailPath(questionId) {
+  const id = String(questionId || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  return id ? `/images/balance_${id}.webp` : '';
+}
+
 export function getHomeFeatureThumbPlan(date = new Date()) {
   const today = getDateStr(date);
   const tomorrow = addDaysToDateLabel(today, 1);
@@ -56,6 +61,7 @@ export function getHomeFeatureThumbPlan(date = new Date()) {
   const tomorrowIdx = introFortuneIndexFromDate(tomorrow);
   const roastTrait = pickDailyRoastTrait(date);
   const brainResult = pickDailyBrainResult(date);
+  const dailyBalance = pickDailyBalanceQuestion(date);
 
   return {
     fortuneToday: {
@@ -79,6 +85,11 @@ export function getHomeFeatureThumbPlan(date = new Date()) {
       src: getBrainThumbnailPath(brainResult.id),
       seed: brainResult.id,
       resultId: brainResult.id,
+    },
+    balance: {
+      src: getBalanceThumbnailPath(dailyBalance.id),
+      seed: dailyBalance.id,
+      questionId: dailyBalance.id,
     },
   };
 }

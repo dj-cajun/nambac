@@ -403,7 +403,7 @@ function buildBalancePanelSvg({ title, optionA, optionB, choice }) {
 </svg>`);
 }
 
-/** Balance (Chọn 1 trong 2) OG — scene image + question + A/B with picked side highlighted. */
+/** Balance Quiz OG — scene image + question + A/B with picked side highlighted. */
 export async function composeBalanceOgImage({
   imageUrl,
   host,
