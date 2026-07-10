@@ -18,6 +18,15 @@ Unused Cloudflare Workers/Pages Git integration for `nambac` was **disconnected 
 
 If a stale failure still appears on an old commit, ignore it — only the latest commit checks matter.
 
+## Google OAuth (로그인)
+
+Google Cloud Console → OAuth 클라이언트 → **승인된 리디렉션 URI**에 아래를 등록:
+
+- `https://www.nambac.xyz/api/auth/google/callback` (필수 — canonical)
+- `https://nambac.xyz/api/auth/google/callback` (선택 — apex 리다이렉트 대비)
+
+`GOOGLE_REDIRECT_URI` env를 비우면 Vercel에서 www 콜백을 자동 사용합니다.
+
 ## Cache
 `GET /api/quizzes` sets:
 - `Cache-Control` / `CDN-Cache-Control` / `Vercel-CDN-Cache-Control`

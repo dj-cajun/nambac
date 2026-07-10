@@ -1,7 +1,7 @@
 import { CANONICAL_SITE_ORIGIN } from '../../shared/siteOrigin.js';
 
-/** OAuth callback stays on apex (Google console); users land on www after login. */
-const NAMBAC_OAUTH_ORIGIN = 'https://nambac.xyz';
+/** OAuth callback on canonical www — apex redirects all traffic to www before the handler runs. */
+const NAMBAC_OAUTH_ORIGIN = CANONICAL_SITE_ORIGIN;
 const NAMBAC_POST_LOGIN_ORIGIN = CANONICAL_SITE_ORIGIN;
 
 function resolveSiteUrl(req) {

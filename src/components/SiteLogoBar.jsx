@@ -18,7 +18,7 @@ export default function SiteLogoBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { toggleDrawer, open } = useDrawer();
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading, authError, clearAuthError, logout } = useAuth();
   const [streak, setStreak] = useState(0);
   const [playerGrade, setPlayerGrade] = useState(null);
   const [lqMastery, setLqMastery] = useState(null);
@@ -130,6 +130,13 @@ export default function SiteLogoBar() {
             <strong>Ngày thứ {streak} điểm danh!</strong>
             <span>Vào mỗi ngày để giữ chuỗi nhé 💪</span>
           </div>
+        </div>
+      )}
+
+      {authError && (
+        <div className="site-auth-error" role="alert">
+          <span>{authError}</span>
+          <button type="button" onClick={clearAuthError} aria-label="Đóng thông báo">×</button>
         </div>
       )}
     </header>

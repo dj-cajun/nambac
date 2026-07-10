@@ -77,6 +77,10 @@ export async function authGoogleCallback(req, res) {
     return res.redirect(302, `${siteOrigin(req)}${returnTo}`);
   } catch (err) {
     console.error('/api/auth/google/callback', err);
+    const msg = String(err.message || '');
+    if (msg.includes('redirect_uri_mismatch') || msg.includes('redirect_uri')) {
+      return redirectWithError(req, res, 'redirect_uri_mismatch');
+    }
     return redirectWithError(req, res, 'login_failed');
   }
 }

@@ -11,7 +11,12 @@ export async function fetchCurrentUser() {
 
 export function googleLoginUrl(returnTo = '/') {
   const safeReturn = String(returnTo || '/').startsWith('/') ? returnTo : '/';
-  return apiUrl(`/auth/google?returnTo=${encodeURIComponent(safeReturn)}`);
+  const qs = `returnTo=${encodeURIComponent(safeReturn)}`;
+  // Full-page OAuth redirect — use pretty /api/auth/* URL (Vercel rewrite), not handler?path=
+  if (import.meta.env.PROD) {
+    return `/api/auth/google?${qs}`;
+  }
+  return apiUrl(`/auth/google?${qs}`);
 }
 
 export async function logoutUser() {

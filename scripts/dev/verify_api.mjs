@@ -47,6 +47,36 @@ const checks = [
   { name: 'GET /api/feature/stats?kind=roast', url: `${base}/feature/stats?kind=roast` },
   { name: 'GET /api/player/grade', url: `${base}/player/grade?visitorId=smoke-guest` },
   {
+    name: 'GET /api/auth/me',
+    url: `${base}/auth/me`,
+    assert: async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!('user' in data)) throw new Error('expected { user }');
+      return 'session=ok';
+    },
+  },
+  {
+    name: 'GET /api/auth/google',
+    url: `${base}/auth/google?returnTo=%2F`,
+    redirect: 'manual',
+    assert: async (res) => {
+      if (res.status !== 302 && res.status !== 503) {
+        throw new Error(`expected 302 or 503, got ${res.status}`);
+      }
+      const loc = res.headers.get('location') || '';
+      if (res.status === 302 && !loc.includes('accounts.google.com')) {
+        throw new Error(`unexpected redirect: ${loc.slice(0, 80)}`);
+      }
+      if (res.status === 302) {
+        const uri = new URL(loc).searchParams.get('redirect_uri') || '';
+        if (!uri.includes('nambac.xyz/api/auth/google/callback')) {
+          throw new Error(`unexpected redirect_uri: ${uri}`);
+        }
+      }
+      return res.status === 302 ? 'oauth=configured' : 'oauth=not_configured';
+    },
+  },
+  {
     name: 'GET /sitemap.xml',
     url: `${siteBase}/sitemap.xml`,
     assert: async (res) => {
@@ -65,8 +95,11 @@ const checks = [
 let failed = 0;
 for (const c of checks) {
   try {
-    const res = await fetch(c.url, { redirect: 'follow' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const res = await fetch(c.url, { redirect: c.redirect || 'follow' });
+    const ok = c.redirect === 'manual'
+      ? (res.status === 302 || res.status === 503 || res.ok)
+      : res.ok;
+    if (!ok) throw new Error(`HTTP ${res.status}`);
     const detail = c.assert ? await c.assert(res) : '';
     console.log('✅', c.name, res.status, detail || '');
   } catch (e) {
