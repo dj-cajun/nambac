@@ -30,6 +30,12 @@ const STATIC_PATHS = [
   { path: '/lienquan/khoe', changefreq: 'daily', priority: '0.8' },
   { path: '/lienquan/quiz', changefreq: 'weekly', priority: '0.85' },
   { path: '/lienquan/tu-dien', changefreq: 'monthly', priority: '0.75' },
+  { path: '/vbti', changefreq: 'weekly', priority: '0.9' },
+  { path: '/vbti/test', changefreq: 'weekly', priority: '0.85' },
+  { path: '/vbti/types', changefreq: 'weekly', priority: '0.85' },
+  { path: '/vbti/mbti', changefreq: 'monthly', priority: '0.75' },
+  { path: '/vbti/x-mbti', changefreq: 'monthly', priority: '0.75' },
+  { path: '/vbti/x-cung', changefreq: 'monthly', priority: '0.75' },
 ];
 
 function escapeXml(value) {

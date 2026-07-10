@@ -852,9 +852,13 @@ export function buildLienquanOgImageApiUrl(host, { title, subtitle } = {}) {
   return `${protocol}://${host}/api/lienquan-og${qs ? `?${qs}` : ''}`;
 }
 
-export function buildVbtiOgImageApiUrl(host) {
+export function buildVbtiOgImageApiUrl(host, { title, subtitle } = {}) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
-  return `${protocol}://${host}/api/vbti-og`;
+  const query = new URLSearchParams();
+  if (title) query.set('title', String(title).slice(0, 80));
+  if (subtitle) query.set('subtitle', String(subtitle).slice(0, 120));
+  const qs = query.toString();
+  return `${protocol}://${host}/api/vbti-og${qs ? `?${qs}` : ''}`;
 }
 
 const LIENQUAN_THUMB_SIZE = 640;

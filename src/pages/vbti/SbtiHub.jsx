@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../../lib/featureStats';
 import { trackFeatureView } from '../../lib/analytics';
-import { buildVbtiOgImageUrl } from '../../lib/siteUrl';
+import { buildVbtiOgImageUrl, buildVbtiShareUrl } from '../../lib/siteUrl';
+import VbtiShareButton from './components/VbtiShareButton.jsx';
 import './sbti.css';
 
 const CATEGORY_BOXES = [
@@ -26,7 +27,11 @@ export default function SbtiHub() {
 
   const metaDescription =
     'VBTI — Vietnam Behavior Type Indicator. Test tiếng Việt: 30 câu, 27 nhãn meme, nhánh ẩn DRUNK. Giải trí trên nambac.xyz.';
-  const ogImage = buildVbtiOgImageUrl();
+  const ogImage = buildVbtiOgImageUrl({
+    title: SBTI_UI.brand,
+    subtitle: '27 nhãn meme · test tiếng Việt',
+  });
+  const shareUrl = buildVbtiShareUrl();
 
   return (
     <div className="sbti-page">
@@ -40,7 +45,7 @@ export default function SbtiHub() {
         <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:url" content="https://www.nambac.xyz/vbti" />
+        <meta property="og:url" content={shareUrl} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={ogImage} />
       </Helmet>
@@ -66,6 +71,7 @@ export default function SbtiHub() {
           <h1 className="sbti-hero-title">{SBTI_UI.hubTitle}</h1>
           <p className="sbti-hero-sub">{SBTI_UI.hubSub}</p>
           <Link to="/vbti/test" className="sbti-btn-primary">{SBTI_UI.hubCta}</Link>
+          <VbtiShareButton />
         </div>
       </div>
 

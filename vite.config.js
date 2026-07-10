@@ -62,6 +62,20 @@ export default defineConfig({
             req.url = '/api/lienquan-share';
             return next();
           }
+          const vbtiTypeShare = pathname.match(/^\/share-vbti\/type\/([^/]+)$/);
+          if (vbtiTypeShare) {
+            req.url = `/api/vbti-share?type=${encodeURIComponent(vbtiTypeShare[1])}`;
+            return next();
+          }
+          const vbtiPageShare = pathname.match(/^\/share-vbti\/([^/]+)$/);
+          if (vbtiPageShare) {
+            req.url = `/api/vbti-share?page=${encodeURIComponent(vbtiPageShare[1])}`;
+            return next();
+          }
+          if (pathname === '/share-vbti') {
+            req.url = '/api/vbti-share';
+            return next();
+          }
           const scoreMatch = pathname.match(/^\/share\/([^/]+)\/(\d+)$/);
           const quizMatch = pathname.match(/^\/share\/([^/]+)$/);
           if (scoreMatch) {

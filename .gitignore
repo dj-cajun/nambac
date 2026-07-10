@@ -40,5 +40,8 @@ data/
 backend/data/
 .backfill-force-progress.json
 
+# Dynamic sitemap (production uses /api/handler?path=sitemap)
+public/sitemap.xml
+
 backend/아카이브.zip
 nambac_upload.zip

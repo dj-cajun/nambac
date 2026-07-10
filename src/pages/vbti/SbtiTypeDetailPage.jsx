@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import { getType } from '../../../shared/vbti/scoring.js';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { typePosterSrc } from '../../lib/vbti/assets.js';
+import { buildVbtiShareUrl } from '../../lib/siteUrl';
 import TypePoster from './components/TypePoster.jsx';
+import VbtiShareButton from './components/VbtiShareButton.jsx';
 import './sbti.css';
 
 export default function SbtiTypeDetailPage() {
@@ -19,6 +21,9 @@ export default function SbtiTypeDetailPage() {
     );
   }
 
+  const shareUrl = buildVbtiShareUrl({ typeCode: type.code });
+  const ogImage = `https://www.nambac.xyz${typePosterSrc(type.code)}`;
+
   return (
     <div className="sbti-page">
       <Helmet>
@@ -27,8 +32,10 @@ export default function SbtiTypeDetailPage() {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${type.code} — ${type.name} | VBTI`} />
         <meta property="og:description" content={type.intro} />
-        <meta property="og:image" content={`https://www.nambac.xyz${typePosterSrc(type.code)}`} />
-        <meta property="og:url" content={`https://www.nambac.xyz/vbti/types/${encodeURIComponent(type.code)}`} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:url" content={shareUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
         <Link to="/vbti/types" className="sbti-back">{SBTI_UI.typeDetailBack}</Link>
@@ -39,6 +46,7 @@ export default function SbtiTypeDetailPage() {
         <p className="sbti-result-name">{type.name}</p>
         <p className="sbti-result-intro">{type.intro}</p>
         <p>{type.desc}</p>
+        <VbtiShareButton typeCode={type.code} />
       </div>
 
       <nav className="sbti-nav-chips">

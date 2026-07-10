@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-/** Generate public/sitemap.xml (static pages + categories + active quizzes). */
+/**
+ * Local sitemap preview only.
+ * Production serves /sitemap.xml dynamically via api/_lib/handlers/sitemap.js
+ * — do NOT commit public/sitemap.xml (static file overrides Vercel rewrite).
+ */
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -7,6 +11,7 @@ import { PROJECT_ROOT } from '../_root.mjs';
 import { listActiveQuizzes } from '../../api/_lib/quizDb.js';
 import { QUIZ_CATEGORY_IDS } from '../../shared/categories.js';
 import { CANONICAL_SITE_ORIGIN } from '../../shared/siteOrigin.js';
+import { HEROES } from '../../shared/lienquan/heroes.js';
 
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
@@ -33,6 +38,17 @@ const STATIC_PATHS = [
   { path: '/balance', changefreq: 'weekly', priority: '0.85' },
   { path: '/roast-card', changefreq: 'weekly', priority: '0.8' },
   { path: '/brain', changefreq: 'weekly', priority: '0.8' },
+  { path: '/lienquan', changefreq: 'daily', priority: '0.9' },
+  { path: '/lienquan/giao-an', changefreq: 'weekly', priority: '0.85' },
+  { path: '/lienquan/khoe', changefreq: 'daily', priority: '0.8' },
+  { path: '/lienquan/quiz', changefreq: 'weekly', priority: '0.85' },
+  { path: '/lienquan/tu-dien', changefreq: 'monthly', priority: '0.75' },
+  { path: '/vbti', changefreq: 'weekly', priority: '0.9' },
+  { path: '/vbti/test', changefreq: 'weekly', priority: '0.85' },
+  { path: '/vbti/types', changefreq: 'weekly', priority: '0.85' },
+  { path: '/vbti/mbti', changefreq: 'monthly', priority: '0.75' },
+  { path: '/vbti/x-mbti', changefreq: 'monthly', priority: '0.75' },
+  { path: '/vbti/x-cung', changefreq: 'monthly', priority: '0.75' },
 ];
 
 function escapeXml(value) {
@@ -58,6 +74,11 @@ async function main() {
   for (const item of STATIC_PATHS) {
     lines.push(urlEntry(`${origin}${item.path}`, item.changefreq, item.priority));
   }
+
+  for (const hero of HEROES.filter((h) => h.meta)) {
+    lines.push(urlEntry(`${origin}/lienquan/tuong/${hero.id}`, 'weekly', '0.8'));
+  }
+
   for (const categoryId of QUIZ_CATEGORY_IDS) {
     lines.push(urlEntry(`${origin}/category/${categoryId}`, 'weekly', '0.75'));
   }
@@ -71,7 +92,7 @@ async function main() {
   lines.push('</urlset>', '');
   const outPath = path.join(PROJECT_ROOT, 'public/sitemap.xml');
   fs.writeFileSync(outPath, lines.join('\n'));
-  console.log(`✅ wrote ${outPath} (${quizzes.length} quizzes)`);
+  console.log(`✅ wrote ${outPath} (${quizzes.length} quizzes, ${HEROES.length} heroes)`);
 }
 
 main().catch((err) => {

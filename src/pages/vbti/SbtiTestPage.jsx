@@ -7,6 +7,7 @@ import {
   scoreAnswers,
 } from '../../../shared/vbti/index.js';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
+import { buildVbtiOgImageUrl, buildVbtiShareUrl } from '../../lib/siteUrl';
 import { shuffleArray } from '../../lib/vbti/shuffle.js';
 import { saveSbtiResult } from '../../lib/vbti/session.js';
 import './sbti.css';
@@ -82,6 +83,13 @@ export default function SbtiTestPage() {
     <div className="sbti-page">
       <Helmet>
         <title>Test VBTI | nambac</title>
+        <meta name="description" content="30 câu VBTI — Vietnam Behavior Type Indicator trên nambac." />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Test VBTI | nambac" />
+        <meta property="og:description" content="30 câu · 27 nhãn meme · nhánh ẩn DRUNK" />
+        <meta property="og:image" content={buildVbtiOgImageUrl({ title: 'Test VBTI', subtitle: '30 câu · 27 nhãn meme' })} />
+        <meta property="og:url" content={buildVbtiShareUrl({ page: 'test' })} />
+        <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 
       <Link to="/vbti" className="sbti-back">{SBTI_UI.backLabel}</Link>

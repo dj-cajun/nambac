@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { getCrossMbti, MBTI_NICKNAMES } from '../../../shared/vbti/cross-mbti.js';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
+import { buildVbtiOgImageUrl, buildVbtiShareUrl } from '../../lib/siteUrl';
 import { loadSbtiResult } from '../../lib/vbti/session.js';
 import './sbti.css';
 
@@ -31,6 +32,12 @@ export default function SbtiCrossMbtiPage() {
       <Helmet>
         <title>{SBTI_UI.crossTitle} | nambac</title>
         <meta name="description" content="Ghép VBTI × MBTI — 432 tổ hợp meme personality." />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${SBTI_UI.crossTitle} | VBTI`} />
+        <meta property="og:description" content="Ghép VBTI × MBTI — combo personality meme." />
+        <meta property="og:image" content={buildVbtiOgImageUrl({ title: 'VBTI × MBTI', subtitle: 'Ghép combo personality' })} />
+        <meta property="og:url" content={buildVbtiShareUrl({ page: 'x-mbti' })} />
+        <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 
       <Link to="/vbti" className="sbti-back">{SBTI_UI.backLabel}</Link>

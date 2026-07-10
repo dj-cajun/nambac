@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { SBTI_MBTI_QUESTIONS, computeMbtiType, MBTI_NICKNAMES } from '../../../shared/vbti/index.js';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
+import { buildVbtiOgImageUrl, buildVbtiShareUrl } from '../../lib/siteUrl';
 import './sbti.css';
 
 export default function SbtiMbtiPage() {
@@ -37,6 +38,13 @@ export default function SbtiMbtiPage() {
       <div className="sbti-page">
         <Helmet>
           <title>{SBTI_UI.mbtiTitle} | nambac</title>
+          <meta name="description" content={SBTI_UI.mbtiSub} />
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={`${SBTI_UI.mbtiTitle} | VBTI`} />
+          <meta property="og:description" content={SBTI_UI.mbtiSub} />
+          <meta property="og:image" content={buildVbtiOgImageUrl({ title: 'MBTI 16 type', subtitle: '28 câu · ~5 phút' })} />
+          <meta property="og:url" content={buildVbtiShareUrl({ page: 'mbti' })} />
+          <meta name="twitter:card" content="summary_large_image" />
         </Helmet>
         <Link to="/vbti" className="sbti-back">{SBTI_UI.backLabel}</Link>
         <header className="sbti-hero-block">

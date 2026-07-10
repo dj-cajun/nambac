@@ -29,6 +29,8 @@ export const SBTI_UI = {
   resultTypes: 'Xem tất cả type',
   resultCross: 'Ghép với MBTI',
   copyToast: 'Đã sao chép link!',
+  shareLink: 'Sao chép link chia sẻ',
+  shareToast: 'Đã sao chép link!',
   yourType: 'VBTI của bạn',
 
   typesTitle: '27 nhân cách VBTI',

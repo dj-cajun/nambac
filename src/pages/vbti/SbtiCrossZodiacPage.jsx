@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { ZODIAC_SIGNS, getCrossZodiac } from '../../../shared/vbti/cross-zodiac.js';
 import { getType } from '../../../shared/vbti/scoring.js';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
+import { buildVbtiOgImageUrl, buildVbtiShareUrl } from '../../lib/siteUrl';
 import { loadSbtiResult } from '../../lib/vbti/session.js';
 import './sbti.css';
 
@@ -22,6 +23,12 @@ export default function SbtiCrossZodiacPage() {
       <Helmet>
         <title>{SBTI_UI.zodiacTitle} | nambac</title>
         <meta name="description" content="VBTI × cung hoàng đạo — 324 buff meme." />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${SBTI_UI.zodiacTitle} | VBTI`} />
+        <meta property="og:description" content="Ghép type VBTI với cung hoàng đạo." />
+        <meta property="og:image" content={buildVbtiOgImageUrl({ title: 'VBTI × Cung hoàng đạo', subtitle: 'Meme zodiac × personality' })} />
+        <meta property="og:url" content={buildVbtiShareUrl({ page: 'x-cung' })} />
+        <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 
       <Link to="/vbti" className="sbti-back">{SBTI_UI.backLabel}</Link>

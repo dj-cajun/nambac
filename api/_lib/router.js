@@ -36,6 +36,7 @@ import fortuneStats from './handlers/fortuneStats.js';
 import lienquanOg from './handlers/lienquanOg.js';
 import lienquanShare from './handlers/lienquanShare.js';
 import vbtiOg from './handlers/vbtiOg.js';
+import vbtiShare from './handlers/vbtiShare.js';
 import { authGoogleStart, authGoogleCallback } from './handlers/authGoogle.js';
 import authSession, { authLogout } from './handlers/authSession.js';
 import authAdminLogin from './handlers/authAdminLogin.js';
@@ -212,6 +213,7 @@ export async function dispatch(req, res, segments = []) {
     return vbtiOg(req, res);
   }
   if (a === 'lienquan-share' && !b) return lienquanShare(req, res);
+  if (a === 'vbti-share' && !b) return vbtiShare(req, res);
 
   // ── Liên Quân mastery + khoe feed ──
   if (a === 'lienquan' && b === 'mastery' && !c && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {

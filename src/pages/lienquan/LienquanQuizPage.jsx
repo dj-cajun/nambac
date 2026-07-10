@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import {
   LIENQUAN_QUIZ_QUESTIONS,
   scoreToMastery,
-  masteryLabel,
 } from '../../../shared/lienquan/quizQuestions.js';
 import { saveMastery } from '../../lib/lienquan/mastery.js';
 import { markTodayDone } from '../../lib/todayDone.js';

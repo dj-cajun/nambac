@@ -105,6 +105,22 @@ export function buildLienquanShareUrl({ page = 'hub', heroId = null } = {}) {
 }
 
 /** VBTI hub OG — hub hero + type poster mosaic */
-export function buildVbtiOgImageUrl() {
-  return `${getSiteOrigin()}/api/vbti-og`;
+export function buildVbtiOgImageUrl({ title, subtitle } = {}) {
+  const params = new URLSearchParams();
+  if (title) params.set('title', String(title).slice(0, 80));
+  if (subtitle) params.set('subtitle', String(subtitle).slice(0, 120));
+  const qs = params.toString();
+  return `${getSiteOrigin()}/api/vbti-og${qs ? `?${qs}` : ''}`;
+}
+
+/** VBTI crawler share URL (FB/Zalo preview) */
+export function buildVbtiShareUrl({ page = 'hub', typeCode = null } = {}) {
+  const origin = getSiteOrigin();
+  if (typeCode) {
+    return `${origin}/share-vbti/type/${encodeURIComponent(typeCode)}`;
+  }
+  if (page && page !== 'hub') {
+    return `${origin}/share-vbti/${encodeURIComponent(page)}`;
+  }
+  return `${origin}/share-vbti`;
 }
