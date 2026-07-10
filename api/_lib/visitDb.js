@@ -8,11 +8,29 @@ function hashVisitorId(id) {
   return crypto.createHash('sha256').update(String(id)).digest('hex').slice(0, 32);
 }
 
+function hashIp(ip) {
+  if (!ip) return null;
+  return `ip:${crypto.createHash('sha256').update(String(ip)).digest('hex').slice(0, 32)}`;
+}
+
+/** Client IP from Vercel / proxies */
+export function getClientIp(req) {
+  const headers = req?.headers || {};
+  const forwarded = headers['x-forwarded-for'] || headers['X-Forwarded-For'] || '';
+  const first = String(forwarded).split(',')[0].trim();
+  if (first) return first;
+  const real = headers['x-real-ip'] || headers['X-Real-Ip'] || '';
+  if (real) return String(real).trim();
+  return req?.socket?.remoteAddress || null;
+}
+
 export function buildVisitorKey({ userId = null, visitorId = null } = {}) {
   if (userId) return `u:${userId}`;
   if (visitorId) return `g:${hashVisitorId(visitorId)}`;
   return null;
 }
+
+let ipColumnReady = null;
 
 async function ensureSchema(db) {
   await db.execute({
@@ -33,26 +51,58 @@ async function ensureSchema(db) {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
   });
+
+  if (!ipColumnReady) {
+    ipColumnReady = (async () => {
+      try {
+        await db.execute({
+          sql: 'ALTER TABLE site_daily_visitors ADD COLUMN ip_key TEXT',
+        });
+      } catch (err) {
+        if (!String(err.message || '').toLowerCase().includes('duplicate column')) {
+          ipColumnReady = null;
+          throw err;
+        }
+      }
+      try {
+        await db.execute({
+          sql: 'CREATE INDEX IF NOT EXISTS idx_site_visitors_ip ON site_daily_visitors(visit_date, ip_key)',
+        });
+      } catch {
+        /* index may already exist */
+      }
+    })();
+  }
+  await ipColumnReady;
 }
+
+/** Unique identity for counting: same IP = 1 (fallback to visitor_key if IP missing) */
+const UNIQUE_ID = `COALESCE(NULLIF(ip_key, ''), visitor_key)`;
 
 /** SQL fragment: exclude owner/admin keys from visitor counts */
 const NOT_EXCLUDED = `visitor_key NOT IN (SELECT visitor_key FROM site_visit_exclusions)
   AND visitor_key NOT IN (
     SELECT 'u:' || id FROM users WHERE role = 'admin'
   )
-  AND visitor_key != 'u:${ADMIN_PASSWORD_USER_ID}'`;
+  AND visitor_key != 'u:${ADMIN_PASSWORD_USER_ID}'
+  AND (${UNIQUE_ID}) NOT IN (SELECT visitor_key FROM site_visit_exclusions)`;
+
+const NOT_EXCLUDED_SIMPLE = `visitor_key NOT IN (SELECT visitor_key FROM site_visit_exclusions)
+  AND visitor_key != 'u:${ADMIN_PASSWORD_USER_ID}'
+  AND (${UNIQUE_ID}) NOT IN (SELECT visitor_key FROM site_visit_exclusions)`;
 
 /**
- * Mark this browser (and admin account) as owner — never count in analytics.
- * Also deletes already-recorded rows for those keys.
+ * Mark this browser (and admin account / IP) as owner — never count in analytics.
  */
-export async function excludeOwnerDevice({ userId = null, visitorId = null } = {}) {
+export async function excludeOwnerDevice({ userId = null, visitorId = null, ip = null } = {}) {
   const db = getTurso();
   await ensureSchema(db);
 
   const keys = new Set([`u:${ADMIN_PASSWORD_USER_ID}`]);
   if (userId) keys.add(`u:${userId}`);
   if (visitorId) keys.add(`g:${hashVisitorId(visitorId)}`);
+  const ipKey = hashIp(ip);
+  if (ipKey) keys.add(ipKey);
 
   for (const key of keys) {
     await db.execute({
@@ -60,10 +110,17 @@ export async function excludeOwnerDevice({ userId = null, visitorId = null } = {
             VALUES (?, 'owner')`,
       args: [key],
     });
-    await db.execute({
-      sql: 'DELETE FROM site_daily_visitors WHERE visitor_key = ?',
-      args: [key],
-    });
+    if (key.startsWith('ip:')) {
+      await db.execute({
+        sql: 'DELETE FROM site_daily_visitors WHERE ip_key = ?',
+        args: [key],
+      });
+    } else {
+      await db.execute({
+        sql: 'DELETE FROM site_daily_visitors WHERE visitor_key = ?',
+        args: [key],
+      });
+    }
   }
 
   return { ok: true, excluded: [...keys] };
@@ -98,15 +155,22 @@ export async function isVisitorExcluded(visitorKey) {
   return false;
 }
 
-export async function recordSiteVisit({ userId = null, visitorId = null, isAdmin = false } = {}) {
+export async function recordSiteVisit({
+  userId = null,
+  visitorId = null,
+  isAdmin = false,
+  ip = null,
+} = {}) {
   const db = getTurso();
   await ensureSchema(db);
 
   if (!userId && !visitorId) return { ok: false };
 
+  const ipKey = hashIp(ip);
+
   // Admin / owner devices: register exclusion and do not count
-  if (isAdmin || (userId && (userId === ADMIN_PASSWORD_USER_ID))) {
-    await excludeOwnerDevice({ userId, visitorId });
+  if (isAdmin || (userId && userId === ADMIN_PASSWORD_USER_ID)) {
+    await excludeOwnerDevice({ userId, visitorId, ip });
     return { ok: true, skipped: 'owner' };
   }
 
@@ -114,6 +178,9 @@ export async function recordSiteVisit({ userId = null, visitorId = null, isAdmin
   if (!visitorKey) return { ok: false };
 
   if (await isVisitorExcluded(visitorKey)) {
+    return { ok: true, skipped: 'excluded' };
+  }
+  if (ipKey && (await isVisitorExcluded(ipKey))) {
     return { ok: true, skipped: 'excluded' };
   }
 
@@ -128,41 +195,69 @@ export async function recordSiteVisit({ userId = null, visitorId = null, isAdmin
   const isLoggedIn = userId ? 1 : 0;
 
   await db.execute({
-    sql: `INSERT OR IGNORE INTO site_daily_visitors (visit_date, visitor_key, is_logged_in)
-          VALUES (${ICT_TODAY}, ?, ?)`,
-    args: [visitorKey, isLoggedIn],
+    sql: `INSERT OR IGNORE INTO site_daily_visitors (visit_date, visitor_key, is_logged_in, ip_key)
+          VALUES (${ICT_TODAY}, ?, ?, ?)`,
+    args: [visitorKey, isLoggedIn, ipKey],
+  });
+
+  // Backfill IP / upgrade login flag on repeat hits same day
+  await db.execute({
+    sql: `UPDATE site_daily_visitors
+          SET ip_key = COALESCE(NULLIF(ip_key, ''), ?),
+              is_logged_in = CASE WHEN is_logged_in < ? THEN ? ELSE is_logged_in END
+          WHERE visit_date = ${ICT_TODAY} AND visitor_key = ?`,
+    args: [ipKey, isLoggedIn, isLoggedIn, visitorKey],
   });
 
   return { ok: true };
 }
 
+/** Aggregate: same IP counts as 1 per day */
+const DAILY_UNIQUE_SQL = `
+  SELECT
+    visit_date,
+    COUNT(*) AS total,
+    SUM(CASE WHEN max_login = 1 THEN 1 ELSE 0 END) AS logged_in,
+    SUM(CASE WHEN max_login = 0 THEN 1 ELSE 0 END) AS guest
+  FROM (
+    SELECT
+      visit_date,
+      ${UNIQUE_ID} AS uniq,
+      MAX(is_logged_in) AS max_login
+    FROM site_daily_visitors
+    WHERE __WHERE__
+    GROUP BY visit_date, ${UNIQUE_ID}
+  )
+  GROUP BY visit_date
+`;
+
 export async function getTodayVisitorStats() {
   const db = getTurso();
   await ensureSchema(db);
 
+  const run = async (whereSql) => {
+    const sql = `
+      SELECT
+        COUNT(*) AS total,
+        SUM(CASE WHEN max_login = 1 THEN 1 ELSE 0 END) AS logged_in,
+        SUM(CASE WHEN max_login = 0 THEN 1 ELSE 0 END) AS guest
+      FROM (
+        SELECT
+          ${UNIQUE_ID} AS uniq,
+          MAX(is_logged_in) AS max_login
+        FROM site_daily_visitors
+        WHERE visit_date = ${ICT_TODAY}
+          AND ${whereSql}
+        GROUP BY ${UNIQUE_ID}
+      )`;
+    return db.execute({ sql });
+  };
+
   let result;
   try {
-    result = await db.execute({
-      sql: `SELECT
-              COUNT(*) AS total,
-              SUM(CASE WHEN is_logged_in = 1 THEN 1 ELSE 0 END) AS logged_in,
-              SUM(CASE WHEN is_logged_in = 0 THEN 1 ELSE 0 END) AS guest
-            FROM site_daily_visitors
-            WHERE visit_date = ${ICT_TODAY}
-              AND ${NOT_EXCLUDED}`,
-    });
+    result = await run(NOT_EXCLUDED);
   } catch {
-    // Fallback if users table missing
-    result = await db.execute({
-      sql: `SELECT
-              COUNT(*) AS total,
-              SUM(CASE WHEN is_logged_in = 1 THEN 1 ELSE 0 END) AS logged_in,
-              SUM(CASE WHEN is_logged_in = 0 THEN 1 ELSE 0 END) AS guest
-            FROM site_daily_visitors
-            WHERE visit_date = ${ICT_TODAY}
-              AND visitor_key NOT IN (SELECT visitor_key FROM site_visit_exclusions)
-              AND visitor_key != 'u:${ADMIN_PASSWORD_USER_ID}'`,
-    });
+    result = await run(NOT_EXCLUDED_SIMPLE);
   }
 
   const row = result.rows[0] || {};
@@ -180,7 +275,7 @@ function ictDateString(offsetDays = 0) {
 }
 
 /**
- * Daily unique visitor series for admin charts (ICT dates).
+ * Daily unique visitor series — same IP = 1 per day (ICT).
  * @param {number} [days=30]
  */
 export async function getDailyVisitorSeries(days = 30) {
@@ -190,36 +285,16 @@ export async function getDailyVisitorSeries(days = 30) {
   const safeDays = Math.min(Math.max(Number(days) || 30, 1), 90);
   const startDate = ictDateString(-(safeDays - 1));
 
+  const run = async (whereSql) => {
+    const sql = DAILY_UNIQUE_SQL.replace('__WHERE__', `visit_date >= ? AND ${whereSql}`);
+    return db.execute({ sql, args: [startDate] });
+  };
+
   let result;
   try {
-    result = await db.execute({
-      sql: `SELECT
-              visit_date,
-              COUNT(*) AS total,
-              SUM(CASE WHEN is_logged_in = 1 THEN 1 ELSE 0 END) AS logged_in,
-              SUM(CASE WHEN is_logged_in = 0 THEN 1 ELSE 0 END) AS guest
-            FROM site_daily_visitors
-            WHERE visit_date >= ?
-              AND ${NOT_EXCLUDED}
-            GROUP BY visit_date
-            ORDER BY visit_date ASC`,
-      args: [startDate],
-    });
+    result = await run(NOT_EXCLUDED);
   } catch {
-    result = await db.execute({
-      sql: `SELECT
-              visit_date,
-              COUNT(*) AS total,
-              SUM(CASE WHEN is_logged_in = 1 THEN 1 ELSE 0 END) AS logged_in,
-              SUM(CASE WHEN is_logged_in = 0 THEN 1 ELSE 0 END) AS guest
-            FROM site_daily_visitors
-            WHERE visit_date >= ?
-              AND visitor_key NOT IN (SELECT visitor_key FROM site_visit_exclusions)
-              AND visitor_key != 'u:${ADMIN_PASSWORD_USER_ID}'
-            GROUP BY visit_date
-            ORDER BY visit_date ASC`,
-      args: [startDate],
-    });
+    result = await run(NOT_EXCLUDED_SIMPLE);
   }
 
   const byDate = new Map();

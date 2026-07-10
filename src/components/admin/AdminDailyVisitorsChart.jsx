@@ -42,7 +42,7 @@ export default function AdminDailyVisitorsChart({ series = [] }) {
         <div>
           <h3 className="admin-daily-chart-title">일별 조회자</h3>
           <p className="admin-daily-chart-sub">
-            고유 방문자(ICT) · 기간 합계 {rangeTotal.toLocaleString()}명
+            고유 IP 기준(ICT) · 같은 IP는 하루 1명 · 기간 합계 {rangeTotal.toLocaleString()}명
             {today ? ` · 오늘 ${Number(today.total || 0).toLocaleString()}명` : ''}
           </p>
         </div>
