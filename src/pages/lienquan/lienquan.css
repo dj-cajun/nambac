@@ -362,8 +362,16 @@
   line-height: 1.4;
 }
 
-.lq-quiz-banner-cta {
+.lq-quiz-banner-side {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 42%;
+}
+
+.lq-quiz-banner-cta {
   padding: 10px 12px;
   border-radius: 999px;
   background: var(--lq-pink);
@@ -371,6 +379,15 @@
   font-size: 12px;
   font-weight: 900;
   white-space: nowrap;
+}
+
+.lq-quiz-banner-note {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--lq-muted);
+  line-height: 1.3;
+  text-align: right;
 }
 
 /* Detail */

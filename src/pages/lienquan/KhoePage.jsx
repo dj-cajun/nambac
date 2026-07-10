@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { HEROES, getHero } from '../../../shared/lienquan/heroes.js';
+import { LQ_UI } from '../../../shared/lienquan/uiText.js';
 import { createBoast, fetchBoasts, likeBoast } from '../../lib/lienquan/boastApi.js';
 import { useAuth } from '../../context/AuthContext';
 import GoogleLoginButton from '../../components/GoogleLoginButton';
@@ -137,17 +138,17 @@ export default function KhoePage() {
 
       <header className="lq-hero-block">
         <h1>Góc Khoe</h1>
-        <p>Đăng MVP · clip TikTok · thả 🔥</p>
+        <p>{LQ_UI.khoeSub}</p>
       </header>
 
       <div className="lq-khoe-toolbar">
         {isLoggedIn ? (
           <button type="button" className="lq-copy-btn" onClick={() => setFormOpen((v) => !v)}>
-            {formOpen ? 'Đóng form' : '+ Đăng chiến tích'}
+            {formOpen ? LQ_UI.khoeUploadClose : LQ_UI.khoeUploadCta}
           </button>
         ) : (
           <div className="lq-khoe-login">
-            <span>Đăng nhập Google để đăng bài</span>
+            <span>{LQ_UI.khoeLoginHint}</span>
             <GoogleLoginButton returnTo="/lienquan/khoe" label="Đăng nhập" />
           </div>
         )}
@@ -164,7 +165,7 @@ export default function KhoePage() {
             required
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="Hôm nay Flo quadra hard carry…"
+            placeholder={LQ_UI.khoeCaptionPlaceholder}
           />
           <label className="lq-search-label" htmlFor="khoe-hero">Tướng</label>
           <select
@@ -203,6 +204,9 @@ export default function KhoePage() {
 
       {error && <p className="lq-khoe-error">{error}</p>}
       {loading && <p className="lq-coming">Đang tải feed…</p>}
+      {!loading && boasts.length === 0 && (
+        <p className="lq-tip">{LQ_UI.khoeEmptyHint}</p>
+      )}
 
       <div className="lq-khoe-feed">
         {boasts.map((b) => {

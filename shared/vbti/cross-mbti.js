@@ -1,4 +1,5 @@
 import types from './types.vi.json' with { type: 'json' };
+import { CROSS_MBTI_OVERRIDES } from './cross-mbti-overrides.js';
 
 const MBTI_AXES = {
   E: 'hướng ngoại, năng lượng từ người khác',
@@ -52,9 +53,11 @@ export function getCrossMbti(sbtiCode, mbtiType) {
   const nickname = MBTI_NICKNAMES[mbtiType] || mbtiType;
   const title = `${sbti.code} × ${mbtiType}`;
   const hook = sbti.intro;
-  const desc = `${sbti.name} (${hook}) gặp ${nickname} (${mbtiType}): bạn mang vibe ${traits}. `
-    + `Trên lý thuyết, ${sbti.name} đẩy năng lượng meme còn ${mbtiType} giữ khung tư duy — `
-    + `combo này ${compatibilityLine(sbtiCode, mbtiType)}`;
+  const overrideKey = `${sbtiCode}:${mbtiType}`;
+  const desc = CROSS_MBTI_OVERRIDES[overrideKey]
+    || `${sbti.name} (${hook}) gặp ${nickname} (${mbtiType}): bạn mang vibe ${traits}. `
+      + `Trên lý thuyết, ${sbti.name} đẩy năng lượng meme còn ${mbtiType} giữ khung tư duy — `
+      + `combo này ${compatibilityLine(sbtiCode, mbtiType)}`;
   return {
     title,
     nickname,

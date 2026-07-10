@@ -92,7 +92,9 @@ const RESULTS = [
 
 export const LIENQUAN_QUIZ_DB_SEED = {
   title: LIENQUAN_QUIZ_DB_TITLE,
-  description: padDesc(LQ_UI.bannerBody),
+  description: padDesc(
+    `${LQ_UI.bannerBody} (Explore: 5 câu thử nhanh — bản đủ 10 câu tại /lienquan/quiz)`,
+  ),
   category: 'Survival',
   quiz_type: 'binary_5q',
   image_url: '/images/lienquan_hub.webp',

@@ -120,7 +120,7 @@ const META_HEROES = metaHeroes.map((h) => ({
   counterNotes:
     META_COUNTER_NOTES[h.id]
     || h.counter_notes
-    || (h.counters || []).map(() => 'Khắc chế theo meta AOG (tham khảo).'),
+    || [],
   tip: h.tip,
   meta: true,
 }));
@@ -427,9 +427,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'top',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Roxie tank đường — giữ skill cho combat.',
+    weakAgainst: ['florentino', 'yena', 'murad'],
+    counterNotes: [
+      'Đấu sĩ trade mạnh hơn Roxie early.',
+      'Burst trước khi Roxie hồi máu passive.',
+      'Dive khi Roxie hết skill.',
+    ],
+    tip: 'Roxie tank đường — giữ skill cho combat, đừng trade khi passive chưa sẵn sàng.',
   },
   {
     id: 'joker',
@@ -437,9 +441,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'adc',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Joker poke tầm xa — đừng đứng im.',
+    weakAgainst: ['wukong', 'nakroth', 'elsu'],
+    counterNotes: [
+      'Dive thẳng Joker khi thiếu peel.',
+      'Gank liên tục, Joker farm chậm.',
+      'Tầm xa kite Chuỗi Phi Tiêu.',
+    ],
+    tip: 'Joker poke tầm xa — đứng sau minion, đừng face-check bụi.',
   },
   {
     id: 'valhein',
@@ -447,9 +455,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'adc',
     tier: 'B',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Valhein ổn định early — farm rồi scale.',
+    weakAgainst: ['hayate', 'elsu', 'nakroth'],
+    counterNotes: [
+      'Kite tầm xa, Valhein thua range.',
+      'Sniper ép góc, né skill farm.',
+      'Dive khi Valhein chưa có đồ bảo vệ.',
+    ],
+    tip: 'Valhein ổn định early — farm an toàn rồi scale mid-game.',
   },
   {
     id: 'wukong',
@@ -457,9 +469,13 @@ const EXTRA_HEROES = [
     aliases: ['ngộ không'],
     lane: 'jungle',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Wukong dive backline — chọn mục tiêu AD.',
+    weakAgainst: ['xeniel', 'arum', 'thane'],
+    counterNotes: [
+      'Ult cứu carry khỏi dive Wukong.',
+      'Ôm cứng khi Wukong lao vào.',
+      'Tank chịu burst, bỏ qua Wukong.',
+    ],
+    tip: 'Wukong dive backline — chọn AD đang lộ, đừng lao một mình.',
   },
   // Counter stubs referenced by meta 15
   {
@@ -468,9 +484,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'top',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Maloch tank / engage — canh chiêu cuối diện rộng.',
+    weakAgainst: ['florentino', 'yena', 'veres'],
+    counterNotes: [
+      'Đấu sĩ trade tốt hơn Maloch early.',
+      'Burst trước khi Maloch ult.',
+      'Poke tầm xa, tránh chiêu cuối diện rộng.',
+    ],
+    tip: 'Maloch tank / engage — canh chiêu cuối diện rộng, báo team trước khi bay.',
   },
   {
     id: 'richter',
@@ -478,9 +498,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'top',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Richter cơ động — đừng lãng phí CC khi hắn dash.',
+    weakAgainst: ['florentino', 'omen', 'hayate'],
+    counterNotes: [
+      'Duel mạnh hơn Richter khi hắn chưa scale.',
+      'Giữ khoảng cách, né Sát Vực.',
+      'Kite tầm xa, Richter thua range.',
+    ],
+    tip: 'Richter cơ động — đừng lãng phí CC khi hắn còn dash.',
   },
   {
     id: 'baldum',
@@ -488,9 +512,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'sp',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Baldum set trong bụi — tránh đứng gần tường.',
+    weakAgainst: ['zip', 'xeniel', 'annette'],
+    counterNotes: [
+      'Cứu đồng đội khỏi set Baldum.',
+      'Ult chống engage cứng.',
+      'Peel carry khỏi tường Baldum.',
+    ],
+    tip: 'Baldum set trong bụi — tránh đứng gần tường khi hắn có ult.',
   },
   {
     id: 'kriknak',
@@ -498,9 +526,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'jungle',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Kriknak gank nhanh — ward bụi và giữ khoảng cách.',
+    weakAgainst: ['nakroth', 'wukong', 'thane'],
+    counterNotes: [
+      'Duel rừng mạnh hơn Kriknak.',
+      'Dive backline trước khi gank.',
+      'Tank chịu burst, bảo vệ carry.',
+    ],
+    tip: 'Kriknak gank nhanh — ward bụi sâu, giữ khoảng cách khi thiếu vision.',
   },
   {
     id: 'lorion',
@@ -508,9 +540,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'mid',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Lorion poke / zone — né skill vùng.',
+    weakAgainst: ['raz', 'natalya', 'nakroth'],
+    counterNotes: [
+      'Núp bụi trừng phạt Lorion đứng lộ.',
+      'Burst trước khi Lorion scale.',
+      'Gank liên tục, Lorion farm chậm.',
+    ],
+    tip: 'Lorion poke / zone — né skill vùng, đừng đứng trong circle.',
   },
   {
     id: 'chaugnar',
@@ -518,9 +554,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'sp',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Chaugnar chống mage — ưu tiên peel cho carry.',
+    weakAgainst: ['grakk', 'ormarr', 'zip'],
+    counterNotes: [
+      'Hook trước khi Chaugnar peel.',
+      'Engage nhanh, không cho set.',
+      'Cứu carry khỏi đẩy lùi.',
+    ],
+    tip: 'Chaugnar chống mage — ưu tiên peel cho carry, đừng chase sâu.',
   },
   {
     id: 'max',
@@ -528,9 +568,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'sp',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Max engage thẳng — đừng đứng gần tường khi hắn có ult.',
+    weakAgainst: ['zip', 'xeniel', 'annette'],
+    counterNotes: [
+      'Cứu carry khỏi Max lao tường.',
+      'Đừng đứng sát tường khi Max có ult.',
+      'Peel tranh chấp với engage Max.',
+    ],
+    tip: 'Max engage thẳng — đứng góc mở, canh flash khi hắn có ult.',
   },
   {
     id: 'lauriel',
@@ -538,9 +582,13 @@ const EXTRA_HEROES = [
     aliases: [],
     lane: 'mid',
     tier: 'A',
-    weakAgainst: [],
-    counterNotes: [],
-    tip: 'Lauriel cơ động cao — giữ CC cho lúc hắn dash vào.',
+    weakAgainst: ['nakroth', 'krixi', 'gildur'],
+    counterNotes: [
+      'Gank Lauriel khi dash hết.',
+      'CC khóa Lauriel lao vào.',
+      'Set tường cắt đường Lauriel.',
+    ],
+    tip: 'Lauriel cơ động cao — giữ CC cho lúc hắn dash vào backline.',
   },
 ];
 
@@ -565,7 +613,8 @@ export function resolveCounters(hero) {
       if (!c) return null;
       return {
         ...c,
-        why: hero.counterNotes?.[i] || 'Khó trade / bị ép nhịp.',
+        why: hero.counterNotes?.[i]
+          || `${c.name} ép nhịp ${hero.name} — trade theo meta AOG, đừng all-in sai thời điểm.`,
       };
     })
     .filter(Boolean);

@@ -5,6 +5,7 @@ import {
   LIENQUAN_QUIZ_QUESTIONS,
   scoreToMastery,
 } from '../../../shared/lienquan/quizQuestions.js';
+import { LQ_UI, quizResultMeme } from '../../../shared/lienquan/uiText.js';
 import { saveMastery } from '../../lib/lienquan/mastery.js';
 import { markTodayDone } from '../../lib/todayDone.js';
 import MasteryBadgeCard from './components/MasteryBadgeCard.jsx';
@@ -70,7 +71,7 @@ export default function LienquanQuizPage() {
 
       <header className="lq-hero-block">
         <h1>Thi Thông Thạo</h1>
-        <p>10 câu · Meta + cơ bản · Mark Đồng → Thông Thạo 7</p>
+        <p>{LQ_UI.quizIntro}</p>
       </header>
 
       <div className="lq-quiz-progress" aria-hidden="true">
@@ -111,11 +112,7 @@ export default function LienquanQuizPage() {
             {correct}/{questions.length} đúng
           </h2>
           <MasteryBadgeCard mastery={mastery} emptyCta={false} variant="stack" />
-          <p className="lq-tip">
-            {mastery.level >= 7
-              ? 'Thông Thạo 7! Mark vàng đã gắn — khoe ngay góc chiến tích.'
-              : 'Chưa 7? Xem lại counter & giáo án rồi thi lại nhé.'}
-          </p>
+          <p className="lq-tip">{quizResultMeme(mastery.level)}</p>
           <div className="lq-nav-chips">
             <Link to="/lienquan" className="lq-chip">Về hub</Link>
             <Link to="/lienquan/khoe" className="lq-chip">Góc Khoe</Link>
