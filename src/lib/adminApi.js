@@ -104,8 +104,8 @@ export function createAdminApi(adminKey = '') {
       });
     },
 
-    async fetchAnalytics() {
-      return adminFetch(apiUrl('/admin/analytics'), adminKey);
+    async fetchAnalytics(days = 30) {
+      return adminFetch(apiUrl(`/admin/analytics?days=${days}`), adminKey);
     },
 
     async fetchUsers({ search = '', role = 'all', limit, offset } = {}) {

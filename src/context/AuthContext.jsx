@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { fetchCurrentUser, googleLoginUrl, loginAdmin, logoutUser } from '../lib/authApi';
+import { markOwnerDevice } from '../lib/siteVisit';
 
 const AuthContext = createContext(null);
 
@@ -38,6 +39,8 @@ export function AuthProvider({ children }) {
   const loginWithAdminPassword = useCallback(async (username, password) => {
     const adminUser = await loginAdmin(username, password);
     setUser(adminUser);
+    // Register this browser (phone/laptop) so future visits never count
+    markOwnerDevice().catch(() => {});
     return adminUser;
   }, []);
 

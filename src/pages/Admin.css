@@ -585,6 +585,162 @@
   border-color: #ff2d85;
 }
 
+.admin-daily-stat {
+  background: #fff;
+  border: 2px solid #111;
+  border-radius: 0.85rem;
+  padding: 0.85rem 1rem;
+  text-align: center;
+  box-shadow: 2px 2px 0 #111;
+}
+
+.admin-daily-stat span {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-daily-stat strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #111;
+}
+
+.admin-daily-chart {
+  background: #fff;
+  border: 2px solid #111;
+  border-radius: 1rem;
+  padding: 1.1rem 1.15rem 1.25rem;
+  box-shadow: 3px 3px 0 #111;
+  margin-bottom: 0.5rem;
+}
+
+.admin-daily-chart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.admin-daily-chart-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #111;
+}
+
+.admin-daily-chart-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.admin-daily-chart-ranges {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.admin-daily-chart-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.admin-daily-chart-legend .swatch {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 2px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+  border: 1px solid #111;
+}
+
+.admin-daily-chart-legend .swatch.guest {
+  background: #d1d5db;
+}
+
+.admin-daily-chart-legend .swatch.login {
+  background: #ff2d85;
+}
+
+.admin-daily-chart-svg-wrap {
+  position: relative;
+}
+
+.admin-daily-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.admin-daily-chart-svg .grid {
+  stroke: #f3f4f6;
+  stroke-width: 1;
+}
+
+.admin-daily-chart-svg .axis {
+  fill: #9ca3af;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.admin-daily-chart-svg .tick {
+  fill: #6b7280;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.admin-daily-chart-svg .bar-guest {
+  fill: #d1d5db;
+}
+
+.admin-daily-chart-svg .bar-login {
+  fill: #ff2d85;
+}
+
+.admin-daily-chart-svg .bar-hover-bg {
+  fill: #fff1f7;
+}
+
+.admin-daily-chart-tooltip {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #111;
+  color: #fff;
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  pointer-events: none;
+  box-shadow: 2px 2px 0 #ff2d85;
+}
+
+.admin-daily-chart-tooltip strong {
+  font-weight: 800;
+  margin-bottom: 0.15rem;
+}
+
+.admin-daily-chart-empty {
+  text-align: center;
+  color: #9ca3af;
+  padding: 2rem 1rem;
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .admin-user-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));

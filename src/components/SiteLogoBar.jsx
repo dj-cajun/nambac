@@ -17,7 +17,7 @@ export default function SiteLogoBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { toggleDrawer, open } = useDrawer();
-  const { user, logout } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const [streak, setStreak] = useState(0);
   const [playerGrade, setPlayerGrade] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -41,7 +41,12 @@ export default function SiteLogoBar() {
   }, [user?.id]);
 
   useEffect(() => {
-    recordSiteVisit();
+    if (authLoading) return;
+    // Admin: register this device as owner (excluded). Others: count once per session.
+    recordSiteVisit({ force: user?.role === 'admin' });
+  }, [authLoading, user?.role]);
+
+  useEffect(() => {
     const { streak: current } = recordDailyVisit();
     setStreak(current);
     if (current <= 0) return undefined;

@@ -1,6 +1,6 @@
 import { getSession } from '../session.js';
 import { isTrustedSiteRequest } from '../requestOrigin.js';
-import { recordSiteVisit } from '../visitDb.js';
+import { recordSiteVisit, excludeOwnerDevice } from '../visitDb.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,19 +17,32 @@ export default async function handler(req, res) {
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const session = getSession(req);
+    const visitorId = String(body.visitorId || '').trim();
+    const safeVisitorId = visitorId && visitorId.length <= 64 ? visitorId : null;
 
-    if (session?.userId) {
-      await recordSiteVisit({ userId: session.userId });
-      return res.status(200).json({ ok: true, kind: 'logged_in' });
+    // Admin session: register this phone/laptop forever, never count
+    if (session?.role === 'admin') {
+      await excludeOwnerDevice({
+        userId: session.userId || null,
+        visitorId: safeVisitorId,
+      });
+      return res.status(200).json({ ok: true, skipped: 'owner' });
     }
 
-    const visitorId = String(body.visitorId || '').trim();
-    if (!visitorId || visitorId.length > 64) {
+    if (session?.userId) {
+      const result = await recordSiteVisit({
+        userId: session.userId,
+        visitorId: safeVisitorId,
+      });
+      return res.status(200).json(result);
+    }
+
+    if (!safeVisitorId) {
       return res.status(400).json({ error: 'Missing visitorId' });
     }
 
-    await recordSiteVisit({ visitorId });
-    return res.status(200).json({ ok: true, kind: 'guest' });
+    const result = await recordSiteVisit({ visitorId: safeVisitorId });
+    return res.status(200).json(result);
   } catch (err) {
     console.error('POST /api/visit', err);
     return res.status(500).json({ error: err.message || 'Internal server error' });

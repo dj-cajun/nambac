@@ -4,6 +4,7 @@ import { getImageUrl } from '../lib/apiConfig';
 import { createAdminApi } from '../lib/adminApi';
 import { getArchetypesByGroup } from '../../shared/personalityArchetypes.js';
 import AdminUsersPanel from '../components/admin/AdminUsersPanel';
+import AdminDailyVisitorsChart from '../components/admin/AdminDailyVisitorsChart';
 import QuizEditor from './QuizEditor';
 import { useAuth } from '../context/AuthContext';
 import './Admin.css';
@@ -866,7 +867,7 @@ const Admin = () => {
                                                 </div>
                                             ) : analytics ? (
                                                 <>
-                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                                         <div className="bg-pink-50 border-2 border-pink-100 rounded-2xl p-6 text-center">
                                                             <p className="text-xs font-black text-gray-400 uppercase">총 조회수</p>
                                                             <p className="text-3xl font-black text-[#FF2D85]">{analytics.totals.views.toLocaleString()}</p>
@@ -880,7 +881,27 @@ const Admin = () => {
                                                             <p className="text-3xl font-black text-yellow-600">{analytics.totals.shares.toLocaleString()}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="overflow-x-auto">
+
+                                                    {analytics.todayVisitors && (
+                                                        <div className="grid grid-cols-3 gap-3 mb-6">
+                                                            <div className="admin-daily-stat">
+                                                                <span>오늘 조회자</span>
+                                                                <strong>{Number(analytics.todayVisitors.total || 0).toLocaleString()}</strong>
+                                                            </div>
+                                                            <div className="admin-daily-stat">
+                                                                <span>로그인</span>
+                                                                <strong>{Number(analytics.todayVisitors.loggedIn || 0).toLocaleString()}</strong>
+                                                            </div>
+                                                            <div className="admin-daily-stat">
+                                                                <span>비로그인</span>
+                                                                <strong>{Number(analytics.todayVisitors.guest || 0).toLocaleString()}</strong>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <AdminDailyVisitorsChart series={analytics.dailyVisitors || []} />
+
+                                                    <div className="overflow-x-auto mt-8">
                                                         <table className="w-full">
                                                             <thead className="bg-gray-50">
                                                                 <tr>
