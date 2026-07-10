@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Menu, LogOut } from 'lucide-react';
 import NambacLogo from './NambacLogo';
 import GoogleLoginButton from './GoogleLoginButton';
@@ -9,6 +9,7 @@ import { scrollToTop } from '../lib/scrollToTop';
 import { recordDailyVisit } from '../lib/dailyStreak';
 import { recordSiteVisit } from '../lib/siteVisit';
 import { fetchPlayerGrade } from '../lib/playerGrade';
+import { fetchMastery } from '../lib/lienquan/mastery';
 import './SiteLogoBar.css';
 
 const POPUP_SESSION_KEY = 'nambac_streak_popup_shown';
@@ -20,6 +21,7 @@ export default function SiteLogoBar() {
   const { user, loading: authLoading, logout } = useAuth();
   const [streak, setStreak] = useState(0);
   const [playerGrade, setPlayerGrade] = useState(null);
+  const [lqMastery, setLqMastery] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function SiteLogoBar() {
     if (authLoading) return;
     // Admin: register this device as owner (excluded). Others: count once per session.
     recordSiteVisit({ force: user?.role === 'admin' });
+    fetchMastery().then(setLqMastery).catch(() => {});
   }, [authLoading, user?.role]);
 
   useEffect(() => {
@@ -93,6 +96,16 @@ export default function SiteLogoBar() {
         <span className="site-grade-badge" aria-label={`Hạng ${playerGrade.label}`}>
           {playerGrade.emoji} {playerGrade.label}
         </span>
+      )}
+      {lqMastery?.level > 0 && (
+        <Link
+          to="/lienquan/quiz"
+          className={`site-lq-badge${lqMastery.level >= 7 ? ' gold' : ''}`}
+          aria-label={lqMastery.label}
+          title={lqMastery.label}
+        >
+          ⚔️ {lqMastery.level >= 7 ? 'TT7' : `TT${lqMastery.level}`}
+        </Link>
       )}
 
       <div className="site-auth-slot">

@@ -40,6 +40,7 @@ const LienquanHub = lazy(() => import('./pages/lienquan/LienquanHub'));
 const LienquanHeroDetail = lazy(() => import('./pages/lienquan/HeroDetailPage'));
 const LienquanGiaoAn = lazy(() => import('./pages/lienquan/GiaoAnPage'));
 const LienquanKhoe = lazy(() => import('./pages/lienquan/KhoePage'));
+const LienquanQuiz = lazy(() => import('./pages/lienquan/LienquanQuizPage'));
 
 function RouteFallback() {
   return <div className="route-fallback" aria-hidden="true" />;
@@ -114,6 +115,7 @@ function AppContent() {
           <Route path="/lienquan/tuong/:slug" element={<LienquanHeroDetail />} />
           <Route path="/lienquan/giao-an" element={<LienquanGiaoAn />} />
           <Route path="/lienquan/khoe" element={<LienquanKhoe />} />
+          <Route path="/lienquan/quiz" element={<LienquanQuiz />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/editor" element={<QuizEditor />} />
           <Route path="/about" element={<About />} />

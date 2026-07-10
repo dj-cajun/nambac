@@ -506,3 +506,195 @@
   color: var(--lq-muted);
   font-weight: 700;
 }
+
+.lq-mastery-chip {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--lq-border);
+  background: #0b1016;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--lq-muted);
+}
+
+.lq-mastery-chip.gold,
+.lq-mastery-badge.gold {
+  border-color: var(--lq-gold);
+  color: var(--lq-gold);
+  box-shadow: 0 0 12px rgba(245, 197, 66, 0.35);
+}
+
+.lq-mastery-badge {
+  display: inline-block;
+  margin: 12px 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 2px solid var(--lq-border);
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.lq-quiz-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: #243041;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.lq-quiz-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lq-pink), var(--lq-gold));
+  transition: width 0.25s ease;
+}
+
+.lq-quiz-step {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--lq-gold);
+}
+
+.lq-quiz-q {
+  margin: 0 0 14px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.lq-quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lq-quiz-opt {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 0.85rem;
+  border: 1.5px solid var(--lq-border);
+  background: #0b1016;
+  color: var(--lq-text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lq-quiz-opt:disabled {
+  cursor: default;
+}
+
+.lq-quiz-opt.ok {
+  border-color: #22c55e;
+  background: #052e16;
+}
+
+.lq-quiz-opt.bad {
+  border-color: #ef4444;
+  background: #450a0a;
+}
+
+.lq-khoe-toolbar {
+  margin-bottom: 14px;
+}
+
+.lq-khoe-login {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--lq-muted);
+}
+
+.lq-khoe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lq-khoe-textarea,
+.lq-khoe-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 0.85rem;
+  border: 1.5px solid var(--lq-border);
+  background: #0b1016;
+  color: var(--lq-text);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+}
+
+.lq-khoe-error {
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.lq-khoe-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lq-khoe-card {
+  background: var(--lq-card);
+  border: 1.5px solid var(--lq-border);
+  border-radius: 1.15rem;
+  padding: 14px;
+}
+
+.lq-khoe-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.lq-khoe-card-top strong {
+  display: block;
+  font-size: 14px;
+}
+
+.lq-khoe-hero-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--lq-muted);
+}
+
+.lq-khoe-caption {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.lq-khoe-img {
+  width: 100%;
+  border-radius: 0.75rem;
+  margin-bottom: 8px;
+  border: 1px solid var(--lq-border);
+}
+
+.lq-like-btn {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--lq-border);
+  background: #0b1016;
+  color: var(--lq-text);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.lq-like-btn.on {
+  border-color: var(--lq-pink);
+  color: var(--lq-pink);
+}

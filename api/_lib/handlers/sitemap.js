@@ -26,6 +26,8 @@ const STATIC_PATHS = [
   { path: '/brain', changefreq: 'weekly', priority: '0.8' },
   { path: '/lienquan', changefreq: 'daily', priority: '0.9' },
   { path: '/lienquan/giao-an', changefreq: 'weekly', priority: '0.85' },
+  { path: '/lienquan/khoe', changefreq: 'daily', priority: '0.8' },
+  { path: '/lienquan/quiz', changefreq: 'weekly', priority: '0.85' },
 ];
 
 function escapeXml(value) {

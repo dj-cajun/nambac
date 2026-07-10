@@ -1,19 +1,23 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from './components/SearchBar.jsx';
 import TierStrip from './components/TierStrip.jsx';
 import QuizEventBanner from './components/QuizEventBanner.jsx';
 import { incrementFeatureStat, trackFeatureViewOnce } from '../../lib/featureStats';
 import { trackFeatureView } from '../../lib/analytics';
+import { fetchMastery } from '../../lib/lienquan/mastery.js';
 import './lienquan.css';
 
 export default function LienquanHub() {
+  const [mastery, setMastery] = useState(null);
+
   useEffect(() => {
     if (trackFeatureViewOnce('lienquan')) {
       trackFeatureView('lienquan');
       incrementFeatureStat('lienquan', 'view').catch(() => {});
     }
+    fetchMastery().then(setMastery).catch(() => {});
   }, []);
 
   return (
@@ -32,6 +36,11 @@ export default function LienquanHub() {
       <header className="lq-hero-block">
         <h1>Liên Quân</h1>
         <p>Tìm counter trong 30 giây · Giáo án pro · Meta AOG</p>
+        {mastery && (
+          <div className={`lq-mastery-chip${mastery.level >= 7 ? ' gold' : ''}`}>
+            Mark: {mastery.label}
+          </div>
+        )}
       </header>
 
       <SearchBar />
@@ -39,6 +48,7 @@ export default function LienquanHub() {
       <nav className="lq-nav-chips" aria-label="Liên Quân menu">
         <Link to="/lienquan/giao-an" className="lq-chip">Giáo Án Pro</Link>
         <Link to="/lienquan/khoe" className="lq-chip">Góc Khoe</Link>
+        <Link to="/lienquan/quiz" className="lq-chip">Thi Thông Thạo</Link>
       </nav>
 
       <TierStrip />

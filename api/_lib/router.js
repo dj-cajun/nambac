@@ -40,6 +40,8 @@ import adminUsers from './handlers/adminUsers.js';
 import siteVisit from './handlers/siteVisit.js';
 import { playerGradeGet, playerGradeComplete } from './handlers/playerGrade.js';
 import sitemap from './handlers/sitemap.js';
+import lienquanMastery from './handlers/lienquan/mastery.js';
+import lienquanBoast from './handlers/lienquan/boast.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -198,6 +200,19 @@ export async function dispatch(req, res, segments = []) {
   }
 
   if (a === 'fortune-share' && !b) return fortuneShare(req, res);
+
+  // ── Liên Quân mastery + khoe feed ──
+  if (a === 'lienquan' && b === 'mastery' && !c && (method === 'GET' || method === 'POST' || method === 'OPTIONS')) {
+    return lienquanMastery(req, res);
+  }
+  if (
+    a === 'lienquan' &&
+    b === 'boast' &&
+    !c &&
+    ['GET', 'POST', 'PATCH', 'OPTIONS'].includes(method)
+  ) {
+    return lienquanBoast(req, res);
+  }
 
   return res.status(404).json({ error: 'Not found', path: segments.join('/') });
 }

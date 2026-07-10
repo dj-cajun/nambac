@@ -75,6 +75,27 @@
   text-overflow: ellipsis;
 }
 
+.site-lq-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 2px solid #1e293b;
+  background: #0f1419;
+  color: #f5c542;
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 2px 2px 0 #1e293b;
+  flex-shrink: 0;
+}
+
+.site-lq-badge.gold {
+  background: linear-gradient(135deg, #422006, #1a1520);
+  border-color: #f5c542;
+  color: #fde68a;
+}
+
 .streak-popup {
   position: fixed;
   top: 58px;
