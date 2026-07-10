@@ -44,6 +44,7 @@
     "smoke:og": "node scripts/dev/smoke_og.mjs",
     "sitemap:generate": "node scripts/ops/generate_sitemap.mjs",
     "vapid:generate": "node scripts/dev/generate_vapid_keys.mjs",
+    "prebuild": "node scripts/ops/generate_sitemap.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

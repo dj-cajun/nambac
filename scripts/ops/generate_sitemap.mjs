@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /**
- * Local sitemap preview only.
- * Production serves /sitemap.xml dynamically via api/_lib/handlers/sitemap.js
- * — do NOT commit public/sitemap.xml (static file overrides Vercel rewrite).
+ * Writes public/sitemap.xml for crawlers (GET/HEAD) and as build fallback.
+ * Dynamic API route stays in sync; regenerate on quiz changes or via prebuild.
  */
 import fs from 'fs';
 import path from 'path';
@@ -12,6 +11,7 @@ import { listActiveQuizzes } from '../../api/_lib/quizDb.js';
 import { QUIZ_CATEGORY_IDS } from '../../shared/categories.js';
 import { CANONICAL_SITE_ORIGIN } from '../../shared/siteOrigin.js';
 import { HEROES } from '../../shared/lienquan/heroes.js';
+import { BLOG_POSTS } from '../../src/content/blogPosts.js';
 
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
@@ -19,10 +19,11 @@ dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 const STATIC_PATHS = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
   { path: '/blog', changefreq: 'weekly', priority: '0.9' },
-  { path: '/blog/xu-huong-di-dong-gen-z-sai-gon', changefreq: 'monthly', priority: '0.85' },
-  { path: '/blog/lich-su-quiz-truc-tuyen-viet-nam', changefreq: 'monthly', priority: '0.85' },
-  { path: '/blog/ung-dung-ai-sang-tao-noi-dung-giai-tri', changefreq: 'monthly', priority: '0.85' },
-  { path: '/blog/van-hoa-meme-va-ap-luc-cot-song-gen-z', changefreq: 'monthly', priority: '0.85' },
+  ...BLOG_POSTS.map((p) => ({
+    path: `/blog/${p.slug}`,
+    changefreq: 'monthly',
+    priority: '0.85',
+  })),
   { path: '/explore', changefreq: 'daily', priority: '0.9' },
   { path: '/leaderboard', changefreq: 'weekly', priority: '0.7' },
   { path: '/about', changefreq: 'monthly', priority: '0.8' },

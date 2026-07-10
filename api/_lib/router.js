@@ -89,7 +89,7 @@ export async function dispatch(req, res, segments = []) {
   if (a === 'player' && b === 'complete' && !c && method === 'POST') return playerGradeComplete(req, res);
 
   // ── Dynamic sitemap (static pages + categories + quizzes) ──
-  if (a === 'sitemap' && !b && method === 'GET') return sitemap(req, res);
+  if (a === 'sitemap' && !b && (method === 'GET' || method === 'HEAD')) return sitemap(req, res);
 
   // ── Google OAuth / session ──
   if (a === 'auth' && b === 'google' && c === 'callback' && method === 'GET') {
