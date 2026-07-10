@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import SearchBar from './components/SearchBar.jsx';
 import TierStrip from './components/TierStrip.jsx';
 import QuizEventBanner from './components/QuizEventBanner.jsx';
+import QuizTierHub from './components/QuizTierHub.jsx';
 import MasteryBadgeCard from './components/MasteryBadgeCard.jsx';
 import GiaoAnCard from './components/GiaoAnCard.jsx';
 import ShareLinkButton from './components/ShareLinkButton.jsx';
@@ -60,16 +61,17 @@ export default function LienquanHub() {
         <p>{LQ_UI.hubSub}</p>
       </header>
 
+      <QuizEventBanner />
+      <QuizTierHub />
+
       <nav className="lq-nav-chips" aria-label="Liên Quân menu">
         <Link to="/lienquan/giao-an" className="lq-chip">{LQ_UI.tabGiaoAn}</Link>
         <Link to="/lienquan/khoe" className="lq-chip">{LQ_UI.tabKhoe}</Link>
         <Link to="/lienquan/tu-dien" className="lq-chip">{LQ_UI.tabTuDien}</Link>
-        <Link to="/lienquan/quiz" className="lq-chip">Thi Thông Thạo</Link>
+        <Link to="/lienquan#quiz" className="lq-chip lq-chip-accent">Thi Thông Thạo</Link>
       </nav>
 
       <TierStrip />
-
-      <QuizEventBanner />
 
       {highlights.length > 0 && (
         <section className="lq-hub-highlights">

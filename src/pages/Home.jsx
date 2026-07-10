@@ -495,7 +495,7 @@ export default function Home() {
             <TodayThumbCard
               className={`home-today-card home-today-lienquan${doneToday.has('lienquan') ? ' is-done' : ''}`}
               done={doneToday.has('lienquan')}
-              to="/lienquan"
+              to="/lienquan#quiz"
               imageSrc={featureThumbs.lienquan?.src}
               imageSeed={featureThumbs.lienquan?.seed || 'lienquan'}
               label="Liên Quân"

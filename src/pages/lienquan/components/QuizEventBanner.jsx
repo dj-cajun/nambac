@@ -1,20 +1,11 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LIENQUAN_QUIZ } from '../../../../shared/lienquan/quizMeta.js';
 import { LQ_UI } from '../../../../shared/lienquan/uiText.js';
-import { fetchLienquanQuizMeta } from '../../../lib/lienquan/quizMetaApi.js';
 
+/** Compact quiz promo — links to tier grid on same page */
 export default function QuizEventBanner() {
-  const [ctaPath, setCtaPath] = useState(LIENQUAN_QUIZ.ctaPath);
-
-  useEffect(() => {
-    fetchLienquanQuizMeta().then((meta) => {
-      if (meta?.ctaPath) setCtaPath(meta.ctaPath);
-    });
-  }, []);
-
   return (
-    <Link to={ctaPath} className="lq-quiz-banner">
+    <Link to="#quiz" className="lq-quiz-banner">
       <div className="lq-quiz-banner-text">
         <strong>{LIENQUAN_QUIZ.bannerTitle}</strong>
         <span>{LIENQUAN_QUIZ.bannerBody}</span>

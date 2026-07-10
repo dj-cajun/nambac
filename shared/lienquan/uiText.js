@@ -20,6 +20,8 @@ export const LQ_UI = {
   glossarySub: 'Trang bị · ngọc · thuật ngữ meta (tham khảo)',
   glossarySearch: 'Tìm tên item hoặc thuật ngữ…',
   hubGiaoAnTitle: 'Giáo án nổi bật',
+  hubQuizTitle: 'Thi Thông Thạo · 5 cấp độ',
+  hubQuizSub: '10 câu mỗi cấp — từ Đồng đến giáo án AOG. Chọn cấp phù hợp rank của bạn.',
 
   counterTitle: 'Tướng Khắc Chế:',
   tipTitle: 'Mẹo Đối Đầu:',
@@ -32,7 +34,7 @@ export const LQ_UI = {
   bannerBody:
     '5 cấp thi Thông Thạo — 10 câu mỗi cấp, mark từ Đồng đến Thông Thạo 7 trên nambac.xyz!',
   bannerCta: 'Thử Thách Ngay',
-  bannerExploreNote: 'Bản trên Explore là 5 câu thử — làm đủ 10 câu tại hub.',
+  bannerExploreNote: '5 cấp · 10 câu mỗi cấp — chọn ngay bên dưới.',
 
   hubTitle: 'Cẩm Nang Liên Quân',
   hubSub: 'Khắc chế · Giáo án pro · Meta AOG',
