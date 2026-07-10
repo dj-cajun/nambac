@@ -1,8 +1,11 @@
 import { apiUrl } from './apiConfig';
+import { getAdminSessionToken } from './adminSession.js';
 
 function adminHeaders(adminKey) {
   const headers = { 'Content-Type': 'application/json' };
   if (adminKey) headers['X-Admin-Key'] = adminKey;
+  const sessionToken = getAdminSessionToken();
+  if (sessionToken) headers.Authorization = `Bearer ${sessionToken}`;
   return headers;
 }
 

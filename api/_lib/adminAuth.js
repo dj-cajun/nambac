@@ -1,8 +1,8 @@
-import { getSession } from './session.js';
+import { getSessionFromRequest } from './session.js';
 
 /** Production requires ADMIN_API_KEY or Google admin session; local dev may run without it. */
 export function requireAdmin(req, res) {
-  const session = getSession(req);
+  const session = getSessionFromRequest(req);
   if (session?.role === 'admin') return true;
 
   const expected = process.env.ADMIN_API_KEY || '';
@@ -24,6 +24,6 @@ export function requireAdmin(req, res) {
 }
 
 export function isAdminSession(req) {
-  const session = getSession(req);
+  const session = getSessionFromRequest(req);
   return session?.role === 'admin';
 }

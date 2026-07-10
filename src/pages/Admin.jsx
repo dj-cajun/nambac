@@ -151,6 +151,7 @@ const Admin = () => {
             setAnalytics(data);
         } catch (error) {
             console.error('Error fetching analytics:', error);
+            showToast(`통계 불러오기 실패: ${error.message}`, 'error');
         } finally {
             setAnalyticsLoading(false);
         }

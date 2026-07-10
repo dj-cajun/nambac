@@ -53,8 +53,24 @@ export function getSession(req) {
   return verifyPayload(cookies[SESSION_COOKIE]);
 }
 
+/** Cookie or `Authorization: Bearer <signed session>` (admin SPA fallback). */
+export function getSessionFromRequest(req) {
+  const fromCookie = getSession(req);
+  if (fromCookie) return fromCookie;
+
+  const authHeader = req.headers?.authorization || req.headers?.Authorization || '';
+  const match = String(authHeader).match(/^Bearer\s+(.+)$/i);
+  if (!match) return null;
+  return verifyPayload(match[1].trim());
+}
+
 export function setSessionCookie(res, payload) {
   const token = signPayload(payload);
+  setSessionCookieToken(res, token);
+  return token;
+}
+
+export function setSessionCookieToken(res, token) {
   const secure = Boolean(process.env.VERCEL) || process.env.NODE_ENV === 'production';
   const parts = [
     `${SESSION_COOKIE}=${encodeURIComponent(token)}`,

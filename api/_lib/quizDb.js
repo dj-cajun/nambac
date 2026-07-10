@@ -228,11 +228,11 @@ export async function getAnalyticsSummary() {
 
   const rows = rs.rows.map((row) => ({
     ...row,
-    is_active: row.is_active === 1,
-    view_count: row.view_count || 0,
-    share_count: row.share_count || 0,
-    like_count: row.like_count || 0,
-    participant_count: row.participant_count || 0,
+    is_active: row.is_active === 1 || row.is_active === true,
+    view_count: Number(row.view_count) || 0,
+    share_count: Number(row.share_count) || 0,
+    like_count: Number(row.like_count) || 0,
+    participant_count: Number(row.participant_count) || 0,
   }));
 
   const totals = rows.reduce(
