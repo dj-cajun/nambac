@@ -30,7 +30,7 @@ export function getFortuneScenePrompt(fortuneIndex) {
   const idx = ((Number(fortuneIndex) % total) + total) % total;
   const scene = FORTUNE_SCENES[idx];
   return finalizeResultImagePrompt(
-    `Daily love fortune share-card poster ${idx}. Center-framed Vietnamese Gen Z character, expressive romantic roast comedy reaction. Scene: ${scene}. Ho Chi Minh City Gen Z love drama humor aesthetic, premium viral quiz share energy.`,
-    { resultCode: idx, quizTitle: FORTUNE_BRAND.labelFull, category: 'fortune' },
+    `Daily fortune card ${idx}. Scene: ${scene}.`,
+    { resultCode: idx, quizTitle: FORTUNE_BRAND.labelFull, category: 'fortune', propMode: 'hero' },
   );
 }

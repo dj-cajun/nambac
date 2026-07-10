@@ -5,14 +5,14 @@ import { finalizeResultImagePrompt } from './imagePrompts.js';
  * One hero share-card image per result id. Playful X-ray-of-the-mind meme energy.
  */
 export const BRAIN_SCENES = {
-  brain_01: 'Vietnamese Gen Z head shown as a glowing brain filled almost entirely with floating pink hearts and a dreamy crush silhouette, a tiny sad textbook squeezed in a corner, love-obsessed mind X-ray comedy',
-  brain_02: 'Young person head as a brain packed with floating bubble tea, hotpot, banh trang tron and noodles, a small sleepy pillow and an empty wallet in the corner, hungry-mind X-ray comedy',
-  brain_03: 'Head as a brain overflowing with floating shopping bags, Shopee parcels and glowing sale tags, a tiny crying empty wallet, broke-shopaholic mind X-ray comedy',
-  brain_04: 'Head as a brain full of floating gossip speech clouds, popcorn buckets and phone screenshots, tabloid detective energy, drama-hunter mind X-ray comedy',
-  brain_05: 'Head as a brain split between a glowing looming deadline clock and a phone showing endless short videos, a lonely coffee cup, procrastination mind X-ray comedy',
-  brain_06: 'Head as a brain packed with floating game controllers, glowing idol light-sticks and TikTok icons, a tiny faded real world in the corner, escapist fan mind X-ray comedy',
-  brain_07: 'Head as a brain split in half — one gloomy rainy self-doubt side, one blazing confident superhero side, dramatic mood-swing mind X-ray comedy',
-  brain_08: 'Head as a brain with calming candles, Da Lat pastel scenery and meditation aura on one side, a swirling tangle of 1am overthinking thoughts on the other, healing-but-anxious mind X-ray comedy',
+  brain_01: 'Saigon Gen Z head as glowing brain cross-section packed with floating pink hearts and a dreamy crush silhouette, tiny sad textbook in the corner, love-obsessed mind collage',
+  brain_02: 'Brain packed with floating bubble tea, hotpot, banh trang tron, Highlands-style iced coffee, sleepy pillow and empty wallet in the corner, hungry-mind collage',
+  brain_03: 'Brain overflowing with shopping bags, Shopee-style parcels and sale-tag shapes, tiny crying empty wallet, broke-shopaholic collage',
+  brain_04: 'Brain full of gossip cloud shapes, popcorn buckets and phone screenshot panels, tabloid detective energy, drama-hunter collage',
+  brain_05: 'Brain split between looming deadline clock and phone with endless short-video scroll, lonely coffee cup, procrastination collage',
+  brain_06: 'Brain packed with game controllers, idol light-sticks and TikTok phone glow, tiny faded real world in the corner, escapist fan collage',
+  brain_07: 'Brain split in half — gloomy rainy self-doubt side vs blazing confident superhero side, mood-swing collage',
+  brain_08: 'Brain with Da Lat pastel calm candles and meditation aura on one side, swirling 1am overthinking tangle on the other, healing-but-anxious collage',
 };
 
 const GENERIC_SCENE =
@@ -20,8 +20,11 @@ const GENERIC_SCENE =
 
 export function getBrainScenePrompt(id, indexHint = 0) {
   const scene = BRAIN_SCENES[id] || GENERIC_SCENE;
+  const keys = Object.keys(BRAIN_SCENES);
+  const fromId = keys.indexOf(id);
+  const resultCode = fromId >= 0 ? fromId : indexHint;
   return finalizeResultImagePrompt(
-    `Brain-composition share-card poster. A funny "what is in your head" mind X-ray. Scene: ${scene}. Ho Chi Minh City Gen Z meme humor aesthetic, bold comedic energy, premium viral share look.`,
-    { resultCode: indexHint, quizTitle: 'Trong đầu bạn có gì', category: 'brain' },
+    `Mind X-ray share-card. Scene: ${scene}.`,
+    { resultCode, quizTitle: 'Trong đầu bạn có gì', category: 'brain', propMode: 'collage' },
   );
 }
