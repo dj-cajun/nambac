@@ -17,10 +17,13 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
-      - name: Sitemap includes quiz URLs
+      - name: Dynamic sitemap config
         run: |
-          test -f public/sitemap.xml
-          grep -q '/quiz/' public/sitemap.xml
+          test ! -f public/sitemap.xml
+          grep -q '/lienquan' api/_lib/handlers/sitemap.js
+          grep -q '/vbti' api/_lib/handlers/sitemap.js
+          grep -q 'listActiveQuizzes' api/_lib/handlers/sitemap.js
+          grep -q 'path=sitemap' vercel.json
 
   prod-smoke:
     runs-on: ubuntu-latest
