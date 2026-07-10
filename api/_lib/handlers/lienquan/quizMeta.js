@@ -1,5 +1,5 @@
-import { getTurso } from '../turso.js';
-import { LIENQUAN_QUIZ_DB_TITLE } from '../../../shared/lienquan/quizDbSeed.js';
+import { getTurso } from '../../turso.js';
+import { LIENQUAN_QUIZ_DB_TITLE } from '../../../../shared/lienquan/quizDbSeed.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
