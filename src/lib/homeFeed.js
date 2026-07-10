@@ -1,7 +1,7 @@
 import { getViralScore } from './quizRanking';
 import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
 
-/** @typedef {'quiz'|'fortune'|'roast'|'brain'} FeedItemKind */
+/** @typedef {'quiz'|'fortune'|'roast'|'brain'|'lienquan'} FeedItemKind */
 
 /**
  * @param {object} params
@@ -62,6 +62,19 @@ export function buildFeatureFeedItems({ fortuneStats, featureStats, featureThumb
       like_count: featureStats?.brain?.like_count || 0,
       participant_count: 0,
       typeLabel: 'Não',
+    },
+    {
+      kind: 'lienquan',
+      id: 'lienquan',
+      title: '⚔️ Liên Quân — Counter & Giáo Án',
+      image_url: featureThumbs.lienquan?.src || '/images/lienquan/hub-thumb.svg',
+      imageSeed: featureThumbs.lienquan?.seed || 'lienquan-hub',
+      to: '/lienquan',
+      view_count: featureStats?.lienquan?.view_count || 0,
+      share_count: featureStats?.lienquan?.share_count || 0,
+      like_count: featureStats?.lienquan?.like_count || 0,
+      participant_count: 0,
+      typeLabel: 'Liên Quân',
     },
   ];
 }

@@ -7,6 +7,8 @@ import {
   masteryLabel,
 } from '../../../shared/lienquan/quizQuestions.js';
 import { saveMastery } from '../../lib/lienquan/mastery.js';
+import { markTodayDone } from '../../lib/todayDone.js';
+import MasteryBadgeCard from './components/MasteryBadgeCard.jsx';
 import './lienquan.css';
 
 export default function LienquanQuizPage() {
@@ -28,6 +30,7 @@ export default function LienquanQuizPage() {
       if (index + 1 >= questions.length) {
         const level = scoreToMastery(nextCorrect);
         const saved = await saveMastery(level);
+        markTodayDone('lienquan');
         setCorrect(nextCorrect);
         setMastery(saved);
         setDone(true);
@@ -90,9 +93,7 @@ export default function LienquanQuizPage() {
           <h2 className="lq-quiz-q">
             {correct}/{questions.length} đúng
           </h2>
-          <div className={`lq-mastery-badge${mastery.level >= 7 ? ' gold' : ''}`}>
-            {mastery.label}
-          </div>
+          <MasteryBadgeCard mastery={mastery} emptyCta={false} variant="stack" />
           <p className="lq-tip">
             {mastery.level >= 7
               ? 'Thông Thạo 7! Mark vàng đã gắn — khoe ngay góc chiến tích.'

@@ -9,8 +9,10 @@
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  min-height: 100vh;
-  padding: 12px 16px 100px;
+  min-height: calc(100vh - 56px);
+  /* Match fortune/home side rhythm — box-sizing so padding doesn't overflow app-layout */
+  padding: 8px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
   color: var(--lq-text);
   background: linear-gradient(180deg, #0f1419 0%, #151c26 40%, #1a1520 100%);
   border-radius: 0;
@@ -34,6 +36,18 @@
   margin-bottom: 20px;
 }
 
+.lq-hero-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.lq-hero-title-row h1 {
+  margin: 0;
+}
+
 .lq-hero-block h1 {
   margin: 0 0 6px;
   font-size: 1.85rem;
@@ -42,6 +56,7 @@
   color: var(--lq-gold);
 }
 
+.lq-hero-title-row + p,
 .lq-hero-block p {
   margin: 0;
   font-size: 14px;
@@ -187,6 +202,12 @@
   padding-bottom: 8px;
   margin-bottom: 10px;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+
+.lq-tier-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .lq-tier-tab {
@@ -211,8 +232,15 @@
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding: 4px 2px 12px;
+  padding: 4px 4px 12px;
+  margin: 0 -4px;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+
+.lq-tier-strip::-webkit-scrollbar {
+  display: none;
 }
 
 .lq-tier-item {
@@ -308,13 +336,18 @@
   background: linear-gradient(135deg, #2a1524, #1a222d);
   text-decoration: none;
   color: var(--lq-text);
-  box-shadow: 4px 4px 0 #ff2d85;
+  /* Inset shadow so overflow-x on app-layout doesn't clip the right edge */
+  box-shadow: 3px 3px 0 #ff2d85;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .lq-quiz-banner-text {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .lq-quiz-banner-text strong {
@@ -626,7 +659,8 @@
   border: 1.5px solid var(--lq-border);
   background: #0b1016;
   color: var(--lq-text);
-  font-size: 14px;
+  /* ≥16px — avoid iOS focus zoom that leaves the page “enlarged” */
+  font-size: 16px;
   font-weight: 700;
   font-family: inherit;
 }
@@ -675,13 +709,6 @@
   line-height: 1.45;
 }
 
-.lq-khoe-img {
-  width: 100%;
-  border-radius: 0.75rem;
-  margin-bottom: 8px;
-  border: 1px solid var(--lq-border);
-}
-
 .lq-like-btn {
   margin-top: 8px;
   padding: 8px 12px;
@@ -697,4 +724,457 @@
 .lq-like-btn.on {
   border-color: var(--lq-pink);
   color: var(--lq-pink);
+}
+
+/* Counter why rows */
+.lq-counter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.lq-counter-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 0.85rem;
+  border: 1.5px solid var(--lq-border);
+  background: #0b1016;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lq-counter-item:active {
+  border-color: var(--lq-gold);
+}
+
+.lq-counter-why {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--lq-muted);
+}
+
+/* Landscape rank plate (game is played sideways) */
+.lq-rank-thumb {
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  border-radius: 8px;
+}
+
+.lq-rank-thumb--empty {
+  display: inline-flex;
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.lq-rank-land {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 2px solid var(--lq-rank-border, var(--lq-gold));
+  border-radius: 8px;
+  background: linear-gradient(90deg, #0b1016 0%, #1a222d 55%, #151820 100%);
+  box-sizing: border-box;
+  color: #f1f5f9;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lq-rank-border, #f5c542) 35%, transparent);
+}
+
+.lq-rank-land--ghost {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.lq-rank-land--thumb {
+  width: 88px;
+  height: 48px;
+}
+
+.lq-rank-land--stack {
+  width: 100%;
+  height: 72px;
+}
+
+.lq-rank-land--full {
+  width: min(78%, 520px);
+  height: auto;
+  aspect-ratio: 16 / 9;
+  max-height: 42%;
+  border-width: 3px;
+  border-radius: 14px;
+}
+
+.lq-rank-land-left {
+  flex: 0 0 34%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: radial-gradient(circle at 40% 35%, #3a4556, #0b1016 72%);
+  border-right: 1px solid color-mix(in srgb, var(--lq-rank-border, #f5c542) 40%, transparent);
+}
+
+.lq-rank-land-emoji {
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.lq-rank-land--full .lq-rank-land-emoji {
+  font-size: 1.5rem;
+}
+
+.lq-rank-land-num {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--lq-rank-accent, #fde68a);
+  line-height: 1;
+}
+
+.lq-rank-land--thumb .lq-rank-land-num {
+  font-size: 1.05rem;
+}
+
+.lq-rank-land--full .lq-rank-land-num {
+  font-size: clamp(2.4rem, 10vw, 4rem);
+}
+
+.lq-rank-land-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 8px;
+}
+
+.lq-rank-land--full .lq-rank-land-right {
+  padding: 14px 20px;
+  gap: 8px;
+}
+
+.lq-rank-land-brand {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.lq-rank-land--full .lq-rank-land-brand {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+
+.lq-rank-land-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--lq-rank-accent, #fde68a);
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lq-rank-land--full .lq-rank-land-label {
+  font-size: clamp(1.15rem, 4.2vw, 1.85rem);
+  white-space: normal;
+}
+
+.lq-rank-land-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.lq-rank-land--full .lq-rank-land-tag {
+  font-size: 15px;
+}
+
+.lq-rank-stack-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.lq-rank-stack-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--lq-muted);
+}
+
+/* Tier color tokens */
+.tone-dong { --lq-rank-border: #b45309; --lq-rank-accent: #fdba74; --lq-rank-glow: rgba(180, 83, 9, 0.55); --lq-rank-wash: #431407; }
+.tone-tt1 { --lq-rank-border: #94a3b8; --lq-rank-accent: #e2e8f0; --lq-rank-glow: rgba(148, 163, 184, 0.45); --lq-rank-wash: #1e293b; }
+.tone-tt2 { --lq-rank-border: #64748b; --lq-rank-accent: #cbd5e1; --lq-rank-glow: rgba(100, 116, 139, 0.5); --lq-rank-wash: #0f172a; }
+.tone-tt3 { --lq-rank-border: #38bdf8; --lq-rank-accent: #bae6fd; --lq-rank-glow: rgba(56, 189, 248, 0.5); --lq-rank-wash: #0c4a6e; }
+.tone-tt4 { --lq-rank-border: #22d3ee; --lq-rank-accent: #a5f3fc; --lq-rank-glow: rgba(34, 211, 238, 0.55); --lq-rank-wash: #164e63; }
+.tone-tt5 { --lq-rank-border: #818cf8; --lq-rank-accent: #c7d2fe; --lq-rank-glow: rgba(129, 140, 248, 0.55); --lq-rank-wash: #312e81; }
+.tone-tt6 { --lq-rank-border: #c084fc; --lq-rank-accent: #e9d5ff; --lq-rank-glow: rgba(192, 132, 252, 0.55); --lq-rank-wash: #4c1d95; }
+.tone-tt7 { --lq-rank-border: #f5c542; --lq-rank-accent: #fde68a; --lq-rank-glow: rgba(245, 197, 66, 0.65); --lq-rank-wash: #422006; }
+
+/* TRUE mobile fullscreen — portal to body, edge-to-edge */
+.lq-rank-fs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  z-index: 99999;
+  display: block;
+  background: #05070a;
+  box-sizing: border-box;
+  animation: lq-rank-fs-in 0.2s ease-out;
+  overscroll-behavior: none;
+  touch-action: none;
+  /* cover iOS safe areas */
+  padding: 0;
+  margin: 0;
+}
+
+@keyframes lq-rank-fs-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lq-rank-fs-close {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top, 0px));
+  right: max(10px, env(safe-area-inset-right, 0px));
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid color-mix(in srgb, var(--lq-rank-border, #f5c542) 70%, #334155);
+  background: rgba(15, 20, 25, 0.92);
+  color: #f1f5f9;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  z-index: 5;
+}
+
+/* Portrait: landscape card rotated to fill entire phone screen */
+.lq-rank-fs-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100dvh;
+  height: 100dvw;
+  width: 100vh;
+  height: 100vw;
+  transform: translate(-50%, -50%) rotate(90deg);
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.lq-rank-fs-card {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 90% at 18% 50%, color-mix(in srgb, var(--lq-rank-glow) 55%, transparent), transparent 60%),
+    linear-gradient(105deg, #070a0e 0%, var(--lq-rank-wash, #1a1520) 42%, #0b1016 100%);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Classical ornate painting frame (tier-colored) */
+.lq-rank-fs-ornate {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lq-rank-fs-mold {
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Outer carved molding */
+.lq-rank-fs-mold--outer {
+  inset: 6px;
+  border-radius: 4px;
+  border: 9px solid var(--lq-rank-border);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 5px,
+      color-mix(in srgb, var(--lq-rank-accent) 14%, transparent) 5px,
+      color-mix(in srgb, var(--lq-rank-accent) 14%, transparent) 6px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 5px,
+      color-mix(in srgb, var(--lq-rank-accent) 10%, transparent) 5px,
+      color-mix(in srgb, var(--lq-rank-accent) 10%, transparent) 6px
+    );
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--lq-rank-accent) 55%, #fff),
+    0 0 0 3px color-mix(in srgb, #000 55%, var(--lq-rank-border)),
+    inset 0 0 0 2px color-mix(in srgb, var(--lq-rank-accent) 40%, transparent),
+    inset 0 0 0 5px color-mix(in srgb, #000 30%, transparent),
+    0 0 36px var(--lq-rank-glow);
+}
+
+/* Mid gilt band */
+.lq-rank-fs-mold--mid {
+  inset: 16px;
+  border-radius: 3px;
+  border: 5px double var(--lq-rank-border);
+  outline: 1px solid color-mix(in srgb, var(--lq-rank-accent) 55%, transparent);
+  outline-offset: -8px;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--lq-rank-accent) 50%, #fff),
+    inset 0 0 18px color-mix(in srgb, var(--lq-rank-glow) 35%, transparent),
+    0 0 0 1px color-mix(in srgb, #000 45%, transparent);
+}
+
+/* Liner / slip */
+.lq-rank-fs-mold--liner {
+  inset: 28px;
+  border-radius: 2px;
+  border: 2px solid color-mix(in srgb, var(--lq-rank-accent) 55%, #1a1520);
+  box-shadow:
+    inset 0 0 0 6px color-mix(in srgb, var(--lq-rank-wash) 75%, #0b1016),
+    inset 0 0 0 7px color-mix(in srgb, var(--lq-rank-border) 40%, transparent);
+}
+
+/* Inner sight edge */
+.lq-rank-fs-mold--inner {
+  inset: 40px;
+  border-radius: 2px;
+  border: 1.5px solid color-mix(in srgb, var(--lq-rank-accent) 70%, transparent);
+  box-shadow:
+    inset 0 0 28px color-mix(in srgb, var(--lq-rank-glow) 25%, transparent),
+    0 0 0 1px color-mix(in srgb, #000 50%, transparent);
+}
+
+/* Corner rosettes — classical frame ornaments */
+.lq-rank-fs-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 50%, var(--lq-rank-accent) 0 18%, transparent 19% 100%),
+    conic-gradient(
+      from 45deg,
+      var(--lq-rank-border),
+      color-mix(in srgb, var(--lq-rank-accent) 80%, #fff),
+      var(--lq-rank-border),
+      color-mix(in srgb, var(--lq-rank-wash) 30%, var(--lq-rank-border)),
+      var(--lq-rank-border)
+    );
+  border: 1.5px solid color-mix(in srgb, var(--lq-rank-accent) 75%, #fff);
+  box-shadow:
+    0 0 10px var(--lq-rank-glow),
+    inset 0 0 6px color-mix(in srgb, #000 35%, transparent);
+  border-radius: 4px;
+  transform: rotate(45deg);
+}
+
+.lq-rank-fs-corner--tl { top: 10px; left: 10px; }
+.lq-rank-fs-corner--tr { top: 10px; right: 10px; }
+.lq-rank-fs-corner--bl { bottom: 10px; left: 10px; }
+.lq-rank-fs-corner--br { bottom: 10px; right: 10px; }
+
+.lq-rank-fs-body {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 52px 56px;
+  box-sizing: border-box;
+}
+
+.lq-rank-fs-brand {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--lq-rank-accent, #fde68a) 70%, #94a3b8);
+}
+
+.lq-rank-fs-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-weight: 900;
+  color: var(--lq-rank-accent, #fde68a);
+  text-align: center;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 24px var(--lq-rank-glow, rgba(245, 197, 66, 0.45));
+}
+
+.lq-rank-fs-sub {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+/* Already landscape: fill without CSS rotate */
+@media (orientation: landscape) {
+  .lq-rank-fs-stage {
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+  }
+
+  .lq-rank-land--full {
+    width: min(70vw, 560px);
+    max-height: 52vh;
+  }
+}
+
+.lq-khoe-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  margin-bottom: 8px;
+  border: 1px solid var(--lq-border);
+  background: #0b1016;
 }

@@ -36,6 +36,7 @@ const BlogPost = lazy(() => import('./pages/BlogPost'));
 const FortunePage = lazy(() => import('./pages/FortunePage'));
 const BalancePage = lazy(() => import('./pages/BalancePage'));
 const RoastCardPage = lazy(() => import('./pages/RoastCardPage'));
+const BrainPage = lazy(() => import('./pages/BrainPage'));
 const LienquanHub = lazy(() => import('./pages/lienquan/LienquanHub'));
 const LienquanHeroDetail = lazy(() => import('./pages/lienquan/HeroDetailPage'));
 const LienquanGiaoAn = lazy(() => import('./pages/lienquan/GiaoAnPage'));

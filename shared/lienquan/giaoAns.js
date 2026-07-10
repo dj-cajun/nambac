@@ -1,4 +1,6 @@
-/** Pro-style giáo án + match list (curated, entertainment). */
+/** Pro-style giáo án + match list (curated, entertainment).
+ * Item names use common Vietnamese Liên Quân shop labels (tham khảo).
+ */
 export const MATCHES = [
   {
     id: 'sgp-1s-2026-07-10',
@@ -14,6 +16,10 @@ export const MATCHES = [
   },
 ];
 
+function buildCopy(hero, items, arcana, spell) {
+  return `${hero} | ${items.join(' > ')} | Arcana: ${arcana} | Spell: ${spell} | nambac giáo án`;
+}
+
 export const GIAO_ANS = [
   {
     id: 'ga-flo-sgp',
@@ -21,11 +27,17 @@ export const GIAO_ANS = [
     player: 'SGP · Top',
     team: 'Saigon Phantom',
     heroId: 'florentino',
-    items: ['Giày', 'Kiếm máu', 'Giáp', 'Dame', 'Pen', 'Máy hồi'],
-    arcana: 'Công · Xuyên · Tốc đánh',
+    items: [
+      'Giày Hermes',
+      'Thương Long Đao',
+      'Giáp Thịnh Nộ',
+      'Lưỡi Hái Tử Thần',
+      'Nanh Fenrir',
+      'Khiên Hy Lạp',
+    ],
+    arcana: 'Công · Xuyên giáp · Tốc đánh',
     spell: 'Cấp tốc',
-    copyCode:
-      'Florentino | Giày > Kiếm máu > Giáp > Dame > Pen > Máy hồi | Arcana: Công/Xuyên/TĐ | Spell: Cấp tốc | nambac giáo án',
+    copyCode: '',
   },
   {
     id: 'ga-nak-1s',
@@ -33,11 +45,17 @@ export const GIAO_ANS = [
     player: '1S · Jungle',
     team: 'One Star',
     heroId: 'nakroth',
-    items: ['Giày', 'Dame', 'Pen', 'Máu', 'Crit', 'Giáp'],
-    arcana: 'Công · Xuyên · Tốc đánh',
+    items: [
+      'Giày Hermes',
+      'Lưỡi Dao Manraban',
+      'Nanh Fenrir',
+      'Cung Tà Thần',
+      'Xà Cốt',
+      'Giáp Thịnh Nộ',
+    ],
+    arcana: 'Công · Xuyên giáp · Tốc đánh',
     spell: 'Trừng trị',
-    copyCode:
-      'Nakroth | Giày > Dame > Pen > Máu > Crit > Giáp | Arcana: Công/Xuyên/TĐ | Spell: Trừng trị | nambac giáo án',
+    copyCode: '',
   },
   {
     id: 'ga-raz-fl',
@@ -45,11 +63,17 @@ export const GIAO_ANS = [
     player: 'FL · Mid',
     team: 'Team Flash',
     heroId: 'raz',
-    items: ['Giày', 'AP', 'Pen phép', 'Máu', 'CD', 'Giáp phép'],
-    arcana: 'Phép · Xuyên phép · CD',
+    items: [
+      'Giày Thuật Sĩ',
+      'Tháp Cổ',
+      'Quyền Trượng Băng',
+      'Sách Thánh',
+      'Vương Miện Hecate',
+      'Giáp Solomon',
+    ],
+    arcana: 'Phép · Xuyên phép · Giảm CD',
     spell: 'Cấp tốc',
-    copyCode:
-      'Raz | Giày > AP > Pen phép > Máu > CD > Giáp phép | Arcana: Phép/Xuyên/CD | Spell: Cấp tốc | nambac giáo án',
+    copyCode: '',
   },
   {
     id: 'ga-elsu-sgp',
@@ -57,11 +81,17 @@ export const GIAO_ANS = [
     player: 'SGP · AD',
     team: 'Saigon Phantom',
     heroId: 'elsu',
-    items: ['Giày', 'Công', 'Crit', 'Pen', 'Máu', 'Giáp'],
-    arcana: 'Công · Xuyên · Tốc đánh',
+    items: [
+      'Giày Hermes',
+      'Cung Tà Thần',
+      'Lưỡi Dao Manraban',
+      'Nanh Fenrir',
+      'Xà Cốt',
+      'Giáp Thịnh Nộ',
+    ],
+    arcana: 'Công · Xuyên giáp · Tốc đánh',
     spell: 'Làm chậm',
-    copyCode:
-      'Elsu | Giày > Công > Crit > Pen > Máu > Giáp | Arcana: Công/Xuyên/TĐ | Spell: Làm chậm | nambac giáo án',
+    copyCode: '',
   },
   {
     id: 'ga-xen-1s',
@@ -69,11 +99,17 @@ export const GIAO_ANS = [
     player: '1S · Sp',
     team: 'One Star',
     heroId: 'xeniel',
-    items: ['Giày', 'Giáp', 'Máu', 'CD', 'Giáp phép', 'Aura'],
-    arcana: 'Máu · Giáp · CD',
+    items: [
+      'Giày Kiên Cường',
+      'Khiên Hy Lạp',
+      'Giáp Solomon',
+      'Áo Choàng Băng',
+      'Khiên Hộ Mệnh',
+      'Huyền Thoại Medusa',
+    ],
+    arcana: 'Máu · Giáp · Giảm CD',
     spell: 'Cấp tốc',
-    copyCode:
-      'Xeniel | Giày > Giáp > Máu > CD > Giáp phép > Aura | Arcana: Máu/Giáp/CD | Spell: Cấp tốc | nambac giáo án',
+    copyCode: '',
   },
   {
     id: 'ga-murad-fl',
@@ -81,13 +117,31 @@ export const GIAO_ANS = [
     player: 'FL · Jungle',
     team: 'Team Flash',
     heroId: 'murad',
-    items: ['Giày', 'Dame', 'Pen', 'Crit', 'Máu', 'Giáp'],
-    arcana: 'Công · Xuyên · Tốc đánh',
+    items: [
+      'Giày Hermes',
+      'Lưỡi Dao Manraban',
+      'Nanh Fenrir',
+      'Cung Tà Thần',
+      'Thương Long Đao',
+      'Giáp Thịnh Nộ',
+    ],
+    arcana: 'Công · Xuyên giáp · Tốc đánh',
     spell: 'Trừng trị',
-    copyCode:
-      'Murad | Giày > Dame > Pen > Crit > Máu > Giáp | Arcana: Công/Xuyên/TĐ | Spell: Trừng trị | nambac giáo án',
+    copyCode: '',
   },
 ];
+
+for (const g of GIAO_ANS) {
+  const heroName = {
+    florentino: 'Florentino',
+    nakroth: 'Nakroth',
+    raz: 'Raz',
+    elsu: 'Elsu',
+    xeniel: 'Xeniel',
+    murad: 'Murad',
+  }[g.heroId] || g.heroId;
+  g.copyCode = buildCopy(heroName, g.items, g.arcana, g.spell);
+}
 
 export function getMatch(id) {
   return MATCHES.find((m) => m.id === id) || null;

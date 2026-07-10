@@ -140,6 +140,15 @@
     background: linear-gradient(135deg, #ffe4e6, #fff);
 }
 
+.home-today-lienquan {
+    border-color: #f5c542;
+    background: linear-gradient(135deg, #1a222d, #0f1419);
+}
+
+.home-today-lienquan .home-today-label {
+    color: #fde68a;
+}
+
 .home-today-emoji {
     display: block;
     font-size: 2rem;

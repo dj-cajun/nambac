@@ -54,6 +54,10 @@ export function getBalanceThumbnailPath(questionId) {
   return id ? `/images/balance_${id}.webp` : '';
 }
 
+export function getLienquanThumbnailPath() {
+  return '/images/lienquan/hub-thumb.svg';
+}
+
 export function getHomeFeatureThumbPlan(date = new Date()) {
   const today = getDateStr(date);
   const tomorrow = addDaysToDateLabel(today, 1);
@@ -90,6 +94,10 @@ export function getHomeFeatureThumbPlan(date = new Date()) {
       src: getBalanceThumbnailPath(dailyBalance.id),
       seed: dailyBalance.id,
       questionId: dailyBalance.id,
+    },
+    lienquan: {
+      src: getLienquanThumbnailPath(),
+      seed: 'lienquan-hub',
     },
   };
 }

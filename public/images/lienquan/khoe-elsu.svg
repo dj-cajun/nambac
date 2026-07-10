@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="1" stop-color="#422006"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#g)"/>
+  <rect x="40" y="40" width="720" height="370" rx="28" fill="#0b1016" stroke="#fb923c" stroke-width="4"/>
+  <text x="80" y="140" font-family="Arial Black, Arial, sans-serif" font-size="64" font-weight="900" fill="#fb923c">ELSU</text>
+  <text x="80" y="210" font-family="Arial, sans-serif" font-size="36" font-weight="800" fill="#fff">PENTAKILL</text>
+  <text x="80" y="280" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#94a3b8">Sniper të båi</text>
+  <circle cx="640" cy="230" r="70" fill="#243041" stroke="#fb923c" stroke-width="6"/>
+  <text x="640" y="245" text-anchor="middle" font-size="48" fill="#fff">E</text>
+</svg>

@@ -40,10 +40,13 @@ export default function HeroDetailPage() {
         </div>
 
         <h2 className="lq-section-title">Counter mạnh</h2>
-        <div className="lq-counter-row">
+        <div className="lq-counter-list">
           {counters.length === 0 && <p className="lq-detail-lane">Chưa có dữ liệu counter.</p>}
           {counters.map((c) => (
-            <HeroIcon key={c.id} hero={c} size="md" showName to={`/lienquan/tuong/${c.id}`} />
+            <Link key={c.id} to={`/lienquan/tuong/${c.id}`} className="lq-counter-item">
+              <HeroIcon hero={c} size="md" showName />
+              <p className="lq-counter-why">{c.why}</p>
+            </Link>
           ))}
         </div>
 

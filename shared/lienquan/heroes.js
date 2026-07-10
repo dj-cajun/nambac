@@ -7,6 +7,11 @@ export const HEROES = [
     lane: 'top',
     tier: 'S+',
     weakAgainst: ['aleister', 'arum', 'veres'],
+    counterNotes: [
+      'CC phép dài — Flo khó trade sớm.',
+      'Ôm + tank, Flo không thoát dễ.',
+      'Đấu sĩ cứng, ép nhịp mid-game.',
+    ],
     tip: 'Gặp Florentino: đừng trade trước level 2 — skill 1 của hắn quá mạnh early.',
   },
   {
@@ -16,6 +21,11 @@ export const HEROES = [
     lane: 'jungle',
     tier: 'S+',
     weakAgainst: ['taara', 'xeniel', 'grakk'],
+    counterNotes: [
+      'Tank máu cao, Nak khó burst.',
+      'Ult cứu / chống dive.',
+      'Hook + CC cắt nhịp gank.',
+    ],
     tip: 'Nakroth gank sớm: giữ bụi, đợi skill 2 rồi mới nhảy — đừng bay lung tung.',
   },
   {
@@ -25,6 +35,11 @@ export const HEROES = [
     lane: 'jungle',
     tier: 'S',
     weakAgainst: ['airi', 'zuka', 'taara'],
+    counterNotes: [
+      'Mobility + trade nhanh hơn early.',
+      'Bay vào backline đối đầu Murad.',
+      'Tank chịu burst ult của Murad.',
+    ],
     tip: 'Murad cần stack trước khi all-in. Đừng 1v1 khi chưa đủ dấu ấn.',
   },
   {
@@ -34,6 +49,11 @@ export const HEROES = [
     lane: 'mid',
     tier: 'S+',
     weakAgainst: ['krixi', 'natalya', 'gildur'],
+    counterNotes: [
+      'Poke / clear ép Raz mất tempo.',
+      'Burst mage đua sát thương.',
+      'CC set — Raz khó kite.',
+    ],
     tip: 'Raz poke bằng skill 1 — giữ khoảng cách, đừng để bị dồn sát thương gần.',
   },
   {
@@ -43,6 +63,11 @@ export const HEROES = [
     lane: 'adc',
     tier: 'S',
     weakAgainst: ['yorn', 'elsu', 'wiro'],
+    counterNotes: [
+      'Tầm xa hơn, ép Violet vị trí.',
+      'Sniper góc — Violet khó đứng.',
+      'Engage cứng vào AD.',
+    ],
     tip: 'Violet kiting: luôn giữ khoảng cách sau mỗi phát bắn, đừng đứng im.',
   },
   {
@@ -52,6 +77,11 @@ export const HEROES = [
     lane: 'jungle',
     tier: 'A',
     weakAgainst: ['nakroth', 'zill', 'veres'],
+    counterNotes: [
+      'Gank / duel mạnh hơn early.',
+      'Burst nhanh trước combo Airi.',
+      'Đấu sĩ cứng chống dive.',
+    ],
     tip: 'Airi combo nhanh — luyện skill 2 → 1 → ult cho mượt trước khi leo rank.',
   },
   {
@@ -61,6 +91,11 @@ export const HEROES = [
     lane: 'top',
     tier: 'S',
     weakAgainst: ['arthur', 'ormarr', 'taara'],
+    counterNotes: [
+      'Ổn định, chống Veres mid.',
+      'CC + tank ép Veres.',
+      'Tank đường chịu sát thương.',
+    ],
     tip: 'Veres mạnh mid-game. Tránh 1v1 quá sớm nếu đối phương có giáp.',
   },
   {
@@ -70,6 +105,11 @@ export const HEROES = [
     lane: 'mid',
     tier: 'A',
     weakAgainst: ['krixi', 'raz', 'natalya'],
+    counterNotes: [
+      'Poke / clear trước khi Ale set.',
+      'Burst mid đua sát thương.',
+      'Mage poke khoảng cách.',
+    ],
     tip: 'Aleister set combat bằng ult — báo team trước khi thả vòng.',
   },
   {
@@ -79,6 +119,11 @@ export const HEROES = [
     lane: 'top',
     tier: 'A',
     weakAgainst: ['wiro', 'xeniel', 'ormarr'],
+    counterNotes: [
+      'Chống ôm / peel Arum.',
+      'Ult cứu đồng đội khỏi ôm.',
+      'Engage cắt nhịp Arum.',
+    ],
     tip: 'Arum ôm mục tiêu trong bụi — đừng ult lộ khi team chưa sẵn sàng.',
   },
   {
@@ -88,6 +133,11 @@ export const HEROES = [
     lane: 'top',
     tier: 'A',
     weakAgainst: ['arthur', 'slimz', 'elsu'],
+    counterNotes: [
+      'Ổn định chống tank đường.',
+      'Tầm xa kite Taara.',
+      'Sniper / poke từ xa.',
+    ],
     tip: 'Taara tank đường — nhường farm cho AD, giữ skill hồi máu cho combat.',
   },
   {
@@ -97,6 +147,11 @@ export const HEROES = [
     lane: 'sp',
     tier: 'S',
     weakAgainst: ['grakk', 'krizzix', 'annette'],
+    counterNotes: [
+      'Hook cắt bay cứu.',
+      'Bẫy / CC trước khi Xen ult.',
+      'Peel tranh chấp với Xen.',
+    ],
     tip: 'Xeniel ult cứu đồng đội — đếm CD địch trước khi bay vào.',
   },
   {
@@ -106,6 +161,11 @@ export const HEROES = [
     lane: 'sp',
     tier: 'A',
     weakAgainst: ['annette', 'krizzix', 'zip'],
+    counterNotes: [
+      'Peel / chống hook.',
+      'Bẫy phản hook.',
+      'Cứu đồng đội khỏi hook.',
+    ],
     tip: 'Grakk hook trong bụi — một hook trượt là mất tempo, kiên nhẫn.',
   },
   {
@@ -115,6 +175,11 @@ export const HEROES = [
     lane: 'mid',
     tier: 'A',
     weakAgainst: ['natalya', 'gildur', 'tulen'],
+    counterNotes: [
+      'Burst / poke đua mid.',
+      'CC set Krixi.',
+      'Roam / burst nhanh.',
+    ],
     tip: 'Krixi clear wave nhanh rồi roam — đừng ngồi mid cả trận.',
   },
   {
@@ -124,6 +189,11 @@ export const HEROES = [
     lane: 'mid',
     tier: 'S',
     weakAgainst: ['gildur', 'raz', 'zill'],
+    counterNotes: [
+      'CC khóa Nata đứng sai.',
+      'Poke ép vị trí Nata.',
+      'Dive backline Nata.',
+    ],
     tip: 'Natalya cần vị trí an toàn — luôn đứng sau tank khi teamfight.',
   },
   {
@@ -133,6 +203,11 @@ export const HEROES = [
     lane: 'adc',
     tier: 'A',
     weakAgainst: ['wiro', 'elsu', 'violet'],
+    counterNotes: [
+      'Engage cứng vào AD.',
+      'Sniper góc đối đầu.',
+      'Kiting / đua tầm.',
+    ],
     tip: 'Yorn tầm xa: giữ khoảng cách tối đa, đừng chase vào bụi.',
   },
   {
@@ -142,6 +217,11 @@ export const HEROES = [
     lane: 'adc',
     tier: 'S+',
     weakAgainst: ['wiro', 'murad', 'nakroth'],
+    counterNotes: [
+      'Engage / gap close Elsu.',
+      'Dive từ bụi.',
+      'Gank cắt góc bắn.',
+    ],
     tip: 'Elsu bắn từ xa — một phát miss là nguy hiểm, canh góc map.',
   },
   {
@@ -151,6 +231,11 @@ export const HEROES = [
     lane: 'top',
     tier: 'A',
     weakAgainst: ['florentino', 'veres', 'arthur'],
+    counterNotes: [
+      'Đấu sĩ mạnh hơn early.',
+      'Ép nhịp mid-game.',
+      'Ổn định chống Wiro.',
+    ],
     tip: 'Wiro chống AD tốt — build giáp theo meta trận đấu.',
   },
   {
@@ -160,6 +245,11 @@ export const HEROES = [
     lane: 'top',
     tier: 'B',
     weakAgainst: ['florentino', 'veres', 'murad'],
+    counterNotes: [
+      'Đấu sĩ mạnh hơn Arthur.',
+      'Ép nhịp mid.',
+      'Dive / burst Arthur.',
+    ],
     tip: 'Arthur ổn định cho người mới — tập engage đúng lúc ult.',
   },
   {
@@ -169,6 +259,11 @@ export const HEROES = [
     lane: 'jungle',
     tier: 'A',
     weakAgainst: ['nakroth', 'airi', 'zill'],
+    counterNotes: [
+      'Duel / gank mạnh hơn.',
+      'Combo nhanh trước Zuka.',
+      'Burst jungle đối đầu.',
+    ],
     tip: 'Zuka bay vào backline — chọn mục tiêu AD/mage trước.',
   },
   {
@@ -178,6 +273,11 @@ export const HEROES = [
     lane: 'jungle',
     tier: 'A',
     weakAgainst: ['taara', 'xeniel', 'grakk'],
+    counterNotes: [
+      'Tank chịu burst Zill.',
+      'Ult cứu / chống dive.',
+      'Hook cắt nhịp gank.',
+    ],
     tip: 'Zill gank bằng tốc độ — đừng farm quá lâu nếu lane đang thua.',
   },
   {
@@ -187,6 +287,11 @@ export const HEROES = [
     lane: 'mid',
     tier: 'A',
     weakAgainst: ['raz', 'natalya', 'gildur'],
+    counterNotes: [
+      'Poke / trade mid.',
+      'Burst đua sát thương.',
+      'CC set Tulen.',
+    ],
     tip: 'Tulen burst cao — chờ skill CD rồi mới all-in.',
   },
   {
@@ -196,6 +301,11 @@ export const HEROES = [
     lane: 'mid',
     tier: 'B',
     weakAgainst: ['krixi', 'elsu', 'yorn'],
+    counterNotes: [
+      'Poke trước khi Gildur set.',
+      'Tầm xa kite tường.',
+      'AD kite / tránh ult.',
+    ],
     tip: 'Gildur set bằng ult — báo team trước khi đóng tường.',
   },
   {
@@ -205,6 +315,11 @@ export const HEROES = [
     lane: 'sp',
     tier: 'A',
     weakAgainst: ['annette', 'zip', 'krizzix'],
+    counterNotes: [
+      'Peel chống engage.',
+      'Cứu carry khỏi Ormarr.',
+      'Bẫy / CC phản engage.',
+    ],
     tip: 'Ormarr engage thẳng — đừng ult khi team còn ở base.',
   },
   {
@@ -214,6 +329,11 @@ export const HEROES = [
     lane: 'sp',
     tier: 'S',
     weakAgainst: ['grakk', 'ormarr', 'zip'],
+    counterNotes: [
+      'Hook ép Annette.',
+      'Engage thẳng vào Anne.',
+      'Cứu / tranh peel.',
+    ],
     tip: 'Annette peel cho AD — ưu tiên cứu carry hơn là chase kill.',
   },
   {
@@ -223,6 +343,11 @@ export const HEROES = [
     lane: 'sp',
     tier: 'A',
     weakAgainst: ['xeniel', 'annette', 'grakk'],
+    counterNotes: [
+      'Ult cứu khỏi bẫy.',
+      'Peel / chống set.',
+      'Hook trước khi Kris bẫy.',
+    ],
     tip: 'Krizzix bẫy trong bụi — một set tốt đổi cả trận.',
   },
   {
@@ -232,6 +357,11 @@ export const HEROES = [
     lane: 'sp',
     tier: 'B',
     weakAgainst: ['grakk', 'ormarr', 'annette'],
+    counterNotes: [
+      'Hook cắt bóng cứu.',
+      'Engage trước Zip cứu.',
+      'Peel tranh chấp.',
+    ],
     tip: 'Zip cứu đồng đội bằng bóng — canh timing skill địch.',
   },
   {
@@ -241,6 +371,11 @@ export const HEROES = [
     lane: 'adc',
     tier: 'B',
     weakAgainst: ['violet', 'yorn', 'elsu'],
+    counterNotes: [
+      'Đua farm / kiting.',
+      'Tầm xa ép Slimz.',
+      'Sniper góc.',
+    ],
     tip: 'Slimz cần farm — tránh fight sớm nếu chưa có đồ.',
   },
   {
@@ -250,6 +385,11 @@ export const HEROES = [
     lane: 'jungle',
     tier: 'A',
     weakAgainst: ['taara', 'arthur', 'xeniel'],
+    counterNotes: [
+      'Tank chịu late BF.',
+      'Ổn định chống scale.',
+      'Ult cứu / chống dive BF.',
+    ],
     tip: 'Butterfly late-game mạnh — sống sót early rồi scale.',
   },
 ];
@@ -262,5 +402,14 @@ export function getHero(id) {
 
 export function resolveCounters(hero) {
   if (!hero?.weakAgainst?.length) return [];
-  return hero.weakAgainst.map((id) => getHero(id)).filter(Boolean);
+  return hero.weakAgainst
+    .map((id, i) => {
+      const c = getHero(id);
+      if (!c) return null;
+      return {
+        ...c,
+        why: hero.counterNotes?.[i] || 'Khó trade / bị ép nhịp.',
+      };
+    })
+    .filter(Boolean);
 }
