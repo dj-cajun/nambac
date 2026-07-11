@@ -8,6 +8,7 @@
  *   npm run daily:quiz -- --category=Trendy
  *   npm run daily:quiz -- --with-images   # optional cover+results (costly)
  *   npm run daily:quiz -- --no-push
+ *   npm run daily:quiz -- --dry-run       # generate + v5.2 validate only (no DB)
  */
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -56,23 +57,37 @@ async function main() {
   const topic = getArg('--topic');
   const skipPush = hasFlag('--no-push');
   const skipImages = !hasFlag('--with-images');
+  const dryRun = hasFlag('--dry-run');
 
-  if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-    console.error('❌ TURSO_DATABASE_URL / TURSO_AUTH_TOKEN missing');
-    process.exit(1);
+  if (!dryRun) {
+    if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
+      console.error('❌ TURSO_DATABASE_URL / TURSO_AUTH_TOKEN missing');
+      process.exit(1);
+    }
   }
   if (!process.env.GEMINI_API_KEY && !process.env.VITE_GEMINI_API_KEY && !process.env.OPENROUTER_API_KEY) {
     console.error('❌ GEMINI_API_KEY or OPENROUTER_API_KEY required');
     process.exit(1);
   }
 
-  console.log(`📅 Daily quiz — category: ${category}`);
+  console.log(`📅 Daily quiz — category: ${category}${dryRun ? ' [DRY-RUN]' : ''}`);
 
   const generated = await generateQuizContent(category, topic);
   const payload = formatQuizForDb(generated);
-  const validationErrors = validateQuizPayload(payload);
+  const aiValidateOpts = { enforceMax: true, enforceVi: true };
+  const validationErrors = validateQuizPayload(payload, aiValidateOpts);
   if (validationErrors.length) {
     throw new Error(`Invalid quiz from Gemini: ${validationErrors.join('; ')}`);
+  }
+
+  if (dryRun) {
+    const resultDescLens = payload.results.map((r) => (r.description || '').length);
+    console.log('\n✅ Dry-run passed (v5.2 MZ limits + VI check)');
+    console.log(`   title: ${payload.title}`);
+    console.log(`   category: ${payload.category}`);
+    console.log(`   result desc lengths: ${resultDescLens.join(', ')} (min ${Math.min(...resultDescLens)}, max ${Math.max(...resultDescLens)})`);
+    console.log('   (not saved to Turso)\n');
+    return;
   }
 
   const quiz = await createFullQuiz(payload);

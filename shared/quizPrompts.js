@@ -179,9 +179,38 @@ const ALLOWED_ENGLISH_BRANDS = new Set([
   'netflix', 'spotify', 'youtube', 'mbti', 'otp', 'fomo', 'wifi', 'app',
 ]);
 
+/** Gen Z quiz / MBTI terms that may appear in Vietnamese copy */
+const ALLOWED_ENGLISH_QUIZ = new Set([
+  'dna', 'gen', 'genz', 'logic', 'type', 'quiz', 'bio', 'vibe', 'flex', 'ship',
+  'ghosting', 'crush', 'trend', 'toxic', 'chill', 'cool', 'team', 'boss', 'deadline',
+  'online', 'offline', 'story', 'feed', 'post', 'chat', 'group', 'match', 'introvert',
+  'extrovert', 'infp', 'enfp', 'intj', 'entj', 'istp', 'estp', 'isfj', 'esfj',
+  'istj', 'estj', 'isfp', 'esfp', 'infj', 'enfj', 'intp', 'entp',
+]);
+
+/** Clear English leakage — not unaccented Vietnamese (quan, hay, cho, …) */
+const ENGLISH_LEAK_WORDS = new Set([
+  'the', 'and', 'you', 'your', 'with', 'this', 'that', 'what', 'when', 'where', 'why', 'how',
+  'because', 'however', 'although', 'something', 'everything', 'nothing', 'someone', 'everyone',
+  'strategic', 'healing', 'energy', 'priority', 'decision', 'actually', 'basically',
+  'literally', 'honestly', 'seriously', 'definitely', 'probably', 'please', 'thanks',
+  'sorry', 'hello', 'people', 'person', 'thing', 'things', 'really', 'very', 'just',
+  'speedrun', 'burnout', 'adulting', 'maintainer', 'changelog', 'readme', 'commit',
+  'gratification', 'decency', 'rights', 'source', 'maintainer', 'github', 'readme',
+  'natural', 'human', 'delayed', 'know', 'king', 'person', 'yolo', 'adulting',
+]);
+
+function isAllowedLatinWord(word) {
+  const lower = word.toLowerCase();
+  return ALLOWED_ENGLISH_BRANDS.has(lower) || ALLOWED_ENGLISH_QUIZ.has(lower);
+}
+
 function unexpectedEnglishWords(text) {
   const words = String(text || '').match(/\b[A-Za-z]{3,}\b/g) || [];
-  return words.filter((w) => !ALLOWED_ENGLISH_BRANDS.has(w.toLowerCase()));
+  return words.filter((w) => {
+    if (isAllowedLatinWord(w)) return false;
+    return ENGLISH_LEAK_WORDS.has(w.toLowerCase());
+  });
 }
 
 function hasAwkwardEnglishParen(text) {
@@ -220,7 +249,7 @@ export function validateViNaturalness(payload) {
       errors.push(`${label}: awkward English in parentheses`);
     }
     const badWords = unexpectedEnglishWords(s);
-    if (badWords.length > 4) {
+    if (badWords.length > 2) {
       errors.push(`${label}: too much unexpected English (${badWords.slice(0, 3).join(', ')}…)`);
     }
   }
@@ -350,6 +379,39 @@ export function formatQuizForDb(geminiData) {
   };
 }
 
+const MZ_CLAMP_SOFT_OVER = 15;
+
+function clampMzField(text, max) {
+  const s = String(text || '').trim();
+  if (s.length <= max) return s;
+  if (s.length > max + MZ_CLAMP_SOFT_OVER) return s;
+  const cut = s.slice(0, max);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > max * 0.55 ? cut.slice(0, sp) : cut).trim();
+}
+
+/** Trim fields that barely exceed MZ max — avoids rejecting 141 vs 140 chars */
+export function clampPayloadToMzLimits(payload) {
+  const L = QUIZ_RICHNESS_LIMITS;
+  return {
+    ...payload,
+    title: clampMzField(payload.title, L.titleMax),
+    description: clampMzField(payload.description, L.descriptionMax),
+    questions: payload.questions.map((q) => ({
+      ...q,
+      question_text: clampMzField(q.question_text, L.questionMax),
+      option_a: clampMzField(q.option_a, L.optionMax),
+      option_b: clampMzField(q.option_b, L.optionMax),
+    })),
+    results: payload.results.map((r) => ({
+      ...r,
+      title: clampMzField(r.title || r.type_name, L.resultTitleMax),
+      type_name: clampMzField(r.type_name || r.title, L.resultTitleMax),
+      description: clampMzField(r.description, L.resultDescMax),
+    })),
+  };
+}
+
 function hasPunchlineOption(text) {
   return /\([^)]{4,}\)/.test(String(text || ''));
 }
@@ -457,7 +519,7 @@ export async function generateQuizContent({ apiKey, openrouterKey, categoryId, c
   const userPrompt = buildQuizUserPrompt(category, customTopic);
   const aiValidateOpts = { enforceMax: true, enforceVi: true };
 
-  const maxAttempts = 2;
+  const maxAttempts = 3;
   let lastErrors = [];
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -482,6 +544,8 @@ export async function generateQuizContent({ apiKey, openrouterKey, categoryId, c
     } catch (err) {
       console.warn('quiz-vi-editor pass failed, using draft', err.message);
     }
+
+    payload = clampPayloadToMzLimits(payload);
 
     lastErrors = validateQuizPayload(payload, aiValidateOpts);
     if (lastErrors.length === 0) {

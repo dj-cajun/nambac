@@ -23,6 +23,10 @@ on:
         description: 'Also generate quiz images (cover+8 results — costly)'
         type: boolean
         default: false
+      dry_run:
+        description: 'Generate + v5.2 validate only (no DB save)'
+        type: boolean
+        default: false
 
 concurrency:
   group: daily-quiz
@@ -72,6 +76,9 @@ jobs:
           fi
           if [ "${{ github.event.inputs.with_images }}" = "true" ]; then
             ARGS="$ARGS --with-images"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
           fi
           node scripts/ops/run_daily_quiz.mjs $ARGS 2>&1 | tee daily-quiz.log
 

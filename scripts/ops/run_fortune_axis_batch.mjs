@@ -8,6 +8,7 @@
  *   npm run fortune:axis-batch -- --axis=health --dry-run
  */
 import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -24,18 +25,24 @@ const dryRun = args.includes('--dry-run');
 const axis = axisArg ? axisArg.split('=')[1] : 'money';
 const count = countArg ? parseInt(countArg.split('=')[1], 10) : 5;
 
-if (!process.env.GEMINI_API_KEY && !process.env.OPENROUTER_API_KEY) {
+if (!dryRun && !process.env.GEMINI_API_KEY && !process.env.OPENROUTER_API_KEY) {
   console.error('❌ GEMINI_API_KEY or OPENROUTER_API_KEY required');
   process.exit(1);
 }
 
-const { generateFortuneArchetypes } = await import('../../shared/fortunePrompts.js');
+const { generateFortuneArchetypes, buildFortuneGeneratorUserPrompt } = await import('../../shared/fortunePrompts.js');
 const { getDateStr } = await import('../../shared/fortuneEngine.js');
+
+const dateLabel = getDateStr();
 
 console.log(`\n🔮 Fortune axis batch — axis=${axis}, count=${count}${dryRun ? ' [DRY]' : ''}\n`);
 
 if (dryRun) {
-  console.log('Would call generateFortuneArchetypes() — merge into fortuneData manually or via future DB.');
+  console.log('Would call generateFortuneArchetypes() with:');
+  console.log(`  axis: ${axis}`);
+  console.log(`  date: ${dateLabel}`);
+  console.log(`  prompt: ${buildFortuneGeneratorUserPrompt(axis, dateLabel).slice(0, 120)}…`);
+  console.log('\nOutput would be saved to data/fortune-batch/ (gitignored). Merge into fortuneData.js after review.\n');
   process.exit(0);
 }
 
@@ -43,8 +50,15 @@ const items = await generateFortuneArchetypes({
   apiKey: process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY,
   openrouterKey: process.env.OPENROUTER_API_KEY,
   axis,
-  dateLabel: getDateStr(),
+  dateLabel,
 });
 
-console.log(JSON.stringify(items.slice(0, count), null, 2));
-console.log(`\n✅ Generated ${Math.min(count, items.length)} item(s). Review JSON before merging.\n`);
+const slice = items.slice(0, count);
+const outDir = path.join(PROJECT_ROOT, 'data', 'fortune-batch');
+fs.mkdirSync(outDir, { recursive: true });
+const outPath = path.join(outDir, `${axis}-${dateLabel}.json`);
+fs.writeFileSync(outPath, `${JSON.stringify(slice, null, 2)}\n`, 'utf8');
+
+console.log(JSON.stringify(slice, null, 2));
+console.log(`\n✅ Generated ${slice.length} item(s) → ${path.relative(PROJECT_ROOT, outPath)}`);
+console.log('   Review JSON before merging into shared/fortuneData.js\n');
