@@ -32,8 +32,14 @@ const PrivacyPolicy = () => {
                     <p style={{ marginTop: '12px' }}>
                         <strong>Cookies:</strong> Chúng tôi sử dụng cookie và các công nghệ theo dõi tương tự để cải thiện trải nghiệm người dùng. Cookie giúp chúng tôi hiểu cách bạn sử dụng trang web và cung cấp nội dung phù hợp hơn. Bạn có thể tắt cookie thông qua cài đặt trình duyệt, nhưng điều này có thể ảnh hưởng đến một số tính năng.
                     </p>
+                    <p style={{ marginTop: '12px' }}>
+                        <strong>Đăng nhập Google (tuỳ chọn):</strong> Nếu bạn chọn đăng nhập bằng Google, chúng tôi thu thập địa chỉ email, tên hiển thị và ảnh đại diện từ tài khoản Google của bạn để tạo hồ sơ, lưu tiến độ quiz, quản lý tài khoản và (nếu bạn đồng ý) gửi thông báo. Bạn có thể dùng trang web mà không cần đăng nhập; hầu hết trắc nghiệm vẫn chơi được ẩn danh.
+                    </p>
                     <p>
-                        <strong>Thông tin chúng tôi KHÔNG thu thập:</strong> nambac.xyz không yêu cầu và không thu thập tên, địa chỉ email, số điện thoại, hay bất kỳ thông tin cá nhân nhận dạng trực tiếp nào của bạn.
+                        <strong>Nội dung do người dùng tạo (Khoe Liên Quân):</strong> Khi đăng nhập, bạn có thể đăng ảnh và chú thích lên mục Khoe. Nội dung này được lưu trên máy chủ của chúng tôi; vui lòng không đăng thông tin nhạy cảm hoặc vi phạm pháp luật. Chúng tôi có quyền gỡ nội dung vi phạm.
+                    </p>
+                    <p>
+                        <strong>Thông tin chúng tôi KHÔNG yêu cầu:</strong> Chúng tôi không yêu cầu số điện thoại hay địa chỉ nhà. Truy cập ẩn danh (không đăng nhập) không cần email.
                     </p>
                 </section>
 

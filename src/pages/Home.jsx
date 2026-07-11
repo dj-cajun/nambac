@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { X } from 'lucide-react';
 import { scrollToTop } from '../lib/scrollToTop';
 import { fetchFortuneStats } from '../lib/fortuneApi';
 import { fetchAllFeatureStats } from '../lib/featureStats';
@@ -34,159 +33,6 @@ const SECTION_TITLES = {
   viral: '📤 Viral tuần này',
   new: '✨ Mới hôm nay',
 };
-
-const HOME_INTRO_FAQ = [
-  {
-    q: 'nambac.xyz là gì?',
-    a: 'Nền tảng trắc nghiệm tính cách AI — 5 câu hỏi, nhanh, vui, dành cho Gen Z Sài Gòn.',
-  },
-  {
-    q: 'Kết quả có chính xác không?',
-    a: 'Mục đích giải trí và khám phá bản thân. Không thay thế kiểm tra tâm lý chuyên nghiệp.',
-  },
-  {
-    q: 'Có cần đăng ký không?',
-    a: 'Không. Làm quiz và xem kết quả ngay, không cần tài khoản.',
-  },
-  {
-    q: 'Thông tin cá nhân có được bảo mật không?',
-    a: 'Không thu thập tên, email hay SĐT. Chỉ dùng cookie cơ bản để cải thiện trải nghiệm.',
-  },
-  {
-    q: 'Có miễn phí không?',
-    a: '100% miễn phí. Chúng tôi duy trì qua quảng cáo, không ảnh hưởng trải nghiệm chính.',
-  },
-  {
-    q: 'Làm thế nào để chia sẻ kết quả?',
-    a: 'Sau khi hoàn thành, dùng nút chia sẻ ở trang kết quả — Zalo, Facebook hoặc sao chép link.',
-  },
-];
-
-const INTRO_BUTTONS = [
-  { id: 'about', label: 'Giới thiệu' },
-  { id: 'faq', label: 'FAQ' },
-  { id: 'contact', label: 'Liên hệ' },
-  { id: 'privacy', label: 'Bảo mật' },
-  { id: 'cookie', label: 'Cookie' },
-  { id: 'terms', label: 'Điều khoản' },
-];
-
-const INTRO_MODAL_META = {
-  about: { title: 'Giới thiệu', more: '/about', moreLabel: 'Xem thêm giới thiệu →' },
-  faq: { title: 'Câu hỏi thường gặp', more: '/faq', moreLabel: 'Xem tất cả FAQ →' },
-  contact: { title: 'Liên hệ', more: '/contact', moreLabel: 'Trang liên hệ đầy đủ →' },
-  privacy: { title: 'Bảo mật', more: '/privacy-policy', moreLabel: 'Chính sách bảo mật →' },
-  cookie: { title: 'Cookie & quảng cáo', more: '/cookie-policy', moreLabel: 'Chính sách Cookie →' },
-  terms: { title: 'Điều khoản', more: '/terms-of-service', moreLabel: 'Xem điều khoản đầy đủ →' },
-  brands: { title: 'Hợp tác thương hiệu', more: '/brands', moreLabel: 'Đăng ký tư vấn →' },
-};
-
-function IntroModalBody({ sectionId }) {
-  if (sectionId === 'about') {
-    return (
-      <>
-        <p className="home-intro-lead">
-          nambac.xyz — trắc nghiệm tính cách AI cho Gen Z Sài Gòn.
-        </p>
-        <ul className="home-intro-list">
-          <li>Chỉ 5 câu hỏi — hoàn thành trong 1–2 phút</li>
-          <li>AI phân tích kết quả &amp; tạo hình minh hoạ riêng</li>
-          <li>MBTI, tình yêu, ẩm thực, nghề nghiệp và nhiều chủ đề khác</li>
-          <li>Chia sẻ kết quả qua Zalo, Facebook dễ dàng</li>
-        </ul>
-      </>
-    );
-  }
-
-  if (sectionId === 'faq') {
-    return (
-      <div className="home-intro-faq-list">
-        {HOME_INTRO_FAQ.map((item) => (
-          <article key={item.q} className="home-intro-faq-item">
-            <h4 className="home-intro-faq-q">{item.q}</h4>
-            <p className="home-intro-faq-a">{item.a}</p>
-          </article>
-        ))}
-      </div>
-    );
-  }
-
-  if (sectionId === 'privacy') {
-    return (
-      <ul className="home-intro-list">
-        <li>Không yêu cầu đăng ký — không thu thập tên, email, SĐT</li>
-        <li>Chỉ thu thập dữ liệu kỹ thuật ẩn danh (IP, trình duyệt, trang truy cập)</li>
-        <li>Cookie cơ bản + phân tích (Google Analytics, Vercel Analytics)</li>
-        <li>Quảng cáo qua Google AdSense — có thể tắt cá nhân hoá trong cài đặt Google</li>
-        <li>Thông báo push (tuỳ chọn) — chỉ khi bạn bấm &quot;Bật&quot;</li>
-        <li>Kết quả quiz dùng để chia sẻ — không bán cho bên thứ ba</li>
-      </ul>
-    );
-  }
-
-  if (sectionId === 'contact') {
-    return (
-      <>
-        <p className="home-intro-lead">
-          Góp ý, báo lỗi hoặc hợp tác — chúng tôi phản hồi trong 24–48 giờ.
-        </p>
-        <ul className="home-intro-list">
-          <li>📧 <strong>contact@nambac.xyz</strong></li>
-          <li>Báo lỗi quiz / hình ảnh / kết quả</li>
-          <li>Đề xuất chủ đề trắc nghiệm mới</li>
-          <li>Hợp tác thương hiệu → mục &quot;Hợp tác thương hiệu&quot; bên dưới</li>
-        </ul>
-      </>
-    );
-  }
-
-  if (sectionId === 'cookie') {
-    return (
-      <ul className="home-intro-list">
-        <li>Cookie cần thiết: phiên, tùy chọn UI, đóng banner</li>
-        <li>Phân tích: Google Analytics, Vercel Analytics (ẩn danh)</li>
-        <li>Quảng cáo: Google AdSense / DoubleClick (khi bật)</li>
-        <li>Tắt quảng cáo cá nhân hoá: google.com/settings/ads</li>
-        <li>Xóa cookie bất cứ lúc nào trong cài đặt trình duyệt</li>
-      </ul>
-    );
-  }
-
-  if (sectionId === 'terms') {
-    return (
-      <>
-        <p className="home-intro-lead">
-          Sử dụng nambac.xyz đồng nghĩa bạn chấp nhận các điều khoản dưới đây.
-        </p>
-        <ul className="home-intro-list">
-          <li>Dịch vụ trắc nghiệm miễn phí, mục đích giải trí</li>
-          <li>Không cần đăng ký tài khoản để sử dụng</li>
-          <li>Kết quả AI mang tính tham khảo — không phải tư vấn y khoa hay pháp lý</li>
-          <li>Nội dung, hình ảnh thuộc nambac.xyz — không sao chép thương mại</li>
-          <li>Chúng tôi có thể cập nhật điều khoản; tiếp tục dùng = đồng ý</li>
-        </ul>
-      </>
-    );
-  }
-
-  if (sectionId === 'brands') {
-    return (
-      <>
-        <p className="home-intro-lead">
-          Tạo chiến dịch quiz AI viral — tiếp cận Gen Z Sài Gòn qua nambac.xyz.
-        </p>
-        <ul className="home-intro-list">
-          <li>Quiz thương hiệu tuỳ chỉnh — AI tạo câu hỏi &amp; hình minh hoạ</li>
-          <li>100K+ lượt chơi tự nhiên, lan truyền Zalo &amp; Facebook</li>
-          <li>Báo cáo hiệu quả chiến dịch realtime</li>
-          <li>Gói ngân sách linh hoạt — tư vấn miễn phí</li>
-        </ul>
-      </>
-    );
-  }
-
-  return null;
-}
 
 function TodayThumbCard({
   className,
@@ -233,7 +79,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState('trending');
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [introModal, setIntroModal] = useState(null);
   const [fortuneStats, setFortuneStats] = useState({ view_count: 0, share_count: 0, like_count: 0 });
   const [featureStats, setFeatureStats] = useState({
     balance: { view_count: 0, share_count: 0, like_count: 0 },
@@ -242,8 +87,6 @@ export default function Home() {
   });
   const [doneToday, setDoneToday] = useState(() => readTodayDone());
   const carouselRef = useRef(null);
-  const introPanelRef = useRef(null);
-  const introBodyRef = useRef(null);
 
   useEffect(() => {
     scrollToTop();
@@ -270,20 +113,6 @@ export default function Home() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
-
-  useEffect(() => {
-    if (!introModal) return;
-    if (introBodyRef.current) introBodyRef.current.scrollTop = 0;
-    requestAnimationFrame(() => {
-      introPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }, [introModal]);
-
-  const openIntroSection = (sectionId) => {
-    setIntroModal((prev) => (prev === sectionId ? null : sectionId));
-  };
-
-  const closeIntroSection = () => setIntroModal(null);
 
   const todayQuiz = useMemo(() => pickDailyQuiz(quizzes), [quizzes]);
   const todayBalance = useMemo(() => pickDailyBalanceQuestion(), []);
@@ -650,53 +479,6 @@ export default function Home() {
           <Link to="/brands" className="home-brand-cta-btn">Xem gói hợp tác</Link>
         </div>
       </section>
-
-      <div className="home-intro-box">
-        <h3 className="home-intro-box-title">nambac.xyz</h3>
-        <p className="home-intro-box-desc">Trắc nghiệm AI · 5 câu · share Zalo liền</p>
-        <div className="home-intro-btns" role="group" aria-label="Thông tin nambac">
-          {INTRO_BUTTONS.map((btn) => (
-            <button
-              key={btn.id}
-              type="button"
-              className={`home-intro-btn${introModal === btn.id ? ' active' : ''}`}
-              aria-expanded={introModal === btn.id}
-              onClick={() => openIntroSection(btn.id)}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
-        <Link to="/blog" className="home-intro-btn home-intro-btn-wide home-intro-btn-link">
-          Insights 📰
-        </Link>
-        {introModal && (
-          <div
-            ref={introPanelRef}
-            className="home-intro-panel"
-            role="region"
-            aria-label={INTRO_MODAL_META[introModal].title}
-          >
-            <div className="home-intro-panel-header">
-              <h4 className="home-intro-panel-title">{INTRO_MODAL_META[introModal].title}</h4>
-              <button
-                type="button"
-                className="home-intro-panel-close"
-                onClick={closeIntroSection}
-                aria-label="Đóng"
-              >
-                <X size={18} strokeWidth={2.25} />
-              </button>
-            </div>
-            <div ref={introBodyRef} className="home-intro-panel-body">
-              <IntroModalBody sectionId={introModal} />
-              <Link to={INTRO_MODAL_META[introModal].more} className="home-intro-more">
-                {INTRO_MODAL_META[introModal].moreLabel}
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

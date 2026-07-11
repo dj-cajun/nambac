@@ -1,9 +1,10 @@
 /**
- * Pre-generate daily fortune AI scene images (FORTUNE_COUNT archetypes × date).
- *
- * Run: npm run images:fortune
- * Options: --date=2026-07-07  --idx=3  --force
+ * @deprecated Use npm run images:zodiac — one-time 24 zodiac assets (no daily AI).
+ * This script generated fortune_${date}_idx*.webp per day — replaced by zodiac pool.
  */
+console.warn('⚠️  images:fortune is deprecated. Use: npm run images:zodiac');
+console.warn('    Fortune now uses static zodiac_west_* / zodiac_cn_* images from DOB + axis.\n');
+
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,52 +15,14 @@ const PROJECT_ROOT = path.join(__dirname, '../..');
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 
-const args = process.argv.slice(2);
-const dateArg = args.find((a) => a.startsWith('--date='));
-const idxArg = args.find((a) => a.startsWith('--idx='));
-const force = args.includes('--force');
-const dateStr = dateArg ? dateArg.split('=')[1] : new Date().toISOString().slice(0, 10);
-const onlyIdx = idxArg !== undefined ? parseInt(idxArg.split('=')[1], 10) : null;
-
-const { getDateStr } = await import('../../shared/fortuneEngine.js');
-const { FORTUNE_COUNT } = await import('../../shared/fortuneData.js');
-const { ensureFortuneSceneImage, getFortuneImageLocalPath } = await import(
-  '../../api/_lib/fortuneImageService.js'
-);
-
-const targetDate = dateArg ? dateStr : getDateStr();
-const indices = onlyIdx !== null && !Number.isNaN(onlyIdx)
-  ? [((onlyIdx % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT]
-  : Array.from({ length: FORTUNE_COUNT }, (_, i) => i);
-
-if (!process.env.OPENROUTER_API_KEY && !process.env.GEMINI_API_KEY && !process.env.VITE_GEMINI_API_KEY) {
-  console.error('❌ OPENROUTER_API_KEY or GEMINI_API_KEY required');
-  process.exit(1);
+if (process.argv.includes('--force-legacy')) {
+  const { spawn } = await import('node:child_process');
+  const child = spawn(process.execPath, [path.join(__dirname, '_backfill_fortune_legacy.mjs'), ...process.argv.slice(2)], {
+    stdio: 'inherit',
+    cwd: PROJECT_ROOT,
+  });
+  child.on('close', (code) => process.exit(code ?? 1));
+} else {
+  console.log('Nothing to run. Generate zodiac pool once:\n  npm run images:zodiac\n');
+  process.exit(0);
 }
-
-console.log(`\n🔮 Fortune image backfill — ${targetDate}${force ? ' [FORCE]' : ''}\n`);
-
-let ok = 0;
-let skipped = 0;
-
-for (const idx of indices) {
-  const localPath = getFortuneImageLocalPath(targetDate, idx);
-  if (!force && localPath && (await import('fs')).default.existsSync(localPath)) {
-    console.log(`  ⏭️  idx${idx} — already exists`);
-    skipped += 1;
-    continue;
-  }
-
-  process.stdout.write(`  🖼️  idx${idx} generating… `);
-  try {
-    const result = await ensureFortuneSceneImage({ fortuneIndex: idx, dateStr: targetDate });
-    console.log(result.cached ? 'cached' : `saved ${result.image_url}`);
-    ok += 1;
-  } catch (err) {
-    console.log(`FAILED — ${err.message}`);
-  }
-
-  await new Promise((r) => setTimeout(r, 2500));
-}
-
-console.log(`\n✅ Done: ${ok} generated, ${skipped} skipped\n`);

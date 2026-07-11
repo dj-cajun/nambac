@@ -26,6 +26,7 @@ if (!process.env.GEMINI_API_KEY && process.env.VITE_GEMINI_API_KEY) {
 const { generateQuizContent, formatQuizForDb, validateQuizPayload } = await import('../../api/_lib/geminiQuiz.js');
 const { createFullQuiz } = await import('../../api/_lib/quizDb.js');
 const { QUIZ_CATEGORY_IDS } = await import('../../shared/categories.js');
+const { DAILY_CATEGORY_IDS } = await import('../../shared/categoryTiers.js');
 
 const argv = process.argv.slice(2);
 function getArg(name, fallback = '') {
@@ -68,7 +69,7 @@ async function main() {
   let failures = 0;
 
   for (let i = 0; i < count; i += 1) {
-    const category = lockedCategory || QUIZ_CATEGORY_IDS[i % QUIZ_CATEGORY_IDS.length];
+    const category = lockedCategory || DAILY_CATEGORY_IDS[i % DAILY_CATEGORY_IDS.length];
     process.stdout.write(`  [${i + 1}/${count}] ${category} … `);
     try {
       const generated = await generateQuizContent(category);

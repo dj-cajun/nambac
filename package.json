@@ -16,6 +16,7 @@
     "images:sync": "node scripts/images/sync_images.mjs",
     "images:backfill": "node scripts/images/backfill_images.mjs",
     "images:fortune": "node scripts/images/backfill_fortune.mjs",
+    "images:zodiac": "node scripts/images/backfill_zodiac.mjs",
     "images:balance": "node scripts/images/backfill_balance.mjs",
     "images:roast": "node scripts/images/backfill_roast.mjs",
     "images:brain": "node scripts/images/backfill_brain.mjs",

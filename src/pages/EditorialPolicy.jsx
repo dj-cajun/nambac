@@ -34,7 +34,19 @@ const EditorialPolicy = () => (
       </section>
 
       <section>
-        <h2>4. Bản quyền</h2>
+        <h2>4. Nội dung người dùng — Khoe Liên Quân</h2>
+        <p>
+          Mục <strong>Khoe</strong> (/lienquan/khoe) cho phép người dùng đã đăng nhập Google đăng ảnh, chú thích và liên kết TikTok/ảnh. Đây là nội dung do người dùng tạo (UGC), không phải nội dung do AI tạo.
+        </p>
+        <ul style={{ paddingLeft: '20px', lineHeight: '2' }}>
+          <li>Admin có quyền ẩn hoặc gỡ bài vi phạm chính sách</li>
+          <li>Người dùng chịu trách nhiệm về nội dung họ đăng</li>
+          <li>Báo cáo: <a href="mailto:contact@nambac.xyz" style={{ color: '#FF2D85' }}>contact@nambac.xyz</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5. Bản quyền</h2>
         <p>
           Văn bản, hình ảnh và thiết kế quiz trên nambac.xyz thuộc quyền sở hữu của nambac.xyz trừ khi ghi chú khác.
           Không sao chép thương mại hoặc tái xuất bản mà không có phép.
@@ -42,7 +54,7 @@ const EditorialPolicy = () => (
       </section>
 
       <section>
-        <h2>5. Báo cáo nội dung</h2>
+        <h2>6. Báo cáo nội dung</h2>
         <p>
           Nếu bạn thấy nội dung không phù hợp, vi phạm hoặc gây hiểu lầm — email{' '}
           <a href="mailto:contact@nambac.xyz" style={{ color: '#FF2D85' }}>contact@nambac.xyz</a>.

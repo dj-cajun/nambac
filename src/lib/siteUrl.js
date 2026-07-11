@@ -64,22 +64,20 @@ export function buildBrainOgImageUrl(resultId, name = '') {
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
 
-/** Fortune result OG — same handler pattern as quiz */
-export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel) {
-  const params = new URLSearchParams({
-    path: 'fortune-og',
+/** Fortune result OG — zodiac background from DOB + axis */
+export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel, dob = '', axis = 'love') {
+  const base = {
     name: String(name).trim(),
     idx: String(fortuneIndex),
     date: dateLabel,
-  });
+  };
+  if (dob) base.dob = dob;
+  if (axis && axis !== 'love') base.axis = axis;
+
   if (import.meta.env.DEV) {
-    const devQ = new URLSearchParams({
-      name: String(name).trim(),
-      idx: String(fortuneIndex),
-      date: dateLabel,
-    });
-    return `${getSiteOrigin()}/api/fortune-og?${devQ}`;
+    return `${getSiteOrigin()}/api/fortune-og?${new URLSearchParams(base)}`;
   }
+  const params = new URLSearchParams({ path: 'fortune-og', ...base });
   return `${getSiteOrigin()}/api/handler?${params}`;
 }
 

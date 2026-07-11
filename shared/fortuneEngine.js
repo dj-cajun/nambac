@@ -1,4 +1,5 @@
 import { FORTUNE_COUNT, getFortuneByIndex } from './fortuneData.js';
+import { normalizeFortuneAxis } from './fortuneMeta.js';
 
 /** YYYY-MM-DD in local timezone */
 export function getDateStr(date = new Date()) {
@@ -12,13 +13,21 @@ export function isValidFortuneDateLabel(dateLabel) {
   return typeof dateLabel === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateLabel);
 }
 
+/** Normalize DOB input — returns YYYY-MM-DD or empty string */
+export function normalizeFortuneDob(raw) {
+  const s = String(raw || '').trim();
+  return isValidFortuneDateLabel(s) ? s : '';
+}
+
 /**
- * Deterministic daily fortune from date + name (no DB).
- * Same name + same day → same index all day; changes tomorrow.
+ * Deterministic daily fortune from date + name + optional DOB + axis (no DB).
+ * Same inputs → same index all day; changes tomorrow or when axis/DOB changes.
  */
-export function calculateTodayFortune(name = '', date = new Date()) {
+export function calculateTodayFortune(name = '', date = new Date(), options = {}) {
   const dateStr = getDateStr(date);
-  const combinedSeed = dateStr + String(name).trim().toLowerCase();
+  const axis = normalizeFortuneAxis(options.axis);
+  const dob = normalizeFortuneDob(options.dob);
+  const combinedSeed = `${dateStr}|${String(name).trim().toLowerCase()}|${dob}|${axis}`;
 
   let hash = 5381;
   for (let i = 0; i < combinedSeed.length; i += 1) {
@@ -47,6 +56,8 @@ export function calculateTodayFortune(name = '', date = new Date()) {
     soulmate,
     rival,
     name: String(name).trim(),
+    dob,
+    axis,
   };
 }
 
@@ -111,18 +122,20 @@ export function buildFortuneResultTitle({ name, fortune, dateLabel }) {
   return `${dateShort} · ${archetype}`;
 }
 
-export function buildFortuneShareUrl(name, fortuneIndex, dateLabel, origin) {
+export function buildFortuneShareUrl(name, fortuneIndex, dateLabel, origin, axis = 'love') {
   if (!isValidFortuneDateLabel(dateLabel)) {
     throw new Error('buildFortuneShareUrl requires dateLabel (YYYY-MM-DD)');
   }
   const base = origin || (typeof window !== 'undefined' ? window.location.origin : 'https://nambac.xyz');
   const idx = ((Number(fortuneIndex) % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
   const encodedName = encodeURIComponent(String(name).trim());
-  return `${base}/share-fortune/${encodedName}/${idx}/${dateLabel}`;
+  const normalizedAxis = normalizeFortuneAxis(axis);
+  const axisSuffix = normalizedAxis !== 'love' ? `?axis=${normalizedAxis}` : '';
+  return `${base}/share-fortune/${encodedName}/${idx}/${dateLabel}${axisSuffix}`;
 }
 
 /** OG preview image — date is required so previews never roll to the next day. */
-export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel, origin) {
+export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel, origin, dob = '', axis = 'love') {
   if (!isValidFortuneDateLabel(dateLabel)) {
     throw new Error('buildFortuneOgImageUrl requires dateLabel (YYYY-MM-DD)');
   }
@@ -132,6 +145,10 @@ export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel, origin) {
     idx: String(fortuneIndex),
     date: dateLabel,
   });
+  if (dob) q.set('dob', dob);
+  const normalizedAxis = normalizeFortuneAxis(axis);
+  if (normalizedAxis !== 'love') q.set('axis', normalizedAxis);
+
   const isLocal = base.includes('localhost');
   if (isLocal) {
     return `${base}/api/fortune-og?${q}`;
@@ -142,6 +159,8 @@ export function buildFortuneOgImageUrl(name, fortuneIndex, dateLabel, origin) {
     idx: String(fortuneIndex),
     date: dateLabel,
   });
+  if (dob) handlerQ.set('dob', dob);
+  if (normalizedAxis !== 'love') handlerQ.set('axis', normalizedAxis);
   return `${base}/api/handler?${handlerQ}`;
 }
 
@@ -151,11 +170,13 @@ export function parseFortuneShareParams(searchParams) {
   const idx = idxRaw !== null && idxRaw !== '' ? Number(idxRaw) : null;
   const dateParam = (searchParams.get('date') || '').trim();
   const dateLabel = isValidFortuneDateLabel(dateParam) ? dateParam : null;
+  const axis = normalizeFortuneAxis(searchParams.get('axis'));
   if (!friendName || idx === null || Number.isNaN(idx)) return null;
   return {
     friendName,
     fortuneIndex: ((idx % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT,
     dateLabel,
+    axis,
     fortune: getFortuneByIndex(idx),
   };
 }

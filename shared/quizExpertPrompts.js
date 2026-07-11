@@ -10,11 +10,11 @@
  */
 
 const EXPERT_RICHNESS_FOOTER = `
-## Rich content (MANDATORY for every quiz)
-- Questions = mini-scenarios (70+ chars): who, where (Sài Gòn), conflict, "Bạn sẽ làm gì?"
-- Every option = action/dialogue + (parenthetical punchline in Vietnamese)
-- 8 result archetypes with type_name in quotes + description 320+ chars (4+ sentences) + exactly 3 traits
-- Reference tone: viral crush/Zalo/trà sữa quizzes on nambac.xyz — never dry or generic
+## MZ content (MANDATORY for every quiz)
+- Questions = mini-scenarios (45–130 chars): who, where (Sài Gòn), conflict, "Bạn sẽ làm gì?"
+- Every option = action/dialogue + (Vietnamese parenthetical punchline)
+- 8 result archetypes with type_name + description 140–300 chars (2–3 sentences) + exactly 3 traits
+- Native Gen Z Sài Gòn tone — never dry, never wall-of-text
 - Never leak topic-source meta (GitHub, repo, README, research notes) into Vietnamese output
 - Never duplicate a closing CTA / sentence inside the same field
 - Never join two alternate phrasings with " | "`;

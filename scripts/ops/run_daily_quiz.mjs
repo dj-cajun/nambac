@@ -6,7 +6,8 @@
  * Usage:
  *   npm run daily:quiz
  *   npm run daily:quiz -- --category=Trendy
- *   npm run daily:quiz -- --no-push --no-images
+ *   npm run daily:quiz -- --with-images   # optional cover+results (costly)
+ *   npm run daily:quiz -- --no-push
  */
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -54,7 +55,7 @@ async function main() {
   const category = getArg('--category') || pickDailyCategory();
   const topic = getArg('--topic');
   const skipPush = hasFlag('--no-push');
-  const skipImages = hasFlag('--no-images');
+  const skipImages = !hasFlag('--with-images');
 
   if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
     console.error('❌ TURSO_DATABASE_URL / TURSO_AUTH_TOKEN missing');

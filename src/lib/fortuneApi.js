@@ -28,35 +28,39 @@ export async function incrementFortuneStat(field, kind = FORTUNE_KIND) {
   }));
 }
 
-export function fortuneImageCacheKey(dateLabel, fortuneIndex) {
+export function fortuneImageCacheKey({ dob, axis, fortuneIndex, dateLabel }) {
+  if (dob) return `nambac_zodiac_img_v1_${dob}_${axis || 'love'}`;
   return `${IMG_CACHE_PREFIX}${dateLabel}_${fortuneIndex}`;
 }
 
-export function readFortuneImageCache(dateLabel, fortuneIndex) {
+export function readFortuneImageCache(params) {
   try {
-    return sessionStorage.getItem(fortuneImageCacheKey(dateLabel, fortuneIndex)) || '';
+    return sessionStorage.getItem(fortuneImageCacheKey(params)) || '';
   } catch {
     return '';
   }
 }
 
-export function writeFortuneImageCache(dateLabel, fortuneIndex, src) {
+export function writeFortuneImageCache(params, src) {
   try {
-    if (src) sessionStorage.setItem(fortuneImageCacheKey(dateLabel, fortuneIndex), src);
+    if (src) sessionStorage.setItem(fortuneImageCacheKey(params), src);
   } catch {
     /* quota / private mode */
   }
 }
 
-/** Fetch AI fortune scene — uses sessionStorage cache, then API */
-export async function fetchFortuneSceneImage({ fortuneIndex, dateLabel }) {
-  const cached = readFortuneImageCache(dateLabel, fortuneIndex);
+/** Fetch zodiac fortune scene — static pool, no daily AI */
+export async function fetchFortuneSceneImage({ fortuneIndex, dateLabel, dob = '', axis = 'love' }) {
+  const cacheParams = { dob, axis, fortuneIndex, dateLabel };
+  const cached = readFortuneImageCache(cacheParams);
   if (cached) return { src: cached, cached: true };
 
   const params = new URLSearchParams({
-    idx: String(fortuneIndex),
+    idx: String(fortuneIndex ?? 0),
     date: dateLabel,
+    axis,
   });
+  if (dob) params.set('dob', dob);
   const res = await fetch(apiUrl(`fortune-image?${params}`));
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -72,6 +76,6 @@ export async function fetchFortuneSceneImage({ fortuneIndex, dateLabel }) {
   }
   if (!src) throw new Error('No image returned');
 
-  writeFortuneImageCache(dateLabel, fortuneIndex, src);
+  writeFortuneImageCache(cacheParams, src);
   return { src, cached: false };
 }

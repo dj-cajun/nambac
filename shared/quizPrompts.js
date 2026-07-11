@@ -3,9 +3,11 @@
  * MASTER prompt + scoring + DB formatting live here only.
  */
 import { normalizeCategory, QUIZ_CATEGORY_IDS } from './categories.js';
+import { pickDailyCategory as pickDailyCategoryFromTiers } from './categoryTiers.js';
 import { QUIZ_EXPERT_PROMPTS, QUIZ_TOPIC_SEEDS } from './quizExpertPrompts.js';
 import { MBTI_TYPES, MBTI_DIMENSIONS } from './personalityArchetypes.js';
 import { generateJsonViaLlm, parseJsonFromLlm } from './llmJson.js';
+import { QUIZ_VI_EDITOR_SYSTEM, buildViEditorUserPrompt } from './quizViEditorPrompts.js';
 
 /** Q1 B=+4, Q2 B=+2, Q3 B=+1, Q4/Q5 B=0 — 3-bit binary scoring */
 export const BINARY_5Q_SCORES = Object.freeze([
@@ -16,43 +18,49 @@ export const BINARY_5Q_SCORES = Object.freeze([
   [0, 0],
 ]);
 
-/** Golden quiz reference — minimum Vietnamese character counts (binary_5q) */
+/** MZ-mode targets — min for substance, max caps AI wall-of-text (enforceMax on AI path only) */
 export const QUIZ_RICHNESS_LIMITS = Object.freeze({
-  titleMin: 35,
-  descriptionMin: 70,
-  questionMin: 55,
-  optionMin: 60,
-  resultTitleMin: 15,
-  resultDescMin: 320,
+  titleMin: 30,
+  titleMax: 80,
+  descriptionMin: 55,
+  descriptionMax: 140,
+  questionMin: 45,
+  questionMax: 130,
+  optionMin: 40,
+  optionMax: 115,
+  resultTitleMin: 12,
+  resultTitleMax: 45,
+  resultDescMin: 140,
+  resultDescMax: 300,
   traitsCount: 3,
 });
 
 export const QUIZ_MASTER_PROMPT = `
-# 🎮 MASTER Quiz Generation Prompt (v5.1 - Rich Content + Anti-Leakage)
+# 🎮 MASTER Quiz Generation Prompt (v5.2 - MZ Mode: Native VI + Punchy)
 
-## 🎯 Core Philosophy: "KING-BAD (킹받음) + Hyper-Localization + Rich Storytelling"
+## 🎯 Core Philosophy: "Native Gen Z Sài Gòn + situational humor — NOT wall of text"
 "재미없으면 죽음뿐. 무조건 베트남어(Vietnamese)로만 대답하십시오."
-짧고 건조한 퀴즈는 **실패**입니다. 모든 문장은 구체적 상황 + Gen Z Sài Gòn 밈/슬랭 + 유머가 있어야 합니다.
+건조한 퀴즈는 **실패**이지만, **너무 긴 설명도 실패**입니다. MZ는 스크롤 짧게 — 임팩트 우선.
 
-> **Language Rule**: 모든 사용자 대면 텍스트는 **반드시 베트남어(Vietnamese)**.
+> **Language Rule**: 모든 사용자 대면 텍스트는 **반드시 베트남어(Vietnamese)**. 괄호 안 영어 설명 금지.
 
-## 📏 텍스트 길이 (STRICT MINIMUM — shorter = reject)
-| 항목 | 최소 | 권장 | 스타일 |
+## 📏 텍스트 길이 (MIN + MAX — out of range = reject)
+| 항목 | 최소 | 최대 | 스타일 |
 | --- | --- | --- | --- |
-| title | 35자 | 45~70자 | 훅 + 따옴표 슬랭 ('trà xanh', 'thả thính'…) |
-| description | 70자 | 90~130자 | 티저 + (괄호 한 방) |
-| question_text | 55자 | 70~110자 | **미니 시나리오**: 장소(The Alley, Zalo, Quận 1) + 갈등 + "Bạn sẽ làm gì?" |
-| option_a / option_b | 60자 | 70~115자 | 행동/대사 + **(괄호 펀치라인)** 필수 |
-| type_name (결과 제목) | 15자 | 18~35자 | 아키타입: 'Thánh Lầy' ẩn mình, 'Thánh Thả Thính' chuyên nghiệp |
-| description (결과) | 320자 | 420~550자 | **4~5문장**: ①아키타입 ②주변 반응 ③팩폭 ④조언/경고 |
+| title | 30자 | 80자 | 훅 + 따옴표 슬랭 ('trà xanh', 'thả thính'…) |
+| description | 55자 | 140자 | 티저 + (괄호 한 방) |
+| question_text | 45자 | 130자 | **미니 시나리오**: Zalo/Quận 1 + 갈등 + "Bạn sẽ làm gì?" |
+| option_a / option_b | 40자 | 115자 | 행동/대사 + **(베트남어 펀치라인)** 필수 |
+| type_name (결과 제목) | 12자 | 45자 | 아키타입: 'Thánh Lầy ẩn mình', 'Thánh Thả Thính' |
+| description (결과) | 140자 | 300자 | **2~3문장**: ①아키타입 ②팩폭/반응 ③조언 한 줄 |
 | traits | 3개 | 3개 | 각 1~3단어 (Hài hước, Bí ẩn, Dè dặt) |
 
-## ✍️ Rich Writing Rules (golden quiz quality)
-1. **Every option** contains a punchline in parentheses: (Cao thủ ẩn mình là đây!), (Rồi sau đó... tính sau!)
-2. Use **quoted slang**: 'thả thính', 'cưa đổ', 'thảo mai', 'flop', 'sống ảo', 'toxic'
-3. Name **local brands/places**: The Alley, Grab, Zalo, TikTok, Quận 1, Thảo Điền, bánh mì, trà chanh
-4. Result descriptions: start with "Bạn là…", plot twist ("Crush tưởng… nhưng thực ra…"), end with roast/advice
-5. Never generic one-liners. Never bare "A"/"B" labels.
+## ✍️ MZ Writing Rules
+1. **Every option** has a Vietnamese punchline in parentheses: (Cao thủ ẩn mình!), (Tính sau cũng được!)
+2. Use **VN slang**: 'thả thính', 'cưa đổ', 'thảo mai', 'flop', 'sống ảo', 'toxic' — NO English meta labels in parens
+3. Name **local brands**: Grab, Zalo, TikTok, Quận 1, Thảo Điền, bánh mì, trà chanh
+4. Result descriptions: 2–3 sentences max — "Bạn là…" + plot twist + one advice line
+5. Never generic one-liners. Never bare "A"/"B" labels. Never King-bad / speedrun / YOLO in output.
 
 ## ⚠️ 필수
 1. 2지선다 (A/B) only — option_a / option_b는 **완전한 베트남어 문장**
@@ -101,7 +109,7 @@ export const QUIZ_MASTER_PROMPT = `
   "description": "[Vietnamese teaser with parenthetical punchline]",
   "category": "[EXACT category id from EXPERT directive]",
   "questions": [ ...5 items ... ],
-  "results": [ ...8 items: score 0-7, type_name, description (320+ chars), traits [3 strings] ... ]
+  "results": [ ...8 items: score 0-7, type_name, description (140–300 chars), traits [3 strings] ... ]
 }
 `;
 
@@ -130,10 +138,10 @@ STRICT RULES:
 - Return ONLY valid JSON.
 - All user-facing text in Vietnamese.
 - Exactly 5 questions, exactly 8 results (scores 0-7).
-- Meet ALL minimum character counts in the Rich Content table (v5.1).
+- Meet ALL min AND max character counts in the MZ table (v5.2).
 - Each option_a and option_b MUST be a full Vietnamese phrase (never the letters "A" or "B" alone).
-- Each option MUST include a parenthetical punchline (…).
-- Each result description MUST be 320+ Vietnamese characters with 4+ sentences.
+- Each option MUST include a parenthetical punchline in Vietnamese (…).
+- Each result description MUST be 140–300 Vietnamese characters with 2–3 sentences.
 - Each result MUST have exactly 3 traits.
 - No sentence, phrase, or CTA may appear twice within the same field (title, description, or any result description).
 - No reference to the topic's inspiration source, research platform, or English technical/meta terminology (e.g. GitHub, repo, README) may appear anywhere in the output.
@@ -151,8 +159,8 @@ export function buildQuizUserPrompt(categoryId, customTopic = '') {
     '⚠️ Note for custom topic input: Write the topic direction as a plain creative brief only (e.g. "attachment style ở Sài Gòn"). Do NOT paste research notes, source links, or phrases like "inspired by GitHub personality-test repos" — the LLM may copy these verbatim into the final quiz text. Topic is INSPIRATION ONLY; never leak source/meta jargon into output.';
 
   return customTopic?.trim()
-    ? `Write a RICH, story-driven quiz in category "${category}". User topic (inspiration only — do not copy meta/source words): ${customTopic.trim()}. ${customTopicNote} Match golden nambac quality: long situational questions, options with (parenthetical punchlines), 320+ char result descriptions. Remember: "category": "${category}"`
-    : `Write a RICH, story-driven quiz in category "${category}". Topic direction: ${topicSeed}. Match golden nambac quality: mini-scenarios (Zalo, crush, The Alley, Grab), options with (punchlines), 8 unique archetype results with 320+ char descriptions. Remember: "category": "${category}"`;
+    ? `Write a punchy, native-Vietnamese quiz in category "${category}". User topic (inspiration only — do not copy meta/source words): ${customTopic.trim()}. ${customTopicNote} MZ mode: situational questions, Vietnamese (parenthetical punchlines), result descriptions 140–300 chars (2–3 sentences). Remember: "category": "${category}"`
+    : `Write a punchy, native-Vietnamese quiz in category "${category}". Topic direction: ${topicSeed}. MZ mode: mini-scenarios (Zalo, crush, Grab), Vietnamese punchlines in parens, 8 unique archetype results with 140–300 char descriptions. Remember: "category": "${category}"`;
 }
 
 function isPlaceholderOption(text) {
@@ -162,6 +170,83 @@ function isPlaceholderOption(text) {
 
 const META_LEAK_RE =
   /\b(GitHub|README|CI\/CD|unit test|open[- ]?source|maintainer|changelog|patch note|star count)\b|\brepo\b|\bcommit\b/i;
+
+const BANNED_VI_PHRASES_RE =
+  /\b(King[- ]?bad|speedrun|burnout speedrun|Yes person|YOLO priority|adulting|Delayed gratification|Strategic natural|Human decency|Know your rights)\b/i;
+
+const ALLOWED_ENGLISH_BRANDS = new Set([
+  'grab', 'zalo', 'tiktok', 'shopee', 'facebook', 'threads', 'teams', 'instagram',
+  'netflix', 'spotify', 'youtube', 'mbti', 'otp', 'fomo', 'wifi', 'app',
+]);
+
+function unexpectedEnglishWords(text) {
+  const words = String(text || '').match(/\b[A-Za-z]{3,}\b/g) || [];
+  return words.filter((w) => !ALLOWED_ENGLISH_BRANDS.has(w.toLowerCase()));
+}
+
+function hasAwkwardEnglishParen(text) {
+  const parens = String(text || '').match(/\([^)]+\)/g) || [];
+  for (const p of parens) {
+    const inner = p.slice(1, -1);
+    const bad = unexpectedEnglishWords(inner);
+    if (bad.length >= 2) return true;
+  }
+  return false;
+}
+
+/** VI naturalness checks — used on AI-generated content */
+export function validateViNaturalness(payload) {
+  const errors = [];
+  const fields = [
+    ['title', payload.title],
+    ['description', payload.description],
+    ...payload.questions.flatMap((q, i) => [
+      [`Q${i + 1}`, q.question_text],
+      [`Q${i + 1} A`, q.option_a],
+      [`Q${i + 1} B`, q.option_b],
+    ]),
+    ...payload.results.flatMap((r, i) => [
+      [`Result ${i} title`, r.type_name || r.title],
+      [`Result ${i} desc`, r.description],
+    ]),
+  ];
+
+  for (const [label, text] of fields) {
+    const s = String(text || '');
+    if (BANNED_VI_PHRASES_RE.test(s)) {
+      errors.push(`${label}: banned translation-ese phrase`);
+    }
+    if (hasAwkwardEnglishParen(s)) {
+      errors.push(`${label}: awkward English in parentheses`);
+    }
+    const badWords = unexpectedEnglishWords(s);
+    if (badWords.length > 4) {
+      errors.push(`${label}: too much unexpected English (${badWords.slice(0, 3).join(', ')}…)`);
+    }
+  }
+  return errors;
+}
+
+function buildRetryHint(errors) {
+  const joined = errors.join('; ');
+  const needsShorter = errors.some((e) => /too long/i.test(e));
+  const needsLonger = errors.some((e) => /too short/i.test(e));
+  const needsVi = errors.some((e) => /English|translation|banned/i.test(e));
+
+  if (needsShorter && needsVi) {
+    return `\n\nRETRY: ${joined}. Shorten text AND rewrite in native Vietnamese — no English in parentheses.`;
+  }
+  if (needsShorter) {
+    return `\n\nRETRY: ${joined}. Shorten to MZ limits — result descriptions 2–3 sentences only.`;
+  }
+  if (needsLonger) {
+    return `\n\nRETRY: ${joined}. Add situational detail but stay under max length.`;
+  }
+  if (needsVi) {
+    return `\n\nRETRY: ${joined}. Rewrite in native Gen Z Sài Gòn Vietnamese — fix awkward English.`;
+  }
+  return `\n\nRETRY: ${joined}. Native Gen Z Sài Gòn Vietnamese, punchy and within min/max limits.`;
+}
 
 /** title/description에서 " | " 로 이어붙인 이중 버전 중 첫 번째만 채택 */
 function stripPipeVariants(text) {
@@ -215,8 +300,7 @@ function sanitizeQuizField(text) {
 /**
  * Normalize Gemini JSON → DB payload. Enforces binary_5q scores; never falls back to "A"/"B".
  * Also strips dual-version " | " pileups and duplicate closing sentences (v5.1 postprocess).
- * Dedup may drop length below 320 — that is intentional so validateQuizPayload can reject
- * padded-but-empty content and force regeneration.
+ * Dedup may drop length below min — validateQuizPayload can reject and force regeneration.
  */
 export function formatQuizForDb(geminiData) {
   const results = Array.from({ length: 8 }, (_, i) => {
@@ -270,16 +354,18 @@ function hasPunchlineOption(text) {
   return /\([^)]{4,}\)/.test(String(text || ''));
 }
 
-function validateQuizRichness(payload) {
+function validateQuizRichness(payload, options = {}) {
   const errors = [];
   const L = QUIZ_RICHNESS_LIMITS;
+  const enforceMax = options.enforceMax === true;
 
-  if ((payload.title?.trim().length || 0) < L.titleMin) {
-    errors.push(`title too short (min ${L.titleMin} chars)`);
-  }
-  if ((payload.description?.trim().length || 0) < L.descriptionMin) {
-    errors.push(`description too short (min ${L.descriptionMin} chars)`);
-  }
+  const checkLen = (label, len, min, max) => {
+    if (len < min) errors.push(`${label} too short (${len} < ${min})`);
+    if (enforceMax && len > max) errors.push(`${label} too long (${len} > ${max})`);
+  };
+
+  checkLen('title', payload.title?.trim().length || 0, L.titleMin, L.titleMax);
+  checkLen('description', payload.description?.trim().length || 0, L.descriptionMin, L.descriptionMax);
   if (/\s\|\s/.test(payload.title || '') || /\s\|\s/.test(payload.description || '')) {
     errors.push('title/description has dual-version " | " pileup');
   }
@@ -289,14 +375,10 @@ function validateQuizRichness(payload) {
 
   payload.questions.forEach((q, i) => {
     const qLen = q.question_text?.trim().length || 0;
-    if (qLen < L.questionMin) {
-      errors.push(`Q${i + 1}: question too short (${qLen} < ${L.questionMin})`);
-    }
+    checkLen(`Q${i + 1}: question`, qLen, L.questionMin, L.questionMax);
     for (const [key, label] of [['option_a', 'A'], ['option_b', 'B']]) {
       const opt = q[key]?.trim() || '';
-      if (opt.length < L.optionMin) {
-        errors.push(`Q${i + 1} option ${label}: too short (${opt.length} < ${L.optionMin})`);
-      }
+      checkLen(`Q${i + 1} option ${label}`, opt.length, L.optionMin, L.optionMax);
       if (!hasPunchlineOption(opt)) {
         errors.push(`Q${i + 1} option ${label}: missing (parenthetical punchline)`);
       }
@@ -306,12 +388,8 @@ function validateQuizRichness(payload) {
   payload.results.forEach((r, i) => {
     const title = (r.type_name || r.title || '').trim();
     const desc = r.description?.trim() || '';
-    if (title.length < L.resultTitleMin) {
-      errors.push(`Result ${i}: title too short (${title.length} < ${L.resultTitleMin})`);
-    }
-    if (desc.length < L.resultDescMin) {
-      errors.push(`Result ${i}: description too short (${desc.length} < ${L.resultDescMin})`);
-    }
+    checkLen(`Result ${i}: title`, title.length, L.resultTitleMin, L.resultTitleMax);
+    checkLen(`Result ${i}: description`, desc.length, L.resultDescMin, L.resultDescMax);
     if (hasDuplicateSentence(desc)) {
       errors.push(`Result ${i}: description contains duplicate sentence(s)`);
     }
@@ -335,7 +413,7 @@ function validateQuizRichness(payload) {
 }
 
 /** Returns validation errors (empty array = OK for publish) */
-export function validateQuizPayload(payload) {
+export function validateQuizPayload(payload, options = {}) {
   const errors = [];
   if (!payload.title?.trim()) errors.push('empty title');
   if (payload.questions.length !== 5) errors.push(`expected 5 questions, got ${payload.questions.length}`);
@@ -349,49 +427,87 @@ export function validateQuizPayload(payload) {
   });
 
   if (payload.quiz_type !== 'mbti_12q') {
-    errors.push(...validateQuizRichness(payload));
+    errors.push(...validateQuizRichness(payload, options));
+    if (options.enforceVi === true) {
+      errors.push(...validateViNaturalness(payload));
+    }
   }
 
   return errors;
+}
+
+async function polishQuizVi({ apiKey, openrouterKey, payload }) {
+  const { text } = await generateJsonViaLlm({
+    geminiKey: apiKey,
+    openrouterKey,
+    system: QUIZ_VI_EDITOR_SYSTEM,
+    user: buildViEditorUserPrompt(payload),
+    temperature: 0.55,
+    maxOutputTokens: 8192,
+    label: 'quiz-vi-editor',
+  });
+  const parsed = parseJsonFromLlm(text);
+  parsed.category = payload.category;
+  return formatQuizForDb(parsed);
 }
 
 export async function generateQuizContent({ apiKey, openrouterKey, categoryId, customTopic = '' }) {
   const category = normalizeCategory(categoryId);
   const systemInstruction = buildQuizSystemInstruction(category);
   const userPrompt = buildQuizUserPrompt(category, customTopic);
+  const aiValidateOpts = { enforceMax: true, enforceVi: true };
 
   const maxAttempts = 2;
   let lastErrors = [];
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const retryHint = attempt > 1
-      ? `\n\nRETRY: Previous output failed validation: ${lastErrors.join('; ')}. Write LONGER, RICHER Vietnamese text.`
-      : '';
+    const retryHint = attempt > 1 ? buildRetryHint(lastErrors) : '';
 
     const { text } = await generateJsonViaLlm({
       geminiKey: apiKey,
       openrouterKey,
       system: systemInstruction,
       user: userPrompt + retryHint,
-      temperature: attempt > 1 ? 0.85 : 0.9,
+      temperature: attempt > 1 ? 0.75 : 0.88,
       maxOutputTokens: 8192,
       label: 'quiz-content',
     });
 
     const parsed = parseJsonFromLlm(text);
     parsed.category = category;
-    const payload = formatQuizForDb(parsed);
-    lastErrors = validateQuizPayload(payload);
-    if (lastErrors.length === 0) return parsed;
+    let payload = formatQuizForDb(parsed);
+
+    try {
+      payload = await polishQuizVi({ apiKey, openrouterKey, payload });
+    } catch (err) {
+      console.warn('quiz-vi-editor pass failed, using draft', err.message);
+    }
+
+    lastErrors = validateQuizPayload(payload, aiValidateOpts);
+    if (lastErrors.length === 0) {
+      return {
+        title: payload.title,
+        description: payload.description,
+        category: payload.category,
+        questions: payload.questions.map((q) => ({
+          question_text: q.question_text,
+          option_a: q.option_a,
+          option_b: q.option_b,
+        })),
+        results: payload.results.map((r) => ({
+          score: r.result_code,
+          type_name: r.type_name || r.title,
+          description: r.description,
+          traits: r.traits,
+        })),
+      };
+    }
   }
 
-  throw new Error(`Quiz failed richness validation: ${lastErrors.join('; ')}`);
+  throw new Error(`Quiz failed MZ validation: ${lastErrors.join('; ')}`);
 }
 
-export function pickDailyCategory() {
-  const day = Math.floor(Date.now() / 86_400_000);
-  return QUIZ_CATEGORY_IDS[day % QUIZ_CATEGORY_IDS.length];
-}
+export { pickDailyCategoryFromTiers as pickDailyCategory };
 
 const MBTI_12Q_EXTRA = `
 ## MBTI 12Q mode (this request only)
@@ -421,8 +537,8 @@ ${archetype.topicPrompt}
 Result framework:
 ${archetype.resultFramework}
 
-Make it King-bad + Ho Chi Minh localized (Grab, Zalo, Thao Dien, Quận 1, TikTok).
-Rich content standard v5.0: long situational questions (70+ chars), options with (punchlines), result descriptions 320+ chars with 4+ sentences, 3 traits each.`;
+Make it native Gen Z Sài Gòn (Grab, Zalo, Thao Dien, Quận 1, TikTok).
+MZ mode v5.2: situational questions (45–130 chars), Vietnamese punchlines in parens, result descriptions 140–300 chars (2–3 sentences), 3 traits each.`;
 }
 
 export function formatMbtiQuizForDb(geminiData, category) {
@@ -492,10 +608,10 @@ export async function generateArchetypeQuizContent({ apiKey, openrouterKey, arch
   const maxAttempts = archetype.quiz_type === 'mbti_12q' ? 1 : 2;
   let lastErrors = [];
 
+  const aiValidateOpts = { enforceMax: true, enforceVi: true };
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const retryHint = attempt > 1
-      ? `\n\nRETRY: Previous output failed validation: ${lastErrors.join('; ')}. Write LONGER, RICHER Vietnamese text.`
-      : '';
+    const retryHint = attempt > 1 ? buildRetryHint(lastErrors) : '';
 
     const { text } = await generateJsonViaLlm({
       geminiKey: apiKey,
@@ -517,11 +633,21 @@ export async function generateArchetypeQuizContent({ apiKey, openrouterKey, arch
     const formatted = formatQuizForDb(parsed);
     formatted.quiz_type = 'binary_5q';
     formatted.category = category;
-    lastErrors = validateQuizPayload(formatted);
-    if (lastErrors.length === 0) return formatted;
+
+    let polished = formatted;
+    try {
+      polished = await polishQuizVi({ apiKey, openrouterKey, formatted });
+      polished.quiz_type = 'binary_5q';
+      polished.category = category;
+    } catch (err) {
+      console.warn('archetype quiz-vi-editor pass failed', err.message);
+    }
+
+    lastErrors = validateQuizPayload(polished, aiValidateOpts);
+    if (lastErrors.length === 0) return polished;
   }
 
-  throw new Error(`Archetype quiz failed richness validation: ${lastErrors.join('; ')}`);
+  throw new Error(`Archetype quiz failed MZ validation: ${lastErrors.join('; ')}`);
 }
 
 export function validateArchetypePayload(payload, quizType = 'binary_5q') {

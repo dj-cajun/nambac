@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buildFortuneResultTitle } from '../../../shared/fortuneEngine.js';
-import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
+import { getFortuneBrand } from '../../../shared/fortuneMeta.js';
 import './TarotFortuneWheel.css';
 
 const CARD_COUNT = 20;
@@ -48,7 +48,8 @@ function scatteredCoords(index) {
   };
 }
 
-function CardFaces({ frontMode = 'default' }) {
+function CardFaces({ frontMode = 'default', brand: brandProp }) {
+  const brand = brandProp || getFortuneBrand('love');
   return (
     <>
       <div className="tarot-wheel-card-face tarot-wheel-card-back tarot-wheel-card-back--comic">
@@ -82,7 +83,7 @@ function CardFaces({ frontMode = 'default' }) {
                 <div className="tarot-wheel-sk-line tarot-wheel-sk-line--md" />
               </div>
             </div>
-            <div className="tarot-wheel-comic-badge">{FORTUNE_BRAND.cardBadge}</div>
+            <div className="tarot-wheel-comic-badge">{brand.cardBadge}</div>
           </>
         )}
       </div>
@@ -117,7 +118,9 @@ export default function TarotFortuneWheel({
   cardRef,
   onComplete,
   startExpanded = false,
+  brand: brandProp,
 }) {
+  const brand = brandProp || getFortuneBrand(result?.axis);
   const [phase, setPhase] = useState(startExpanded ? 'expanded' : 'awaitingGather');
   const [pickedIndex, setPickedIndex] = useState(null);
 
@@ -218,7 +221,7 @@ export default function TarotFortuneWheel({
         </div>
 
         <div className="fortune-compat-box">
-          <p className="fortune-compat-title">{FORTUNE_BRAND.compatTitle}</p>
+          <p className="fortune-compat-title">{brand.compatTitle}</p>
           <p className="fortune-compat-line fortune-compat-good">
             <strong>Cứu tinh (chỉ số trạng thái hôm nay {result.soulmateIndex}) 🌟:</strong>{' '}
             {result.soulmate.emoji} {result.soulmate.title}
@@ -288,7 +291,7 @@ export default function TarotFortuneWheel({
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            <p className="tarot-wheel-kicker">{FORTUNE_BRAND.kicker}</p>
+            <p className="tarot-wheel-kicker">{brand.kicker}</p>
             <h2 className="tarot-wheel-title">{headerTitle}</h2>
           </motion.div>
         )}
@@ -443,6 +446,7 @@ export default function TarotFortuneWheel({
                     >
                       <CardFaces
                         frontMode={isPicked ? pickedFrontMode(phase) : 'default'}
+                        brand={brand}
                       />
                     </motion.div>
                   </motion.button>

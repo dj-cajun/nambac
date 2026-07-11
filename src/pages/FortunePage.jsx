@@ -13,8 +13,8 @@ import {
   parseFortuneShareParams,
   buildFortuneResultFromShare,
 } from '../../shared/fortuneEngine.js';
-import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
-import { introFortuneIndexFromDate } from '../../shared/featureThumbnails.js';
+import { FORTUNE_AXES, FORTUNE_AXIS_IDS, getFortuneBrand } from '../../shared/fortuneMeta.js';
+import { resolveFortuneZodiacAsset } from '../../shared/zodiacFortune.js';
 import { fetchFortuneSceneImage, fetchFortuneStats, incrementFortuneStat } from '../lib/fortuneApi.js';
 import { trackFortuneViewOnce, trackFortuneLikeOnce, hasFortuneLikedThisSession } from '../lib/fortuneStats.js';
 import {
@@ -35,6 +35,8 @@ import './FortunePage.css';
 import './Result.css';
 
 const NAME_KEY = 'nambac_fortune_name';
+const DOB_KEY = 'nambac_fortune_dob';
+const AXIS_KEY = 'nambac_fortune_axis';
 
 function addDays(dateLabel, days) {
   const d = new Date(`${dateLabel}T00:00:00`);
@@ -66,6 +68,22 @@ export default function FortunePage({ dayOffset = 0 }) {
       return '';
     }
   });
+  const [dob, setDob] = useState(() => {
+    try {
+      return localStorage.getItem(DOB_KEY) || '';
+    } catch {
+      return '';
+    }
+  });
+  const [axis, setAxis] = useState(() => {
+    if (friendShare?.axis) return friendShare.axis;
+    try {
+      return localStorage.getItem(AXIS_KEY) || 'love';
+    } catch {
+      return 'love';
+    }
+  });
+  const brand = getFortuneBrand(axis);
   const [phase, setPhase] = useState(sharedResult ? 'done' : 'form'); // form | ritual | done
   const [showActions, setShowActions] = useState(!!sharedResult);
   const [result, setResult] = useState(sharedResult);
@@ -89,12 +107,14 @@ export default function FortunePage({ dayOffset = 0 }) {
     if (!trimmed) return;
     try {
       localStorage.setItem(NAME_KEY, trimmed);
+      if (dob) localStorage.setItem(DOB_KEY, dob);
+      localStorage.setItem(AXIS_KEY, axis);
     } catch {
       /* private mode */
     }
-    const calc = calculateTodayFortune(trimmed, baseDateObj);
+    const calc = calculateTodayFortune(trimmed, baseDateObj, { dob, axis });
     setResult(calc);
-    trackFortuneReveal('love');
+    trackFortuneReveal(axis);
     setImageSrc('');
     setImageError(false);
     setShowActions(false);
@@ -150,13 +170,11 @@ export default function FortunePage({ dayOffset = 0 }) {
   useEffect(() => {
     const today = getDateStr();
     const tomorrow = addDays(today, 1);
-    const todayIdx = introFortuneIndexFromDate(today);
-    const tomorrowIdx = introFortuneIndexFromDate(tomorrow);
     let cancelled = false;
 
     Promise.allSettled([
-      fetchFortuneSceneImage({ fortuneIndex: todayIdx, dateLabel: today }),
-      fetchFortuneSceneImage({ fortuneIndex: tomorrowIdx, dateLabel: tomorrow }),
+      fetchFortuneSceneImage({ fortuneIndex: 0, dateLabel: today, dob, axis }),
+      fetchFortuneSceneImage({ fortuneIndex: 0, dateLabel: tomorrow, dob, axis }),
     ]).then(([todayRes, tomorrowRes]) => {
       if (cancelled) return;
       if (todayRes.status === 'fulfilled') setIntroTodayImage(todayRes.value.src);
@@ -166,7 +184,7 @@ export default function FortunePage({ dayOffset = 0 }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [dob, axis]);
 
   useEffect(() => {
     if ((phase !== 'ritual' && phase !== 'done') || !result) return undefined;
@@ -178,6 +196,8 @@ export default function FortunePage({ dayOffset = 0 }) {
     fetchFortuneSceneImage({
       fortuneIndex: result.fortuneIndex,
       dateLabel: result.dateLabel,
+      dob: result.dob || dob,
+      axis: result.axis || axis,
     })
       .then(({ src }) => {
         if (!cancelled) setImageSrc(src);
@@ -192,7 +212,7 @@ export default function FortunePage({ dayOffset = 0 }) {
     return () => {
       cancelled = true;
     };
-  }, [phase, result]);
+  }, [phase, result, dob, axis]);
 
   const handleDownload = async () => {
     if (!cardRef.current) return;
@@ -248,10 +268,17 @@ export default function FortunePage({ dayOffset = 0 }) {
     ? buildFortuneResultTitle({ name: result.name, fortune, dateLabel: result.dateLabel })
     : null;
   const ogImageUrl = result
-    ? buildFortuneOgImageUrl(result.name, result.fortuneIndex, result.dateLabel)
+    ? buildFortuneOgImageUrl(
+        result.name,
+        result.fortuneIndex,
+        result.dateLabel,
+        undefined,
+        result.dob || dob,
+        result.axis || axis,
+      )
     : null;
   const sharePageUrl = result
-    ? buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)
+    ? buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel, undefined, result.axis || axis)
     : null;
 
   return (
@@ -259,21 +286,21 @@ export default function FortunePage({ dayOffset = 0 }) {
       <Helmet>
         <title>
           {resultTitle
-            ? `${resultTitle} — ${FORTUNE_BRAND.label}`
-            : `${FORTUNE_BRAND.labelFull} ${isTomorrow ? 'ngày mai' : 'hôm nay'} ${FORTUNE_BRAND.emoji} — nambac.xyz`}
+            ? `${resultTitle} — ${brand.label}`
+            : `${brand.labelFull} ${isTomorrow ? 'ngày mai' : 'hôm nay'} ${brand.emoji} — nambac.xyz`}
         </title>
         <meta
           name="description"
           content={
             fortune
               ? `${fortune.body.slice(0, 120)}…`
-              : FORTUNE_BRAND.metaDefault
+              : brand.metaDefault
           }
         />
         {result && ogImageUrl && (
           <>
             <meta property="og:type" content="website" />
-            <meta property="og:title" content={resultTitle ? `${resultTitle} — nambac.xyz` : `${FORTUNE_BRAND.labelFull} — nambac.xyz`} />
+            <meta property="og:title" content={resultTitle ? `${resultTitle} — nambac.xyz` : `${brand.labelFull} — nambac.xyz`} />
             <meta property="og:description" content={fortune?.body.slice(0, 160)} />
             <meta property="og:image" content={ogImageUrl} />
             <meta property="og:image:width" content="1200" />
@@ -289,17 +316,17 @@ export default function FortunePage({ dayOffset = 0 }) {
         <>
           <header className="fortune-hero">
             <p className="fortune-date-badge">📅 {dayLabel} · {introDateLabel}</p>
-            <h1>{FORTUNE_BRAND.labelFull} {isTomorrow ? 'ngày mai' : 'hôm nay'} {FORTUNE_BRAND.emoji}</h1>
-            <p>{isTomorrow ? 'Xem trước vận tình yêu ngày mai — chuẩn bị tinh thần nhé!' : FORTUNE_BRAND.heroLine}</p>
+            <h1>{brand.labelFull} {isTomorrow ? 'ngày mai' : 'hôm nay'} {brand.emoji}</h1>
+            <p>{isTomorrow ? `Xem trước ${brand.label.toLowerCase()} ngày mai — chuẩn bị tinh thần nhé!` : brand.heroLine}</p>
           </header>
 
-          <section className="fortune-intro-grid fortune-intro-grid--single" aria-label={`Tử vi tình yêu ${dayLabel.toLowerCase()}`}>
+          <section className="fortune-intro-grid fortune-intro-grid--single" aria-label={`${brand.labelFull} ${dayLabel.toLowerCase()}`}>
             <article className="fortune-intro-card fortune-intro-card--single">
               <p className="fortune-intro-card-kicker">{dayLabel}</p>
               {(isTomorrow ? introTomorrowImage : introTodayImage) ? (
                 <img
                   src={isTomorrow ? introTomorrowImage : introTodayImage}
-                  alt={`Tử vi tình yêu ${dayLabel.toLowerCase()}`}
+                  alt={`${brand.labelFull} ${dayLabel.toLowerCase()}`}
                   className="fortune-intro-card-image"
                 />
               ) : (
@@ -324,6 +351,23 @@ export default function FortunePage({ dayOffset = 0 }) {
           )}
 
           <form className="fortune-form" onSubmit={handleReveal}>
+            <div className="fortune-axis-row" role="tablist" aria-label="Chọn loại tử vi">
+              {FORTUNE_AXIS_IDS.map((id) => {
+                const item = FORTUNE_AXES[id];
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={axis === id}
+                    className={`fortune-axis-chip${axis === id ? ' is-active' : ''}`}
+                    onClick={() => setAxis(id)}
+                  >
+                    {item.emoji} {item.label}
+                  </button>
+                );
+              })}
+            </div>
             <input
               className="fortune-name-input"
               type="text"
@@ -333,15 +377,29 @@ export default function FortunePage({ dayOffset = 0 }) {
               onChange={(e) => setName(e.target.value)}
               autoComplete="nickname"
             />
-            <button type="submit" className="fortune-submit-btn" disabled={!name.trim()}>
-              {FORTUNE_BRAND.submitCta}
+            <input
+              className="fortune-name-input fortune-dob-input"
+              type="date"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              aria-label="Ngày sinh"
+              max={getDateStr()}
+            />
+            <button type="submit" className="fortune-submit-btn" disabled={!name.trim() || !dob}>
+              {brand.submitCta}
             </button>
           </form>
 
           <p className="fortune-hint">
+            {dob && (
+              <>
+                Ảnh nền: <strong>{resolveFortuneZodiacAsset({ dob, axis }).label}</strong>
+                {' · '}
+              </>
+            )}
             {isTomorrow
-              ? 'Kết quả cố định cho ngày mai với cùng tên. Không lưu máy chủ, 0 đồng.'
-              : 'Kết quả cố định cả ngày với cùng tên — mai quay lại sẽ khác. Không lưu máy chủ, 0 đồng.'}
+              ? 'Kết quả cố định cho ngày mai với cùng tên + ngày sinh. Không lưu máy chủ, 0 đồng.'
+              : 'Kết quả cố định cả ngày với cùng tên + ngày sinh — mai quay lại sẽ khác. Không lưu máy chủ, 0 đồng.'}
           </p>
         </>
       )}
@@ -363,6 +421,7 @@ export default function FortunePage({ dayOffset = 0 }) {
           fortune={result.fortune}
           userName={result.name}
           result={result}
+          brand={getFortuneBrand(result.axis || axis)}
           imageSrc={imageSrc}
           imageLoading={imageLoading}
           imageError={imageError}
@@ -389,9 +448,9 @@ export default function FortunePage({ dayOffset = 0 }) {
               {result && (
                 <ZaloShareButton
                   fillParent
-                  url={buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel)}
+                  url={buildFortuneShareUrl(result.name, result.fortuneIndex, result.dateLabel, undefined, result.axis || axis)}
                   label="TAG 3 BẠN"
-                  title="Tử vi tình yêu — nambac"
+                  title={`${brand.labelFull} — nambac`}
                   text="Xem tử vi này trên nambac — tag 3 bạn ngay!"
                   onShared={handleZaloShare}
                   onToast={showToast}

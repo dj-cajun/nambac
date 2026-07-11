@@ -1,6 +1,7 @@
 import { composeFortuneOgImage } from '../composeOgImage.js';
-import { getDateStr, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
+import { getDateStr, isValidFortuneDateLabel, normalizeFortuneDob } from '../../../shared/fortuneEngine.js';
 import { getFortuneByIndex, FORTUNE_COUNT } from '../../../shared/fortuneData.js';
+import { normalizeFortuneAxis } from '../../../shared/fortuneMeta.js';
 import { resolveFortuneSceneForOg } from '../fortuneImageService.js';
 
 export default async function handler(req, res) {
@@ -18,10 +19,13 @@ export default async function handler(req, res) {
       return isValidFortuneDateLabel(raw) ? raw : getDateStr();
     })();
 
+    const dob = normalizeFortuneDob(req.query?.dob);
+    const axis = normalizeFortuneAxis(req.query?.axis);
+
     const idx = ((fortuneIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
     const fortune = getFortuneByIndex(idx);
     const host = req.headers['x-forwarded-host'] || req.headers.host;
-    const scene = await resolveFortuneSceneForOg({ fortuneIndex: idx, dateStr, host });
+    const scene = await resolveFortuneSceneForOg({ fortuneIndex: idx, dateStr, host, dob, axis });
 
     const buffer = await composeFortuneOgImage({
       imageUrl: scene.image_url,

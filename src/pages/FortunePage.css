@@ -117,6 +117,33 @@
   box-shadow: 3px 3px 0 #1e293b;
 }
 
+.fortune-axis-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.fortune-axis-chip {
+  padding: 10px 8px;
+  border: 2px solid #1e293b;
+  border-radius: 0.85rem;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #1e293b;
+}
+
+.fortune-axis-chip.is-active {
+  background: linear-gradient(135deg, #fce7f3, #ede9fe);
+  color: #7c3aed;
+}
+
+.fortune-dob-input {
+  font-size: 16px;
+}
+
 .fortune-form {
   display: flex;
   flex-direction: column;
