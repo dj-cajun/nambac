@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buildFortuneResultTitle } from '../../../shared/fortuneEngine.js';
 import { getFortuneBrand } from '../../../shared/fortuneMeta.js';
+import { resolveFortuneZodiacAsset } from '../../../shared/zodiacFortune.js';
 import './TarotFortuneWheel.css';
 
 const CARD_COUNT = 20;
@@ -121,6 +122,14 @@ export default function TarotFortuneWheel({
   brand: brandProp,
 }) {
   const brand = brandProp || getFortuneBrand(result?.axis);
+  const zodiacAsset = result
+    ? resolveFortuneZodiacAsset({
+        dob: result.dob,
+        axis: result.axis,
+        fortuneIndex: result.fortuneIndex,
+        dateStr: result.dateLabel,
+      })
+    : null;
   const [phase, setPhase] = useState(startExpanded ? 'expanded' : 'awaitingGather');
   const [pickedIndex, setPickedIndex] = useState(null);
 
@@ -211,6 +220,11 @@ export default function TarotFortuneWheel({
       </div>
 
       <div className="result-text-panel">
+        {zodiacAsset && (
+          <p className="fortune-zodiac-badge" aria-label="Ảnh nền theo cung hoặc tuổi">
+            {zodiacAsset.kind === 'cn' ? 'Con giáp' : 'Cung hoàng đạo'}: <strong>{zodiacAsset.label}</strong>
+          </p>
+        )}
         <div className="result-title-badge">
           {resultHeadline}
         </div>

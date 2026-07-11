@@ -14,7 +14,7 @@ export function buildFeatureFeedItems({ fortuneStats, featureStats, featureThumb
     {
       kind: 'fortune',
       id: 'fortune-today',
-      title: `${FORTUNE_BRAND.emoji} Tình yêu hôm nay`,
+      title: `${FORTUNE_BRAND.emoji} Tử vi hôm nay`,
       image_url: featureThumbs.fortuneToday.src,
       imageSeed: featureThumbs.fortuneToday.seed,
       to: '/fortune',
@@ -27,7 +27,7 @@ export function buildFeatureFeedItems({ fortuneStats, featureStats, featureThumb
     {
       kind: 'fortune',
       id: 'fortune-tomorrow',
-      title: '🔮 Tình yêu ngày mai',
+      title: '🔮 Tử vi ngày mai',
       image_url: featureThumbs.fortuneTomorrow.src,
       imageSeed: featureThumbs.fortuneTomorrow.seed,
       to: '/fortune/tomorrow',
