@@ -25,6 +25,8 @@ export default defineConfig({
             const decodedName = decodeURIComponent(name);
             let q = `name=${encodeURIComponent(decodedName)}&idx=${idx}`;
             if (date) q += `&date=${encodeURIComponent(date)}`;
+            const axis = new URL(req.url, 'http://localhost').searchParams.get('axis');
+            if (axis) q += `&axis=${encodeURIComponent(axis)}`;
             req.url = `/api/fortune-share?${q}`;
             return next();
           }

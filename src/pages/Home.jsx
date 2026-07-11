@@ -42,6 +42,7 @@ function TodayThumbCard({
   imageSrc,
   imageSeed,
   label,
+  hint,
   emoji,
 }) {
   const content = (
@@ -54,7 +55,10 @@ function TodayThumbCard({
       ) : (
         <span className="home-today-emoji">{emoji}</span>
       )}
-      <span className="home-today-label">{label}</span>
+      <span className="home-today-text">
+        <span className="home-today-label">{label}</span>
+        {hint ? <span className="home-today-hint">{hint}</span> : null}
+      </span>
     </>
   );
 
@@ -291,6 +295,7 @@ export default function Home() {
                 imageSrc={todayQuiz.image_url}
                 imageSeed={todayQuiz.id}
                 label="Quiz"
+                hint="5 câu AI"
                 emoji="🎯"
               />
             )}
@@ -301,6 +306,7 @@ export default function Home() {
               imageSrc={featureThumbs.fortuneToday.src}
               imageSeed={featureThumbs.fortuneToday.seed}
               label="Tử vi"
+              hint="Tên + ngày sinh"
               emoji={getFortuneBrand('general').emoji}
             />
             <TodayThumbCard
@@ -310,6 +316,7 @@ export default function Home() {
               imageSrc={featureThumbs.balance?.src}
               imageSeed={featureThumbs.balance?.seed || todayBalance.id}
               label="Cân não"
+              hint="Chọn A hay B"
               emoji={todayBalance.emoji || '⚖️'}
             />
             <TodayThumbCard
@@ -319,6 +326,7 @@ export default function Home() {
               imageSrc={featureThumbs.roast.src}
               imageSeed={featureThumbs.roast.seed}
               label="Bóc phốt"
+              hint="Gõ tên bạn"
               emoji="💳"
             />
             <TodayThumbCard
@@ -328,6 +336,7 @@ export default function Home() {
               imageSrc={featureThumbs.lienquan?.src}
               imageSeed={featureThumbs.lienquan?.seed || 'lienquan'}
               label="Liên Quân"
+              hint="Tướng khớp tên"
               emoji="⚔️"
             />
             <TodayThumbCard
@@ -337,6 +346,7 @@ export default function Home() {
               imageSrc={featureThumbs.sbti?.src}
               imageSeed={featureThumbs.sbti?.seed || 'sbti'}
               label="VBTI"
+              hint="27 type + cung"
               emoji="🎭"
             />
           </div>
@@ -367,7 +377,8 @@ export default function Home() {
           </div>
 
           <Link to="/brain" className="home-today-more-link">
-            Não bạn 🧠 · thêm trò chơi →
+            <span className="home-today-more-title">Não bạn 🧠</span>
+            <span className="home-today-more-hint">Gõ tên → meme não · thêm trò chơi →</span>
           </Link>
         </div>
       </section>

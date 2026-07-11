@@ -66,6 +66,7 @@ async function main() {
     ['OG image (result)', `${base}/api/og-image?quizId=${quizId}&score=${score}`],
     ['Fortune OG HTML', `${base}/share-fortune/Minh/2/2026-07-07`],
     ['Fortune OG HTML (legacy, no date)', `${base}/share-fortune/Minh/2`],
+    ['Fortune OG HTML (money axis)', `${base}/share-fortune/Minh/2/2026-07-07?axis=money`],
     ['Fortune OG image', `${base}/api/fortune-og?name=Minh&idx=2&date=2026-07-07`],
   ]) {
     try {

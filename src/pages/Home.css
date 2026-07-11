@@ -156,11 +156,24 @@
     padding: 18px 0 8px;
 }
 
+.home-today-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 2px 4px;
+}
+
 .home-today-label {
     font-size: 13px;
     font-weight: 900;
     line-height: 1.2;
-    padding: 0 2px 4px;
+}
+
+.home-today-hint {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #64748b;
 }
 
 .home-today-start-cta {
@@ -254,13 +267,27 @@
 }
 
 .home-today-more-link {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
     text-align: center;
     font-size: 13px;
     font-weight: 800;
     color: #64748b;
     text-decoration: none;
     padding: 2px 0 0;
+}
+
+.home-today-more-title {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.home-today-more-hint {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
 }
 
 .home-today-more-link:active {
