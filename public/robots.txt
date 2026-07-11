@@ -4,3 +4,4 @@ Disallow: /admin
 Disallow: /api/
 
 Sitemap: https://www.nambac.xyz/sitemap.xml
+Sitemap: https://www.nambac.xyz/sitemaps/all.xml

@@ -9,6 +9,23 @@
   },
   "headers": [
     {
+      "source": "/sitemaps/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
       "source": "/sitemap.xml",
       "headers": [
         {
@@ -140,7 +157,7 @@
       "destination": "/api/handler?path=$1"
     },
     {
-      "source": "/((?!api/|sitemap\\.xml|robots\\.txt|.*\\..*).*)",
+      "source": "/((?!api/|sitemap\\.xml|sitemaps/|robots\\.txt|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]
