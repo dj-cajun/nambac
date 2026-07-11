@@ -1,4 +1,5 @@
 import { FORTUNE_COUNT, getFortuneByIndex } from './fortuneData.js';
+import { formatFortuneForAxis } from './fortuneAxisFormat.js';
 import { normalizeFortuneAxis } from './fortuneMeta.js';
 
 /** YYYY-MM-DD in local timezone */
@@ -35,7 +36,7 @@ export function calculateTodayFortune(name = '', date = new Date(), options = {}
   }
 
   const fortuneIndex = Math.abs(hash) % FORTUNE_COUNT;
-  const fortune = getFortuneByIndex(fortuneIndex);
+  const fortune = formatFortuneForAxis(getFortuneByIndex(fortuneIndex), axis);
   const soulmateIndex =
     Number.isInteger(fortune?.soulmateIndex)
       ? ((fortune.soulmateIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT
@@ -44,8 +45,8 @@ export function calculateTodayFortune(name = '', date = new Date(), options = {}
     Number.isInteger(fortune?.villainIndex)
       ? ((fortune.villainIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT
       : (fortuneIndex + 11) % FORTUNE_COUNT;
-  const soulmate = getFortuneByIndex(soulmateIndex);
-  const rival = getFortuneByIndex(rivalIndex);
+  const soulmate = formatFortuneForAxis(getFortuneByIndex(soulmateIndex), axis);
+  const rival = formatFortuneForAxis(getFortuneByIndex(rivalIndex), axis);
 
   return {
     fortuneIndex,
@@ -65,7 +66,8 @@ export function calculateTodayFortune(name = '', date = new Date(), options = {}
 export function buildFortuneResultFromShare(share) {
   if (!share?.friendName) return null;
   const fortuneIndex = share.fortuneIndex;
-  const fortune = share.fortune || getFortuneByIndex(fortuneIndex);
+  const axis = normalizeFortuneAxis(share.axis);
+  const fortune = formatFortuneForAxis(share.fortune || getFortuneByIndex(fortuneIndex), axis);
   const dateLabel = share.dateLabel || getDateStr();
   const soulmateIndex = Number.isInteger(fortune?.soulmateIndex)
     ? ((fortune.soulmateIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT
@@ -79,9 +81,11 @@ export function buildFortuneResultFromShare(share) {
     rivalIndex,
     dateLabel,
     fortune,
-    soulmate: getFortuneByIndex(soulmateIndex),
-    rival: getFortuneByIndex(rivalIndex),
+    soulmate: formatFortuneForAxis(getFortuneByIndex(soulmateIndex), axis),
+    rival: formatFortuneForAxis(getFortuneByIndex(rivalIndex), axis),
     name: share.friendName,
+    axis,
+    dob: share.dob || '',
   };
 }
 

@@ -1,6 +1,7 @@
 import { FORTUNE_COUNT, getFortuneByIndex } from '../../../shared/fortuneData.js';
 import { buildFortuneResultTitle, getDateStr, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
-import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
+import { formatFortuneForAxis } from '../../../shared/fortuneAxisFormat.js';
+import { getFortuneBrand, normalizeFortuneAxis } from '../../../shared/fortuneMeta.js';
 import { buildFortuneOgImageApiUrl } from '../composeOgImage.js';
 import { isBot, ogHtml } from './og.js';
 
@@ -17,31 +18,35 @@ export default async function handler(req, res) {
     const rawDate = String(req.query?.date || '').trim();
     const hasExplicitDate = isValidFortuneDateLabel(rawDate);
     const dateStr = hasExplicitDate ? rawDate : getDateStr();
+    const axis = normalizeFortuneAxis(req.query?.axis);
 
     if (!name || Number.isNaN(fortuneIndex)) {
       return res.redirect(302, `${currentBase}/fortune`);
     }
 
     const idx = ((fortuneIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
-    const fortune = getFortuneByIndex(idx);
+    const fortune = formatFortuneForAxis(getFortuneByIndex(idx), axis);
+    const brand = getFortuneBrand(axis);
     const encodedName = encodeURIComponent(name);
+    const axisQ = axis !== 'love' ? `?axis=${axis}` : '';
     const fullShareUrl = hasExplicitDate
-      ? `${currentBase}/share-fortune/${encodedName}/${idx}/${dateStr}`
-      : `${currentBase}/share-fortune/${encodedName}/${idx}`;
+      ? `${currentBase}/share-fortune/${encodedName}/${idx}/${dateStr}${axisQ}`
+      : `${currentBase}/share-fortune/${encodedName}/${idx}${axisQ}`;
     const fortuneQuery = new URLSearchParams({ name, idx: String(idx), date: dateStr });
+    if (axis !== 'love') fortuneQuery.set('axis', axis);
     const redirectUrl = `${currentBase}/fortune?${fortuneQuery}`;
 
     if (!isBot(ua)) {
       return res.redirect(302, redirectUrl);
     }
 
-    const title = `${buildFortuneResultTitle({ name, fortune, dateLabel: dateStr })} — ${FORTUNE_BRAND.label}`;
+    const title = `${buildFortuneResultTitle({ name, fortune, dateLabel: dateStr })} — ${brand.label}`;
     const description = `${fortune.body.slice(0, 160)}…`;
 
     const html = ogHtml({
       title,
       description,
-      image: buildFortuneOgImageApiUrl(host, { name, idx, date: dateStr }),
+      image: buildFortuneOgImageApiUrl(host, { name, idx, date: dateStr, axis }),
       url: fullShareUrl,
       redirectUrl,
     });

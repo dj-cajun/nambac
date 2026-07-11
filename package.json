@@ -29,6 +29,7 @@
     "audit:quizzes": "node scripts/ops/audit_quizzes.mjs",
     "audit:quizzes:detail": "node scripts/ops/audit_quizzes_detail.mjs",
     "daily:quiz": "node scripts/ops/run_daily_quiz.mjs",
+    "fortune:axis-batch": "node scripts/ops/run_fortune_axis_batch.mjs",
     "gen:quizzes": "node scripts/ops/batch_generate_quizzes.mjs",
     "seed:quizzes": "node scripts/ops/seed_handcrafted_quizzes.mjs",
     "seed:lienquan-quiz": "node scripts/ops/seed_lienquan_quiz.mjs",

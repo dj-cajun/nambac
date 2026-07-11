@@ -654,16 +654,17 @@ export function buildBalanceOgImageApiUrl(host, { id, choice }) {
 }
 
 /** Fortune result OG — same handler routing as quiz og-image */
-export function buildFortuneOgImageApiUrl(host, { name, idx, date }) {
+export function buildFortuneOgImageApiUrl(host, { name, idx, date, axis = 'love' }) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const query = new URLSearchParams({
     name: String(name).trim(),
     idx: String(idx),
     date: String(date),
   });
+  if (axis && axis !== 'love') query.set('axis', axis);
   const path = host.includes('localhost')
     ? `/api/fortune-og?${query}`
-    : `/api/handler?${new URLSearchParams({ path: 'fortune-og', name: String(name).trim(), idx: String(idx), date: String(date) })}`;
+    : `/api/handler?${new URLSearchParams({ path: 'fortune-og', name: String(name).trim(), idx: String(idx), date: String(date), ...(axis && axis !== 'love' ? { axis } : {}) })}`;
   return `${protocol}://${host}${path}`;
 }
 

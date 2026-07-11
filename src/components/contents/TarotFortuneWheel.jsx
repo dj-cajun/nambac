@@ -237,11 +237,11 @@ export default function TarotFortuneWheel({
         <div className="fortune-compat-box">
           <p className="fortune-compat-title">{brand.compatTitle}</p>
           <p className="fortune-compat-line fortune-compat-good">
-            <strong>Cứu tinh (chỉ số trạng thái hôm nay {result.soulmateIndex}) 🌟:</strong>{' '}
+            <strong>{fortune.compatGoodLabel || 'Cứu tinh'} (chỉ số trạng thái hôm nay {result.soulmateIndex}) 🌟:</strong>{' '}
             {result.soulmate.emoji} {result.soulmate.title}
           </p>
           <p className="fortune-compat-line fortune-compat-bad">
-            <strong>Báo thủ (chỉ số trạng thái hôm nay {result.rivalIndex}) ⚠️:</strong>{' '}
+            <strong>{fortune.compatBadLabel || 'Báo thủ'} (chỉ số trạng thái hôm nay {result.rivalIndex}) ⚠️:</strong>{' '}
             {result.rival.emoji} {result.rival.title}
           </p>
           <p className="fortune-compat-cta">
