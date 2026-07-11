@@ -7,7 +7,6 @@ import { useDrawer } from './DrawerContext';
 import { fetchQuizzes } from '../../lib/quizApi';
 import { QUIZ_CATEGORIES } from '../../constants/categories';
 import { pickDailyQuiz, pickDailyBalanceQuestion } from '../../../shared/dailyPicks.js';
-import { FORTUNE_BRAND } from '../../../shared/fortuneMeta.js';
 import { LQ_UI } from '../../../shared/lienquan/uiText.js';
 import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { scrollToTop } from '../../lib/scrollToTop';
@@ -27,7 +26,7 @@ function buildTodayCategoryGroup(todayQuiz) {
 function buildFortuneGroup() {
   return {
     id: 'fortune',
-    label: `${FORTUNE_BRAND.emoji} ${FORTUNE_BRAND.label}`,
+    label: '✨ Tử vi',
     variant: 'fortune',
     links: [
       { to: '/fortune', label: 'Hôm nay', exact: true },
@@ -42,7 +41,7 @@ function buildMiniAppsGroup(todayBalance) {
     label: '🎮 Chơi nhanh',
     variant: 'miniapps',
     links: [
-      { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} Balance Quiz` },
+      { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} Cân não` },
       { to: '/roast-card', label: '💳 Bóc phốt' },
       { to: '/brain', label: '🧠 Não bạn' },
       { to: '/lienquan', label: `⚔️ ${LQ_UI.drawerLabel}` },

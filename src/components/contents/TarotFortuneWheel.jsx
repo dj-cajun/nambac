@@ -74,7 +74,7 @@ function CardFaces({ frontMode = 'default', brand: brandProp }) {
         ) : (
           <>
             <div className="tarot-wheel-comic-front-head">
-              <span>BÀI TỬ VI TÌNH YÊU</span>
+              <span>BÀI TỬ VI</span>
               <span className="tarot-wheel-comic-year">#2026</span>
             </div>
             <div className="tarot-wheel-comic-front-body">

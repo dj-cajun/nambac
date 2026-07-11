@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { scrollToTop } from '../lib/scrollToTop';
 import { fetchFortuneStats } from '../lib/fortuneApi';
 import { fetchAllFeatureStats } from '../lib/featureStats';
-import { FORTUNE_BRAND } from '../../shared/fortuneMeta.js';
+import { getFortuneBrand } from '../../shared/fortuneMeta.js';
 import './Home.css';
 import './MiniApp.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
@@ -301,7 +301,7 @@ export default function Home() {
               imageSrc={featureThumbs.fortuneToday.src}
               imageSeed={featureThumbs.fortuneToday.seed}
               label="Tử vi"
-              emoji={FORTUNE_BRAND.emoji}
+              emoji={getFortuneBrand('general').emoji}
             />
             <TodayThumbCard
               className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
@@ -309,7 +309,7 @@ export default function Home() {
               to={`/balance/${todayBalance.id}`}
               imageSrc={featureThumbs.balance?.src}
               imageSeed={featureThumbs.balance?.seed || todayBalance.id}
-              label="Balance Quiz"
+              label="Cân não"
               emoji={todayBalance.emoji || '⚖️'}
             />
             <TodayThumbCard

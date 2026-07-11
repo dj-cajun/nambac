@@ -3,8 +3,9 @@ import { ROAST_TRAITS } from './roastData.js';
 import { BRAIN_RESULTS } from './brainData.js';
 import { getIctDateString, hashString, pickDailyBalanceQuestion } from './dailyPicks.js';
 import { getDateStr } from './fortuneEngine.js';
+import { pickWesternZodiacForDate } from './zodiacFortune.js';
 
-/** Intro card index for a date — same logic as FortunePage intro preview */
+/** @deprecated use pickWesternZodiacForDate — kept for scripts referencing idx */
 export function introFortuneIndexFromDate(dateLabel) {
   let hash = 2166136261;
   for (let i = 0; i < dateLabel.length; i += 1) {
@@ -18,9 +19,10 @@ export function normalizeFortuneIndex(fortuneIndex) {
   return ((Number(fortuneIndex) % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
 }
 
-export function getFortuneThumbnailPath(dateLabel, fortuneIndex) {
-  const idx = normalizeFortuneIndex(fortuneIndex);
-  return `/images/fortune_${dateLabel}_idx${idx}.webp`;
+/** Daily rotating western zodiac thumb — static pool, no per-day AI */
+export function getFortuneThumbnailPath(dateLabel) {
+  const sign = pickWesternZodiacForDate(dateLabel);
+  return `/images/zodiac_west_${sign.id}.webp`;
 }
 
 export function addDaysToDateLabel(dateLabel, days) {
@@ -65,24 +67,26 @@ export function getSbtiThumbnailPath() {
 export function getHomeFeatureThumbPlan(date = new Date()) {
   const today = getDateStr(date);
   const tomorrow = addDaysToDateLabel(today, 1);
-  const todayIdx = introFortuneIndexFromDate(today);
-  const tomorrowIdx = introFortuneIndexFromDate(tomorrow);
+  const todaySign = pickWesternZodiacForDate(today);
+  const tomorrowSign = pickWesternZodiacForDate(tomorrow);
   const roastTrait = pickDailyRoastTrait(date);
   const brainResult = pickDailyBrainResult(date);
   const dailyBalance = pickDailyBalanceQuestion(date);
 
   return {
     fortuneToday: {
-      src: getFortuneThumbnailPath(today, todayIdx),
-      seed: `fortune-${today}-${todayIdx}`,
-      fortuneIndex: todayIdx,
+      src: getFortuneThumbnailPath(today),
+      seed: `zodiac-west-${today}-${todaySign.id}`,
+      fortuneIndex: 0,
       dateLabel: today,
+      zodiacId: todaySign.id,
     },
     fortuneTomorrow: {
-      src: getFortuneThumbnailPath(tomorrow, tomorrowIdx),
-      seed: `fortune-${tomorrow}-${tomorrowIdx}`,
-      fortuneIndex: tomorrowIdx,
+      src: getFortuneThumbnailPath(tomorrow),
+      seed: `zodiac-west-${tomorrow}-${tomorrowSign.id}`,
+      fortuneIndex: 0,
       dateLabel: tomorrow,
+      zodiacId: tomorrowSign.id,
     },
     roast: {
       src: getRoastThumbnailPath(roastTrait.id),
