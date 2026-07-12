@@ -1,0 +1,178 @@
+nambac — Quiz Enhancer / Formatter (v5.1 live)
+내보낸 시각: 2026-07-10T06:33:39.247Z
+
+근본 원인 (CTA 중복): shared/handcraftedQuizzes.js → padDesc()
+  - 예전: while (len < 320) s += DESC_PAD  → 멱등성 없음, 두 번 붙을 수 있음
+  - 지금: marker 있으면 return, 없으면 최대 1회 append
+
+fix_broken / batch_generate / daily: CTA append 없음 — formatQuizForDb + validate만 사용
+
+════════════════════════════════════════
+stripPipeVariants
+════════════════════════════════════════
+function stripPipeVariants(text) {
+  if (!text) return text;
+  const s = String(text).trim();
+  return s.includes(' | ') ? s.split(' | ')[0].trim() : s;
+}
+
+════════════════════════════════════════
+stripDuplicateSentences
+════════════════════════════════════════
+function stripDuplicateSentences(text) {
+  if (!text) return text;
+  let s = String(text).trim();
+
+  // Handcrafted padDesc CTA — collapse exact repeated blocks first
+  const marker = 'Kết quả mang tính giải trí Gen Z Sài Gòn';
+  if (s.split(marker).length - 1 >= 2) {
+    const second = s.indexOf(marker, s.indexOf(marker) + marker.length);
+    if (second !== -1) s = s.slice(0, second).trim();
+  }
+
+  const sentences = s.match(/[^.!?…]+[.!?…]+(\s|$)|[^.!?…]+$/g) || [s];
+  const seen = new Set();
+  const deduped = [];
+  for (const raw of sentences) {
+    const part = raw.trim();
+    const key = part.toLowerCase().replace(/\s+/g, ' ');
+    if (!key) continue;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(part);
+  }
+  return deduped.join(' ').trim();
+}
+
+════════════════════════════════════════
+hasDuplicateSentence
+════════════════════════════════════════
+function hasDuplicateSentence(text) {
+  const sentences = (text || '').match(/[^.!?…]+[.!?…]+/g) || [];
+  const seen = new Set();
+  for (const raw of sentences) {
+    const key = raw.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!key) continue;
+    if (seen.has(key)) return true;
+    seen.add(key);
+  }
+  return false;
+}
+
+════════════════════════════════════════
+formatQuizForDb
+════════════════════════════════════════
+export function formatQuizForDb(geminiData) {
+  const results = Array.from({ length: 8 }, (_, i) => {
+    const found = (geminiData.results || []).find(
+      (r) => (r.score ?? r.result_code) === i,
+    ) || geminiData.results?.[i];
+    return {
+      result_code: i,
+      title: stripPipeVariants(found?.type_name || found?.title || `Level ${i}`),
+      type_name: stripPipeVariants(found?.type_name || found?.title || null),
+      description: stripDuplicateSentences(
+        stripPipeVariants(found?.description || ''),
+      ),
+      traits: Array.isArray(found?.traits) ? found.traits : [],
+    };
+  });
+
+  const rawQuestions = (geminiData.questions || []).slice(0, 5);
+  const questions = rawQuestions.map((q, i) => {
+    const [score_a, score_b] = BINARY_5Q_SCORES[i] || [0, 0];
+    const option_a = stripPipeVariants(q.option_a?.trim() || '');
+    const option_b = stripPipeVariants(q.option_b?.trim() || '');
+
+    if (isPlaceholderOption(option_a) || isPlaceholderOption(option_b)) {
+      console.warn(`formatQuizForDb: Q${i + 1} has placeholder options — needs manual fix or regeneration`);
+    }
+
+    return {
+      order_number: i + 1,
+      question_text: q.question_text?.trim() || '',
+      option_a,
+      option_b,
+      score_a,
+      score_b,
+    };
+  });
+
+  return {
+    title: stripPipeVariants(String(geminiData.title || '').trim()) || 'Quiz mới nambac',
+    description: stripDuplicateSentences(
+      stripPipeVariants(String(geminiData.description || geminiData.title || '').trim()),
+    ),
+    category: normalizeCategory(geminiData.category),
+    quiz_type: 'binary_5q',
+    questions,
+    results,
+  };
+}
+
+════════════════════════════════════════
+validateQuizRichness
+════════════════════════════════════════
+function validateQuizRichness(payload) {
+  const errors = [];
+  const L = QUIZ_RICHNESS_LIMITS;
+
+  if ((payload.title?.trim().length || 0) < L.titleMin) {
+    errors.push(`title too short (min ${L.titleMin} chars)`);
+  }
+  if ((payload.description?.trim().length || 0) < L.descriptionMin) {
+    errors.push(`description too short (min ${L.descriptionMin} chars)`);
+  }
+  if (/\s\|\s/.test(payload.title || '') || /\s\|\s/.test(payload.description || '')) {
+    errors.push('title/description has dual-version " | " pileup');
+  }
+  if (META_LEAK_RE.test(`${payload.title || ''} ${payload.description || ''}`)) {
+    errors.push('title/description leaks tech/meta jargon (GitHub/repo/etc.)');
+  }
+
+  payload.questions.forEach((q, i) => {
+    const qLen = q.question_text?.trim().length || 0;
+    if (qLen < L.questionMin) {
+      errors.push(`Q${i + 1}: question too short (${qLen} < ${L.questionMin})`);
+    }
+    for (const [key, label] of [['option_a', 'A'], ['option_b', 'B']]) {
+      const opt = q[key]?.trim() || '';
+      if (opt.length < L.optionMin) {
+        errors.push(`Q${i + 1} option ${label}: too short (${opt.length} < ${L.optionMin})`);
+      }
+      if (!hasPunchlineOption(opt)) {
+        errors.push(`Q${i + 1} option ${label}: missing (parenthetical punchline)`);
+      }
+    }
+  });
+
+  payload.results.forEach((r, i) => {
+    const title = (r.type_name || r.title || '').trim();
+    const desc = r.description?.trim() || '';
+    if (title.length < L.resultTitleMin) {
+      errors.push(`Result ${i}: title too short (${title.length} < ${L.resultTitleMin})`);
+    }
+    if (desc.length < L.resultDescMin) {
+      errors.push(`Result ${i}: description too short (${desc.length} < ${L.resultDescMin})`);
+    }
+    if (hasDuplicateSentence(desc)) {
+      errors.push(`Result ${i}: description contains duplicate sentence(s)`);
+    }
+    const traits = Array.isArray(r.traits) ? r.traits.filter(Boolean) : [];
+    if (traits.length < L.traitsCount) {
+      errors.push(`Result ${i}: need ${L.traitsCount} traits, got ${traits.length}`);
+    }
+    if (/\s\|\s/.test(title) || /\s\|\s/.test(desc)) {
+      errors.push(`Result ${i}: dual-version " | " pileup`);
+    }
+    if (META_LEAK_RE.test(`${title} ${desc}`)) {
+      errors.push(`Result ${i}: tech/meta jargon leak`);
+    }
+    const marker = 'Kết quả mang tính giải trí Gen Z Sài Gòn';
+    if (desc.split(marker).length - 1 >= 2) {
+      errors.push(`Result ${i}: duplicate closing CTA`);
+    }
+  });
+
+  return errors;
+}
