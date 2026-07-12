@@ -14,14 +14,39 @@ export function getOpenRouterKey() {
 }
 
 export function parseJsonFromLlm(text) {
-  let raw = text || '';
-  const match = raw.match(/\{[\s\S]*\}/);
-  if (match) raw = match[0];
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return JSON.parse(raw.replace(/,\s*([}\]])/g, '$1'));
+  let raw = String(text || '').trim();
+  const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) raw = fence[1].trim();
+
+  const tryParse = (candidate) => {
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      try {
+        return JSON.parse(candidate.replace(/,\s*([}\]])/g, '$1'));
+      } catch {
+        return null;
+      }
+    }
+  };
+
+  let parsed = tryParse(raw);
+  if (parsed) return parsed;
+
+  // Fortune batch returns JSON arrays — prefer full array match over first object
+  const arrMatch = raw.match(/\[[\s\S]*\]/);
+  if (arrMatch) {
+    parsed = tryParse(arrMatch[0]);
+    if (parsed) return parsed;
   }
+
+  const objMatch = raw.match(/\{[\s\S]*\}/);
+  if (objMatch) {
+    parsed = tryParse(objMatch[0]);
+    if (parsed) return parsed;
+  }
+
+  throw new Error('LLM returned invalid JSON');
 }
 
 async function callGeminiText({ apiKey, prompt, temperature, maxOutputTokens }) {

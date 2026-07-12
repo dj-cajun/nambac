@@ -42,7 +42,7 @@ export function formatFortuneForAxis(fortune, axis = 'love') {
   const ax = normalizeFortuneAxis(axis);
   const brand = getFortuneBrand(ax);
   const leads = AXIS_BODY_LEADS[ax] || [];
-  const lead = leads.length ? leads[fortune.id % leads.length] : '';
+  const lead = fortune.axisNative ? '' : (leads.length ? leads[fortune.id % leads.length] : '');
   const labels = AXIS_COMPAT_LABELS[ax] || AXIS_COMPAT_LABELS.general;
 
   return {

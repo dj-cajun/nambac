@@ -1,4 +1,4 @@
-import { FORTUNE_COUNT, getFortuneByIndex } from '../../../shared/fortuneData.js';
+import { FORTUNE_COUNT, getFortuneByIndexForAxis } from '../../../shared/fortuneData.js';
 import { buildFortuneResultTitle, getDateStr, isValidFortuneDateLabel } from '../../../shared/fortuneEngine.js';
 import { formatFortuneForAxis } from '../../../shared/fortuneAxisFormat.js';
 import { getFortuneBrand, normalizeFortuneAxis } from '../../../shared/fortuneMeta.js';
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     }
 
     const idx = ((fortuneIndex % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
-    const fortune = formatFortuneForAxis(getFortuneByIndex(idx), axis);
+    const fortune = formatFortuneForAxis(getFortuneByIndexForAxis(idx, axis), axis);
     const brand = getFortuneBrand(axis);
     const encodedName = encodeURIComponent(name);
     const axisQ = axis !== 'love' ? `?axis=${axis}` : '';

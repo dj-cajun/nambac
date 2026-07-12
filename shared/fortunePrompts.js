@@ -52,17 +52,31 @@ export async function generateFortuneArchetypes({
   axis = 'love',
   dateLabel,
 }) {
-  const { text } = await generateJsonViaLlm({
-    geminiKey: apiKey,
-    openrouterKey,
-    system: FORTUNE_GENERATOR_SYSTEM,
-    user: buildFortuneGeneratorUserPrompt(axis, dateLabel),
-    temperature: 0.82,
-    maxOutputTokens: 4096,
-    label: 'fortune-text',
-  });
-  const parsed = parseJsonFromLlm(text);
-  const list = Array.isArray(parsed) ? parsed : parsed.archetypes || parsed.items || [];
-  if (list.length < 1) throw new Error('fortune generator returned empty array');
-  return list;
+  const maxAttempts = 3;
+  let lastErr;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const { text } = await generateJsonViaLlm({
+        geminiKey: apiKey,
+        openrouterKey,
+        system: FORTUNE_GENERATOR_SYSTEM,
+        user: buildFortuneGeneratorUserPrompt(axis, dateLabel),
+        temperature: attempt > 1 ? 0.7 : 0.82,
+        maxOutputTokens: 4096,
+        label: 'fortune-text',
+      });
+      const parsed = parseJsonFromLlm(text);
+      const list = Array.isArray(parsed) ? parsed : parsed.archetypes || parsed.items || [];
+      if (list.length < 1) throw new Error('fortune generator returned empty array');
+      return list;
+    } catch (err) {
+      lastErr = err;
+      if (attempt < maxAttempts) {
+        console.warn(`fortune-text attempt ${attempt} failed: ${err.message}`);
+      }
+    }
+  }
+
+  throw lastErr;
 }

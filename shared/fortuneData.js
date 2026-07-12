@@ -1,5 +1,7 @@
 /** Daily love fortune archetypes — Tử vi tình yêu (20 types, chỉ số 0–19) */
 
+import { FORTUNE_HEALTH_RESULTS, FORTUNE_MONEY_RESULTS } from './fortuneAxisPools.js';
+
 export const FORTUNE_RESULTS = [
   {
     id: 0,
@@ -206,7 +208,7 @@ export const FORTUNE_RESULTS = [
 const TITLE_EMOJI_RE = /^(.+?)\s+([\p{Extended_Pictographic}\uFE0F]+)$/u;
 const INDEX_LABEL_RE = /Chỉ số\s*(\d+)/i;
 
-function normalizeFortune(entry) {
+export function normalizeFortune(entry) {
   const match = entry.title.match(TITLE_EMOJI_RE);
   const emoji = match ? match[2].trim() : '✨';
   const title = match ? match[1].trim() : entry.title.trim();
@@ -230,7 +232,28 @@ function normalizeFortune(entry) {
 export const FORTUNE_ARCHETYPES = FORTUNE_RESULTS.map(normalizeFortune);
 export const FORTUNE_COUNT = FORTUNE_ARCHETYPES.length;
 
+function markAxisNative(pool) {
+  return pool.map((f) => ({ ...f, axisNative: true }));
+}
+
+export const FORTUNE_MONEY_ARCHETYPES = markAxisNative(FORTUNE_MONEY_RESULTS.map(normalizeFortune));
+export const FORTUNE_HEALTH_ARCHETYPES = markAxisNative(FORTUNE_HEALTH_RESULTS.map(normalizeFortune));
+
 export function getFortuneByIndex(index) {
   const i = ((Number(index) % FORTUNE_COUNT) + FORTUNE_COUNT) % FORTUNE_COUNT;
   return FORTUNE_ARCHETYPES[i];
+}
+
+/** Axis-native pool when available; index stays 0..FORTUNE_COUNT-1 for share URLs */
+export function getFortuneByIndexForAxis(index, axis) {
+  const pool = getFortunePoolForAxis(axis);
+  const i = ((Number(index) % pool.length) + pool.length) % pool.length;
+  return pool[i];
+}
+
+export function getFortunePoolForAxis(axis) {
+  const ax = String(axis || 'love').trim().toLowerCase();
+  if (ax === 'money' && FORTUNE_MONEY_ARCHETYPES.length) return FORTUNE_MONEY_ARCHETYPES;
+  if (ax === 'health' && FORTUNE_HEALTH_ARCHETYPES.length) return FORTUNE_HEALTH_ARCHETYPES;
+  return FORTUNE_ARCHETYPES;
 }
