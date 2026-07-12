@@ -120,7 +120,7 @@ export default function Home() {
         <p className="home-pitch">VBTI · Game · khoe Zalo ngay</p>
 
         <div className="home-today-header-text">
-          <h2 className="home-today-title">Xin chào, hôm nay tụi mình chơi gì? ⚡</h2>
+          <h2 className="home-today-title">Hôm nay chơi gì?</h2>
           <p className="home-today-sub">~90 giây là xong — ở quán cf cũng được ☕</p>
         </div>
 
@@ -143,75 +143,51 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="home-today-subsection">
-            <p className="home-today-subsection-label">AI &amp; Tương tác 🤝</p>
-            <div className="home-today-grid home-today-grid--games" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-              <Link to="/instant-quiz" className="home-today-card" style={{ background: '#f5f3ff', border: '2px solid #7c3aed', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', borderRadius: '12px', textDecoration: 'none', color: '#1e293b' }}>
-                <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>🪄</span>
-                <span style={{ fontWeight: '800', fontSize: '13px' }}>Tự tạo Quiz AI</span>
-                <span style={{ fontSize: '11px', color: '#6d28d9', fontWeight: '600' }}>Nhập chủ đề tùy ý</span>
-              </Link>
-              <Link to="/compatibility" className="home-today-card" style={{ background: '#ecfdf5', border: '2px solid #059669', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', borderRadius: '12px', textDecoration: 'none', color: '#1e293b' }}>
-                <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>❤️</span>
-                <span style={{ fontWeight: '800', fontSize: '13px' }}>AI So Khớp</span>
-                <span style={{ fontSize: '11px', color: '#047857', fontWeight: '600' }}>Đo độ hợp cạ</span>
-              </Link>
-              <Link to="/personality" className="home-today-card" style={{ background: '#fff7ed', border: '2px solid #ea580c', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', borderRadius: '12px', textDecoration: 'none', color: '#1e293b', gridColumn: '1 / -1' }}>
-                <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>🆔</span>
-                <span style={{ fontWeight: '800', fontSize: '13px' }}>Thẻ Cá Nhân AI</span>
-                <span style={{ fontSize: '11px', color: '#c2410c', fontWeight: '600' }}>VBTI + nhân vật khớp vibe</span>
-              </Link>
-            </div>
+          <div className="home-today-grid home-today-grid--games">
+            <TodayThumbCard
+              className={`home-today-card home-today-lienquan${doneToday.has('lienquan') ? ' is-done' : ''}`}
+              done={doneToday.has('lienquan')}
+              to="/lienquan#quiz"
+              imageSrc={featureThumbs.lienquan?.src}
+              imageSeed={featureThumbs.lienquan?.seed || 'lienquan'}
+              label="Liên Quân"
+              hint="Tướng khớp tên"
+              emoji="⚔️"
+            />
+            <TodayThumbCard
+              className={`home-today-card home-today-roast${doneToday.has('roast') ? ' is-done' : ''}`}
+              done={doneToday.has('roast')}
+              to="/roast-card"
+              imageSrc={featureThumbs.roast.src}
+              imageSeed={featureThumbs.roast.seed}
+              label="Bóc phốt"
+              hint="Gõ tên bạn"
+              emoji="💳"
+            />
+            <TodayThumbCard
+              className={`home-today-card home-today-brain${doneToday.has('brain') ? ' is-done' : ''}`}
+              done={doneToday.has('brain')}
+              to="/brain"
+              imageSrc={featureThumbs.brain.src}
+              imageSeed={featureThumbs.brain.seed}
+              label="Não bạn"
+              hint="Gõ tên → meme"
+              emoji="🧠"
+            />
+            <TodayThumbCard
+              className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
+              done={doneToday.has('balance')}
+              to={`/balance/${todayBalance.id}`}
+              imageSrc={featureThumbs.balance?.src}
+              imageSeed={featureThumbs.balance?.seed || todayBalance.id}
+              label="Cân não"
+              hint="Chọn A hay B"
+              emoji={todayBalance.emoji || '⚖️'}
+            />
           </div>
 
           <div className="home-today-subsection">
-            <p className="home-today-subsection-label">Mini Apps Vui Nhộn 🎮</p>
-            <div className="home-today-grid home-today-grid--games">
-              <TodayThumbCard
-                className={`home-today-card home-today-lienquan${doneToday.has('lienquan') ? ' is-done' : ''}`}
-                done={doneToday.has('lienquan')}
-                to="/lienquan#quiz"
-                imageSrc={featureThumbs.lienquan?.src}
-                imageSeed={featureThumbs.lienquan?.seed || 'lienquan'}
-                label="Liên Quân"
-                hint="Tướng khớp tên"
-                emoji="⚔️"
-              />
-              <TodayThumbCard
-                className={`home-today-card home-today-roast${doneToday.has('roast') ? ' is-done' : ''}`}
-                done={doneToday.has('roast')}
-                to="/roast-card"
-                imageSrc={featureThumbs.roast.src}
-                imageSeed={featureThumbs.roast.seed}
-                label="Bóc phốt"
-                hint="Gõ tên bạn"
-                emoji="💳"
-              />
-              <TodayThumbCard
-                className={`home-today-card home-today-brain${doneToday.has('brain') ? ' is-done' : ''}`}
-                done={doneToday.has('brain')}
-                to="/brain"
-                imageSrc={featureThumbs.brain.src}
-                imageSeed={featureThumbs.brain.seed}
-                label="Não bạn"
-                hint="Gõ tên → meme"
-                emoji="🧠"
-              />
-              <TodayThumbCard
-                className={`home-today-card home-today-balance${doneToday.has('balance') ? ' is-done' : ''}`}
-                done={doneToday.has('balance')}
-                to={`/balance/${todayBalance.id}`}
-                imageSrc={featureThumbs.balance?.src}
-                imageSeed={featureThumbs.balance?.seed || todayBalance.id}
-                label="Cân não"
-                hint="Chọn A hay B"
-                emoji={todayBalance.emoji || '⚖️'}
-              />
-            </div>
-          </div>
-
-          <div className="home-today-subsection">
-            <p className="home-today-subsection-label">Quiz &amp; Tử vi 🔮</p>
+            <p className="home-today-subsection-label">Quiz &amp; Tử vi</p>
             <div className="home-today-grid home-today-grid--secondary">
               <TodayThumbCard
                 className={`home-today-card home-today-fortune${doneToday.has('fortune') ? ' is-done' : ''}`}
