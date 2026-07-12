@@ -109,12 +109,13 @@ function AppContent() {
           <Route path="/compatibility/:id/:friendScore/:myScore" element={<CompatibilityPage />} />
           <Route path="/compatibility" element={<CompatibilityPage />} />
           <Route path="/instant-quiz" element={<InstantQuizPage />} />
+          <Route path="/personality" element={<PersonalityCardPage />} />
           <Route path="/brands" element={<BrandsLanding />} />
           <Route path="/brands/report/:quizId/:token" element={<BrandReport />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/me" element={<PersonalityCardPage />} />
+          <Route path="/me" element={<MePage />} />
           <Route path="/blog" element={<BlogIndex />} />
           <Route path="/blog/saigon-genz-mobile" element={<Navigate to="/blog/xu-huong-di-dong-gen-z-sai-gon" replace />} />
           <Route path="/blog/vietnam-quiz-history" element={<Navigate to="/blog/lich-su-quiz-truc-tuyen-viet-nam" replace />} />

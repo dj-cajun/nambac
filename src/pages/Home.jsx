@@ -156,6 +156,11 @@ export default function Home() {
                 <span style={{ fontWeight: '800', fontSize: '13px' }}>AI So Khớp</span>
                 <span style={{ fontSize: '11px', color: '#047857', fontWeight: '600' }}>Đo độ hợp cạ</span>
               </Link>
+              <Link to="/personality" className="home-today-card" style={{ background: '#fff7ed', border: '2px solid #ea580c', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', borderRadius: '12px', textDecoration: 'none', color: '#1e293b', gridColumn: '1 / -1' }}>
+                <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>🆔</span>
+                <span style={{ fontWeight: '800', fontSize: '13px' }}>Thẻ Cá Nhân AI</span>
+                <span style={{ fontSize: '11px', color: '#c2410c', fontWeight: '600' }}>VBTI + nhân vật khớp vibe</span>
+              </Link>
             </div>
           </div>
 

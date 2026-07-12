@@ -1,9 +1,8 @@
-import { generateQuizContent } from '../../../shared/quizPrompts.js';
+import { generateQuizContent, BINARY_5Q_SCORES } from '../../../shared/quizPrompts.js';
 import { getGeminiKeys } from '../../../shared/geminiKeys.js';
 import { getOpenRouterKey } from '../../../shared/llmJson.js';
 
 export default async function handler(req, res) {
-  // Support both GET and POST for flexbility
   if (req.method !== 'GET' && req.method !== 'POST' && req.method !== 'OPTIONS') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -25,8 +24,7 @@ export default async function handler(req, res) {
     });
 
     const quizId = `instant-${Date.now()}`;
-    
-    // Add ids and order numbers to match standard quiz format
+
     const formattedQuiz = {
       id: quizId,
       title: quizContent.title,
@@ -36,16 +34,19 @@ export default async function handler(req, res) {
       image_url: '/images/default_cover.png',
     };
 
-    const formattedQuestions = quizContent.questions.map((q, index) => ({
-      id: `${quizId}-q-${index + 1}`,
-      quiz_id: quizId,
-      order_number: index + 1,
-      question_text: q.question_text,
-      option_a: q.option_a,
-      option_b: q.option_b,
-      score_a: 0,
-      score_b: 0,
-    }));
+    const formattedQuestions = quizContent.questions.map((q, index) => {
+      const [score_a, score_b] = BINARY_5Q_SCORES[index] || [0, 0];
+      return {
+        id: `${quizId}-q-${index + 1}`,
+        quiz_id: quizId,
+        order_number: index + 1,
+        question_text: q.question_text,
+        option_a: q.option_a,
+        option_b: q.option_b,
+        score_a,
+        score_b,
+      };
+    });
 
     const formattedResults = quizContent.results.map((r) => ({
       id: `${quizId}-r-${r.score}`,

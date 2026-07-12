@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Sparkles, ArrowRight, Zap, RefreshCw, Home, Heart } from 'lucide-react';
+import { calculateScore } from '../logic/scoring';
 import './QuizPage.css';
 import './Result.css';
 
@@ -36,7 +37,7 @@ export default function InstantQuizPage() {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [loading]);
+  }, [loading, loadingMessages.length]);
 
   const handleGenerate = async (e) => {
     e.preventDefault();
@@ -64,21 +65,17 @@ export default function InstantQuizPage() {
   };
 
   const handleAnswer = (optionIndex) => {
-    const nextAnswers = [...answers, optionIndex === 0];
+    // calculateScore expects true when Option B is selected
+    const nextAnswers = [...answers, optionIndex === 1];
     setAnswers(nextAnswers);
 
     if (currentIndex < quizData.questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // 3-Bit binary score calculation: Q1 = +4, Q2 = +2, Q3 = +1, Q4/Q5 = +0
-      // A (Option Index 0) is false, B (Option Index 1) is true
-      const q1 = nextAnswers[0] ? 0 : 4;
-      const q2 = nextAnswers[1] ? 0 : 2;
-      const q3 = nextAnswers[2] ? 0 : 1;
-      const calculatedScore = q1 + q2 + q3;
-
+      const calculatedScore = calculateScore(nextAnswers, quizData.questions);
       setScore(calculatedScore);
-      const match = quizData.results.find((r) => r.result_code === calculatedScore) || quizData.results[0];
+      const match = quizData.results.find((r) => Number(r.result_code) === calculatedScore)
+        || quizData.results[0];
       setFinalResult(match);
       setPlaying(false);
       setShowResult(true);

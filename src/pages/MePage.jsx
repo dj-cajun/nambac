@@ -169,6 +169,11 @@ export default function MePage() {
             </span>
           )}
         </div>
+        <p style={{ margin: '0 0 12px', fontSize: '13px' }}>
+          <Link to="/personality" style={{ fontWeight: 800, color: '#7c3aed' }}>
+            Xem thẻ cá nhân AI →
+          </Link>
+        </p>
         {sbtiType ? (
           <>
             <div className="me-vbti-card">
