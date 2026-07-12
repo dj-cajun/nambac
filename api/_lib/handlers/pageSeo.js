@@ -19,9 +19,9 @@ const PAGE_META = {
   '': {
     title: 'nambac.xyz — Trắc nghiệm tính cách AI cho Gen Z Sài Gòn',
     description:
-      'Chỉ 5 câu hỏi — AI phân tích tính cách kiểu Gen Z Sài Gòn. Nhanh, vui, share Zalo liền tay!',
-    h1: 'Trắc nghiệm tính cách AI cho Gen Z Sài Gòn',
-    body: 'Chỉ cần trả lời 5 câu hỏi vui — AI sẽ phân tích tính cách của bạn theo phong cách Gen Z Sài Gòn. Nhanh gọn, dễ thương, share Zalo cùng bạn bè ngay!',
+      'nambac.xyz là nền tảng trắc nghiệm tính cách và mini-game giải trí cho Gen Z Việt Nam. Website: https://www.nambac.xyz',
+    h1: 'nambac.xyz — Trắc nghiệm tính cách AI cho Gen Z Sài Gòn',
+    body: 'nambac.xyz (https://www.nambac.xyz) là website giải trí tiếng Việt: quiz tính cách AI (5 câu), VBTI (trắc nghiệm kiểu Việt), Liên Quân Mobile hub, bói vận mệnh, balance game, roast card. Mục tiêu: chơi nhanh ~90 giây rồi share Zalo. Không phải công ty phụ tùng ô tô Nam Bắc (nambac.vn) hay bất động sản — đây là nền tảng quiz Gen Z tại Sài Gòn.',
   },
   explore: {
     title: 'Khám phá Quiz — nambac.xyz',

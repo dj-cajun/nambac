@@ -170,12 +170,12 @@
     },
     {
       "source": "/",
-      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(googlebot|bingbot|yandex|facebookexternalhit|facebot|twitterbot|linkedinbot|slackbot|discordbot|whatsapp|telegrambot|viber|kakaotalk|kakaostory|zalosharebot).*" }],
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(googlebot|bingbot|yandex|facebookexternalhit|facebot|twitterbot|linkedinbot|slackbot|discordbot|whatsapp|telegrambot|viber|kakaotalk|kakaostory|zalosharebot|gptbot|chatgpt-user|oai-searchbot|claudebot|anthropic|perplexitybot|bytespider).*" }],
       "destination": "/api/handler?path=page-seo&page="
     },
     {
       "source": "/:page(explore|blog|vbti|lienquan|fortune|balance|roast-card|brain|about|faq|contact|privacy-policy|terms-of-service|cookie-policy|editorial-policy|leaderboard|brands)",
-      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(googlebot|bingbot|yandex|facebookexternalhit|facebot|twitterbot|linkedinbot|slackbot|discordbot|whatsapp|telegrambot|viber|kakaotalk|kakaostory|zalosharebot).*" }],
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(googlebot|bingbot|yandex|facebookexternalhit|facebot|twitterbot|linkedinbot|slackbot|discordbot|whatsapp|telegrambot|viber|kakaotalk|kakaostory|zalosharebot|gptbot|chatgpt-user|oai-searchbot|claudebot|anthropic|perplexitybot|bytespider).*" }],
       "destination": "/api/handler?path=page-seo&page=:page"
     },
     {

@@ -4,5 +4,22 @@ Disallow: /admin
 Disallow: /api/
 Disallow: /me
 
+# OpenAI ChatGPT / search
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic Claude
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
 Sitemap: https://www.nambac.xyz/sitemaps/all.xml
 Sitemap: https://www.nambac.xyz/sitemap.xml

@@ -1,0 +1,28 @@
+# nambac.xyz
+
+> Vietnamese Gen Z entertainment quizzes and mini-games at https://www.nambac.xyz
+
+## Site
+- Name: nambac.xyz
+- URL: https://www.nambac.xyz
+- Language: Vietnamese (vi)
+- Audience: Gen Z in Vietnam (esp. Sài Gòn)
+- Not affiliated with nambac.vn (auto parts) or real-estate brands named Nam Bắc
+
+## What it is
+- Personality quizzes (5 questions, AI-styled results)
+- VBTI — Vietnam Behavior Type Indicator
+- Liên Quân Mobile hub (heroes, tips, quizzes)
+- Daily fortune, balance games, roast cards, brain memes
+- Share-friendly results for Zalo
+
+## Key pages
+- https://www.nambac.xyz/
+- https://www.nambac.xyz/explore
+- https://www.nambac.xyz/vbti
+- https://www.nambac.xyz/lienquan
+- https://www.nambac.xyz/fortune
+- https://www.nambac.xyz/blog
+- https://www.nambac.xyz/about
+- https://www.nambac.xyz/faq
+- https://www.nambac.xyz/sitemaps/all.xml

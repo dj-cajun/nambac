@@ -29,6 +29,8 @@ export default defineConfig({
             const isBot = ['googlebot', 'bingbot', 'yandex', 'facebookexternalhit', 'facebot',
               'twitterbot', 'linkedinbot', 'slackbot', 'discordbot', 'whatsapp',
               'telegrambot', 'kakaotalk', 'zalosharebot',
+              'gptbot', 'chatgpt-user', 'oai-searchbot', 'claudebot', 'anthropic',
+              'perplexitybot', 'bytespider',
             ].some((b) => ua.includes(b));
             if (isBot) {
               req.url = `/api/page-seo?page=${encodeURIComponent(cleanPath)}`;
@@ -42,6 +44,8 @@ export default defineConfig({
               'googlebot', 'bingbot', 'yandex', 'facebookexternalhit', 'facebot',
               'twitterbot', 'linkedinbot', 'slackbot', 'discordbot', 'whatsapp',
               'telegrambot', 'kakaotalk', 'zalosharebot',
+              'gptbot', 'chatgpt-user', 'oai-searchbot', 'claudebot', 'anthropic',
+              'perplexitybot', 'bytespider',
             ].some((b) => ua.includes(b));
             if (bot) {
               req.url = `/api/quiz-seo?id=${encodeURIComponent(quizSeoMatch[1])}`;

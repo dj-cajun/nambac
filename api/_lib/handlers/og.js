@@ -10,6 +10,10 @@ const BOT_AGENTS = [
   'discordbot', 'whatsapp',
   'telegrambot', 'viber',
   'kakaotalk', 'kakaostory',
+  // OpenAI / ChatGPT / Claude / Perplexity — need crawlable HTML (SPA shell is empty)
+  'gptbot', 'chatgpt-user', 'oai-searchbot',
+  'claudebot', 'anthropic-ai',
+  'perplexitybot', 'bytespider',
 ];
 
 export function isBot(ua) {
