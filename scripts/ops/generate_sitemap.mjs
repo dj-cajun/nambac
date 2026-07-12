@@ -91,9 +91,18 @@ async function main() {
   }
 
   lines.push('</urlset>', '');
+  const xml = lines.join('\n');
+
   const outPath = path.join(PROJECT_ROOT, 'public/sitemap.xml');
-  fs.writeFileSync(outPath, lines.join('\n'));
+  fs.writeFileSync(outPath, xml);
+
+  const allDir = path.join(PROJECT_ROOT, 'public/sitemaps');
+  fs.mkdirSync(allDir, { recursive: true });
+  const allPath = path.join(allDir, 'all.xml');
+  fs.writeFileSync(allPath, xml);
+
   console.log(`✅ wrote ${outPath} (${quizzes.length} quizzes, ${HEROES.length} heroes)`);
+  console.log(`✅ wrote ${allPath}`);
 }
 
 main().catch((err) => {

@@ -81,12 +81,26 @@ const checks = [
     url: `${siteBase}/sitemap.xml`,
     assert: async (res) => {
       const text = await res.text();
+      // Production serves a sitemap index; /api/sitemap still returns a full urlset.
+      if (text.includes('<sitemapindex')) {
+        if (!text.includes('/sitemaps/all.xml')) throw new Error('sitemap index missing all.xml');
+        return `index bytes=${text.length}`;
+      }
       if (!text.includes('<urlset')) throw new Error('invalid sitemap');
       if (!text.includes('/quiz/')) {
-        // Dynamic rewrite may lag behind static file deploy; accept www canonical pages.
         if (!text.includes('nambac.xyz')) throw new Error('sitemap missing quiz urls');
         throw new Error('sitemap missing quiz urls');
       }
+      return `bytes=${text.length}`;
+    },
+  },
+  {
+    name: 'GET /sitemaps/all.xml',
+    url: `${siteBase}/sitemaps/all.xml`,
+    assert: async (res) => {
+      const text = await res.text();
+      if (!text.includes('<urlset')) throw new Error('invalid all.xml');
+      if (!text.includes('/quiz/')) throw new Error('all.xml missing quiz urls');
       return `bytes=${text.length}`;
     },
   },

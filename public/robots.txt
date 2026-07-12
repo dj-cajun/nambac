@@ -2,6 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
+Disallow: /me
 
 Sitemap: https://www.nambac.xyz/sitemap.xml
-Sitemap: https://www.nambac.xyz/sitemaps/all.xml
