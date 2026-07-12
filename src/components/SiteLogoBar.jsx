@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import NambacLogo from './NambacLogo';
 import GoogleLoginButton from './GoogleLoginButton';
 import { useAuth } from '../context/AuthContext';
@@ -8,8 +8,6 @@ import { useDrawer } from './shell/DrawerContext';
 import { scrollToTop } from '../lib/scrollToTop';
 import { recordDailyVisit } from '../lib/dailyStreak';
 import { recordSiteVisit } from '../lib/siteVisit';
-import { fetchPlayerGrade } from '../lib/playerGrade';
-import { fetchMastery } from '../lib/lienquan/mastery';
 import './SiteLogoBar.css';
 
 const POPUP_SESSION_KEY = 'nambac_streak_popup_shown';
@@ -18,35 +16,13 @@ export default function SiteLogoBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { toggleDrawer, open } = useDrawer();
-  const { user, loading: authLoading, authError, clearAuthError, logout } = useAuth();
+  const { user, loading: authLoading, authError, clearAuthError } = useAuth();
   const [streak, setStreak] = useState(0);
-  const [playerGrade, setPlayerGrade] = useState(null);
-  const [lqMastery, setLqMastery] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    const loadGrade = () => {
-      fetchPlayerGrade().then((data) => {
-        if (data?.grade?.level > 0) setPlayerGrade(data.grade);
-      });
-    };
-    const onGradeUpdated = (event) => {
-      if (event.detail?.grade?.level > 0) {
-        setPlayerGrade(event.detail.grade);
-        return;
-      }
-      loadGrade();
-    };
-    loadGrade();
-    window.addEventListener('nambac:grade-updated', onGradeUpdated);
-    return () => window.removeEventListener('nambac:grade-updated', onGradeUpdated);
-  }, [user?.id]);
-
-  useEffect(() => {
     if (authLoading) return;
-    // Admin: register this device as owner (excluded). Others: count once per session.
     recordSiteVisit({ force: user?.role === 'admin' });
-    fetchMastery().then(setLqMastery).catch(() => {});
   }, [authLoading, user?.role]);
 
   useEffect(() => {
@@ -88,36 +64,24 @@ export default function SiteLogoBar() {
         <NambacLogo />
       </button>
       {streak > 0 && (
-        <span className="site-streak-badge" aria-label={`Điểm danh ngày thứ ${streak} liên tiếp`}>
-          🔥 Ngày {streak}
-        </span>
-      )}
-      {playerGrade && (
-        <span className="site-grade-badge" aria-label={`Hạng ${playerGrade.label}`}>
-          {playerGrade.emoji} {playerGrade.label}
-        </span>
-      )}
-      {lqMastery?.level > 0 && (
         <Link
-          to="/lienquan/quiz"
-          className={`site-lq-badge${lqMastery.level >= 7 ? ' gold' : ''}`}
-          aria-label={lqMastery.label}
-          title={lqMastery.label}
+          to="/me"
+          className="site-streak-badge"
+          aria-label={`Điểm danh ngày thứ ${streak} liên tiếp`}
         >
-          ⚔️ {lqMastery.level >= 7 ? 'TT7' : `TT${lqMastery.level}`}
+          🔥 {streak}
         </Link>
       )}
 
       <div className="site-auth-slot">
         {user ? (
-          <button type="button" className="site-auth-user" onClick={logout} title={`${user.email} — 로그아웃`}>
+          <Link to="/me" className="site-auth-user" title={user.name || user.email || 'Tài khoản'}>
             {user.picture_url ? (
               <img src={user.picture_url} alt="" className="site-auth-avatar" />
             ) : (
               <span className="site-auth-avatar site-auth-avatar--fallback">{(user.name || user.email || '?')[0]}</span>
             )}
-            <LogOut size={14} aria-hidden="true" />
-          </button>
+          </Link>
         ) : (
           <GoogleLoginButton compact returnTo={pathname} label="Đăng nhập" />
         )}

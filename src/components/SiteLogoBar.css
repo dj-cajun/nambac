@@ -43,27 +43,10 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 3px 10px;
+  padding: 3px 9px;
   border-radius: 999px;
   border: 2px solid #1e293b;
   background: linear-gradient(135deg, #fff0f6, #fef3c7);
-  font-size: 14px;
-  font-weight: 900;
-  color: #1e293b;
-  line-height: 1.2;
-  white-space: nowrap;
-  box-shadow: 2px 2px 0 #1e293b;
-  flex-shrink: 0;
-}
-
-.site-grade-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 2px solid #1e293b;
-  background: linear-gradient(135deg, #e0f2fe, #fce7f3);
   font-size: 13px;
   font-weight: 900;
   color: #1e293b;
@@ -71,40 +54,12 @@
   white-space: nowrap;
   box-shadow: 2px 2px 0 #1e293b;
   flex-shrink: 0;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.site-lq-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 7px;
-  border-radius: 999px;
-  border: 2px solid #1e293b;
-  background: #0f1419;
-  color: #f5c542;
-  font-size: 11px;
-  font-weight: 900;
   text-decoration: none;
-  box-shadow: 2px 2px 0 #1e293b;
-  flex-shrink: 1;
-  min-width: 0;
-  max-width: 64px;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
-@media (max-width: 360px) {
-  .site-lq-badge {
-    display: none;
-  }
-}
-
-.site-lq-badge.gold {
-  background: linear-gradient(135deg, #422006, #1a1520);
-  border-color: #f5c542;
-  color: #fde68a;
+.site-streak-badge:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #1e293b;
 }
 
 .streak-popup {
@@ -216,14 +171,14 @@
 .site-auth-user {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px 4px 4px;
+  padding: 2px;
   border: 2px solid #1e293b;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.95);
   color: #475569;
   cursor: pointer;
   box-shadow: 2px 2px 0 #1e293b;
+  text-decoration: none;
 }
 
 .site-auth-user:active {
