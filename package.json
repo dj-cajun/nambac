@@ -57,6 +57,7 @@
     "@resvg/resvg-wasm": "^2.6.2",
     "@supabase/supabase-js": "^2.110.2",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/functions": "^3.7.5",
     "dotenv": "^17.4.2",
     "framer-motion": "^12.29.2",
     "html2canvas": "^1.4.1",
