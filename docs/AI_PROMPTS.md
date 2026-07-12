@@ -6,7 +6,7 @@
 
 | 역할 | 파일 | 주요 export |
 |------|------|-------------|
-| MASTER + scoring + validation + 2-pass | `shared/quizPrompts.js` | `QUIZ_MASTER_PROMPT` (v5.2 MZ), `QUIZ_RICHNESS_LIMITS`, `generateQuizContent`, `validateQuizPayload`, `validateViNaturalness`, `clampPayloadToMzLimits` |
+| MASTER + scoring + validation + 2-pass | `shared/quizPrompts.js` | `QUIZ_MASTER_PROMPT` (v5.2 MZ), `QUIZ_RICHNESS_LIMITS`, `QUIZ_AI_VALIDATE_OPTS`, `generateQuizContent`, `validateQuizPayload`, `validateViNaturalness`, `clampPayloadToMzLimits` |
 | VI Editor 2nd pass | `shared/quizViEditorPrompts.js` | `QUIZ_VI_EDITOR_SYSTEM`, `buildViEditorUserPrompt` |
 | Category tiers (daily rotation) | `shared/categoryTiers.js` | `DAILY_CATEGORY_IDS`, `pickDailyCategory` |
 | 8 Expert agents + topic seeds | `shared/quizExpertPrompts.js` | `QUIZ_EXPERT_PROMPTS`, `QUIZ_TOPIC_SEEDS` |
@@ -48,6 +48,7 @@
 npm run fortune:axis-batch -- --axis=money --count=5   # → data/fortune-batch/
 npm run fortune:merge-batch -- --axis=money              # → shared/fortune-pools/fortune-money.pool.json
 npm run verify:fortune-images
+npm run verify:pipeline          # build + fortune images + pool counts
 ```
 
 ## Quiz images

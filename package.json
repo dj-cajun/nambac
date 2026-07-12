@@ -44,6 +44,7 @@
     "verify:api": "node scripts/dev/verify_api.mjs",
     "verify:ops": "node scripts/dev/verify_ops.mjs",
     "verify:fortune-images": "node scripts/dev/verify_fortune_image_mapping.mjs",
+    "verify:pipeline": "node scripts/dev/verify_pipeline.mjs",
     "smoke:og": "node scripts/dev/smoke_og.mjs",
     "sitemap:generate": "node scripts/ops/generate_sitemap.mjs",
     "vapid:generate": "node scripts/dev/generate_vapid_keys.mjs",
