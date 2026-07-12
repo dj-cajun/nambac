@@ -17,6 +17,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - name: Fortune zodiac image pool
+        run: npm run verify:fortune-images
       - name: Sitemap config
         run: |
           test -f public/sitemap.xml
