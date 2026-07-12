@@ -169,6 +169,10 @@
       "destination": "/api/handler?path=$1"
     },
     {
+      "source": "/:page(explore|blog|vbti|lienquan|fortune|balance|roast-card|brain|about|faq|contact|privacy-policy|terms-of-service|cookie-policy|editorial-policy|leaderboard|brands)",
+      "destination": "/api/handler?path=page-seo&page=:page"
+    },
+    {
       "source": "/((?!api/|sitemap\\.xml|sitemaps/|robots\\.txt|.*\\..*).*)",
       "destination": "/index.html"
     }

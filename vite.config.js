@@ -19,6 +19,22 @@ export default defineConfig({
             req.url = '/api/sitemap';
             return next();
           }
+          // ── Static page SEO for crawlers (dev mode) ──
+          const seoPages = ['', 'explore', 'blog', 'vbti', 'lienquan', 'fortune', 'balance',
+            'roast-card', 'brain', 'about', 'faq', 'contact', 'privacy-policy',
+            'terms-of-service', 'cookie-policy', 'editorial-policy', 'leaderboard', 'brands'];
+          const cleanPath = pathname.replace(/^\//, '');
+          if (seoPages.includes(cleanPath) || pathname === '/') {
+            const ua = String(req.headers['user-agent'] || '').toLowerCase();
+            const isBot = ['googlebot', 'bingbot', 'yandex', 'facebookexternalhit', 'facebot',
+              'twitterbot', 'linkedinbot', 'slackbot', 'discordbot', 'whatsapp',
+              'telegrambot', 'kakaotalk', 'zalosharebot',
+            ].some((b) => ua.includes(b));
+            if (isBot) {
+              req.url = `/api/page-seo?page=${encodeURIComponent(cleanPath)}`;
+              return next();
+            }
+          }
           const quizSeoMatch = pathname.match(/^\/quiz\/([^/]+)$/);
           if (quizSeoMatch) {
             const ua = String(req.headers['user-agent'] || '').toLowerCase();

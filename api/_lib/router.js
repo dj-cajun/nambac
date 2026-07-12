@@ -18,6 +18,7 @@ import brandStats from './handlers/brandStats.js';
 import dailyQuiz from './handlers/dailyQuiz.js';
 import og from './handlers/og.js';
 import quizSeo from './handlers/quizSeo.js';
+import pageSeo from './handlers/pageSeo.js';
 import ogImage from './handlers/ogImage.js';
 import balance from './handlers/balance.js';
 import balanceImage from './handlers/balanceImage.js';
@@ -151,6 +152,11 @@ export async function dispatch(req, res, segments = []) {
   // ── Quiz SEO for crawlers (/quiz/:id rewrite) ──
   if (a === 'quiz-seo' && !b && (method === 'GET' || method === 'HEAD')) {
     return quizSeo(req, res);
+  }
+
+  // ── Static page SEO for crawlers (bot → crawlable HTML, human → SPA) ──
+  if (a === 'page-seo' && !b && (method === 'GET' || method === 'HEAD')) {
+    return pageSeo(req, res);
   }
 
   // ── OG scraper (also reached via /share/* rewrites) ──
