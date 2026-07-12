@@ -15,7 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'node:child_process';
 import { PROJECT_ROOT } from '../_root.mjs';
-import { generateQuizContent, formatQuizForDb, pickDailyCategory, validateQuizPayload } from '../../api/_lib/geminiQuiz.js';
+import { generateQuizContent, formatQuizForDb, pickDailyCategory, validateQuizPayload, QUIZ_AI_VALIDATE_OPTS } from '../../api/_lib/geminiQuiz.js';
 import { createFullQuiz } from '../../api/_lib/quizDb.js';
 import { sendPushToAll } from '../../api/_lib/pushService.js';
 import { buildSiteUrl } from '../../api/_lib/siteUrl.js';
@@ -74,7 +74,7 @@ async function main() {
 
   const generated = await generateQuizContent(category, topic);
   const payload = formatQuizForDb(generated);
-  const aiValidateOpts = { enforceMax: true, enforceVi: true };
+  const aiValidateOpts = QUIZ_AI_VALIDATE_OPTS;
   const validationErrors = validateQuizPayload(payload, aiValidateOpts);
   if (validationErrors.length) {
     throw new Error(`Invalid quiz from Gemini: ${validationErrors.join('; ')}`);

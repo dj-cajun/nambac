@@ -18,7 +18,6 @@ export const BINARY_5Q_SCORES = Object.freeze([
   [0, 0],
 ]);
 
-/** MZ-mode targets — min for substance, max caps AI wall-of-text (enforceMax on AI path only) */
 export const QUIZ_RICHNESS_LIMITS = Object.freeze({
   titleMin: 30,
   titleMax: 80,
@@ -34,6 +33,9 @@ export const QUIZ_RICHNESS_LIMITS = Object.freeze({
   resultDescMax: 300,
   traitsCount: 3,
 });
+
+/** AI 생성 경로 검증 — daily/batch/cron 공통 */
+export const QUIZ_AI_VALIDATE_OPTS = Object.freeze({ enforceMax: true, enforceVi: true });
 
 export const QUIZ_MASTER_PROMPT = `
 # 🎮 MASTER Quiz Generation Prompt (v5.2 - MZ Mode: Native VI + Punchy)
@@ -517,7 +519,7 @@ export async function generateQuizContent({ apiKey, openrouterKey, categoryId, c
   const category = normalizeCategory(categoryId);
   const systemInstruction = buildQuizSystemInstruction(category);
   const userPrompt = buildQuizUserPrompt(category, customTopic);
-  const aiValidateOpts = { enforceMax: true, enforceVi: true };
+  const aiValidateOpts = QUIZ_AI_VALIDATE_OPTS;
 
   const maxAttempts = 3;
   let lastErrors = [];
@@ -672,7 +674,7 @@ export async function generateArchetypeQuizContent({ apiKey, openrouterKey, arch
   const maxAttempts = archetype.quiz_type === 'mbti_12q' ? 1 : 2;
   let lastErrors = [];
 
-  const aiValidateOpts = { enforceMax: true, enforceVi: true };
+  const aiValidateOpts = QUIZ_AI_VALIDATE_OPTS;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     const retryHint = attempt > 1 ? buildRetryHint(lastErrors) : '';

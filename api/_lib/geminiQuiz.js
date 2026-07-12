@@ -3,9 +3,10 @@ import {
   formatQuizForDb,
   pickDailyCategory,
   validateQuizPayload,
+  QUIZ_AI_VALIDATE_OPTS,
 } from '../../shared/quizPrompts.js';
 
-export { formatQuizForDb, pickDailyCategory, validateQuizPayload };
+export { formatQuizForDb, pickDailyCategory, validateQuizPayload, QUIZ_AI_VALIDATE_OPTS };
 
 function getApiKey() {
   return process.env.GEMINI_API_KEY || '';

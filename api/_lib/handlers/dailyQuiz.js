@@ -1,6 +1,6 @@
 import { requireCron } from '../cronAuth.js';
 import { createFullQuiz } from '../quizDb.js';
-import { generateQuizContent, formatQuizForDb, pickDailyCategory, validateQuizPayload } from '../geminiQuiz.js';
+import { generateQuizContent, formatQuizForDb, pickDailyCategory, validateQuizPayload, QUIZ_AI_VALIDATE_OPTS } from '../geminiQuiz.js';
 import { sendPushToAll } from '../pushService.js';
 import { buildSiteUrl } from '../siteUrl.js';
 import { triggerImageBackfill } from '../triggerImageBackfill.js';
@@ -19,12 +19,10 @@ export default async function handler(req, res) {
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
   const category = body.category || req.query?.category || pickDailyCategory();
 
-  const AI_VALIDATE_OPTS = { enforceMax: true, enforceVi: true };
-
   try {
     const generated = await generateQuizContent(category, body.topic || '');
     const payload = formatQuizForDb(generated);
-    const validationErrors = validateQuizPayload(payload, AI_VALIDATE_OPTS);
+    const validationErrors = validateQuizPayload(payload, QUIZ_AI_VALIDATE_OPTS);
     if (validationErrors.length) {
       throw new Error(`Invalid quiz from Gemini: ${validationErrors.join('; ')}`);
     }

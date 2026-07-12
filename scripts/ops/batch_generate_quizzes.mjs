@@ -23,8 +23,7 @@ if (!process.env.GEMINI_API_KEY && process.env.VITE_GEMINI_API_KEY) {
   process.env.GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY;
 }
 
-const AI_VALIDATE_OPTS = { enforceMax: true, enforceVi: true };
-const { generateQuizContent, formatQuizForDb, validateQuizPayload } = await import('../../api/_lib/geminiQuiz.js');
+const { generateQuizContent, formatQuizForDb, validateQuizPayload, QUIZ_AI_VALIDATE_OPTS } = await import('../../api/_lib/geminiQuiz.js');
 const { createFullQuiz } = await import('../../api/_lib/quizDb.js');
 const { QUIZ_CATEGORY_IDS } = await import('../../shared/categories.js');
 const { DAILY_CATEGORY_IDS } = await import('../../shared/categoryTiers.js');
@@ -75,7 +74,7 @@ async function main() {
     try {
       const generated = await generateQuizContent(category);
       const payload = formatQuizForDb(generated);
-      const errors = validateQuizPayload(payload, AI_VALIDATE_OPTS);
+      const errors = validateQuizPayload(payload, QUIZ_AI_VALIDATE_OPTS);
       if (errors.length) throw new Error(errors.join('; '));
 
       const quiz = await createFullQuiz(payload);
