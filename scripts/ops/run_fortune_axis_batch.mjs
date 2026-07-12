@@ -56,7 +56,10 @@ const items = await generateFortuneArchetypes({
 const slice = items.slice(0, count);
 const outDir = path.join(PROJECT_ROOT, 'data', 'fortune-batch');
 fs.mkdirSync(outDir, { recursive: true });
-const outPath = path.join(outDir, `${axis}-${dateLabel}.json`);
+let outPath = path.join(outDir, `${axis}-${dateLabel}.json`);
+if (fs.existsSync(outPath)) {
+  outPath = path.join(outDir, `${axis}-${dateLabel}-${Date.now()}.json`);
+}
 fs.writeFileSync(outPath, `${JSON.stringify(slice, null, 2)}\n`, 'utf8');
 
 console.log(JSON.stringify(slice, null, 2));

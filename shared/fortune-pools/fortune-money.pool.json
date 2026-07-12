@@ -38,5 +38,45 @@
     "remedy": "Tạm thời ăn chực bạn bè hoặc vay nóng mẹ 50k để qua cơn bĩ cực.",
     "cuuTinh": "Chỉ số 2 (Lì xì đột xuất)",
     "baoThu": "Chỉ số 0 (Các loại hóa đơn)"
+  },
+  {
+    "id": 5,
+    "title": "Ví mỏng vì Shopee 💸",
+    "desc": "Hôm nay ví bạn có biến động lớn, không phải vì tiền vào mà là tiền ra. Mấy món đồ linh tinh trên Shopee bỗng dưng 'tự nhảy' vào giỏ hàng khiến bạn phải thanh toán không trượt phát nào.",
+    "remedy": "Tắt app Shopee ngay lập tức, hoặc ít nhất là ẩn nó vào một folder nào đó khó tìm.",
+    "cuuTinh": "Chỉ số 75 (Shipper thân thiện)",
+    "baoThu": "Chỉ số 90 (Sale Flash Deal)"
+  },
+  {
+    "id": 6,
+    "title": "Cơm nhà hay GrabFood? 🛵",
+    "desc": "Dù đã thề thốt sẽ tự nấu ăn để tiết kiệm, nhưng mùi thơm từ mấy món ăn vặt trên GrabFood lại quá sức chịu đựng. Ví tiền bạn đang khóc thét vì những bữa ăn 'sang chảnh' liên tục.",
+    "remedy": "Xóa app, hoặc rủ bạn bè đi ăn chung để chia tiền ship. Mà thôi, tự nấu đi!",
+    "cuuTinh": "Chỉ số 60 (Mẹ dặn dò)",
+    "baoThu": "Chỉ số 85 (Ưu đãi freeship)"
+  },
+  {
+    "id": 7,
+    "title": "Kế hoạch tiết kiệm 'toang' 📉",
+    "desc": "Vừa nhận lương là lên kế hoạch tiết kiệm hoành tráng, nhưng chỉ sau vài tiếng, bạn đã thấy 'kế hoạch' đó bay màu theo mấy đợt sale. Tiền bay nhanh hơn cả tốc độ WiFi nhà bạn.",
+    "remedy": "Đem tiền đi gửi ngân hàng ngay khi vừa nhận lương, đừng để nó nằm yên trong tài khoản.",
+    "cuuTinh": "Chỉ số 50 (Heo đất)",
+    "baoThu": "Chỉ số 95 (Bạn bè rủ rê)"
+  },
+  {
+    "id": 8,
+    "title": "Ví mỏng như tình yêu 💔",
+    "desc": "Đầu tháng hứa hẹn đủ điều, giờ cuối tháng ví tiền lại mỏng tanh như tờ giấy. Mọi kế hoạch 'làm giàu' đều tan tành mây khói, chỉ còn lại nỗi lo 'ăn gì hôm nay'.",
+    "remedy": "Tìm lại mấy món đồ cũ còn dùng được, đừng vội mua sắm. Hoặc gọi điện cho mẹ.",
+    "cuuTinh": "Chỉ số 40 (Mì gói thần thánh)",
+    "baoThu": "Chỉ số 80 (Chủ quán trà sữa)"
+  },
+  {
+    "id": 9,
+    "title": "Cơn nghiện đồ mới 👕📱",
+    "desc": "Hôm nay bạn có xu hướng bị thu hút bởi những món đồ công nghệ mới hay quần áo 'hot trend'. Cẩn thận kẻo ví tiền lại 'bốc hơi' mà không kịp ngáp, chỉ vì một phút yếu lòng.",
+    "remedy": "Tự hỏi bản thân: 'Mình có thực sự cần nó không?' 3 lần trước khi quyết định mua.",
+    "cuuTinh": "Chỉ số 65 (Reviewer có tâm)",
+    "baoThu": "Chỉ số 70 (Quảng cáo TikTok)"
   }
 ]
