@@ -19,10 +19,12 @@ export default async function handler(req, res) {
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
   const category = body.category || req.query?.category || pickDailyCategory();
 
+  const AI_VALIDATE_OPTS = { enforceMax: true, enforceVi: true };
+
   try {
     const generated = await generateQuizContent(category, body.topic || '');
     const payload = formatQuizForDb(generated);
-    const validationErrors = validateQuizPayload(payload);
+    const validationErrors = validateQuizPayload(payload, AI_VALIDATE_OPTS);
     if (validationErrors.length) {
       throw new Error(`Invalid quiz from Gemini: ${validationErrors.join('; ')}`);
     }

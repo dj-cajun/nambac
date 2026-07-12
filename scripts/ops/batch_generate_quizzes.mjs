@@ -8,7 +8,7 @@
  *   npm run gen:quizzes -- --count=10
  *   npm run gen:quizzes -- --images=full    # cover + 8 results each
  *   npm run gen:quizzes -- --images=none    # text only
- *   npm run gen:quizzes -- --category=Trendy # lock a single category
+ *   npm run gen:quizzes -- --category=Trendy # lock a single category (Tier B — manual only)
  */
 import dotenv from 'dotenv';
 import path from 'path';
@@ -23,6 +23,7 @@ if (!process.env.GEMINI_API_KEY && process.env.VITE_GEMINI_API_KEY) {
   process.env.GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY;
 }
 
+const AI_VALIDATE_OPTS = { enforceMax: true, enforceVi: true };
 const { generateQuizContent, formatQuizForDb, validateQuizPayload } = await import('../../api/_lib/geminiQuiz.js');
 const { createFullQuiz } = await import('../../api/_lib/quizDb.js');
 const { QUIZ_CATEGORY_IDS } = await import('../../shared/categories.js');
@@ -74,7 +75,7 @@ async function main() {
     try {
       const generated = await generateQuizContent(category);
       const payload = formatQuizForDb(generated);
-      const errors = validateQuizPayload(payload);
+      const errors = validateQuizPayload(payload, AI_VALIDATE_OPTS);
       if (errors.length) throw new Error(errors.join('; '));
 
       const quiz = await createFullQuiz(payload);
