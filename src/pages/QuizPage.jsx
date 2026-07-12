@@ -67,7 +67,7 @@ export default function QuizPage({ quizIdProp }) {
         if (quizId && trackQuizViewOnce(quizId)) {
             incrementQuizStat(quizId, 'view').catch(console.error);
         }
-    }, [quizId]);
+    }, [quizId, navigate]);
 
     const handleStart = () => {
         setStarted(true);
@@ -90,13 +90,6 @@ export default function QuizPage({ quizIdProp }) {
         } else {
             setShowResult(true);
         }
-    };
-
-    const handleRestart = () => {
-        setAnswers([]);
-        setCurrentIndex(0);
-        setShowResult(false);
-        setStarted(false);
     };
 
     const handleShareLink = async () => {

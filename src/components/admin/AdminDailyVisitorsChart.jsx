@@ -87,11 +87,9 @@ export default function AdminDailyVisitorsChart({ series = [] }) {
               })}
 
               {points.map((p, i) => {
-                const total = Number(p.total) || 0;
                 const loggedIn = Number(p.loggedIn) || 0;
                 const guest = Number(p.guest) || 0;
                 const x = padX + i * (barW + barGap);
-                const hTotal = (total / maxTotal) * chartH;
                 const hLogin = (loggedIn / maxTotal) * chartH;
                 const hGuest = (guest / maxTotal) * chartH;
                 const yGuest = chartH + 4 - hGuest;

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { timingSafeEqualString } from './secureCompare.js';
 
 export const SESSION_COOKIE = 'nambac_session';
 const MAX_AGE_SEC = 60 * 60 * 24 * 30;
@@ -23,7 +24,7 @@ export function signPayload(payload) {
 export function verifyPayload(token) {
   if (!token) return null;
   const [data, sig] = String(token).split('.');
-  if (!data || !sig || sign(data) !== sig) return null;
+  if (!data || !sig || !timingSafeEqualString(sig, sign(data))) return null;
   try {
     const payload = JSON.parse(Buffer.from(data, 'base64url').toString());
     if (!payload.exp || payload.exp < Date.now()) return null;
@@ -43,7 +44,11 @@ export function parseCookies(req) {
     if (eq === -1) continue;
     const key = trimmed.slice(0, eq);
     const value = trimmed.slice(eq + 1);
-    out[key] = decodeURIComponent(value);
+    try {
+      out[key] = decodeURIComponent(value);
+    } catch {
+      out[key] = value;
+    }
   }
   return out;
 }

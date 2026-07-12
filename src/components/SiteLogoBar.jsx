@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import NambacLogo from './NambacLogo';
 import GoogleLoginButton from './GoogleLoginButton';
 import { useAuth } from '../context/AuthContext';
@@ -89,6 +89,14 @@ export default function SiteLogoBar() {
 
       {showPopup && streak > 0 && (
         <div className="streak-popup" role="status">
+          <button
+            type="button"
+            className="streak-popup-close"
+            onClick={() => setShowPopup(false)}
+            aria-label="Đóng điểm danh"
+          >
+            <X size={16} />
+          </button>
           <span className="streak-popup-emoji">🔥</span>
           <div className="streak-popup-text">
             <strong>Ngày thứ {streak} điểm danh!</strong>

@@ -18,8 +18,6 @@ export default function CustomQuiz({ quizInfo, questions, results }) {
     const [started, setStarted] = useState(false);
 
     const design = quizInfo.design || {};
-    const config = quizInfo.config || {};
-
     // Inject custom CSS
     useEffect(() => {
         if (design.custom_css) {
@@ -51,7 +49,6 @@ export default function CustomQuiz({ quizInfo, questions, results }) {
     };
 
     const handleAnswer = (optionIndex) => {
-        const q = questions[currentIndex];
         const newAnswers = [...answers, optionIndex];
         setAnswers(newAnswers);
 

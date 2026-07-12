@@ -71,12 +71,34 @@
   align-items: center;
   gap: 10px;
   max-width: 260px;
-  padding: 10px 14px;
+  padding: 10px 38px 10px 14px;
   border-radius: 14px;
   border: 2px solid #1e293b;
   background: linear-gradient(135deg, #fff0f6, #fef3c7);
   box-shadow: 3px 3px 0 #1e293b;
   animation: streak-popup-in 0.28s ease-out;
+}
+
+.streak-popup-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.streak-popup-close:hover {
+  background: #fff;
+  color: #0f172a;
 }
 
 .streak-popup-emoji {

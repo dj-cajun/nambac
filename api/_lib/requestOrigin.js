@@ -17,6 +17,16 @@ function withWwwVariants(hostname) {
   return [host, `www.${host}`];
 }
 
+function deploymentHosts() {
+  return [
+    process.env.VERCEL_URL,
+    process.env.VERCEL_BRANCH_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  ]
+    .flatMap((host) => withWwwVariants(hostnameFromUrl(host ? `https://${host}` : '')))
+    .filter(Boolean);
+}
+
 /** Block obvious cross-site stats spam in production. */
 export function isTrustedSiteRequest(req) {
   if (!process.env.VERCEL) return true;
@@ -29,15 +39,11 @@ export function isTrustedSiteRequest(req) {
 
   const allowed = new Set([
     ...withWwwVariants(hostnameFromUrl(buildSiteUrl())),
-    ...withWwwVariants(hostnameFromUrl(process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '')),
+    ...deploymentHosts(),
     // Canonical product hosts (apex redirects to www in production)
     'nambac.xyz',
     'www.nambac.xyz',
-    'localhost',
-    '127.0.0.1',
   ].filter(Boolean));
 
-  if (allowed.has(refHost)) return true;
-  if (refHost.endsWith('.vercel.app')) return true;
-  return false;
+  return allowed.has(refHost);
 }

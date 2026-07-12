@@ -283,6 +283,11 @@ export default function RoastCardPage() {
                     </div>
                   )}
                 </div>
+                {imageError && (
+                  <p className="roast-card-image-error">
+                    Ảnh AI chưa tải được, hệ thống dùng nền mặc định.
+                  </p>
+                )}
 
                 <div className="roast-card-body-panel">
                   <p className="roast-card-answer">{answerText}</p>

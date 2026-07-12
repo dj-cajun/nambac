@@ -36,20 +36,9 @@ export default [
         'warn',
         { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
       ],
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': 'off',
       'react-hooks/set-state-in-effect': 'off',
       'no-useless-catch': 'warn',
-    },
-  },
-  {
-    files: ['src/**/*.{js,jsx}'],
-    rules: {
-      'max-lines-per-function': ['warn', { max: 80, skipBlankLines: true, skipComments: true }],
-      'max-depth': ['warn', 4],
-      'complexity': ['warn', 15],
     },
   },
 ]

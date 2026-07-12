@@ -1,4 +1,5 @@
 import { getSessionFromRequest } from './session.js';
+import { timingSafeEqualString } from './secureCompare.js';
 
 /** Production requires ADMIN_API_KEY or Google admin session; local dev may run without it. */
 export function requireAdmin(req, res) {
@@ -17,7 +18,7 @@ export function requireAdmin(req, res) {
   }
 
   const key = req.headers?.['x-admin-key'] || req.headers?.['X-Admin-Key'];
-  if (key === expected) return true;
+  if (timingSafeEqualString(key, expected)) return true;
 
   res.status(401).json({ error: 'Unauthorized' });
   return false;

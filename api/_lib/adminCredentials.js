@@ -1,11 +1,4 @@
-import crypto from 'crypto';
-
-function timingSafeEqual(a, b) {
-  const left = Buffer.from(String(a));
-  const right = Buffer.from(String(b));
-  if (left.length !== right.length) return false;
-  return crypto.timingSafeEqual(left, right);
-}
+import { timingSafeEqualString } from './secureCompare.js';
 
 export function getAdminCredentials() {
   return {
@@ -22,6 +15,6 @@ export function isAdminLoginConfigured() {
 export function verifyAdminCredentials(username, password) {
   const expected = getAdminCredentials();
   if (!expected.username || !expected.password) return false;
-  return timingSafeEqual(username, expected.username)
-    && timingSafeEqual(password, expected.password);
+  return timingSafeEqualString(username, expected.username)
+    && timingSafeEqualString(password, expected.password);
 }

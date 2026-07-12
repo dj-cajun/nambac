@@ -124,7 +124,7 @@ const CompatibilityPage = () => {
                     text: `Xem mức độ hợp nhau của tớ và bạn thân trên nambac.xyz nhé!`,
                     url: shareUrl,
                 });
-            } catch (e) {
+            } catch {
                 navigator.clipboard.writeText(shareUrl);
                 alert("Đã sao chép liên kết!");
             }

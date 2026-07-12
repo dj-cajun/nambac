@@ -66,8 +66,6 @@ export default function QuizEditor({ embedded = false, onClose }) {
         }
     };
 
-    const [isAuth, setIsAuth] = useState(true);
-
     const exitEditor = () => {
         if (embedded && onClose) {
             onClose();
@@ -331,7 +329,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
     };
 
     // ZIP Upload (Disabled in serverless)
-    const handleZipUpload = async (e) => {
+    const handleZipUpload = async () => {
         alert('서버리스 환경에서는 ZIP 업로드를 사용할 수 없습니다. 직접 퀴즈를 만들어 주세요.');
     };
 
@@ -357,7 +355,7 @@ export default function QuizEditor({ embedded = false, onClose }) {
                 if (r.image_file) {
                     finalResUrl = await saveImageFile(r.image_file);
                 }
-                const { image_file, preview_url, ...dbPayload } = r;
+                const { image_file: _imageFile, preview_url: _previewUrl, ...dbPayload } = r;
                 return { ...dbPayload, image_url: finalResUrl };
             }));
 

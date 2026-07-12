@@ -91,7 +91,14 @@ const Result = () => {
     const ogImageUrl = buildOgImageUrl(quizIdParam, score);
 
     const renderDescription = (text = "") => {
-        return <span dangerouslySetInnerHTML={{ __html: text.replace(/\\n/g, '<br/>') }} />;
+        return String(text)
+            .split(/\r?\n|\\n/g)
+            .map((line, index, lines) => (
+                <span key={`${index}-${line.slice(0, 12)}`}>
+                    {line}
+                    {index < lines.length - 1 ? <br /> : null}
+                </span>
+            ));
     };
 
     const handleDownloadImage = async () => {

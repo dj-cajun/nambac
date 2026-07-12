@@ -107,7 +107,7 @@ const Admin = () => {
         hidden: quizzes.filter((q) => q.is_active === false || q.status === 'hidden').length,
     }), [quizzes]);
 
-    const fetchQuizzes = async () => {
+    const fetchQuizzes = useCallback(async () => {
         setLoading(true);
         try {
             const combined = await api.fetchAllQuizzes();
@@ -118,15 +118,15 @@ const Admin = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [api, showToast]);
 
     useEffect(() => {
         if (isAdminAuthed) {
             fetchQuizzes();
         }
-    }, [isAdminAuthed]);
+    }, [isAdminAuthed, fetchQuizzes]);
 
-    const fetchInquiries = async () => {
+    const fetchInquiries = useCallback(async () => {
         setInquiriesLoading(true);
         try {
             const data = await api.fetchInquiries();
@@ -136,15 +136,15 @@ const Admin = () => {
         } finally {
             setInquiriesLoading(false);
         }
-    };
+    }, [api]);
 
     useEffect(() => {
         if (isAdminAuthed && adminTab === 'b2b') {
             fetchInquiries();
         }
-    }, [isAdminAuthed, adminTab]);
+    }, [isAdminAuthed, adminTab, fetchInquiries]);
 
-    const fetchAnalytics = async () => {
+    const fetchAnalytics = useCallback(async () => {
         setAnalyticsLoading(true);
         try {
             const data = await api.fetchAnalytics();
@@ -155,13 +155,13 @@ const Admin = () => {
         } finally {
             setAnalyticsLoading(false);
         }
-    };
+    }, [api, showToast]);
 
     useEffect(() => {
         if (isAdminAuthed && adminTab === 'analytics') {
             fetchAnalytics();
         }
-    }, [isAdminAuthed, adminTab]);
+    }, [isAdminAuthed, adminTab, fetchAnalytics]);
 
     const updateInquiryStatus = async (id, newStatus) => {
         try {
@@ -191,8 +191,6 @@ const Admin = () => {
         if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString('ko-KR');
     };
-
-    const handleGenerate = () => setShowEditor(true);
 
     const toggleStatus = async (id) => {
         try {
@@ -345,36 +343,6 @@ const Admin = () => {
         const updatedResults = [...editResults];
         updatedResults[index] = { ...updatedResults[index], [field]: value };
         setEditResults(updatedResults);
-    };
-
-    const handleClearResult = (index) => {
-        if (!window.confirm('이 결과 내용을 비울까요?')) return;
-        const updatedResults = [...editResults];
-        updatedResults[index] = {
-            ...updatedResults[index],
-            title: '',
-            description: '',
-            image_url: ''
-        };
-        setEditResults(updatedResults);
-    };
-
-    const toScoreDisplay = (code) => `${code} pts`;
-
-    const handleDeleteQuestion = async (idx) => {
-        const question = editQuestions[idx];
-        if (!question) return;
-        if (!window.confirm('이 문항을 삭제할까요?')) return;
-
-        try {
-            if (question.id) {
-                await api.deleteQuestion(editingQuiz.id, question.id);
-            }
-            setEditQuestions(prev => prev.filter((_, i) => i !== idx));
-        } catch (error) {
-            console.error("Error deleting question:", error);
-            showToast(`문항 삭제 실패: ${error.message}`, 'error');
-        }
     };
 
     const saveQuiz = async () => {
