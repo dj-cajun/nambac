@@ -18,6 +18,8 @@ import './App.css';
 const Result = lazy(() => import('./pages/Result'));
 const ShareRedirect = lazy(() => import('./pages/ShareRedirect'));
 const CompatibilityPage = lazy(() => import('./pages/CompatibilityPage'));
+const InstantQuizPage = lazy(() => import('./pages/InstantQuizPage'));
+const PersonalityCardPage = lazy(() => import('./pages/PersonalityCardPage'));
 const Admin = lazy(() => import('./pages/Admin'));
 const QuizEditor = lazy(() => import('./pages/QuizEditor'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
@@ -105,12 +107,14 @@ function AppContent() {
           <Route path="/share-view/:id/:score" element={<ShareRedirect />} />
           <Route path="/share-view/:id" element={<ShareRedirect />} />
           <Route path="/compatibility/:id/:friendScore/:myScore" element={<CompatibilityPage />} />
+          <Route path="/compatibility" element={<CompatibilityPage />} />
+          <Route path="/instant-quiz" element={<InstantQuizPage />} />
           <Route path="/brands" element={<BrandsLanding />} />
           <Route path="/brands/report/:quizId/:token" element={<BrandReport />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/me" element={<MePage />} />
+          <Route path="/me" element={<PersonalityCardPage />} />
           <Route path="/blog" element={<BlogIndex />} />
           <Route path="/blog/saigon-genz-mobile" element={<Navigate to="/blog/xu-huong-di-dong-gen-z-sai-gon" replace />} />
           <Route path="/blog/vietnam-quiz-history" element={<Navigate to="/blog/lich-su-quiz-truc-tuyen-viet-nam" replace />} />

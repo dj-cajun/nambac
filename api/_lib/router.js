@@ -50,6 +50,10 @@ import lienquanMastery from './handlers/lienquan/mastery.js';
 import lienquanBoast from './handlers/lienquan/boast.js';
 import lienquanKhoeImage from './handlers/lienquan/khoeImage.js';
 import lienquanQuizMeta from './handlers/lienquan/quizMeta.js';
+import aiInterpretResult from './handlers/aiInterpretResult.js';
+import aiInstantQuiz from './handlers/aiInstantQuiz.js';
+import aiCompatibility from './handlers/aiCompatibility.js';
+import aiCharacterMatch from './handlers/aiCharacterMatch.js';
 
 function stripPathQuery(query) {
   const q = { ...query };
@@ -257,6 +261,12 @@ export async function dispatch(req, res, segments = []) {
   ) {
     return lienquanKhoeImage(req, res);
   }
+
+  // ── AI Entertainment Platform routes ──
+  if (a === 'ai' && b === 'interpret') return aiInterpretResult(req, res);
+  if (a === 'ai' && b === 'instant-quiz') return aiInstantQuiz(req, res);
+  if (a === 'ai' && b === 'compatibility') return aiCompatibility(req, res);
+  if (a === 'ai' && b === 'character-match') return aiCharacterMatch(req, res);
 
   return res.status(404).json({ error: 'Not found', path: segments.join('/') });
 }

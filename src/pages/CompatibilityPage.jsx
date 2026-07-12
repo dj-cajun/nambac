@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Home, Share2, Download, Zap } from 'lucide-react';
+import { Home, Share2, Download, Zap, RefreshCw } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { getImageUrl } from '../lib/apiConfig';
 import { fetchQuizBundle } from '../lib/quizApi';
@@ -13,15 +13,25 @@ const CompatibilityPage = () => {
     const navigate = useNavigate();
     const pageRef = useRef(null);
 
+    const [nameA, setNameA] = useState('');
+    const [mbtiA, setMbtiA] = useState('');
+    const [nameB, setNameB] = useState('');
+    const [mbtiB, setMbtiB] = useState('');
+    const [aiResult, setAiResult] = useState(null);
+    const [aiLoading, setAiLoading] = useState(false);
+
+    const isInteractiveMode = !quizId || friendScoreParam === undefined || myScoreParam === undefined;
+
     const friendScore = parseInt(friendScoreParam);
     const myScore = parseInt(myScoreParam);
 
     const [quizTitle, setQuizTitle] = useState("Trắc nghiệm tính cách");
     const [friendResult, setFriendResult] = useState(null);
     const [myResult, setMyResult] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!isInteractiveMode);
 
     useEffect(() => {
+        if (isInteractiveMode) return;
         const fetchData = async () => {
             try {
                 setLoading(true);
@@ -43,7 +53,7 @@ const CompatibilityPage = () => {
             }
         };
         fetchData();
-    }, [quizId, friendScore, myScore]);
+    }, [quizId, friendScore, myScore, isInteractiveMode]);
 
     useEffect(() => {
         if (!loading && quizId) {
@@ -51,9 +61,8 @@ const CompatibilityPage = () => {
         }
     }, [loading, quizId, friendScore, myScore]);
 
-    // 3-Bit Binary Compatibility Logic
     const calculateCompatibility = () => {
-        // Convert scores to 3-bit binary arrays (e.g. 5 -> [1, 0, 1])
+        if (isInteractiveMode) return { score: 0, title: '', roast: '', chemical: '' };
         const toBinaryArray = (num) => {
             return [num & 1, (num >> 1) & 1, (num >> 2) & 1];
         };
@@ -61,7 +70,6 @@ const CompatibilityPage = () => {
         const fBits = toBinaryArray(friendScore);
         const mBits = toBinaryArray(myScore);
 
-        // Count matching bits
         let matchCount = 0;
         for (let i = 0; i < 3; i++) {
             if (fBits[i] === mBits[i]) matchCount++;
@@ -94,6 +102,23 @@ const CompatibilityPage = () => {
 
     const { score: matchScore, title: matchTitle, roast: matchRoast, chemical: matchChemical } = calculateCompatibility();
 
+    const handleCompare = async (e) => {
+        e.preventDefault();
+        if (!nameA.trim() || !nameB.trim() || aiLoading) return;
+        setAiLoading(true);
+        try {
+            const res = await fetch(`/api/ai/compatibility?nameA=${encodeURIComponent(nameA)}&mbtiA=${encodeURIComponent(mbtiA)}&nameB=${encodeURIComponent(nameB)}&mbtiB=${encodeURIComponent(mbtiB)}`);
+            if (!res.ok) throw new Error("Failed to compare");
+            const data = await res.json();
+            setAiResult(data);
+        } catch (err) {
+            console.error(err);
+            alert("Không so khớp được lúc này. Hãy thử lại sau nhé!");
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
     const handleDownload = async () => {
         if (!pageRef.current) return;
         try {
@@ -105,33 +130,19 @@ const CompatibilityPage = () => {
             });
             const dataUrl = canvas.toDataURL('image/png');
             const link = document.createElement('a');
-            link.download = `nambac-compatibility-${quizId}.png`;
+            link.download = `nambac-compat.png`;
             link.href = dataUrl;
             link.click();
         } catch (err) {
-            console.error("Failed to download compatibility image", err);
-            alert("Có lỗi xảy ra khi tải ảnh! Bạn hãy chụp màn hình kết quả nhé.");
+            console.error("Failed to download", err);
         }
     };
 
-    const handleShare = async () => {
+    const handleShare = () => {
         const shareUrl = window.location.href;
-        trackShare('compat', quizId, matchScore);
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `Độ hợp nhau của chúng tớ là ${matchScore}%!`,
-                    text: `Xem mức độ hợp nhau của tớ và bạn thân trên nambac.xyz nhé!`,
-                    url: shareUrl,
-                });
-            } catch {
-                navigator.clipboard.writeText(shareUrl);
-                alert("Đã sao chép liên kết!");
-            }
-        } else {
-            navigator.clipboard.writeText(shareUrl);
-            alert("Đã sao chép liên kết!");
-        }
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert("Đã sao chép link so sánh!");
+        });
     };
 
     if (loading) {
@@ -145,28 +156,53 @@ const CompatibilityPage = () => {
         );
     }
 
+    if (isInteractiveMode) {
+        return (
+            <div className="compatibility-page" style={{ maxWidth: '480px', margin: '0 auto', paddingBottom: '80px' }}>
+                <Helmet>
+                    <title>AI So Khớp &amp; Đo Độ Hợp Cạ | nambac.xyz</title>
+                </Helmet>
+                <main className="compatibility-main" ref={pageRef} style={{ width: '90%', margin: '20px auto' }}>
+                    <div className="compat-header">
+                        <span className="compat-badge">AI MATCHMAKER 🪄</span>
+                        <h1 className="compat-quiz-title" style={{ fontSize: '1.4rem', fontWeight: 900 }}>Đo Độ Hợp Cạ Cùng Crush</h1>
+                    </div>
+                    {!aiResult && !aiLoading && (
+                        <div style={{ background: '#fff', border: '2.5px solid #1e293b', borderRadius: '20px', padding: '20px', boxShadow: '4px 4px 0 #1e293b' }}>
+                            <form onSubmit={handleCompare} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <input type="text" placeholder="Tên của bạn..." value={nameA} onChange={(e) => setNameA(e.target.value)} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '2px solid #1e293b' }} />
+                                <input type="text" placeholder="Tên đối phương..." value={nameB} onChange={(e) => setNameB(e.target.value)} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '2px solid #1e293b' }} />
+                                <button type="submit" style={{ background: '#10b981', color: '#fff', border: '2.5px solid #1e293b', padding: '14px', borderRadius: '12px', fontWeight: 900 }}>🚀 BẮT ĐẦU SO KHỚP AI</button>
+                            </form>
+                        </div>
+                    )}
+                    {aiLoading && <div style={{ textAlign: 'center', padding: '40px' }}>AI đang đo lường... ⚡</div>}
+                    {aiResult && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div className="compat-score-section">
+                                <div className="compat-score-circle" style={{ borderColor: '#10b981' }}>
+                                    <span className="score-percentage">{aiResult.matchRate}%</span>
+                                </div>
+                                <h2 className="compat-score-title">{aiResult.archetype}</h2>
+                            </div>
+                            <button onClick={() => { setAiResult(null); setNameA(''); setNameB(''); }}><RefreshCw size={16} /> SO SÁNH CẶP KHÁC</button>
+                        </div>
+                    )}
+                </main>
+            </div>
+        );
+    }
+
     return (
         <div className="compatibility-page-container">
             <Helmet>
                 <title>{`Độ hợp nhau: ${matchScore}% — nambac.xyz`}</title>
-                <meta name="description" content={`${matchTitle} — ${matchRoast}`} />
-                <meta property="og:title" content={`Độ hợp nhau ${matchScore}%! ${matchTitle}`} />
-                <meta property="og:description" content={matchRoast} />
-                <meta property="og:image" content={getImageUrl(myResult?.image_url) || getOgDefaultImageUrl()} />
-                <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-                <meta property="og:type" content="website" />
-                <meta property="og:locale" content="vi_VN" />
-                <meta name="twitter:card" content="summary_large_image" />
             </Helmet>
-
             <main className="compatibility-main" ref={pageRef}>
-                {/* Visual Header */}
                 <div className="compat-header">
                     <span className="compat-badge">SO KÈO HỢP NHAU ⚡</span>
                     <h1 className="compat-quiz-title">{quizTitle}</h1>
                 </div>
-
-                {/* Compatibility Score Circle */}
                 <div className="compat-score-section">
                     <div className="compat-score-circle">
                         <Zap className="score-bolt-icon" size={28} />
@@ -175,59 +211,38 @@ const CompatibilityPage = () => {
                     <h2 className="compat-score-title">{matchTitle}</h2>
                     <span className="compat-chemical">🧪 Phản ứng: {matchChemical}</span>
                 </div>
-
-                {/* Left & Right Results Preview */}
                 <div className="compat-duo-cards">
-                    {/* Friend Card */}
                     <div className="compat-person-card">
                         <div className="card-avatar friend">
-                            <img 
-                                src={getImageUrl(friendResult?.image_url)} 
-                                onError={(e) => { e.target.src = "/images/default_cover.png" }}
-                                alt="Friend Result" 
-                            />
+                            <img src={getImageUrl(friendResult?.image_url)} onError={(e) => { e.target.src = "/images/default_cover.png" }} alt="Friend Result" />
                         </div>
                         <span className="person-label">BẠN THÂN</span>
                         <h4 className="person-result-title">{friendResult?.type_name || friendResult?.title}</h4>
                     </div>
-
-                    {/* VS */}
                     <div className="compat-vs">VS</div>
-
-                    {/* My Card */}
                     <div className="compat-person-card">
                         <div className="card-avatar me">
-                            <img 
-                                src={getImageUrl(myResult?.image_url)} 
-                                onError={(e) => { e.target.src = "/images/default_cover.png" }}
-                                alt="My Result" 
-                            />
+                            <img src={getImageUrl(myResult?.image_url)} onError={(e) => { e.target.src = "/images/default_cover.png" }} alt="My Result" />
                         </div>
                         <span className="person-label">BẠN</span>
                         <h4 className="person-result-title">{myResult?.type_name || myResult?.title}</h4>
                     </div>
                 </div>
-
-                {/* Roast description Box */}
                 <div className="compat-roast-box">
                     <div className="roast-tape"></div>
                     <p className="roast-text">{matchRoast}</p>
                 </div>
             </main>
-
-            {/* Bottom Actions Bar */}
             <div className="result-bottom-bar">
                 <div className="bar-actions">
                     <button className="restart-btn" onClick={() => navigate('/')}>
                         <Home size={18} />
                         <span className="btn-label">TRANG CHỦ</span>
                     </button>
-
                     <button className="download-action-btn" onClick={handleDownload}>
                         <Download size={18} />
                         <span className="btn-label">TẢI ẢNH</span>
                     </button>
-
                     <button className="share-btn" onClick={handleShare}>
                         <Share2 size={18} />
                     </button>
