@@ -31,6 +31,7 @@ const BrandsLanding = lazy(() => import('./pages/BrandsLanding'));
 const BrandReport = lazy(() => import('./pages/BrandReport'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const LeaderboardPage = lazy(() => import('./pages/LeaderboardPage'));
+const MePage = lazy(() => import('./pages/MePage'));
 const BlogIndex = lazy(() => import('./pages/BlogIndex'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const FortunePage = lazy(() => import('./pages/FortunePage'));
@@ -72,7 +73,7 @@ function AppContent() {
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin' || location.pathname === '/editor';
   const isBrandsPage = location.pathname === '/brands' || location.pathname.startsWith('/brands/');
-  const mainTabPaths = ['/', '/explore', '/leaderboard'];
+  const mainTabPaths = ['/', '/explore', '/me', '/leaderboard'];
   const showBottomNav = mainTabPaths.includes(location.pathname);
   const hideFooter = isAdminPage;
   const showSiteHeader = !isAdminPage && location.pathname !== '/brands';
@@ -109,6 +110,7 @@ function AppContent() {
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/me" element={<MePage />} />
           <Route path="/blog" element={<BlogIndex />} />
           <Route path="/blog/saigon-genz-mobile" element={<Navigate to="/blog/xu-huong-di-dong-gen-z-sai-gon" replace />} />
           <Route path="/blog/vietnam-quiz-history" element={<Navigate to="/blog/lich-su-quiz-truc-tuyen-viet-nam" replace />} />

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home as HomeIcon, Compass, BarChart2 } from 'lucide-react';
+import { Home as HomeIcon, Compass, User } from 'lucide-react';
 import { scrollToTop } from '../lib/scrollToTop';
 
 export default function BottomNav() {
@@ -22,9 +22,9 @@ export default function BottomNav() {
         <Compass size={24} color={isActive('/explore') ? '#FF2D85' : '#94A3B8'} />
         <span className={labelClass('/explore')}>Khám phá</span>
       </div>
-      <div className={`nav-item-col ${isActive('/leaderboard') ? 'active' : ''}`} onClick={() => navigate('/leaderboard')}>
-        <BarChart2 size={24} color={isActive('/leaderboard') ? '#FF2D85' : '#94A3B8'} />
-        <span className={labelClass('/leaderboard')}>BXH</span>
+      <div className={`nav-item-col ${isActive('/me') ? 'active' : ''}`} onClick={() => { scrollToTop(); navigate('/me'); }}>
+        <User size={24} strokeWidth={isActive('/me') ? 2.5 : 2} color={isActive('/me') ? '#FF2D85' : '#94A3B8'} />
+        <span className={labelClass('/me')}>Tôi</span>
       </div>
     </div>
   );

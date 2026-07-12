@@ -2,14 +2,14 @@
  * Tracks which "today" mini-activities the user has actually completed.
  *
  * Stored per local calendar day in localStorage so it auto-resets at midnight.
- * Shape: { date: 'YYYY-MM-DD', ids: ['quiz', 'fortune', 'balance', 'roast', 'brain'] }
+ * Shape: { date: 'YYYY-MM-DD', ids: ['quiz', 'fortune', 'balance', 'roast', 'brain', 'sbti', 'lienquan'] }
  *
  * Recorded at the real completion moment of each activity (result revealed /
  * vote submitted), not merely on click, so the Home badge means "đã chơi".
  */
 const TODAY_DONE_KEY = 'nambac-today-done';
 
-export const TODAY_IDS = ['quiz', 'fortune', 'balance', 'roast', 'brain'];
+export const TODAY_IDS = ['quiz', 'fortune', 'balance', 'roast', 'brain', 'sbti', 'lienquan'];
 
 export function localDateKey() {
   const d = new Date();
@@ -36,7 +36,7 @@ function writeTodayDone(set) {
 
 /**
  * Mark one activity as completed today. Idempotent.
- * @param {'quiz'|'fortune'|'balance'|'roast'|'brain'} id
+ * @param {'quiz'|'fortune'|'balance'|'roast'|'brain'|'sbti'|'lienquan'} id
  */
 export function markTodayDone(id) {
   if (!TODAY_IDS.includes(id)) return;

@@ -51,23 +51,31 @@
     text-transform: none;
 }
 
+.home-hero-primary,
 .home-hero-quiz {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 12px;
-    border: 2.5px solid #ff2d85;
+    border: 2.5px solid #1e293b;
     border-radius: 1rem;
-    background: linear-gradient(135deg, #fff0f6, #fff);
+    background: #fff;
     box-shadow: 3px 3px 0 #1e293b;
 }
 
+.home-hero-vbti {
+    border-color: #f43f5e;
+    background: linear-gradient(135deg, #fff5f3, #fff);
+}
+
+.home-hero-primary.is-done,
 .home-hero-quiz.is-done {
     opacity: 0.65;
     filter: saturate(0.7);
 }
 
+.home-hero-primary-thumb,
 .home-hero-quiz-thumb {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -75,14 +83,24 @@
     overflow: hidden;
     background: #f0f0f0;
     border: 1.5px solid rgba(15, 23, 42, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.home-hero-primary-thumb img,
 .home-hero-quiz-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+.home-hero-primary-emoji {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.home-hero-primary-title,
 .home-hero-quiz-title {
     margin: 0;
     font-size: 15px;
@@ -90,14 +108,39 @@
     line-height: 1.35;
     color: #1e293b;
     letter-spacing: -0.02em;
+}
+
+.home-hero-primary-hint {
+    margin: -6px 0 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    line-height: 1.35;
+}
+
+.home-hero-primary-title {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
+.home-hero-quiz-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.home-hero-primary-cta,
 .home-hero-quiz-cta {
     margin-top: 2px;
+    text-decoration: none;
+    text-align: center;
+}
+
+.home-hero-vbti .home-today-start-cta {
+    background: linear-gradient(135deg, #ff2d85, #f43f5e);
 }
 
 .home-hero-quiz-fallback {
@@ -107,8 +150,29 @@
     text-decoration: none;
 }
 
-.home-today-grid--secondary {
+.home-today-grid--games {
     margin-top: 2px;
+}
+
+.home-today-subsection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1.5px dashed #e2e8f0;
+}
+
+.home-today-subsection-label {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.home-today-grid--secondary {
+    margin-top: 0;
 }
 
 .home-today-brain {
