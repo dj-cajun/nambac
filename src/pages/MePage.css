@@ -79,6 +79,35 @@
   color: #64748b;
 }
 
+.me-auth-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #fecaca;
+  border-radius: 0.85rem;
+  background: #fff1f2;
+  color: #be123c;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.me-auth-error span {
+  flex: 1;
+}
+
+.me-auth-error button {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: #be123c;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .me-logout-btn {
   display: inline-flex;
   align-items: center;
@@ -167,6 +196,54 @@
   line-height: 1.2;
 }
 
+.me-grade-progress {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.85rem;
+  background: #f8fafc;
+}
+
+.me-grade-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.me-progress-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border: 1.5px solid #1e293b;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.me-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff2d85, #ffd166);
+}
+
+.me-today-progress {
+  margin-bottom: 12px;
+}
+
+.me-today-progress p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
 .me-today-list {
   list-style: none;
   margin: 0;
@@ -218,6 +295,38 @@
   gap: 8px;
 }
 
+.me-continue-primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border: 2.5px solid #1e293b;
+  border-radius: 0.95rem;
+  background: #ff2d85;
+  box-shadow: 3px 3px 0 #1e293b;
+  color: #fff;
+  text-decoration: none;
+}
+
+.me-continue-primary span,
+.me-continue-primary strong {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.me-continue-primary span {
+  font-weight: 900;
+}
+
+.me-continue-primary strong {
+  flex-shrink: 0;
+  font-weight: 900;
+}
+
 .me-shortcut {
   display: flex;
   align-items: center;
@@ -237,4 +346,20 @@
 .me-shortcut:active {
   transform: translate(2px, 2px);
   box-shadow: none;
+}
+
+@media (max-width: 360px) {
+  .me-card {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+
+  .me-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .me-continue-primary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
