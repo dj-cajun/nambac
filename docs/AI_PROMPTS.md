@@ -6,7 +6,7 @@
 
 | 역할 | 파일 | 주요 export |
 |------|------|-------------|
-| MASTER + scoring + validation + 2-pass | `shared/quizPrompts.js` | `QUIZ_MASTER_PROMPT` (v5.2 MZ), `QUIZ_RICHNESS_LIMITS`, `generateQuizContent`, `validateQuizPayload`, `validateViNaturalness` |
+| MASTER + scoring + validation + 2-pass | `shared/quizPrompts.js` | `QUIZ_MASTER_PROMPT` (v5.2 MZ), `QUIZ_RICHNESS_LIMITS`, `generateQuizContent`, `validateQuizPayload`, `validateViNaturalness`, `clampPayloadToMzLimits` |
 | VI Editor 2nd pass | `shared/quizViEditorPrompts.js` | `QUIZ_VI_EDITOR_SYSTEM`, `buildViEditorUserPrompt` |
 | Category tiers (daily rotation) | `shared/categoryTiers.js` | `DAILY_CATEGORY_IDS`, `pickDailyCategory` |
 | 8 Expert agents + topic seeds | `shared/quizExpertPrompts.js` | `QUIZ_EXPERT_PROMPTS`, `QUIZ_TOPIC_SEEDS` |
@@ -18,22 +18,37 @@
 
 - Admin UI: `POST /api/admin/generate-quiz-content` → `api/_lib/geminiQuiz.js`
 - Cron daily: `POST /api/cron/daily-quiz` → Tier A categories only via `pickDailyCategory`
+- Local/CI dry-run: `npm run daily:quiz -- --dry-run` (no Turso write)
+- GitHub Actions: `Daily quiz` workflow → `dry_run: true` input
 - Archetype factory: `POST /api/admin/generate-archetype-quiz` → `shared/quizPrompts.js` (`generateArchetypeQuizContent`)
 
-**Pipeline (v5.2):** Generate → VI Editor polish → validate (min+max+VI on AI path)
+**Pipeline (v5.2):** Generate → VI Editor polish → `clampPayloadToMzLimits` → validate (`enforceMax` + `enforceVi` on AI path)
 
 ## Fortune text
 
 | 역할 | 파일 | 주요 export |
 |------|------|-------------|
 | Multi-axis brand copy | `shared/fortuneMeta.js` | `FORTUNE_AXES`, `getFortuneBrand` |
+| Axis-native pools (money/health) | `shared/fortune-pools/fortune-*.pool.json` | JSON pools merged via `fortune:merge-batch` |
+| Pool loader | `shared/fortuneAxisPools.js` | `FORTUNE_MONEY_RESULTS`, `FORTUNE_HEALTH_RESULTS` |
+| Axis display framing | `shared/fortuneAxisFormat.js` | `formatFortuneForAxis` (lead + compat; skips lead when `axisNative`) |
 | Zodiac asset mapping (DOB → image) | `shared/zodiacFortune.js` | `resolveFortuneZodiacAsset`, `getWesternZodiacFromDob`, `getChineseZodiacFromDob` |
 | Zodiac image prompts (24 assets) | `shared/zodiacImagePrompts.js` | `listAllZodiacImageJobs` |
 | Static zodiac image loader | `api/_lib/zodiacImageService.js` | `ensureZodiacFortuneImage` |
-| AI fortune batch (optional expansion) | `shared/fortunePrompts.js` | `generateFortuneArchetypes` |
+| AI fortune batch (expansion) | `shared/fortunePrompts.js` | `generateFortuneArchetypes` |
 | Deterministic engine | `shared/fortuneEngine.js` | `calculateTodayFortune` (name + DOB + axis) |
 
+**Axis pools:** love/general → shared 20 (`fortuneData.js`). money/health → dedicated JSON pool when present (`getFortuneByIndexForAxis`).
+
 **Zodiac images (one-time):** `npm run images:zodiac` → `public/images/zodiac_west_*.webp` (12) + `zodiac_cn_*.webp` (12). No daily AI.
+
+**Batch ops:**
+
+```bash
+npm run fortune:axis-batch -- --axis=money --count=5   # → data/fortune-batch/
+npm run fortune:merge-batch -- --axis=money              # → shared/fortune-pools/fortune-money.pool.json
+npm run verify:fortune-images
+```
 
 ## Quiz images
 
@@ -48,6 +63,7 @@
 
 - Admin batch: `POST /api/admin/generate-quiz-images`
 - Backfill: `npm run images:backfill`
+- Daily quiz images: **off by default** — `npm run daily:quiz -- --with-images` or Actions `with_images: true`
 - Single: `POST /api/generate-image` (admin)
 
 ## Categories (normalization)

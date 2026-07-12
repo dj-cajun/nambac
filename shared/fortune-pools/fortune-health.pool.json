@@ -1,0 +1,42 @@
+[
+  {
+    "id": 0,
+    "title": "Kiệt Sức Level Max! 💀",
+    "desc": "Cảm thấy cả người rã rời như cây kem chảy giữa trưa Sài Gòn. Deadline dí tới cổ, não bộ đình công từ sáng. Chỉ muốn độn thổ hoặc biến thành cục đá không cảm xúc.",
+    "remedy": "Xin sếp/giáo viên cho \"flex time\" đi ngủ bù, hoặc ít nhất là ngó lơ vài cái tin nhắn.",
+    "cuuTinh": "Chỉ số 1 (Giường Êm)",
+    "baoThu": "Chỉ số 6 (Deadline)"
+  },
+  {
+    "id": 1,
+    "title": "Mắt Panda 🐼 Cấp Độ Khẩn Cấp",
+    "desc": "Đêm qua cày nốt bộ phim/game không lối thoát, giờ mắt thâm quầng như gấu trúc. Cafe cũng không cứu nổi, chỉ muốn úp mặt vào tường ngủ một giấc.",
+    "remedy": "Tối nay tắt Wi-Fi sớm, đặt báo thức nhắc đi ngủ, đừng để TikTok cuốn nữa nha.",
+    "cuuTinh": "Chỉ số 2 (Giấc Ngủ Sâu)",
+    "baoThu": "Chỉ số 7 (Series Phim)"
+  },
+  {
+    "id": 2,
+    "title": "Pin Xã Giao Cạn Kiệt 🔋",
+    "desc": "Sau một ngày phải \"chào hỏi xã giao\" và trả lời 7749 tin nhắn, pin xã giao của bạn đã chạm đáy. Chỉ muốn về nhà trùm chăn, không ai làm phiền.",
+    "remedy": "Hủy kèo gấp, viện cớ bận việc nhà, dành thời gian cho bản thân sạc lại năng lượng.",
+    "cuuTinh": "Chỉ số 3 (Chăn Ấm)",
+    "baoThu": "Chỉ số 5 (Hội Bạn)"
+  },
+  {
+    "id": 3,
+    "title": "Dạ Dày Biểu Tình 🤢",
+    "desc": "Căng thẳng dí quá làm bạn cứ order đồ ăn vặt linh tinh trên GrabFood. Giờ thì bụng réo ầm ĩ, cảm giác dạ dày muốn đình công rồi đó.",
+    "remedy": "Uống nước lọc nhiều lên, ăn rau xanh, và đừng nhìn vào cái app GrabFood nữa nha.",
+    "cuuTinh": "Chỉ số 4 (Nước Lọc)",
+    "baoThu": "Chỉ số 0 (Đồ Chiên)"
+  },
+  {
+    "id": 4,
+    "title": "Thân Hình Bất Động 🛋️",
+    "desc": "Cả ngày nằm ườn trên ghế sofa hoặc bàn làm việc, giờ thì người ê ẩm, vai gáy cứng đờ. Cảm giác như xương khớp muốn rụng rời theo từng cú click chuột.",
+    "remedy": "Đứng dậy đi lại 5 phút mỗi tiếng, vươn vai giãn cơ nhẹ nhàng, đừng để biến thành tượng nha.",
+    "cuuTinh": "Chỉ số 5 (Vận Động Nhẹ)",
+    "baoThu": "Chỉ số 2 (Sofa Lười)"
+  }
+]
