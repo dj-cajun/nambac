@@ -12,14 +12,19 @@ import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { scrollToTop } from '../../lib/scrollToTop';
 import './SidebarDrawer.css';
 
-function buildTodayCategoryGroup(todayQuiz) {
-  if (!todayQuiz) return null;
-
+/** Primary drawer: VBTI + games first (matches home launcher IA) */
+function buildPlayGroup(todayBalance) {
   return {
-    id: 'today',
-    label: 'Quiz hôm nay ☕',
-    variant: 'today',
-    links: [{ to: `/quiz/${todayQuiz.id}`, label: '🎯 Quiz' }],
+    id: 'play',
+    label: '🎮 Chơi ngay',
+    variant: 'miniapps',
+    links: [
+      { to: '/vbti', label: `🎭 ${SBTI_UI.drawerLabel}` },
+      { to: '/lienquan', label: `⚔️ ${LQ_UI.drawerLabel}` },
+      { to: '/roast-card', label: '💳 Bóc phốt' },
+      { to: '/brain', label: '🧠 Não bạn' },
+      { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} Cân não` },
+    ],
   };
 }
 
@@ -35,18 +40,18 @@ function buildFortuneGroup() {
   };
 }
 
-function buildMiniAppsGroup(todayBalance) {
+function buildQuizGroup(todayQuiz) {
+  const links = [];
+  if (todayQuiz) {
+    links.push({ to: `/quiz/${todayQuiz.id}`, label: '☕ Quiz hôm nay' });
+  }
+  links.push({ to: '/explore', label: '🧭 Khám phá quiz' });
+  links.push({ to: '/leaderboard', label: '🏆 BXH Hot' });
   return {
-    id: 'miniapps',
-    label: '🎮 Chơi nhanh',
-    variant: 'miniapps',
-    links: [
-      { to: `/balance/${todayBalance.id}`, label: `${todayBalance.emoji || '⚖️'} Cân não` },
-      { to: '/roast-card', label: '💳 Bóc phốt' },
-      { to: '/brain', label: '🧠 Não bạn' },
-      { to: '/lienquan', label: `⚔️ ${LQ_UI.drawerLabel}` },
-      { to: '/vbti', label: `🎭 ${SBTI_UI.drawerLabel}` },
-    ],
+    id: 'quiz',
+    label: '🎯 Quiz',
+    variant: 'today',
+    links,
   };
 }
 
@@ -56,7 +61,7 @@ function isDrawerLinkActive(pathname, link) {
   return pathname === link.to || pathname.startsWith(`${link.to}/`);
 }
 
-function isMiniAppRoute(pathname) {
+function isPlayRoute(pathname) {
   return pathname.startsWith('/balance')
     || pathname.startsWith('/roast-card')
     || pathname === '/brain'
@@ -85,8 +90,8 @@ function DrawerLink({ link, closeDrawer, nested = false, lined = false }) {
 function DrawerCategoryGroup({ group, closeDrawer }) {
   const location = useLocation();
   const routeActive = group.links?.some((link) => isDrawerLinkActive(location.pathname, link))
-    || (group.id === 'miniapps' && isMiniAppRoute(location.pathname));
-  const defaultOpen = group.id === 'today' || group.id === 'fortune' || group.id === 'miniapps';
+    || (group.id === 'play' && isPlayRoute(location.pathname));
+  const defaultOpen = group.id === 'play' || group.id === 'fortune' || group.id === 'quiz';
   const [isOpen, setIsOpen] = useState(defaultOpen || routeActive);
 
   const variantClass = group.variant ? ` drawer-category--${group.variant}` : '';
@@ -129,7 +134,7 @@ function DrawerQuizCategoriesBox({ closeDrawer }) {
 
   return (
     <div className="drawer-quiz-list-box">
-      <div className="drawer-quiz-list-heading">Trắc nghiệm</div>
+      <div className="drawer-quiz-list-heading">Theo chủ đề</div>
       <div className="drawer-quiz-list-lines">
         {QUIZ_CATEGORIES.map((category) => {
           const to = `/category/${category.id}`;
@@ -161,12 +166,9 @@ export default function SidebarDrawer() {
 
   const todayQuiz = useMemo(() => pickDailyQuiz(quizzes), [quizzes]);
   const todayBalance = useMemo(() => pickDailyBalanceQuestion(), []);
-  const todayGroup = useMemo(() => buildTodayCategoryGroup(todayQuiz), [todayQuiz]);
+  const playGroup = useMemo(() => buildPlayGroup(todayBalance), [todayBalance]);
   const fortuneGroup = useMemo(() => buildFortuneGroup(), []);
-  const miniAppsGroup = useMemo(
-    () => buildMiniAppsGroup(todayBalance),
-    [todayBalance],
-  );
+  const quizGroup = useMemo(() => buildQuizGroup(todayQuiz), [todayQuiz]);
 
   useEffect(() => {
     if (!open || quizzesLoaded) return;
@@ -231,16 +233,24 @@ export default function SidebarDrawer() {
 
             <div className="drawer-scroll drawer-scroll--hidden">
               <div className="drawer-quiz-groups">
-                {todayGroup && (
-                  <DrawerCategoryGroup group={todayGroup} closeDrawer={closeDrawer} />
-                )}
+                <DrawerCategoryGroup group={playGroup} closeDrawer={closeDrawer} />
                 <DrawerCategoryGroup group={fortuneGroup} closeDrawer={closeDrawer} />
-                <DrawerCategoryGroup group={miniAppsGroup} closeDrawer={closeDrawer} />
+                <DrawerCategoryGroup group={quizGroup} closeDrawer={closeDrawer} />
                 <DrawerQuizCategoriesBox closeDrawer={closeDrawer} />
               </div>
             </div>
 
             <div className="drawer-footer">
+              <Link
+                to="/me"
+                className="drawer-link drawer-link--lined"
+                onClick={() => {
+                  scrollToTop();
+                  closeDrawer();
+                }}
+              >
+                👤 Tài khoản của tôi
+              </Link>
               <Link
                 to="/brands"
                 className="drawer-link drawer-link--lined"
@@ -261,7 +271,7 @@ export default function SidebarDrawer() {
               >
                 📰 Insights
               </Link>
-              <p>Gen Z Sài Gòn · Không cần đăng nhập</p>
+              <p>Gen Z Sài Gòn · VBTI · Game</p>
             </div>
           </motion.aside>
         </>
