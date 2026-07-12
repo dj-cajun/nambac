@@ -10,6 +10,7 @@ import { SBTI_UI } from '../../../shared/vbti/ui-text.vi.js';
 import { buildVbtiOgImageUrl, buildVbtiShareUrl } from '../../lib/siteUrl';
 import { shuffleArray } from '../../lib/vbti/shuffle.js';
 import { saveSbtiResult } from '../../lib/vbti/session.js';
+import { markTodayDone } from '../../lib/todayDone.js';
 import './sbti.css';
 
 const QUESTION_MAP = Object.fromEntries(
@@ -59,6 +60,7 @@ export default function SbtiTestPage() {
     if (nextIndex >= nextDeck.length) {
       const result = scoreAnswers(nextAnswers, SBTI_QUESTIONS);
       saveSbtiResult({ result, answers: nextAnswers });
+      markTodayDone('sbti');
       navigate('/vbti/result', { state: { result } });
       return;
     }

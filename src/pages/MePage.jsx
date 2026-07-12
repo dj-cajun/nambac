@@ -9,6 +9,8 @@ import { fetchPlayerGrade } from '../lib/playerGrade';
 import { fetchMastery } from '../lib/lienquan/mastery';
 import { readTodayDone } from '../lib/todayDone';
 import { scrollToTop } from '../lib/scrollToTop';
+import { loadSbtiResult } from '../lib/vbti/session';
+import { typePosterSrc } from '../lib/vbti/assets';
 import { pickDailyBalanceQuestion } from '../../shared/dailyPicks.js';
 import './MePage.css';
 import './Home.css';
@@ -25,12 +27,55 @@ function buildTodayItems(todayBalance) {
   ];
 }
 
+const VBTI_DAILY_NOTES = [
+  {
+    title: 'Mood hôm nay',
+    text: 'Giữ nhịp nhẹ thôi. Hôm nay hợp làm một việc nhỏ cho xong, đừng ôm nguyên vũ trụ vào đầu.',
+  },
+  {
+    title: 'Điểm cộng hôm nay',
+    text: 'Bạn có aura tự biết mình là ai. Dùng nó để chọn việc đáng làm, còn drama thì để ngoài cửa.',
+  },
+  {
+    title: 'Cảnh báo nhẹ',
+    text: 'Đừng rep tin nhắn khi đang đói hoặc đang buồn ngủ. Một câu lỡ tay là đủ mở season mới.',
+  },
+  {
+    title: 'Nhiệm vụ hôm nay',
+    text: 'Chọn một phe trong Cân não rồi xem mình có giống số đông không. Không cần thắng, cần có mood.',
+  },
+  {
+    title: 'Self-check',
+    text: 'Nếu hôm nay thấy hơi lệch sóng, cứ reset bằng một ly nước, một bài nhạc, một quyết định rõ ràng.',
+  },
+  {
+    title: 'Vibe Sài Gòn',
+    text: 'Hợp ra ngoài 30 phút, đổi không khí rồi quay lại. Não cần gió, không chỉ cần WiFi.',
+  },
+  {
+    title: 'Lời nhắc nhỏ',
+    text: 'Bạn không cần chứng minh quá nhiều hôm nay. Làm xong một việc tử tế là đủ có điểm sáng.',
+  },
+];
+
+function getVbtiDailyNote(typeCode) {
+  const today = new Date();
+  const dateKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+  const seed = `${typeCode || 'VBTI'}:${dateKey}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) % 100000;
+  }
+  return VBTI_DAILY_NOTES[hash % VBTI_DAILY_NOTES.length];
+}
+
 export default function MePage() {
   const { user, loading: authLoading, logout, authError, clearAuthError } = useAuth();
   const [streak, setStreak] = useState({ streak: 0, best: 0 });
   const [playerGradeData, setPlayerGradeData] = useState(null);
   const [lqMastery, setLqMastery] = useState(null);
   const [doneToday, setDoneToday] = useState(() => readTodayDone());
+  const [sbtiSaved, setSbtiSaved] = useState(() => loadSbtiResult());
   const todayBalance = useMemo(() => pickDailyBalanceQuestion(), []);
   const todayItems = useMemo(() => buildTodayItems(todayBalance), [todayBalance]);
 
@@ -38,6 +83,7 @@ export default function MePage() {
     scrollToTop();
     setStreak(getDailyStreak());
     setDoneToday(readTodayDone());
+    setSbtiSaved(loadSbtiResult());
     fetchPlayerGrade().then((data) => {
       if (data?.grade) setPlayerGradeData(data);
     });
@@ -45,7 +91,10 @@ export default function MePage() {
   }, [user?.id]);
 
   useEffect(() => {
-    const refresh = () => setDoneToday(readTodayDone());
+    const refresh = () => {
+      setDoneToday(readTodayDone());
+      setSbtiSaved(loadSbtiResult());
+    };
     window.addEventListener('focus', refresh);
     return () => window.removeEventListener('focus', refresh);
   }, []);
@@ -61,6 +110,8 @@ export default function MePage() {
   const uniqueQuizzes = playerGradeData?.uniqueQuizzes || 0;
   const nextGrade = playerGradeData?.nextGrade;
   const gradeProgress = playerGradeData?.progressPercent || 0;
+  const sbtiType = sbtiSaved?.result?.finalType || null;
+  const sbtiDaily = sbtiType ? getVbtiDailyNote(sbtiType.code) : null;
 
   return (
     <div className="home-container me-page">
@@ -105,6 +156,49 @@ export default function MePage() {
               </div>
             )}
             <GoogleLoginButton returnTo="/me" label="Đăng nhập Google" />
+          </div>
+        )}
+      </section>
+
+      <section className="me-card me-identity" aria-label="VBTI của tôi">
+        <div className="me-section-head">
+          <h2 className="me-section-title">VBTI của tôi</h2>
+          {sbtiSaved?.savedAt && (
+            <span className="me-done-count">
+              {new Date(sbtiSaved.savedAt).toLocaleDateString('vi-VN')}
+            </span>
+          )}
+        </div>
+        {sbtiType ? (
+          <>
+            <div className="me-vbti-card">
+              <img
+                src={typePosterSrc(sbtiType.code)}
+                alt=""
+                className="me-vbti-poster"
+                loading="lazy"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+              <div className="me-vbti-copy">
+                <p className="me-vbti-kicker">Type hiện tại</p>
+                <h3>{sbtiType.code} · {sbtiType.name}</h3>
+                <p>{sbtiType.intro}</p>
+                <Link to="/vbti/result" className="me-vbti-link">Xem lại kết quả →</Link>
+              </div>
+            </div>
+            <div className="me-daily-identity">
+              <span className="me-daily-identity-kicker">Daily identity</span>
+              <strong>{sbtiDaily.title}</strong>
+              <p>{sbtiDaily.text}</p>
+            </div>
+          </>
+        ) : (
+          <div className="me-empty-identity">
+            <p>Chưa có type VBTI để giữ làm “chất riêng” hằng ngày.</p>
+            <Link to="/vbti/test" className="me-continue-primary">
+              <span>🎭 Test VBTI</span>
+              <strong>Lấy type của bạn →</strong>
+            </Link>
           </div>
         )}
       </section>
