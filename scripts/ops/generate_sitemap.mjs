@@ -93,16 +93,18 @@ async function main() {
   lines.push('</urlset>', '');
   const xml = lines.join('\n');
 
-  const outPath = path.join(PROJECT_ROOT, 'public/sitemap.xml');
-  fs.writeFileSync(outPath, xml);
-
+  // Primary crawl target for Search Console: /sitemaps/all.xml
   const allDir = path.join(PROJECT_ROOT, 'public/sitemaps');
   fs.mkdirSync(allDir, { recursive: true });
   const allPath = path.join(allDir, 'all.xml');
   fs.writeFileSync(allPath, xml);
 
-  console.log(`✅ wrote ${outPath} (${quizzes.length} quizzes, ${HEROES.length} heroes)`);
-  console.log(`✅ wrote ${allPath}`);
+  // Keep /sitemap.xml as a mirror for legacy submissions / tools
+  const outPath = path.join(PROJECT_ROOT, 'public/sitemap.xml');
+  fs.writeFileSync(outPath, xml);
+
+  console.log(`✅ wrote ${allPath} (${quizzes.length} quizzes, ${HEROES.length} heroes)`);
+  console.log(`✅ wrote ${outPath} (mirror)`);
 }
 
 main().catch((err) => {
