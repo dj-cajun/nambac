@@ -3,7 +3,7 @@
     "api/handler.js": {
       "maxDuration": 300,
       "memory": 1024,
-      "includeFiles": "{api/_lib/fonts/**,node_modules/@resvg/resvg-wasm/index_bg.wasm}",
+      "includeFiles": "{api/_lib/fonts/**,node_modules/@resvg/resvg-wasm/index_bg.wasm,dist/index.html,index.html}",
       "excludeFiles": "{public/images/**,node_modules/@img/*darwin*,node_modules/@img/*win32*}"
     }
   },
@@ -92,6 +92,18 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/sitemaps/all.xml",
+      "destination": "/api/handler?path=sitemap"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/handler?path=sitemap"
+    },
+    {
+      "source": "/quiz/:id",
+      "destination": "/api/handler?path=quiz-seo&id=:id"
+    },
     {
       "source": "/share-fortune/:name/:idx/:date",
       "destination": "/api/handler?path=fortune-share&name=:name&idx=:idx&date=:date"

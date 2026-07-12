@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import './Home.css';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
@@ -9,7 +9,6 @@ import QuizCardTitle from '../components/QuizCardTitle';
 import QuizCardStats from '../components/QuizCardStats';
 
 export default function LeaderboardPage() {
-  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,11 +21,10 @@ export default function LeaderboardPage() {
 
   const ranked = useMemo(() => sortByViralScore(quizzes), [quizzes]);
 
-  const handleQuizClick = (quizId) => {
+  const trackView = (quizId) => {
     if (trackQuizViewOnce(quizId)) {
       incrementQuizStat(quizId, 'view').catch(console.error);
     }
-    navigate(`/quiz/${quizId}`);
   };
 
   if (loading) {
@@ -42,6 +40,7 @@ export default function LeaderboardPage() {
       <Helmet>
         <title>BXH — nambac.xyz</title>
         <meta name="description" content="Bảng xếp hạng quiz hot nhất trên nambac.xyz" />
+        <link rel="canonical" href="https://www.nambac.xyz/leaderboard" />
       </Helmet>
 
       <div className="mt-6">
@@ -53,10 +52,11 @@ export default function LeaderboardPage() {
             <div className="text-center p-8 text-gray-500 font-bold col-span-2">Chưa có quiz nào hết trơn á! 🕸️</div>
           ) : (
             ranked.map((quiz, index) => (
-              <div
+              <Link
                 key={quiz.id}
+                to={`/quiz/${quiz.id}`}
                 className="glass-card square-card leaderboard-card"
-                onClick={() => handleQuizClick(quiz.id)}
+                onClick={() => trackView(quiz.id)}
               >
                 {index < 99 && (
                   <span className={`leaderboard-rank-badge${index < 3 ? ' top-rank' : ''}`}>
@@ -68,7 +68,7 @@ export default function LeaderboardPage() {
                   <QuizCardTitle title={quiz.title} />
                   <QuizCardStats quiz={quiz} />
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>

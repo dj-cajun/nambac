@@ -91,6 +91,7 @@ const checks = [
         if (!text.includes('nambac.xyz')) throw new Error('sitemap missing quiz urls');
         throw new Error('sitemap missing quiz urls');
       }
+      if (!text.includes('<lastmod>')) throw new Error('sitemap missing lastmod');
       return `bytes=${text.length}`;
     },
   },
@@ -101,6 +102,22 @@ const checks = [
       const text = await res.text();
       if (!text.includes('<urlset')) throw new Error('invalid all.xml');
       if (!text.includes('/quiz/')) throw new Error('all.xml missing quiz urls');
+      if (!text.includes('<lastmod>')) throw new Error('all.xml missing lastmod');
+      return `bytes=${text.length}`;
+    },
+  },
+  {
+    name: 'GET /quiz/:id (Googlebot SEO)',
+    url: `${base}/quiz-seo?id=67fc1b12-2a95-4d6b-a7ab-f224b45c4b7d`,
+    headers: { 'user-agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' },
+    assert: async (res) => {
+      const text = await res.text();
+      if (!text.includes('rel="canonical"') && !text.includes("rel='canonical'")) {
+        // 404 page for missing quiz is still ok if HTML
+        if (!text.includes('Quiz không tồn tại') && !text.includes('<title>')) {
+          throw new Error('quiz-seo missing canonical/title');
+        }
+      }
       return `bytes=${text.length}`;
     },
   },
@@ -109,7 +126,10 @@ const checks = [
 let failed = 0;
 for (const c of checks) {
   try {
-    const res = await fetch(c.url, { redirect: c.redirect || 'follow' });
+    const res = await fetch(c.url, {
+      redirect: c.redirect || 'follow',
+      headers: c.headers || undefined,
+    });
     const ok = c.redirect === 'manual'
       ? (res.status === 302 || res.status === 503 || res.ok)
       : res.ok;

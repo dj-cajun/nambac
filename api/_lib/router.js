@@ -17,6 +17,7 @@ import pushNotify from './handlers/pushNotify.js';
 import brandStats from './handlers/brandStats.js';
 import dailyQuiz from './handlers/dailyQuiz.js';
 import og from './handlers/og.js';
+import quizSeo from './handlers/quizSeo.js';
 import ogImage from './handlers/ogImage.js';
 import balance from './handlers/balance.js';
 import balanceImage from './handlers/balanceImage.js';
@@ -146,6 +147,11 @@ export async function dispatch(req, res, segments = []) {
   if (a === 'push' && b === 'notify' && method === 'POST') return pushNotify(req, res);
   if (a === 'brand' && b === 'stats' && method === 'GET') return brandStats(req, res);
   if (a === 'cron' && b === 'daily-quiz' && (method === 'GET' || method === 'POST')) return dailyQuiz(req, res);
+
+  // ── Quiz SEO for crawlers (/quiz/:id rewrite) ──
+  if (a === 'quiz-seo' && !b && (method === 'GET' || method === 'HEAD')) {
+    return quizSeo(req, res);
+  }
 
   // ── OG scraper (also reached via /share/* rewrites) ──
   if (a === 'og' && !b) return og(req, res);

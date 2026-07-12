@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { getCategoryMeta, matchesCategory } from '../constants/categories';
 import { fetchQuizzes, incrementQuizStat } from '../lib/quizApi';
@@ -12,7 +12,6 @@ import './Home.css';
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
-  const navigate = useNavigate();
   const category = getCategoryMeta(categoryId);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,11 +34,10 @@ export default function CategoryPage() {
     return sortByViralScore(quizzes.filter((q) => matchesCategory(q.category, category.id)));
   }, [quizzes, category]);
 
-  const handleQuizClick = (quizId) => {
+  const trackView = (quizId) => {
     if (trackQuizViewOnce(quizId)) {
       incrementQuizStat(quizId, 'view').catch(console.error);
     }
-    navigate(`/quiz/${quizId}`);
   };
 
   if (!category) {
@@ -62,6 +60,7 @@ export default function CategoryPage() {
           name="description"
           content={`Trắc nghiệm ${category.labelKo || category.id} — quiz Gen Z Sài Gòn trên nambac.xyz`}
         />
+        <link rel="canonical" href={`https://www.nambac.xyz/category/${category.id}`} />
       </Helmet>
 
       <div className="mt-6">
@@ -75,7 +74,12 @@ export default function CategoryPage() {
             </div>
           ) : (
             filtered.map((quiz) => (
-              <div key={quiz.id} className="glass-card square-card" onClick={() => handleQuizClick(quiz.id)}>
+              <Link
+                key={quiz.id}
+                to={`/quiz/${quiz.id}`}
+                className="glass-card square-card"
+                onClick={() => trackView(quiz.id)}
+              >
                 <QuizCardThumb
                   src={quiz.image_url}
                   seed={quiz.id}
@@ -86,7 +90,7 @@ export default function CategoryPage() {
                   <QuizCardTitle title={quiz.title} />
                   <QuizCardStats quiz={quiz} />
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>

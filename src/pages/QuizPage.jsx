@@ -170,20 +170,20 @@ export default function QuizPage({ quizIdProp }) {
 
     // --- Intro View ---
     if (!started) {
-        // Derive dynamic share URL for Quiz OG Tags (Route through /share/ for SSR OG api wrapper)
-        const shareUrl = buildShareUrl(`/share/${quizId}`);
-        
+        const playUrl = buildShareUrl(`/quiz/${quizId}`);
+
         return (
             <>
                 <Helmet>
                     <title>{quizInfo.title} - nambac.xyz</title>
                     <meta name="description" content={quizInfo.description || quizInfo.title} />
+                    <link rel="canonical" href={playUrl} />
                     <meta property="og:title" content={quizInfo.title} />
                     <meta property="og:description" content={quizInfo.description || quizInfo.title} />
                     <meta property="og:image" content={buildOgImageUrl(quizId)} />
                     <meta property="og:image:width" content="1200" />
                     <meta property="og:image:height" content="630" />
-                    <meta property="og:url" content={shareUrl} />
+                    <meta property="og:url" content={playUrl} />
                     <meta property="twitter:card" content="summary_large_image" />
                 </Helmet>
                 

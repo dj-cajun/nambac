@@ -15,9 +15,22 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           const pathname = req.url?.split('?')[0] || '';
-          if (pathname === '/sitemap.xml') {
+          if (pathname === '/sitemap.xml' || pathname === '/sitemaps/all.xml') {
             req.url = '/api/sitemap';
             return next();
+          }
+          const quizSeoMatch = pathname.match(/^\/quiz\/([^/]+)$/);
+          if (quizSeoMatch) {
+            const ua = String(req.headers['user-agent'] || '').toLowerCase();
+            const bot = [
+              'googlebot', 'bingbot', 'yandex', 'facebookexternalhit', 'facebot',
+              'twitterbot', 'linkedinbot', 'slackbot', 'discordbot', 'whatsapp',
+              'telegrambot', 'kakaotalk', 'zalosharebot',
+            ].some((b) => ua.includes(b));
+            if (bot) {
+              req.url = `/api/quiz-seo?id=${encodeURIComponent(quizSeoMatch[1])}`;
+              return next();
+            }
           }
           const fortuneShareMatch = pathname.match(/^\/share-fortune\/([^/]+)\/(\d+)(?:\/([^/]+))?$/);
           if (fortuneShareMatch) {

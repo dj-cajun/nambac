@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { scrollToTop } from '../lib/scrollToTop';
 import { getFortuneBrand } from '../../shared/fortuneMeta.js';
@@ -43,7 +43,7 @@ function TodayThumbCard({
 
   if (to) {
     return (
-      <Link to={to} className={className}>
+      <Link to={to} className={className} onClick={onClick}>
         {content}
       </Link>
     );
@@ -57,7 +57,6 @@ function TodayThumbCard({
 }
 
 export default function Home() {
-  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [doneToday, setDoneToday] = useState(() => readTodayDone());
@@ -86,13 +85,6 @@ export default function Home() {
   const todayQuiz = useMemo(() => pickDailyQuiz(quizzes), [quizzes]);
   const todayBalance = useMemo(() => pickDailyBalanceQuestion(), []);
   const featureThumbs = useHomeFeatureThumbs();
-
-  const handleQuizClick = async (quizId) => {
-    if (trackQuizViewOnce(quizId)) {
-      incrementQuizStat(quizId, 'view').catch(console.error);
-    }
-    navigate(`/quiz/${quizId}`);
-  };
 
   if (loading) {
     return (
@@ -211,7 +203,12 @@ export default function Home() {
                 <TodayThumbCard
                   className={`home-today-card home-today-quiz${doneToday.has('quiz') ? ' is-done' : ''}`}
                   done={doneToday.has('quiz')}
-                  onClick={() => handleQuizClick(todayQuiz.id)}
+                  to={`/quiz/${todayQuiz.id}`}
+                  onClick={() => {
+                    if (trackQuizViewOnce(todayQuiz.id)) {
+                      incrementQuizStat(todayQuiz.id, 'view').catch(console.error);
+                    }
+                  }}
                   imageSrc={todayQuiz.image_url}
                   imageSeed={todayQuiz.id}
                   label="Quiz hôm nay"

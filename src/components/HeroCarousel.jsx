@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import QuizImage from './QuizImage';
 
 export default function HeroCarousel({ slides, onItemClick }) {
@@ -7,6 +8,7 @@ export default function HeroCarousel({ slides, onItemClick }) {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftState, setScrollLeftState] = useState(0);
+  const dragMoved = useRef(false);
 
   const getCarouselStep = () => {
     const el = carouselRef.current;
@@ -63,6 +65,7 @@ export default function HeroCarousel({ slides, onItemClick }) {
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
+    dragMoved.current = false;
     setStartX(e.pageX - carouselRef.current.offsetLeft);
     setScrollLeftState(carouselRef.current.scrollLeft);
     if (carouselRef.current) {
@@ -94,6 +97,7 @@ export default function HeroCarousel({ slides, onItemClick }) {
     e.preventDefault();
     const x = e.pageX - carouselRef.current.offsetLeft;
     const walk = (x - startX) * 2;
+    if (Math.abs(walk) > 6) dragMoved.current = true;
     carouselRef.current.scrollLeft = scrollLeftState - walk;
   };
 
@@ -114,10 +118,17 @@ export default function HeroCarousel({ slides, onItemClick }) {
             onMouseMove={handleMouseMove}
           >
             {slides.map((item) => (
-              <div
+              <Link
                 key={`${item.kind}-${item.id}`}
+                to={item.to || '/explore'}
                 className="hero-slide"
-                onClick={() => onItemClick(item)}
+                onClick={(e) => {
+                  if (dragMoved.current) {
+                    e.preventDefault();
+                    return;
+                  }
+                  onItemClick?.(item);
+                }}
               >
                 <div className="hero-image-bg">
                   <QuizImage src={item.image_url} alt={item.title} seed={item.imageSeed} />
@@ -127,7 +138,7 @@ export default function HeroCarousel({ slides, onItemClick }) {
                   <span className="trending-badge">{item.typeLabel}</span>
                   <h2 className="hero-title">{item.title}</h2>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -35,7 +35,7 @@ venv/
 *.njsproj
 *.sln
 
-# Data
+artifacts/
 data/
 backend/data/
 .backfill-force-progress.json

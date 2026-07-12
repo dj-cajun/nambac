@@ -818,6 +818,8 @@
     cursor: pointer;
     transition: transform 0.2s;
     box-sizing: border-box;
+    color: inherit;
+    text-decoration: none;
 }
 
 .hero-slide:active {
@@ -1148,6 +1150,11 @@
     transition: all 0.1s;
     position: relative;
     cursor: pointer;
+}
+
+a.glass-card {
+    color: inherit;
+    text-decoration: none;
 }
 
 .glass-card.square-card {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import './Home.css';
 import { scrollToTop } from '../lib/scrollToTop';
@@ -42,7 +42,6 @@ const MINI_APP_SHORTCUTS = [
 ];
 
 export default function ExplorePage() {
-  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState('trending');
@@ -89,16 +88,11 @@ export default function ExplorePage() {
     [quizzes, featureFeedItems],
   );
 
-  const handleQuizClick = (quizId) => {
-    if (trackQuizViewOnce(quizId)) {
-      incrementQuizStat(quizId, 'view').catch(console.error);
-    }
-    navigate(`/quiz/${quizId}`);
-  };
-
   const handleFeedItemClick = (item) => {
     if (item.kind === 'quiz') {
-      handleQuizClick(item.quizId);
+      if (trackQuizViewOnce(item.quizId)) {
+        incrementQuizStat(item.quizId, 'view').catch(console.error);
+      }
       return;
     }
     if (item.kind === 'roast' || item.kind === 'brain' || item.kind === 'lienquan' || item.kind === 'sbti') {
@@ -106,7 +100,6 @@ export default function ExplorePage() {
         incrementFeatureStat(item.kind, 'view').catch(console.error);
       }
     }
-    navigate(item.to);
   };
 
   const getMiniAppThumb = (key) => {
@@ -214,8 +207,9 @@ export default function ExplorePage() {
             <div className="text-center p-8 text-gray-500 font-bold col-span-2">Chưa có quiz nào hết trơn á! 🕸️</div>
           ) : (
             feedItems.map((item) => (
-              <div
+              <Link
                 key={`${item.kind}-${item.id}`}
+                to={item.to}
                 className="glass-card square-card"
                 onClick={() => handleFeedItemClick(item)}
               >
@@ -229,7 +223,7 @@ export default function ExplorePage() {
                   <QuizCardTitle title={item.title} />
                   <QuizCardStats quiz={item} />
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
