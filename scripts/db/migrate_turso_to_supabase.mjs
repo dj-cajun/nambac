@@ -88,23 +88,30 @@ async function testConnection(dbUrl) {
 }
 
 async function applySchema(pool) {
-  const sqlPath = path.join(PROJECT_ROOT, 'supabase/migrations/20260711000000_nambac_turso_schema.sql');
-  const raw = fs.readFileSync(sqlPath, 'utf-8');
-  const statements = raw
-    .replace(/--[^\n]*/g, '')
-    .split(';')
-    .map((s) => s.trim())
-    .filter(Boolean);
+  const migrationsDir = path.join(PROJECT_ROOT, 'supabase/migrations');
+  const sqlPaths = fs.readdirSync(migrationsDir)
+    .filter((name) => name.endsWith('.sql'))
+    .sort()
+    .map((name) => path.join(migrationsDir, name));
 
-  for (const stmt of statements) {
-    try {
-      await pool.query(stmt);
-    } catch (err) {
-      if (/already exists|duplicate/i.test(err.message)) continue;
-      throw err;
+  for (const sqlPath of sqlPaths) {
+    const raw = fs.readFileSync(sqlPath, 'utf-8');
+    const statements = raw
+      .replace(/--[^\n]*/g, '')
+      .split(';')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const stmt of statements) {
+      try {
+        await pool.query(stmt);
+      } catch (err) {
+        if (/already exists|duplicate/i.test(err.message)) continue;
+        throw err;
+      }
     }
+    console.log(`✅ Supabase migration applied: ${path.basename(sqlPath)}`);
   }
-  console.log('✅ Supabase schema applied');
 }
 
 async function copyTable(turso, pool, table) {
