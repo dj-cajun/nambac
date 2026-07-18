@@ -223,8 +223,7 @@ ON CONFLICT (id) DO NOTHING;
 DROP POLICY IF EXISTS "Khoe images public read" ON storage.objects;
 DROP POLICY IF EXISTS "Khoe images service upload" ON storage.objects;
 
-CREATE POLICY "Khoe images public read" ON storage.objects
-  FOR SELECT USING (bucket_id = 'khoe-images');
-
 CREATE POLICY "Khoe images service upload" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'khoe-images');
+  FOR INSERT
+  TO service_role
+  WITH CHECK (bucket_id = 'khoe-images');

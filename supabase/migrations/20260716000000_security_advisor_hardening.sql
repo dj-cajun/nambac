@@ -158,12 +158,7 @@ CREATE POLICY "Service role manages lienquan boast likes" ON lienquan_boast_like
 CREATE POLICY "Service role manages lienquan khoe images" ON lienquan_khoe_images
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
--- ── Storage policies: public read, server-only upload ──────────────────────
-CREATE POLICY "Khoe images public read" ON storage.objects
-  FOR SELECT
-  TO anon, authenticated
-  USING (bucket_id = 'khoe-images');
-
+-- ── Storage policies: public buckets use object URLs; writes stay server-only ──
 CREATE POLICY "Khoe images service upload" ON storage.objects
   FOR INSERT
   TO service_role
