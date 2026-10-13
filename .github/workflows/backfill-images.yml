@@ -1,7 +1,7 @@
 # 원격 이미지 백필 — 누락분 보완 (일일 퀴즈는 daily-quiz.yml에서 처리)
 #
 # 필수 Secrets (Settings → Secrets → Actions):
-#   TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, GEMINI_API_KEY, OPENROUTER_API_KEY
+#   SUPABASE_DB_URL, GEMINI_API_KEY, OPENROUTER_API_KEY
 # 선택: OPENROUTER_TEXT_MODEL, OPENROUTER_IMAGE_MODEL, VITE_GEMINI_API_KEY
 
 name: Remote image backfill
@@ -53,8 +53,7 @@ jobs:
 
       - name: Run backfill
         env:
-          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
-          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -66,6 +65,7 @@ jobs:
           BACKFILL_PAUSE: '8000'
           BACKFILL_QUIZ_ID: ${{ github.event.client_payload.quiz_id || github.event.inputs.quiz_id || '' }}
         run: |
+          set -o pipefail
           if [ -n "$BACKFILL_QUIZ_ID" ]; then
             echo "Single-quiz backfill: $BACKFILL_QUIZ_ID"
             npm run images:backfill -- --quiz-id="$BACKFILL_QUIZ_ID" --max-quizzes=1 --delay=4000 --skip-questions $BACKFILL_FORCE 2>&1 | tee backfill.log

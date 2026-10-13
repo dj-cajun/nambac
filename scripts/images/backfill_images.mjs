@@ -79,8 +79,8 @@ async function main() {
     console.error('❌ OPENROUTER_API_KEY or GEMINI_API_KEY required for image generation');
     process.exit(1);
   }
-  if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-    console.error('❌ TURSO_* required');
+  if (!process.env.SUPABASE_DB_URL && !process.env.DATABASE_URL) {
+    console.error('❌ SUPABASE_DB_URL required');
     process.exit(1);
   }
 

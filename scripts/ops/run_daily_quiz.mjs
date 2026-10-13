@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Daily quiz: Gemini → Turso → (optional) push → image backfill.
+ * Daily quiz: Gemini → Supabase → (optional) push → image backfill.
  * Used locally (`npm run daily:quiz`) and in GitHub Actions.
  *
  * Usage:
@@ -60,8 +60,8 @@ async function main() {
   const dryRun = hasFlag('--dry-run');
 
   if (!dryRun) {
-    if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-      console.error('❌ TURSO_DATABASE_URL / TURSO_AUTH_TOKEN missing');
+    if (!process.env.SUPABASE_DB_URL && !process.env.DATABASE_URL) {
+      console.error('❌ SUPABASE_DB_URL missing');
       process.exit(1);
     }
   }
@@ -86,7 +86,7 @@ async function main() {
     console.log(`   title: ${payload.title}`);
     console.log(`   category: ${payload.category}`);
     console.log(`   result desc lengths: ${resultDescLens.join(', ')} (min ${Math.min(...resultDescLens)}, max ${Math.max(...resultDescLens)})`);
-    console.log('   (not saved to Turso)\n');
+    console.log('   (not saved to DB)\n');
     return;
   }
 

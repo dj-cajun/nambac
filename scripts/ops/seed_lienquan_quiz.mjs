@@ -11,8 +11,8 @@ dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env.local'), override: true });
 
 async function main() {
-  if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-    console.error('❌ TURSO_* missing');
+  if (!process.env.SUPABASE_DB_URL && !process.env.DATABASE_URL) {
+    console.error('❌ SUPABASE_DB_URL missing');
     process.exit(1);
   }
 

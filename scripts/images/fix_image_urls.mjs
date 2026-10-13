@@ -61,8 +61,8 @@ function resolveUrl(quizId, currentUrl, kind, resultCode = null) {
 }
 
 async function main() {
-  if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-    console.error('❌ TURSO_* required');
+  if (!process.env.SUPABASE_DB_URL && !process.env.DATABASE_URL) {
+    console.error('❌ SUPABASE_DB_URL required');
     process.exit(1);
   }
 

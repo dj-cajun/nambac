@@ -67,8 +67,8 @@ async function main() {
 
   let db = null;
   if (!skipDb) {
-    if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-      console.error('❌ TURSO_* required (or pass --skip-db)');
+    if (!process.env.SUPABASE_DB_URL && !process.env.DATABASE_URL) {
+      console.error('❌ SUPABASE_DB_URL required (or pass --skip-db)');
       process.exit(1);
     }
     const { getTurso } = await import('../../api/_lib/turso.js');

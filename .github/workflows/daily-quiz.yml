@@ -1,6 +1,6 @@
-# 일일 퀴즈 — Gemini → Turso → Push (텍스트만 기본, 이미지는 --with-images 시에만)
+# 일일 퀴즈 — Gemini → Supabase → Push (텍스트만 기본, 이미지는 --with-images 시에만)
 #
-# 필수 Secrets: TURSO_*, GEMINI_API_KEY, OPENROUTER_API_KEY
+# 필수 Secrets: SUPABASE_DB_URL, GEMINI_API_KEY, OPENROUTER_API_KEY
 # Push(선택): VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT
 
 name: Daily quiz
@@ -55,8 +55,7 @@ jobs:
       - name: Generate daily quiz (text only by default)
         id: quiz
         env:
-          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
-          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -67,6 +66,7 @@ jobs:
           VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
           VITE_SITE_URL: https://www.nambac.xyz
         run: |
+          set -o pipefail
           ARGS=""
           if [ -n "${{ github.event.inputs.category }}" ]; then
             ARGS="$ARGS --category=${{ github.event.inputs.category }}"

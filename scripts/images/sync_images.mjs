@@ -26,8 +26,8 @@ const quizIdArg = args.find((a) => a.startsWith('--quiz-id='));
 const filterQuizId = quizIdArg ? quizIdArg.split('=')[1] : null;
 
 async function main() {
-  if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-    console.error('❌ TURSO_* required in .env.local');
+  if (!process.env.SUPABASE_DB_URL && !process.env.DATABASE_URL) {
+    console.error('❌ SUPABASE_DB_URL required in .env.local');
     process.exit(1);
   }
 

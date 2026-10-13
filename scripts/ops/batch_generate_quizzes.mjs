@@ -39,8 +39,8 @@ const imagesMode = getArg('--images', 'cover'); // cover | full | none
 const lockedCategory = getArg('--category', '');
 const genDelay = parseInt(getArg('--delay', '2500'), 10) || 2500;
 
-if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
-  console.error('❌ TURSO_DATABASE_URL / TURSO_AUTH_TOKEN missing');
+if (!process.env.SUPABASE_DB_URL && !process.env.DATABASE_URL) {
+  console.error('❌ SUPABASE_DB_URL missing');
   process.exit(1);
 }
 if (!process.env.GEMINI_API_KEY && !process.env.OPENROUTER_API_KEY) {
